@@ -7,9 +7,10 @@ import re
 import csv
 from collections import namedtuple
 from heapq import nsmallest
-from ConfigParser import RawConfigParser
 
-from _bibtex_undiacritic import undiacritic
+from pyglottolog import languoids
+from pyglottolog.util import references_path, parse_conjunctions, read_ini
+from pyglottolog._bibtex_undiacritic import undiacritic
 
 __all__ = [
     'add_inlg_e',
@@ -21,8 +22,7 @@ __all__ = [
     'pitems',
 ]
 
-INLG = '../references/alt4inlg.ini'
-HHTYPE = '../references/alt4hhtype.ini'
+HHTYPE = references_path('alt4hhtype.ini')
 
 
 def read_csv_dict(filename):
@@ -47,29 +47,20 @@ def write_csv_rows(rows, filename, fieldnames=None, encoding='utf-8', dialect='e
         writer.writerows([[unicode(c).encode(encoding) for c in r] for r in rows])
 
 
-def load_triggers(filename, sec_curly_to_square=False):
-    if sec_curly_to_square:
-        mangle_sec = lambda s: s.replace('{', '[').replace('}', ']')
-    else:
-        mangle_sec = lambda s: s
-    p = RawConfigParser()
-    with open(filename) as fp:
-        p.readfp(fp)
+def load_triggers(filename):
+    p = read_ini(filename)
     result = {}
     for s in p.sections():
-        cls, _, lab = mangle_sec(s).partition(', ')
+        cls, lab = s.split(', ', 1)
         triggers = p.get(s, 'triggers').strip().splitlines()
         if not triggers:  # hhtype, unknown
             continue
-        result[(cls, lab)] = [[(False, w[4:].strip()) if w.startswith('NOT ') else (True, w.strip())
-          for w in t.split(' AND ')] for t in triggers]
+        result[(cls, lab)] = [parse_conjunctions(t) for t in triggers]
     return result
 
 
 def load_hhtypes(filename=HHTYPE):
-    p = RawConfigParser()
-    with open(filename) as fp:
-        p.readfp(fp)
+    p = read_ini(filename)
     result = {}
     for s in p.sections():
         _, _, expl = s.partition(', ')
@@ -282,7 +273,7 @@ def renfn(e, ups):
 
 
 def add_inlg_e(e):
-    inlg = load_triggers(INLG, sec_curly_to_square=True)
+    inlg = languoids.load_triggers(type_='inlg')
     # FIXME: does not honor 'NOT' for now
     dh = {word: label  for (cls, label), triggers in inlg.iteritems()
         for t in triggers for flag, word in t}  

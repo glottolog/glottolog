@@ -3,15 +3,16 @@
 import os
 import io
 import datetime
-import ConfigParser
 
+from clldutils.inifile import INI
+
+from pyglottolog.util import references_path
 import _bibtex
 from _bibfiles_db import Database
 
 __all__ = ['Collection', 'BibFile', 'Database']
 
-DIR = '../references/bibtex'
-
+DIR = references_path('bibtex').as_posix()
 CONFIG = 'BIBFILES.ini'
 
 
@@ -23,10 +24,8 @@ class Collection(list):
     @classmethod
     def _bibfiles(cls, directory, config, endwith):
         """Read the INI-file, yield bibfile instances for sections."""
-        config = os.path.join(directory, config)
-        cfg = ConfigParser.RawConfigParser()
-        with io.open(config, encoding=cls._encoding) as fp:
-            cfg.readfp(fp)
+        cfg = INI(interpolation=None)
+        cfg.read(os.path.join(directory, '..', config))
         for s in cfg.sections():
             if not s.endswith(endwith):
                 continue
@@ -35,7 +34,8 @@ class Collection(list):
             sortkey = cfg.get(s, 'sortkey')
             if sortkey.lower() == 'none':
                 sortkey = None
-            yield BibFile(filepath=filepath,
+            yield BibFile(
+                filepath=filepath,
                 encoding=cfg.get(s, 'encoding'), sortkey=sortkey,
                 use_pybtex=cfg.getboolean(s, 'use_pybtex'),
                 priority=cfg.getint(s, 'priority'),

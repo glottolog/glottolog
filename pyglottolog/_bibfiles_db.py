@@ -10,21 +10,19 @@ import itertools
 import contextlib
 import collections
 
+from pyglottolog.util import references_path, build_path
 import _bibtex
 
 __all__ = ['Database']
 
-DBFILE = '_bibfiles.sqlite3'
-
-BIBFILE = 'monster-utf8.bib'
-
-CSVFILE = '../references/monster.csv'
-
-REPLACEMENTSFILE = 'monster-replacements.json'
+DBFILE = build_path('_bibfiles.sqlite3').as_posix()
+BIBFILE = build_path('monster-utf8.bib').as_posix()
+CSVFILE = references_path('monster.csv').as_posix()
+REPLACEMENTSFILE = build_path('monster-replacements.json').as_posix()
 
 UNION_FIELDS = {'fn', 'asjp_name', 'isbn'}
 
-IGNORE_FIELDS = {'crossref',  'numnote', 'glotto_id'}
+IGNORE_FIELDS = {'crossref', 'numnote', 'glotto_id'}
 
 
 class Database(object):

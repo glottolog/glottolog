@@ -50,19 +50,20 @@ deduplication and annotation in the process.
 
 import time
 
-import _bibfiles
-import _libmonster as bib
+from pyglottolog.util import build_path, references_path
+from pyglottolog import _bibfiles
+from pyglottolog import _libmonster as bib
+from pyglottolog import languoids
 
 BIBFILES = _bibfiles.Collection()
-PREVIOUS = '../references/monster.csv'
-REPLACEMENTS = 'monster-replacements.json'
-MONSTER = _bibfiles.BibFile('monster-utf8.bib', encoding='utf-8', sortkey='bibkey')
+PREVIOUS = references_path('monster.csv').as_posix()
+REPLACEMENTS = build_path('monster-replacements.json').as_posix()
+MONSTER = _bibfiles.BibFile(
+    build_path('monster-utf8.bib').as_posix(), encoding='utf-8', sortkey='bibkey')
 
-HHTYPE = '../references/alt4hhtype.ini'
-LGCODE = '../references/alt4lgcode.ini'
-LGINFO = '../languoids/lginfo.csv'
-MARKHHTYPE = 'monstermark-hht.txt'
-MARKLGCODE = 'monstermark-lgc.txt'
+HHTYPE = references_path('alt4hhtype.ini').as_posix()
+MARKHHTYPE = build_path('monstermark-hht.txt').as_posix()
+MARKLGCODE = build_path('monstermark-lgc.txt').as_posix()
 
 
 def intersectall(xs):
@@ -127,11 +128,11 @@ def markall(e, trigs, labelab=lambda x: x):
     return e
 
 
-def macro_area_from_lgcode(m, lginfo=LGINFO):
-    lgd = bib.read_csv_dict(lginfo)
+def macro_area_from_lgcode(m):
+    lgd = languoids.macro_area_from_hid()
 
     def inject_macro_area((typ, fields)):
-        mas = set(lgd[x].macro_area for x in bib.lgcode((typ, fields)) if x in lgd and lgd[x].macro_area)
+        mas = set(lgd[x] for x in bib.lgcode((typ, fields)) if x in lgd and lgd[x])
         if mas:
             fields['macro_area'] = ', '.join(sorted(mas))
         return (typ, fields)
@@ -160,7 +161,7 @@ def main(bibfiles=BIBFILES, previous=PREVIOUS, replacements=REPLACEMENTS, monste
 
     # Annotate with lgcode
     print '%s annotate lgcode' % time.ctime()
-    lgc = bib.load_triggers(LGCODE, sec_curly_to_square=True)
+    lgc = languoids.load_triggers()
     m = markconservative(m, lgc, hhbib, outfn=MARKLGCODE, blamefield="hhtype")
 
     # Annotate with inlg
