@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 import re
 from itertools import takewhile
+import io
 
 from clldutils.misc import slug
 from clldutils.path import Path, walk
@@ -189,6 +190,27 @@ def walk_tree(tree=TREE, **kw):
             yield Languoid.from_ini(fname, **kw)
 
 
+def make_index(level):
+    fname = dict(language='languages', family='families', dialect='dialects')[level]
+    links = {}
+    for lang in walk_tree():
+        if lang.level == level:
+            label = '{0.name} [{0.id}]'.format(lang)
+            if lang.iso:
+                label += '[%s]' % lang.iso
+            links[label] = \
+                lang.dir.joinpath(lang.fname('.ini')).relative_to(languoids_path())
+
+    with languoids_path(fname + '.md').open('w', encoding='utf8') as fp:
+        fp.write('## %s\n\n' % fname.capitalize())
+        for label in sorted(links.keys()):
+            fp.write('- [%s](%s)\n' % (label, links[label]))
+
+
+#
+# The following two functions are necessary to make the compilation of the monster bib
+# compatible with the new way of storing languoid data.
+#
 def macro_area_from_hid(tree=TREE):
     res = {}
     for lang in walk_tree(tree):

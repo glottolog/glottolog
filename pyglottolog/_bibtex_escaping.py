@@ -11,6 +11,7 @@
 \textvertline
 \textesh
 \textbaru
+\textbari
 \textsubring
 \textgamma
 \textupsilon

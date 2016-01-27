@@ -16,29 +16,35 @@ from __future__ import unicode_literals
 import sys
 import argparse
 
-from pyglottolog.util import DATA_DIR
 from pyglottolog.monster import main as compile_monster
+from pyglottolog.languoids import make_index
 
 
 def monster(args):
     """Compile the monster bibfile from the BibTeX files listed in references/BIBFILES.ini
 
-    glottolog monster GLOTTOCODE [SOURCE]
+    glottolog monster
     """
     compile_monster()
 
 
-COMMANDS = {f.__name__: f for f in [monster]}
+def index(args):
+    """Create an index page listing and linking to all languoids of a specified level.
+
+    glottolog index (family|language|dialect|all)
+    """
+    for level in ['family', 'language', 'dialect']:
+        if args.args[0] in [level, 'all']:
+            make_index(level)
+
+
+COMMANDS = {f.__name__: f for f in [monster, index]}
 
 
 def main():
     parser = argparse.ArgumentParser(
         description="""Main command line interface of the pyglottolog package.""",
         epilog="Use '%(prog)s help <cmd>' to get help about individual commands.")
-    parser.add_argument(
-        "--data-dir",
-        help="directory holding the glottolog data",
-        default=DATA_DIR)
     parser.add_argument("--verbosity", help="increase output verbosity")
     parser.add_argument('command', help='|'.join(COMMANDS))
     parser.add_argument('args', nargs=argparse.REMAINDER)
