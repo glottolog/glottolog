@@ -15,4 +15,4 @@ To allow easier access to the languoid information files, three index documents 
 
 ### How to request name changes for languoids
 
-You may follow the procedure in the [exemplary pull request 3](https://github.com/clld/glottolog/pull/3) to change a name of a languoid.
+You may follow the procedure in the [exemplary pull request 3](https://github.com/clld/glottolog/pull/3) to change a name of a languoid. Alternatively, you may create a pull request through-the-web, following the steps described in [issue #4](https://github.com/clld/glottolog/issues/4).
