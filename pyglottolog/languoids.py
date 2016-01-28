@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import re
 from itertools import takewhile
 import io
+from collections import defaultdict
 
 from clldutils.misc import slug
 from clldutils.path import Path, walk
@@ -192,19 +193,25 @@ def walk_tree(tree=TREE, **kw):
 
 def make_index(level):
     fname = dict(language='languages', family='families', dialect='dialects')[level]
-    links = {}
+    links = defaultdict(dict)
     for lang in walk_tree():
         if lang.level == level:
             label = '{0.name} [{0.id}]'.format(lang)
             if lang.iso:
                 label += '[%s]' % lang.iso
-            links[label] = \
+            links[slug(lang.name)[0]][label] = \
                 lang.dir.joinpath(lang.fname('.ini')).relative_to(languoids_path())
 
     with languoids_path(fname + '.md').open('w', encoding='utf8') as fp:
         fp.write('## %s\n\n' % fname.capitalize())
-        for label in sorted(links.keys()):
-            fp.write('- [%s](%s)\n' % (label, links[label]))
+        fp.write(' '.join(
+            '[-%s-](%s_%s.md)' % (i.upper(), fname, i) for i in sorted(links.keys())))
+        fp.write('\n')
+
+    for i, langs in links.items():
+        with languoids_path('%s_%s.md' % (fname, i)).open('w', encoding='utf8') as fp:
+            for label in sorted(langs.keys()):
+                fp.write('- [%s](%s)\n' % (label, langs[label]))
 
 
 #
