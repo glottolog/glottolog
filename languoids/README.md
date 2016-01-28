@@ -10,3 +10,9 @@ To allow easier access to the languoid information files, three index documents 
 - [Languages](languages.md)
 - [Families](families.md)
 - [Dialects](dialects.md)
+
+## Contributing
+
+### How to request name changes for languoids
+
+You may follow the procedure in the [exemplary pull request 3](https://github.com/clld/glottolog/pull/3) to change a name of a languoid.
