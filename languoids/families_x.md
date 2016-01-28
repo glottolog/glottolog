@@ -1,0 +1,4 @@
+- [Xasonka [xaso1239]](tree/mande.mand1469/westernmande.west2780/mandingkpelle.mand1431/centralmande.cent2047/mandingjogo.mand1432/mandingvai.mand1433/mandingmokole.mand1434/manding.mand1435/westmanding.west2499/xasonka.xaso1239/xasonka.xaso1239.ini)
+- [Xinca Shared Grammatical Traits [xinc1244]](tree/xincan.xinc1237/xincasharedgrammaticaltraits.xinc1244/xincasharedgrammaticaltraits.xinc1244.ini)
+- [Xincan [xinc1237]](tree/xincan.xinc1237/xincan.xinc1237.ini)
+- [Xinguan [xing1247]](tree/cariban.cari1283/pekodian.peko1235/xinguan.xing1247/xinguan.xing1247.ini)
