@@ -1,9 +1,7 @@
 # coding: utf8
 from __future__ import unicode_literals
 import re
-import os
 from itertools import takewhile
-import io
 from collections import defaultdict
 
 from clldutils.misc import slug
@@ -156,7 +154,7 @@ class Languoid(object):
         self._set('classification_status', value)
 
     def fname(self, suffix=''):
-        return '%s.%s%s' % (slug(self.name), self.id, suffix)
+        return '%s%s' % (self.id, suffix)
 
     def write_info(self, outdir):
         if not isinstance(outdir, Path):
@@ -179,12 +177,6 @@ class Languoid(object):
         if self.classification_status:
             res = '%s %s' % (res, self.classification_status)
         return res
-
-
-def rename():
-    for fname in walk(TREE, mode='files'):
-        slug, gc, suffix = fname.name.split('.')
-        os.rename(fname.as_posix(), fname.parent.joinpath('%s.%s' % (gc, suffix)).as_posix())
 
 
 def walk_tree(tree=TREE, **kw):
