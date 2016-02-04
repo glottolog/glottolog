@@ -14,10 +14,9 @@ from lff to directory tree:
 - copy new tree
 """
 from __future__ import unicode_literals, print_function, division
-import io
 from collections import defaultdict
+import re
 
-from clldutils.misc import slug
 from clldutils.path import Path
 
 from pyglottolog.util import build_path
@@ -25,12 +24,13 @@ from pyglottolog.languoids import Languoid, walk_tree, TREE
 
 
 def read_lff(level):
+    starts_with_whitespace = re.compile('\s+')
     path = None
     with build_path('%sff.txt' % level[0]).open(encoding='utf8') as fp:
         for line in fp:
             if line.startswith('#'):
                 continue
-            if line.startswith('    '):
+            if starts_with_whitespace.match(line):
                 assert path
                 #
                 # TODO: handle these errors, or fix them in glottolog before switching!
@@ -41,8 +41,8 @@ def read_lff(level):
                 path = line.strip()
 
 
-def lff2tree(tree=None, outdir='fromlff'):
-    out = Path(outdir)
+def lff2tree(tree=TREE, outdir=None):
+    out = Path(outdir or build_path('tree'))
     out.mkdir()
     old_tree = {l.id: l for l in walk_tree(tree)} if tree else {}
 
@@ -53,7 +53,7 @@ def lff2tree(tree=None, outdir='fromlff'):
         languages[lang.id] = lang
 
         for name, id_, level in lang.lineage:
-            groupdir = groupdir.joinpath('%s.%s' % (slug(name), id_))
+            groupdir = groupdir.joinpath(id_)
             if not groupdir.exists():
                 groupdir.mkdir()
                 if id_ in old_tree:
@@ -83,12 +83,13 @@ def lff2tree(tree=None, outdir='fromlff'):
     for lang in read_lff('dialect'):
         groupdir = out
 
-        if not lang.lineage:
+        if not lang.lineage or lang.lineage[0][1] not in languages:
             # TODO: handle error of un-attached dialects!
-            continue
+            print(lang.id, lang.lineage)
+            raise ValueError('unattached dialect')
 
         for name, id_, level in languages[lang.lineage[0][1]].lineage + lang.lineage:
-            groupdir = groupdir.joinpath('%s.%s' % (slug(name), id_))
+            groupdir = groupdir.joinpath(id_)
             if not groupdir.exists():
                 groupdir.mkdir()
                 if id_ in old_tree:

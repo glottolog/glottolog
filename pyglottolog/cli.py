@@ -47,7 +47,15 @@ def tree2lff(args):
     lff.tree2lff()
 
 
-COMMANDS = {f.__name__: f for f in [monster, index, tree2lff]}
+def lff2tree(args):
+    """Recreate tree from lff.txt and dff.txt
+
+    glottolog lff2tree
+    """
+    lff.lff2tree()
+
+
+COMMANDS = {f.__name__: f for f in [monster, index, tree2lff, lff2tree]}
 
 
 def main():

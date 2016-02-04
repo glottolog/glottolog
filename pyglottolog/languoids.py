@@ -181,6 +181,12 @@ class Languoid(object):
         return res
 
 
+def rename():
+    for fname in walk(TREE, mode='files'):
+        slug, gc, suffix = fname.name.split('.')
+        os.rename(fname.as_posix(), fname.parent.joinpath('%s.%s' % (gc, suffix)).as_posix())
+
+
 def walk_tree(tree=TREE, **kw):
     for fname in walk(tree, mode='files', followlinks=True):
         if fname.suffix == '.ini':
