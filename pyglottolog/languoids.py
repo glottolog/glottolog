@@ -1,6 +1,7 @@
 # coding: utf8
 from __future__ import unicode_literals
 import re
+import os
 from itertools import takewhile
 import io
 from collections import defaultdict
@@ -13,10 +14,6 @@ from pyglottolog.util import languoids_path, parse_conjunctions
 
 
 TREE = languoids_path('tree')
-
-
-def dirname(name, id):
-    return '%s.%s' % (slug(name), id)
 
 
 class Languoid(object):
@@ -33,8 +30,7 @@ class Languoid(object):
         assert all([self.id_pattern.match(id) for name, id, level in lineage])
         self.lineage = lineage
         self.cfg = cfg
-        self.dir = directory or TREE.joinpath(
-            *[dirname(name, id) for name, id, _ in self.lineage])
+        self.dir = directory or TREE.joinpath(*[id for name, id, _ in self.lineage])
 
     @classmethod
     def from_dir(cls, directory, **kw):
@@ -54,8 +50,8 @@ class Languoid(object):
 
         lineage = []
         for parent in directory.parents:
-            id_ = parent.name.split('.')[-1]
-            assert id_ != directory.name.split('.')[-1]
+            id_ = parent.name
+            assert id_ != directory.name
             if not cls.id_pattern.match(id_):
                 # we ignore leading non-languoid-dir path components.
                 break
@@ -101,7 +97,7 @@ class Languoid(object):
     def ancestors(self):
         res = []
         for parent in self.dir.parents:
-            id_ = parent.name.split('.')[-1]
+            id_ = parent.name
             if self.id_pattern.match(id_):
                 res.append(Languoid.from_dir(parent))
             else:
