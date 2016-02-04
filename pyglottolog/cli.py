@@ -18,6 +18,7 @@ import argparse
 
 from pyglottolog.monster import main as compile_monster
 from pyglottolog.languoids import make_index
+from pyglottolog import lff
 
 
 def monster(args):
@@ -38,7 +39,15 @@ def index(args):
             make_index(level)
 
 
-COMMANDS = {f.__name__: f for f in [monster, index]}
+def tree2lff(args):
+    """Create lff.txt and dff.txt from the current languoid tree.
+
+    glottolog tree2lff
+    """
+    lff.tree2lff()
+
+
+COMMANDS = {f.__name__: f for f in [monster, index, tree2lff]}
 
 
 def main():

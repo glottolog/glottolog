@@ -13,11 +13,20 @@ from lff to directory tree:
 - rm old tree
 - copy new tree
 """
+from __future__ import unicode_literals, print_function, division
+import io
+from collections import defaultdict
+
+from clldutils.misc import slug
+from clldutils.path import Path
+
+from pyglottolog.util import build_path
+from pyglottolog.languoids import Languoid, walk_tree, TREE
 
 
-def read_lff(p, level):
+def read_lff(level):
     path = None
-    with io.open(p, encoding='utf8') as fp:
+    with build_path('%sff.txt' % level[0]).open(encoding='utf8') as fp:
         for line in fp:
             if line.startswith('#'):
                 continue
@@ -32,14 +41,14 @@ def read_lff(p, level):
                 path = line.strip()
 
 
-def lff2tree(lff, tree=None, outdir='fromlff'):
+def lff2tree(tree=None, outdir='fromlff'):
     out = Path(outdir)
     out.mkdir()
-    old_tree = {l.id: l for l in languoids_from_tree(tree)} if tree else {}
+    old_tree = {l.id: l for l in walk_tree(tree)} if tree else {}
 
     nodes = set()
     languages = {}
-    for lang in read_lff(lff, 'language'):
+    for lang in read_lff('language'):
         groupdir = out
         languages[lang.id] = lang
 
@@ -71,7 +80,7 @@ def lff2tree(lff, tree=None, outdir='fromlff'):
         langdir.mkdir()
         old_lang.write_info(langdir)
 
-    for lang in read_lff(lff.replace('lff', 'dff'), 'dialect'):
+    for lang in read_lff('dialect'):
         groupdir = out
 
         if not lang.lineage:
@@ -106,26 +115,21 @@ def lff2tree(lff, tree=None, outdir='fromlff'):
         langdir.mkdir()
         old_lang.write_info(langdir)
 
-    print len(nodes)
+    print(len(nodes))
 
 
-def tree2lff(tree):
+def tree2lff(tree=TREE):
     languoids = dict(dialect=defaultdict(list), language=defaultdict(list))
     nodes = {}
 
-    for l in languoids_from_tree(tree, nodes=nodes):
+    for l in walk_tree(tree=tree, nodes=nodes):
         if l.level in languoids:
             languoids[l.level][l.lff_group()].append(l.lff_language())
 
     for level, languages in languoids.items():
-        with io.open('%sff.txt' % level[0], 'w', encoding='utf8') as fp:
+        with build_path('%sff.txt' % level[0]).open('w', encoding='utf8') as fp:
             fp.write('# -*- coding: utf-8 -*-\n')
             for path in sorted(languages):
                 fp.write(path + '\n')
                 for l in sorted(languages[path]):
                     fp.write(l + '\n')
-
-
-if __name__ == "__main__":
-    import sys
-    tree2lff(sys.argv[1])
