@@ -20,20 +20,32 @@ import re
 from clldutils.path import Path
 
 from pyglottolog.util import build_path
-from pyglottolog.languoids import Languoid, walk_tree, TREE
+from pyglottolog.languoids import Languoid, walk_tree, TREE, ID_REGEX
 
 
-def read_lff(level):
-    starts_with_whitespace = re.compile('\s+')
+NAME_AND_ID_REGEX = '([^\[]+)(\[' + ID_REGEX + '\])'
+
+
+def read_lff(level, fp=None):
+    lang_line = re.compile('\s+' + NAME_AND_ID_REGEX + '(\[([a-z]{3})?\])$')
+    class_line = re.compile(NAME_AND_ID_REGEX + '(,\s*' + NAME_AND_ID_REGEX + ')*$')
+
     path = None
-    with build_path('%sff.txt' % level[0]).open(encoding='utf8') as fp:
+    with fp or build_path('%sff.txt' % level[0]).open(encoding='utf8') as fp:
         for line in fp:
-            if line.startswith('#'):
+            line = line.rstrip()
+            print(line)
+            if line.startswith('#') or not line.strip():
+                # ignore comments or empty lines
                 continue
-            if starts_with_whitespace.match(line):
+            match = lang_line.match(line)
+            if match:
                 assert path
                 yield Languoid.from_lff(path, line.strip(), level)
             else:
+                # assert it matches a classification line!
+                if not class_line.match(line):
+                    raise ValueError(line)
                 path = line.strip()
 
 

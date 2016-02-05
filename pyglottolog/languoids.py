@@ -12,11 +12,12 @@ from pyglottolog.util import languoids_path, parse_conjunctions
 
 
 TREE = languoids_path('tree')
+ID_REGEX = '([a-z0-9]{4}[0-9]{4}|NOCODE(_[a-z0-9]+)?)'
 
 
 class Languoid(object):
     section_core = 'core'
-    id_pattern = re.compile('[a-z0-9]{4}[0-9]{4}$')
+    id_pattern = re.compile(ID_REGEX + '$')
 
     def __init__(self, cfg, lineage=None, directory=None):
         """
