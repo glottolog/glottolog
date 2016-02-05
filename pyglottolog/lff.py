@@ -32,11 +32,7 @@ def read_lff(level):
                 continue
             if starts_with_whitespace.match(line):
                 assert path
-                #
-                # TODO: handle these errors, or fix them in glottolog before switching!
-                #
-                if path != 'ERROR [-unclassified-]':
-                    yield Languoid.from_lff(path, line.strip(), level)
+                yield Languoid.from_lff(path, line.strip(), level)
             else:
                 path = line.strip()
 
