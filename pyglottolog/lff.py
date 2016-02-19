@@ -1,14 +1,25 @@
 from __future__ import unicode_literals, print_function, division
 from collections import defaultdict
 import re
+import os
 
-from clldutils.path import Path, copytree, rmtree
+from clldutils.path import Path, copytree, as_posix
 
 from pyglottolog.util import build_path
 from pyglottolog.languoids import Languoid, walk_tree, TREE, ID_REGEX
 
 
 NAME_AND_ID_REGEX = '([^\[]+)(\[' + ID_REGEX + '\])'
+
+
+def rmtree(d, **kw):
+    d = as_posix(d)
+    for path in (os.path.join(d, f) for f in os.listdir(d)):
+        if os.path.isdir(path):
+            rmtree(path)
+        else:
+            os.unlink(path)
+    os.rmdir(d)
 
 
 def read_lff(level, fp=None):
