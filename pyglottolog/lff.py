@@ -87,8 +87,10 @@ def lff2tree(tree=TREE, outdir=None, test=False):
     - copy new tree
     """
     out = Path(outdir or build_path('tree'))
-    build_path().mkdir(exists_ok=True)
-    rmtree(out)
+    if not out.parent.exists():
+        out.parent.mkdir()
+    if out.exists():
+        rmtree(out)
     out.mkdir()
     old_tree = {l.id: l for l in walk_tree(tree)} if tree else {}
 
