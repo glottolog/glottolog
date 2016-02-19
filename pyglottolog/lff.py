@@ -107,7 +107,7 @@ def lff2tree(tree=TREE, outdir=None, test=False):
             lang, languages[lang.lineage[0][1]].lineage + lang.lineage, out, old_tree)
 
     if not test:
-        rmtree(TREE)
+        rmtree(TREE, ignore_errors=True)
         copytree(out, TREE)
 
 
