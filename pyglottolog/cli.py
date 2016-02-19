@@ -50,9 +50,45 @@ def tree2lff(args):
 def lff2tree(args):
     """Recreate tree from lff.txt and dff.txt
 
-    glottolog lff2tree
+    glottolog lff2tree [test]
     """
-    lff.lff2tree()
+    lff.lff2tree(test=args.args and args.args[0] == 'test')
+    if args.args and args.args[0] == 'test':
+        print("""
+You can run
+
+    diff -rbB build/tree/ languoids/tree/
+
+to inspect the changes in the directory tree.
+""")
+    else:
+        print("""
+Run
+
+    git status
+
+to inspect changes in the directory tree.
+
+- To discard changes run
+
+    git checkout languoids/tree
+
+- To commit and push changes, run
+
+    git add languoids/tree/...
+
+  for any newly created nodes listed under
+
+# Untracked files:
+#   (use "git add <file>..." to include in what will be committed)
+#
+#	languoids/tree/...
+
+  followed by
+
+    git commit -a -m"reason for change of classification"
+    git push origin
+""")
 
 
 COMMANDS = {f.__name__: f for f in [monster, index, tree2lff, lff2tree]}

@@ -2,7 +2,7 @@ from __future__ import unicode_literals, print_function, division
 from collections import defaultdict
 import re
 
-from clldutils.path import Path
+from clldutils.path import Path, copytree, rmtree
 
 from pyglottolog.util import build_path
 from pyglottolog.languoids import Languoid, walk_tree, TREE, ID_REGEX
@@ -71,7 +71,7 @@ def lang2tree(lang, lineage, out, old_tree):
         lang.write_info(langdir)
 
 
-def lff2tree(tree=TREE, outdir=None):
+def lff2tree(tree=TREE, outdir=None, test=False):
     """
     - get mapping glottocode -> Languoid from old tree
     - assemble new directory tree
@@ -101,6 +101,10 @@ def lff2tree(tree=TREE, outdir=None):
 
         lang2tree(
             lang, languages[lang.lineage[0][1]].lineage + lang.lineage, out, old_tree)
+
+    if not test:
+        rmtree(TREE)
+        copytree(out, TREE)
 
 
 def tree2lff(tree=TREE):
