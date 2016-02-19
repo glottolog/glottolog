@@ -71,15 +71,16 @@ class Languoid(object):
         glottocode, isocode = codes[:-1].split('][')
 
         lineage = []
-        for i, comp in enumerate(path.split('], ')):
-            if comp.endswith(']'):
-                comp = comp[:-1]
-            name, id_ = comp.split(' [', 1)
-            if id_ != '-isolate-':
-                _level = 'family'
-                if level == 'dialect':
-                    _level = 'language' if i == 0 else 'dialect'
-                lineage.append((name, id_, _level))
+        if path:
+            for i, comp in enumerate(path.split('], ')):
+                if comp.endswith(']'):
+                    comp = comp[:-1]
+                name, id_ = comp.split(' [', 1)
+                if id_ != '-isolate-':
+                    _level = 'family'
+                    if level == 'dialect':
+                        _level = 'language' if i == 0 else 'dialect'
+                    lineage.append((name, id_, _level))
 
         cfg = INI(interpolation=None)
         cfg.read_dict(dict(core=dict(name=lname, glottocode=glottocode, level=level)))

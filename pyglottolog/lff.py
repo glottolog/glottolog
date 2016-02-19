@@ -29,24 +29,29 @@ NAME_AND_ID_REGEX = '([^\[]+)(\[' + ID_REGEX + '\])'
 def read_lff(level, fp=None):
     lang_line = re.compile('\s+' + NAME_AND_ID_REGEX + '(\[([a-z]{3})?\])$')
     class_line = re.compile(NAME_AND_ID_REGEX + '(,\s*' + NAME_AND_ID_REGEX + ')*$')
+    isolate_line = re.compile('([^\[]+)(\[-isolate-\])$')
 
     path = None
     with fp or build_path('%sff.txt' % level[0]).open(encoding='utf8') as fp:
         for line in fp:
             line = line.rstrip()
-            print(line)
             if line.startswith('#') or not line.strip():
                 # ignore comments or empty lines
                 continue
             match = lang_line.match(line)
             if match:
                 assert path
-                yield Languoid.from_lff(path, line.strip(), level)
+                yield Languoid.from_lff(
+                    None if path == 'isolate' else path, line.strip(), level)
             else:
-                # assert it matches a classification line!
-                if not class_line.match(line):
-                    raise ValueError(line)
-                path = line.strip()
+                match = isolate_line.match(line)
+                if match:
+                    path = 'isolate'
+                else:
+                    # assert it matches a classification line!
+                    if not class_line.match(line):
+                        raise ValueError(line)
+                    path = line.strip()
 
 
 def lff2tree(tree=TREE, outdir=None):
@@ -72,21 +77,25 @@ def lff2tree(tree=TREE, outdir=None):
                         group.name = name
                     group.write_info(groupdir)
                 else:
+                    assert id_.startswith('NOCODE')
                     # TODO: create Languoid, write info file!
                     pass
 
-            assert id_ in old_tree
             nodes.add(id_)
 
-        assert lang.id in old_tree
         nodes.add(lang.id)
-        old_lang = old_tree[lang.id]
-        assert old_lang.level == lang.level
-        if old_lang.name != lang.name:
-            old_lang.name = lang.name
         langdir = groupdir.joinpath(lang.fname())
         langdir.mkdir()
-        old_lang.write_info(langdir)
+
+        if lang.id in old_tree:
+            old_lang = old_tree[lang.id]
+            assert old_lang.level == lang.level
+            if old_lang.name != lang.name:
+                old_lang.name = lang.name
+            old_lang.write_info(langdir)
+        else:
+            assert lang.id.startswith('NOCODE')
+            lang.write_info(langdir)
 
     for lang in read_lff('dialect'):
         groupdir = out
