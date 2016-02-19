@@ -65,6 +65,12 @@ class Languoid(object):
         return res
 
     @classmethod
+    def from_name_id_level(cls, name, id, level):
+        cfg = INI(interpolation=None)
+        cfg.read_dict(dict(core=dict(name=name, glottocode=id, level=level)))
+        return cls(cfg, [])
+
+    @classmethod
     def from_lff(cls, path, name_and_codes, level):
         lname, codes = name_and_codes.split('[', 1)
         lname = lname.strip()
@@ -76,11 +82,10 @@ class Languoid(object):
                 if comp.endswith(']'):
                     comp = comp[:-1]
                 name, id_ = comp.split(' [', 1)
-                if id_ != '-isolate-':
-                    _level = 'family'
-                    if level == 'dialect':
-                        _level = 'language' if i == 0 else 'dialect'
-                    lineage.append((name, id_, _level))
+                _level = 'family'
+                if level == 'dialect':
+                    _level = 'language' if i == 0 else 'dialect'
+                lineage.append((name, id_, _level))
 
         cfg = INI(interpolation=None)
         cfg.read_dict(dict(core=dict(name=lname, glottocode=glottocode, level=level)))
