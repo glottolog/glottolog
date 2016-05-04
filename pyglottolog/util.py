@@ -1,5 +1,6 @@
 # coding: utf8
 from __future__ import unicode_literals
+from functools import partial
 
 from clldutils.path import Path
 from clldutils.inifile import INI
@@ -10,16 +11,14 @@ import pyglottolog
 DATA_DIR = Path(pyglottolog.__file__).parent.parent
 
 
-def languoids_path(*comps):
-    return DATA_DIR.joinpath('languoids', *comps)
+def subdir_path(subdir, *comps, **kw):
+    data_dir = kw.pop('data_dir', DATA_DIR)
+    return data_dir.joinpath(subdir, *comps)
 
 
-def references_path(*comps):
-    return DATA_DIR.joinpath('references', *comps)
-
-
-def build_path(*comps):
-    return DATA_DIR.joinpath('build', *comps)
+languoids_path = partial(subdir_path, 'languoids')
+references_path = partial(subdir_path, 'references')
+build_path = partial(subdir_path, 'build')
 
 
 def read_ini(filename, interpolation=None):

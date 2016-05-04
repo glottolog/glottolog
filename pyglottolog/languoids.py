@@ -110,11 +110,33 @@ class Languoid(object):
                 break
         return list(reversed(res))
 
+    @property
+    def parent(self):
+        ancestors = self.ancestors
+        return ancestors[-1] if ancestors else None
+
+    @property
+    def family(self):
+        ancestors = self.ancestors
+        return ancestors[0] if ancestors else None
+
     def _set(self, key, value):
         self.cfg.set(self.section_core, key, value)
 
-    def _get(self, key):
-        return self.cfg.get(self.section_core, key, fallback=None)
+    def _get(self, key, type_=None):
+        res = self.cfg.get(self.section_core, key, fallback=None)
+        if type_ and res:
+            return type_(res)
+        return res
+
+    @property
+    def macroareas(self):
+        return self.cfg.getlist(self.section_core, 'macroareas')
+
+    @macroareas.setter
+    def macroareas(self, value):
+        assert isinstance(value, (list, tuple))
+        self._set('macroareas', value)
 
     @property
     def name(self):
@@ -131,6 +153,30 @@ class Languoid(object):
     @id.setter
     def id(self, value):
         self._set('glottocode', value)
+
+    @property
+    def glottocode(self):
+        return self._get('glottocode')
+
+    @glottocode.setter
+    def glottocode(self, value):
+        self._set('glottocode', value)
+
+    @property
+    def latitude(self):
+        return self._get('latitude', float)
+
+    @latitude.setter
+    def latitude(self, value):
+        self._set('latitude', value)
+
+    @property
+    def longitude(self):
+        return self._get('longitude', float)
+
+    @longitude.setter
+    def longitude(self, value):
+        self._set('longitude', value)
 
     @property
     def hid(self):
@@ -150,6 +196,14 @@ class Languoid(object):
 
     @iso.setter
     def iso(self, value):
+        self._set('iso639-3', value)
+
+    @property
+    def iso_code(self):
+        return self._get('iso639-3')
+
+    @iso_code.setter
+    def iso_code(self, value):
         self._set('iso639-3', value)
 
     @property
