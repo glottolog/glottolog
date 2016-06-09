@@ -6,13 +6,14 @@ import os
 from clldutils.path import Path, copytree, as_posix
 
 from pyglottolog.util import build_path
-from pyglottolog.languoids import Languoid, walk_tree, TREE, ID_REGEX
+from pyglottolog.languoids import Languoid, walk_tree, TREE, ID_REGEX, Level
 
 
 NAME_AND_ID_REGEX = '([^\[]+)(\[' + ID_REGEX + '\])'
 
 
 def rmtree(d, **kw):
+    """More performant way to remove large directory structures."""
     d = as_posix(d)
     for path in (os.path.join(d, f) for f in os.listdir(d)):
         if os.path.isdir(path):
@@ -23,12 +24,13 @@ def rmtree(d, **kw):
 
 
 def read_lff(level, fp=None):
+    assert isinstance(level, Level)
     lang_line = re.compile('\s+' + NAME_AND_ID_REGEX + '(\[([a-z]{3})?\])$')
     class_line = re.compile(NAME_AND_ID_REGEX + '(,\s*' + NAME_AND_ID_REGEX + ')*$')
     isolate_line = re.compile('([^\[]+)(\[-isolate-\])$')
 
     path = None
-    with fp or build_path('%sff.txt' % level[0]).open(encoding='utf8') as fp:
+    with fp or build_path('%sff.txt' % level.value[0]).open(encoding='utf8') as fp:
         for line in fp:
             line = line.rstrip()
             if line.startswith('#') or not line.strip():
@@ -64,7 +66,7 @@ def lang2tree(lang, lineage, out, old_tree):
                     # rename a subgroup!
                     group.name = name
             else:
-                assert id_.startswith('NOCODE')
+                #assert id_.startswith('NOCODE')
                 group = Languoid.from_name_id_level(name, id_, level)
             group.write_info(groupdir)
 
@@ -78,11 +80,11 @@ def lang2tree(lang, lineage, out, old_tree):
             old_lang.name = lang.name
         old_lang.write_info(langdir)
     else:
-        assert lang.id.startswith('NOCODE')
+        #assert lang.id.startswith('NOCODE')
         lang.write_info(langdir)
 
 
-def lff2tree(tree=TREE, outdir=None, test=False):
+def lff2tree(tree=TREE, outdir=None, test=False, lffs=None):
     """
     - get mapping glottocode -> Languoid from old tree
     - assemble new directory tree
@@ -105,12 +107,13 @@ def lff2tree(tree=TREE, outdir=None, test=False):
     out.mkdir()
     old_tree = {l.id: l for l in walk_tree(tree)} if tree else {}
 
+    lffs = lffs or {}
     languages = {}
-    for lang in read_lff('language'):
+    for lang in read_lff(Level.language, fp=lffs.get(Level.language)):
         languages[lang.id] = lang
         lang2tree(lang, lang.lineage, out, old_tree)
 
-    for lang in read_lff('dialect'):
+    for lang in read_lff(Level.dialect, fp=lffs.get(Level.dialect)):
         if not lang.lineage or lang.lineage[0][1] not in languages:
             raise ValueError('unattached dialect')
 
@@ -118,12 +121,13 @@ def lff2tree(tree=TREE, outdir=None, test=False):
             lang, languages[lang.lineage[0][1]].lineage + lang.lineage, out, old_tree)
 
     if not test:
-        rmtree(TREE, ignore_errors=True)
-        copytree(out, TREE)
+        rmtree(tree, ignore_errors=True)
+        copytree(out, tree)
 
 
-def tree2lff(tree=TREE):
-    languoids = dict(dialect=defaultdict(list), language=defaultdict(list))
+def tree2lff(tree=TREE, out_paths=None):
+    out_paths = out_paths or {}
+    languoids = {Level.dialect: defaultdict(list), Level.language: defaultdict(list)}
     nodes = {}
 
     for l in walk_tree(tree=tree, nodes=nodes):
@@ -131,7 +135,8 @@ def tree2lff(tree=TREE):
             languoids[l.level][l.lff_group()].append(l.lff_language())
 
     for level, languages in languoids.items():
-        with build_path('%sff.txt' % level[0]).open('w', encoding='utf8') as fp:
+        out_path = out_paths.get(level, build_path('%sff.txt' % level.value[0]))
+        with out_path.open('w', encoding='utf8') as fp:
             fp.write('# -*- coding: utf-8 -*-\n')
             for path in sorted(languages):
                 fp.write(path + '\n')

@@ -2,9 +2,12 @@
 from __future__ import unicode_literals
 import re
 from itertools import takewhile
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 
+from enum import Enum
+from six import text_type
 from clldutils.misc import slug
+from clldutils import jsonlib
 from clldutils.path import Path, walk
 from clldutils.inifile import INI
 
@@ -13,6 +16,12 @@ from pyglottolog.util import languoids_path, parse_conjunctions
 
 TREE = languoids_path('tree')
 ID_REGEX = '([a-z0-9]{4}[0-9]{4}|NOCODE(_[A-Za-z0-9\-]+)?)'
+
+
+class Level(Enum):
+    family = 'family'
+    language = 'language'
+    dialect = 'dialect'
 
 
 class Languoid(object):
@@ -26,8 +35,9 @@ class Languoid(object):
         :param lineage: list of ancestors, given as (id, name) pairs.
         """
         lineage = lineage or []
-        assert all([self.id_pattern.match(id) for name, id, level in lineage])
-        self.lineage = lineage
+        assert all(
+            [self.id_pattern.match(id) and Level(level) for name, id, level in lineage])
+        self.lineage = [(name, id, Level(level)) for name, id, level in lineage]
         self.cfg = cfg
         self.dir = directory or TREE.joinpath(*[id for name, id, _ in self.lineage])
 
@@ -65,13 +75,18 @@ class Languoid(object):
         return res
 
     @classmethod
-    def from_name_id_level(cls, name, id, level):
+    def from_name_id_level(cls, name, id, level, **kw):
         cfg = INI(interpolation=None)
-        cfg.read_dict(dict(core=dict(name=name, glottocode=id, level=level)))
-        return cls(cfg, [])
+        cfg.read_dict(dict(core=dict(name=name, glottocode=id)))
+        res = cls(cfg, [])
+        res.level = Level(level)
+        for k, v in kw.items():
+            setattr(res, k, v)
+        return res
 
     @classmethod
     def from_lff(cls, path, name_and_codes, level):
+        assert isinstance(level, Level)
         lname, codes = name_and_codes.split('[', 1)
         lname = lname.strip()
         glottocode, isocode = codes[:-1].split('][')
@@ -82,14 +97,15 @@ class Languoid(object):
                 if comp.endswith(']'):
                     comp = comp[:-1]
                 name, id_ = comp.split(' [', 1)
-                _level = 'family'
-                if level == 'dialect':
-                    _level = 'language' if i == 0 else 'dialect'
+                _level = Level.family
+                if level == Level.dialect:
+                    _level = Level.language if i == 0 else Level.dialect
                 lineage.append((name, id_, _level))
 
         cfg = INI(interpolation=None)
-        cfg.read_dict(dict(core=dict(name=lname, glottocode=glottocode, level=level)))
+        cfg.read_dict(dict(core=dict(name=lname, glottocode=glottocode)))
         res = cls(cfg, lineage)
+        res.level = level
         if isocode:
             res.iso = isocode
         return res
@@ -184,11 +200,11 @@ class Languoid(object):
 
     @property
     def level(self):
-        return self._get('level')
+        return self._get('level', Level)
 
     @level.setter
     def level(self, value):
-        self._set('level', value)
+        self._set('level', Level(value).value)
 
     @property
     def iso(self):
@@ -217,15 +233,20 @@ class Languoid(object):
     def fname(self, suffix=''):
         return '%s%s' % (self.id, suffix)
 
-    def write_info(self, outdir):
+    def write_info(self, outdir=None):
+        outdir = outdir or self.id
         if not isinstance(outdir, Path):
             outdir = Path(outdir)
-        self.cfg.write(outdir.joinpath(self.fname('.ini')))
+        if not outdir.exists():
+            outdir.mkdir()
+        fname = outdir.joinpath(self.fname('.ini'))
+        self.cfg.write(fname)
+        return fname
 
     def lff_group(self):
-        if self.level == 'dialect':
+        if self.level == Level.dialect:
             lineage = reversed(
-                list(takewhile(lambda x: x[2] != 'family', reversed(self.lineage))))
+                list(takewhile(lambda x: x[2] != Level.family, reversed(self.lineage))))
         else:
             lineage = self.lineage
         if not self.lineage:
@@ -292,3 +313,21 @@ def load_triggers(tree=TREE, type_='lgcode'):
             res[(type_, '%s [%s]' % (lang.name, lang.hid))] = [
                 parse_conjunctions(t) for t in triggers]
     return res
+
+
+def glottocode_for_name(name, dry_run=False, repos=None):
+    alpha = slug(text_type(name))[:4]
+    assert alpha
+    while len(alpha) < 4:
+        alpha += alpha[-1]
+
+    gc_store = languoids_path('glottocodes.json', **{'data_dir': repos} if repos else {})
+    glottocodes = jsonlib.load(gc_store)
+    glottocodes[alpha] = num = glottocodes.get(alpha, 1233) + 1
+    if not dry_run:
+        # Store the updated dictionary of glottocodes back.
+        ordered = OrderedDict()
+        for k in sorted(glottocodes.keys()):
+            ordered[k] = glottocodes[k]
+        jsonlib.dump(ordered, gc_store, indent=4)
+    return '%s%s' % (alpha, num)

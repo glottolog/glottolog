@@ -29,3 +29,6 @@ class Glottolog(object):
         for d in walk(self.tree, mode='dirs'):
             if ids is None or d.name in ids:
                 yield languoids.Languoid.from_dir(d)
+
+    def add_languoid(self):
+        pass

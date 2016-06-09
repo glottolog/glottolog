@@ -5,6 +5,11 @@ import re
 
 
 class Tests(TestCase):
+    def test_glottocode_from_name(self):
+        from pyglottolog.languoids import glottocode_for_name
+
+        self.assertEqual(glottocode_for_name('a', dry_run=True)[:4], 'aaaa')
+
     def test_ID_REGEX(self):
         from pyglottolog.languoids import ID_REGEX
 

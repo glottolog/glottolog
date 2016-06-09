@@ -17,7 +17,7 @@ import sys
 import argparse
 
 from pyglottolog.monster import main as compile_monster
-from pyglottolog.languoids import make_index
+from pyglottolog.languoids import make_index, glottocode_for_name, Languoid
 from pyglottolog import lff
 
 
@@ -37,6 +37,23 @@ def index(args):
     for level in ['family', 'language', 'dialect']:
         if args.args[0] in [level, 'all']:
             make_index(level)
+
+
+def new_languoid(args):
+    """Create a new languoid directory for a languoid specified by name and level.
+
+    glottolog new_languoid <name> <level>
+    """
+    assert args.args[1] in ['family', 'language', 'dialect']
+    lang = Languoid.from_name_id_level(
+        args.args[0],
+        glottocode_for_name(args.args[0]),
+        args.args[1],
+        **dict(prop.split('=') for prop in args.args[2:]))
+    #
+    # FIXME: how to specify parent? Just mv there?
+    #
+    print("Info written to %s" % lang.write_info())
 
 
 def tree2lff(args):
@@ -91,7 +108,7 @@ to inspect changes in the directory tree.
 """)
 
 
-COMMANDS = {f.__name__: f for f in [monster, index, tree2lff, lff2tree]}
+COMMANDS = {f.__name__: f for f in [monster, index, tree2lff, lff2tree, new_languoid]}
 
 
 def main():
