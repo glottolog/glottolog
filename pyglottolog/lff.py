@@ -26,7 +26,7 @@ def rmtree(d, **kw):
 
 def read_lff(level, fp=None):
     assert isinstance(level, Level)
-    lang_line = re.compile('\s+' + NAME_AND_ID_REGEX + '(\[([a-z]{3})?\])$')
+    lang_line = re.compile('\s+' + NAME_AND_ID_REGEX + '(\[([a-z]{3}|NOCODE\_[^\]]+)?\])$')
     class_line = re.compile(NAME_AND_ID_REGEX + '(,\s*' + NAME_AND_ID_REGEX + ')*$')
     isolate_line = re.compile('([^\[]+)(\[-isolate-\])$')
 
