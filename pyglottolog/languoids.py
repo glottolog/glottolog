@@ -1,8 +1,10 @@
 # coding: utf8
 from __future__ import unicode_literals
+import os
 import re
 from itertools import takewhile
 from collections import defaultdict, OrderedDict
+import io
 
 from enum import Enum
 from six import text_type
@@ -241,6 +243,11 @@ class Languoid(object):
             outdir.mkdir()
         fname = outdir.joinpath(self.fname('.ini'))
         self.cfg.write(fname)
+        if os.linesep == '\n':
+            with fname.open(encoding='utf8') as fp:
+                text = fp.read()
+            with fname.open('w', encoding='utf8') as fp:
+                fp.write(text.replace('\n', '\r\n'))
         return fname
 
     def lff_group(self):

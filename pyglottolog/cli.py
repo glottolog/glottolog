@@ -69,7 +69,7 @@ def lff2tree(args):
 
     glottolog lff2tree [test]
     """
-    lff.lff2tree(test=args.args and args.args[0] == 'test')
+    lff.lff2tree()
     if args.args and args.args[0] == 'test':
         print("""
 You can run
@@ -85,6 +85,11 @@ Run
     git status
 
 to inspect changes in the directory tree.
+You can run
+
+    diff -rbB build/tree/ languoids/tree/
+
+to inspect the changes in detail.
 
 - To discard changes run
 

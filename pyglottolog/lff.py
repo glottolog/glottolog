@@ -2,8 +2,9 @@ from __future__ import unicode_literals, print_function, division
 from collections import defaultdict
 import re
 import os
+import shutil
 
-from clldutils.path import Path, copytree, as_posix
+from clldutils.path import Path, as_posix
 
 from pyglottolog.util import build_path
 from pyglottolog.languoids import Languoid, walk_tree, TREE, ID_REGEX, Level
@@ -84,7 +85,7 @@ def lang2tree(lang, lineage, out, old_tree):
         lang.write_info(langdir)
 
 
-def lff2tree(tree=TREE, outdir=None, test=False, lffs=None):
+def lff2tree(tree=TREE, outdir=None, builddir=None, lffs=None):
     """
     - get mapping glottocode -> Languoid from old tree
     - assemble new directory tree
@@ -99,13 +100,24 @@ def lff2tree(tree=TREE, outdir=None, test=False, lffs=None):
     - rm old tree
     - copy new tree
     """
-    out = Path(outdir or build_path('tree'))
+    # FIXME: instead of removing trees, we should just move the current one
+    # from outdir to build, and then recreate in outdir.
+    builddir = Path(builddir) if builddir else build_path('tree')
+    old_tree = {l.id: l for l in walk_tree(tree)} if tree else {}
+    out = Path(outdir or tree)
     if not out.parent.exists():
         out.parent.mkdir()
     if out.exists():
-        rmtree(out)
+        if builddir.exists():
+            try:
+                rmtree(builddir)
+            except:
+                pass
+            if builddir.exists():
+                raise ValueError('please remove %s before proceeding' % builddir)
+        # move the old tree out of the way
+        shutil.move(out.as_posix(), builddir.as_posix())
     out.mkdir()
-    old_tree = {l.id: l for l in walk_tree(tree)} if tree else {}
 
     lffs = lffs or {}
     languages = {}
@@ -119,10 +131,6 @@ def lff2tree(tree=TREE, outdir=None, test=False, lffs=None):
 
         lang2tree(
             lang, languages[lang.lineage[0][1]].lineage + lang.lineage, out, old_tree)
-
-    if not test:
-        rmtree(tree, ignore_errors=True)
-        copytree(out, tree)
 
 
 def tree2lff(tree=TREE, out_paths=None):

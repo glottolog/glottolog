@@ -76,8 +76,8 @@ Abkhazian [abkh1244]
         def lffs():
             return {Level.language: lff(_l), Level.dialect: lff(_d)}
 
-        lff2tree(old, old, lffs=lffs(), test=True)
-        lff2tree(old, new, lffs=lffs())
+        lff2tree(old, builddir=self.tmp_path('build1'), lffs=lffs())
+        lff2tree(old, new, builddir=self.tmp_path('build2'), lffs=lffs())
         tree2lff(
             new,
             out_paths={
