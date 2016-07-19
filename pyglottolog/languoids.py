@@ -268,6 +268,12 @@ class Languoid(object):
         return res
 
 
+def find_languoid(tree=TREE, glottocode=None, **kw):
+    for fname in walk(tree, mode='dirs', followlinks=True):
+        if fname.name == glottocode:
+            return Languoid.from_dir(fname)
+
+
 def walk_tree(tree=TREE, **kw):
     for fname in walk(tree, mode='files', followlinks=True):
         if fname.suffix == '.ini':

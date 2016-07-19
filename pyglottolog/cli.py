@@ -14,10 +14,12 @@ The basic invocation looks like
 """
 from __future__ import unicode_literals
 import sys
-import argparse
+
+from clldutils.clilib import ArgumentParser, ParserError
+from clldutils.path import copytree, rmtree
 
 from pyglottolog.monster import main as compile_monster
-from pyglottolog.languoids import make_index, glottocode_for_name, Languoid
+from pyglottolog.languoids import make_index, glottocode_for_name, Languoid, find_languoid
 from pyglottolog import lff
 
 
@@ -37,6 +39,27 @@ def index(args):
     for level in ['family', 'language', 'dialect']:
         if args.args[0] in [level, 'all']:
             make_index(level)
+
+
+def check_tree(args):
+    pass
+
+
+def recode(args):
+    """Assign a new glottocode to an existing languoid.
+
+    glottolog recode <code>
+    """
+    lang = find_languoid(glottocode=args.args[0])
+    if not lang:
+        raise ParserError('languoid not found')
+    gc = glottocode_for_name(lang.name)
+    lang.id = gc
+    new_dir = lang.dir.parent.joinpath(gc)
+    copytree(lang.dir, new_dir)
+    lang.write_info(new_dir)
+    rmtree(lang.dir)
+    print("%s -> %s" % (args.args[0], gc))
 
 
 def new_languoid(args):
@@ -113,23 +136,7 @@ to inspect the changes in detail.
 """)
 
 
-COMMANDS = {f.__name__: f for f in [monster, index, tree2lff, lff2tree, new_languoid]}
-
-
 def main():
-    parser = argparse.ArgumentParser(
-        description="""Main command line interface of the pyglottolog package.""",
-        epilog="Use '%(prog)s help <cmd>' to get help about individual commands.")
-    parser.add_argument("--verbosity", help="increase output verbosity")
-    parser.add_argument('command', help='|'.join(COMMANDS))
-    parser.add_argument('args', nargs=argparse.REMAINDER)
-
-    args = parser.parse_args()
-    if args.command == 'help':
-        # As help text for individual commands we simply re-use the docstrings of the
-        # callables registered for the command:
-        print(COMMANDS[args.args[0]].__doc__)
-        sys.exit(0)
-
-    COMMANDS[args.command](args)
-    sys.exit(0)
+    parser = ArgumentParser(
+        'pyglottolog', monster, index, tree2lff, lff2tree, new_languoid, recode)
+    sys.exit(parser.main())
