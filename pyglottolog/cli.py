@@ -16,7 +16,7 @@ from __future__ import unicode_literals
 import sys
 
 from clldutils.clilib import ArgumentParser, ParserError
-from clldutils.path import copytree, rmtree
+from clldutils.path import copytree, rmtree, remove
 
 from pyglottolog.monster import main as compile_monster
 from pyglottolog.languoids import make_index, glottocode_for_name, Languoid, find_languoid
@@ -58,6 +58,7 @@ def recode(args):
     new_dir = lang.dir.parent.joinpath(gc)
     copytree(lang.dir, new_dir)
     lang.write_info(new_dir)
+    remove(new_dir.joinpath('%s.ini' % args.args[0]))
     rmtree(lang.dir)
     print("%s -> %s" % (args.args[0], gc))
 
