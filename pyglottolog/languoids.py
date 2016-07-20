@@ -4,7 +4,6 @@ import os
 import re
 from itertools import takewhile
 from collections import defaultdict, OrderedDict
-import io
 
 from enum import Enum
 from six import text_type
@@ -17,7 +16,6 @@ from pyglottolog.util import languoids_path, parse_conjunctions
 
 
 TREE = languoids_path('tree')
-ID_REGEX = '([a-z0-9]{4}[0-9]{4}|NOCODE(_[A-Za-z0-9\-]+)?)'
 
 
 class Level(Enum):
@@ -26,9 +24,50 @@ class Level(Enum):
     dialect = 'dialect'
 
 
+class Glottocodes(object):
+    def __init__(self, **kw):
+        self._fname = languoids_path('glottocodes.json', **kw)
+        self._store = jsonlib.load(self._fname)
+
+    def __contains__(self, item):
+        alpha, num = Glottocode(item).split()
+        return alpha in self._store and num <= self._store[alpha]
+
+    def new(self, alpha, dry_run=False):
+        num = self._store.get(alpha, 1233) + 1
+        if not dry_run:
+            self._store[alpha] = num
+            # Store the updated dictionary of glottocodes back.
+            ordered = OrderedDict()
+            for k in sorted(self._store.keys()):
+                ordered[k] = self._store[k]
+            jsonlib.dump(ordered, self._fname, indent=4)
+        return Glottocode('%s%s' % (alpha, num))
+
+
+class Glottocode(text_type):
+    regex = '[a-z0-9]{4}[0-9]{4}'
+    pattern = re.compile(regex + '$')
+
+    def __new__(cls, content):
+        if not cls.pattern.match(content):
+            raise ValueError(content)
+        return text_type.__new__(cls, content)
+
+    def split(self):
+        return self[:4], int(self[4:])
+
+    @classmethod
+    def from_name(cls, name, dry_run=False, repos=None):
+        alpha = slug(text_type(name))[:4]
+        assert alpha
+        while len(alpha) < 4:
+            alpha += alpha[-1]
+        return Glottocodes(repos=repos).new(alpha, dry_run=dry_run)
+
+
 class Languoid(object):
     section_core = 'core'
-    id_pattern = re.compile(ID_REGEX + '$')
 
     def __init__(self, cfg, lineage=None, directory=None):
         """
@@ -38,23 +77,25 @@ class Languoid(object):
         """
         lineage = lineage or []
         assert all(
-            [self.id_pattern.match(id) and Level(level) for name, id, level in lineage])
+            [Glottocode.pattern.match(id) and Level(level) for name, id, level in lineage])
         self.lineage = [(name, id, Level(level)) for name, id, level in lineage]
         self.cfg = cfg
         self.dir = directory or TREE.joinpath(*[id for name, id, _ in self.lineage])
+
+    def __eq__(self, other):
+        return self.id == other.id
 
     @classmethod
     def from_dir(cls, directory, **kw):
         for p in directory.iterdir():
             if p.is_file():
-                assert p.suffix == '.ini'
+                assert p.suffix == '.ini' and Glottocode.pattern.match(p.stem)
                 return cls.from_ini(p, **kw)
 
     @classmethod
-    def from_ini(cls, ini, nodes={}):
-        if not isinstance(ini, Path):
-            ini = Path(ini)
-
+    def from_ini(cls, ini, nodes=None):
+        nodes = nodes or {}
+        ini = Path(ini)
         directory = ini.parent
         cfg = INI(interpolation=None)
         cfg.read(ini.as_posix(), encoding='utf8')
@@ -63,7 +104,7 @@ class Languoid(object):
         for parent in directory.parents:
             id_ = parent.name
             assert id_ != directory.name
-            if not cls.id_pattern.match(id_):
+            if not Glottocode.pattern.match(id_):
                 # we ignore leading non-languoid-dir path components.
                 break
 
@@ -121,7 +162,7 @@ class Languoid(object):
         res = []
         for parent in self.dir.parents:
             id_ = parent.name
-            if self.id_pattern.match(id_):
+            if Glottocode.pattern.match(id_):
                 res.append(Languoid.from_dir(parent))
             else:
                 # we ignore leading non-languoid-dir path components.
@@ -166,19 +207,19 @@ class Languoid(object):
 
     @property
     def id(self):
-        return self._get('glottocode')
+        return self._get('glottocode', Glottocode)
 
     @id.setter
     def id(self, value):
-        self._set('glottocode', value)
+        self._set('glottocode', Glottocode(value))
 
     @property
     def glottocode(self):
-        return self._get('glottocode')
+        return self._get('glottocode', Glottocode)
 
     @glottocode.setter
     def glottocode(self, value):
-        self._set('glottocode', value)
+        self._set('glottocode', Glottocode(value))
 
     @property
     def latitude(self):
@@ -186,7 +227,7 @@ class Languoid(object):
 
     @latitude.setter
     def latitude(self, value):
-        self._set('latitude', value)
+        self._set('latitude', float(value))
 
     @property
     def longitude(self):
@@ -194,11 +235,15 @@ class Languoid(object):
 
     @longitude.setter
     def longitude(self, value):
-        self._set('longitude', value)
+        self._set('longitude', float(value))
 
     @property
     def hid(self):
         return self._get('hid')
+
+    @hid.setter
+    def hid(self, value):
+        self._set('hid', value)
 
     @property
     def level(self):
@@ -280,27 +325,32 @@ def walk_tree(tree=TREE, **kw):
             yield Languoid.from_ini(fname, **kw)
 
 
-def make_index(level):
-    fname = dict(language='languages', family='families', dialect='dialects')[level]
+def make_index(level, repos=None):
+    fname = dict(
+        language='languages', family='families', dialect='dialects')[level.value]
     links = defaultdict(dict)
-    for lang in walk_tree():
+    for lang in walk_tree(tree=languoids_path('tree', repos=repos)):
         if lang.level == level:
             label = '{0.name} [{0.id}]'.format(lang)
             if lang.iso:
                 label += '[%s]' % lang.iso
             links[slug(lang.name)[0]][label] = \
-                lang.dir.joinpath(lang.fname('.ini')).relative_to(languoids_path())
+                lang.dir.joinpath(lang.fname('.ini'))\
+                    .relative_to(languoids_path(repos=repos))
 
-    with languoids_path(fname + '.md').open('w', encoding='utf8') as fp:
+    res = [languoids_path(fname + '.md', repos=repos)]
+    with res[0].open('w', encoding='utf8') as fp:
         fp.write('## %s\n\n' % fname.capitalize())
         fp.write(' '.join(
             '[-%s-](%s_%s.md)' % (i.upper(), fname, i) for i in sorted(links.keys())))
         fp.write('\n')
 
     for i, langs in links.items():
-        with languoids_path('%s_%s.md' % (fname, i)).open('w', encoding='utf8') as fp:
+        res.append(languoids_path('%s_%s.md' % (fname, i), repos=repos))
+        with res[-1].open('w', encoding='utf8') as fp:
             for label in sorted(langs.keys()):
                 fp.write('- [%s](%s)\n' % (label, langs[label]))
+    return res
 
 
 #
@@ -311,7 +361,7 @@ def macro_area_from_hid(tree=TREE):
     res = {}
     for lang in walk_tree(tree):
         if lang.hid:
-            macroareas = lang.cfg.getlist('core', 'macroareas')
+            macroareas = lang.macroareas
             res[lang.hid] = macroareas[0] if macroareas else ''
     return res
 
@@ -326,21 +376,3 @@ def load_triggers(tree=TREE, type_='lgcode'):
             res[(type_, '%s [%s]' % (lang.name, lang.hid))] = [
                 parse_conjunctions(t) for t in triggers]
     return res
-
-
-def glottocode_for_name(name, dry_run=False, repos=None):
-    alpha = slug(text_type(name))[:4]
-    assert alpha
-    while len(alpha) < 4:
-        alpha += alpha[-1]
-
-    gc_store = languoids_path('glottocodes.json', **{'data_dir': repos} if repos else {})
-    glottocodes = jsonlib.load(gc_store)
-    glottocodes[alpha] = num = glottocodes.get(alpha, 1233) + 1
-    if not dry_run:
-        # Store the updated dictionary of glottocodes back.
-        ordered = OrderedDict()
-        for k in sorted(glottocodes.keys()):
-            ordered[k] = glottocodes[k]
-        jsonlib.dump(ordered, gc_store, indent=4)
-    return '%s%s' % (alpha, num)

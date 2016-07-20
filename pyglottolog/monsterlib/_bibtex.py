@@ -36,7 +36,7 @@ VERBATIM = {'doi', 'eprint', 'file', 'url', 'pdf', 'fn', 'fnnote'}
 def memorymapped(filename, access=mmap.ACCESS_READ):
     fd = open(filename)
     try:
-        m = mmap.mmap(fd.fileno(), 0,  access=access)
+        m = mmap.mmap(fd.fileno(), 0, access=access)
     except:
         fd.close()
         raise
@@ -66,7 +66,8 @@ def iterentries(filename, encoding=None, use_pybtex=True):
         with memorymapped(filename) as source:
             try:
                 for entrytype, (bibkey, fields) in BibTeXEntryIterator(source):
-                    fields = {name.decode(encoding).lower():
+                    fields = {
+                        name.decode(encoding).lower():
                         whitespace_re.sub(' ', ''.join(values).decode(encoding).strip())
                         for name, values in fields}
                     yield bibkey.decode(encoding), (entrytype.decode(encoding), fields)
@@ -77,9 +78,9 @@ def iterentries(filename, encoding=None, use_pybtex=True):
 def debug_pybtex(source, e):
     start, line, pos = e.error_context_info
     print('BIBTEX ERROR on line %d, last parsed lines:' % line)
-    print(source[start:start+500] + '...')
-    raise
-    
+    print(source[start:start + 500] + '...')
+    raise e
+
 
 def names(s):
     for name in split_name_list(s):
@@ -96,8 +97,8 @@ class Name(collections.namedtuple('Name', 'prelast last given lineage')):
     @classmethod
     def from_string(cls, name):
         person = Person(name)
-        prelast, last, first, middle, lineage = (' '.join(getattr(person, part))
-            for part in ('_prelast', '_last', '_first', '_middle', '_lineage'))
+        prelast, last, first, middle, lineage = (' '.join(getattr(person, part)())
+            for part in ('prelast', 'last', 'first', 'middle', 'lineage'))
         given = ' '.join(n for n in (first, middle) if n)
         return cls(prelast, last, given, lineage)
 

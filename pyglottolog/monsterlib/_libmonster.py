@@ -4,50 +4,29 @@
 # TODO: enusure \emph is dropped from titles in keyid calculation
 
 import re
-import csv
-from collections import namedtuple
 from heapq import nsmallest
+from collections import defaultdict
+
+from clldutils.dsv import UnicodeWriter
 
 from pyglottolog import languoids
-from pyglottolog.util import references_path, parse_conjunctions, read_ini
-from pyglottolog._bibtex_undiacritic import undiacritic
+from pyglottolog.util import references_path, parse_conjunctions, read_ini, intersectall
+from pyglottolog.monsterlib._bibtex_undiacritic import undiacritic
 
 __all__ = [
     'add_inlg_e',
     'keyid',
-    'wrds', 'setd', 'setd3', 'indextrigs',
+    'wrds',
     'lstat', 'lstat_witness', 
     'hhtype_to_n', 'expl_to_hhtype', 'lgcode',
-    'read_csv_dict', 'write_csv_rows', 'load_triggers',
+    'load_triggers',
     'pitems',
 ]
 
 HHTYPE = references_path('alt4hhtype.ini')
 
 
-def read_csv_dict(filename):
-    return {row[0]: row for row in csv_iterrows(filename)}
-
-
-def csv_iterrows(filename, fieldnames=None, dialect='excel'):
-    with open(filename) as fd:
-        reader = csv.reader(fd, dialect=dialect)
-        if fieldnames is None:
-            fieldnames = next(reader)
-        make_row = namedtuple('Row', fieldnames)._make
-        for row in reader:
-            yield make_row(row)
-
-
-def write_csv_rows(rows, filename, fieldnames=None, encoding='utf-8', dialect='excel'):
-    with open(filename, 'wb') as fd:
-        writer = csv.writer(fd, dialect=dialect)
-        if fieldnames:
-            writer.writerow([unicode(f).encode(encoding) for f in fieldnames])
-        writer.writerows([[unicode(c).encode(encoding) for c in r] for r in rows])
-
-
-def load_triggers(filename):
+def load_triggers(filename=HHTYPE):
     p = read_ini(filename)
     result = {}
     for s in p.sections():
@@ -72,44 +51,22 @@ def load_hhtypes(filename=HHTYPE):
     return result
 
 
-def setd3(ds, k1, k2, k3, v=None):
-    if ds.has_key(k1):
-        if ds[k1].has_key(k2):
-            ds[k1][k2][k3] = v
-        else:
-            ds[k1][k2] = {k3: v}
-    else:
-        ds[k1] = {k2: {k3: v}}
-    return
-
-
-def setd(ds, k1, k2, v=None):
-    if ds.has_key(k1):
-        ds[k1][k2] = v
-    else:
-        ds[k1] = {k2: v}
-    return
-
-
 def opv(d, func):
     return {i: func(v) for i, v in d.iteritems()}
 
 
 def grp2fd(l):
-    r = {}
+    r = defaultdict(dict)
     for (a, b) in l:
-        if r.has_key(a):
-            r[a][b] = r[a].get(b, 0) + 1
-        else:
-            r[a] = {b: 1}
+        r[a][b] = 1
     return r
 
 
 def grp2(l):
-    r = {}
+    r = defaultdict(dict)
     for (a, b) in l:
-        setd(r, a, b)
-    return opv(r, lambda x: x.keys())
+        r[a][b] = None
+    return opv(r, lambda x: list(x.keys()))
 
 
 reauthor = [re.compile(pattern) for pattern in [
@@ -124,6 +81,7 @@ reauthor = [re.compile(pattern) for pattern in [
     "(?P<lastname>\?)$",
     "(?P<lastname>[\s\S]+)$",
 ]]
+
 
 def psingleauthor(n, vonlastname=True):
     for pattern in reauthor:
@@ -151,6 +109,7 @@ def pauthor(s):
 
 relu = re.compile("\s+|(d\')(?=[A-Z])")
 recapstart = re.compile("\[?[A-Z]")
+
 
 def lowerupper(s):
     parts = [x for x in relu.split(s) if x]
@@ -194,6 +153,7 @@ def rangecomplete(incomplete, complete):
 rebracketyear = re.compile("\[([\d\,\-\/]+)\]")
 reyl = re.compile("[\,\-\/\s\[\]]+")
 
+
 def pyear(s):
     if rebracketyear.search(s):
         s = rebracketyear.search(s).group(1)
@@ -214,6 +174,7 @@ retypekey = re.compile("@(?P<type>[a-zA-Z]+){(?P<key>[^,\s]*)[,\r\n]")
 reitem = re.compile("@[a-zA-Z]+{[^@]+}")
 
 trf = '@Book{g:Fourie:Mbalanhu,\n  author =   {David J. Fourie},\n  title =    {Mbalanhu},\n  publisher =    LINCOM,\n  series =       LWM,\n  volume =       03,\n  year = 1993\n}'
+
 
 def pitems(txt):
     for m in reitem.finditer(txt):
@@ -250,12 +211,14 @@ bibord = {k: i for i, k in enumerate([
     'url',
 ])}
 
+
 def bibord_iteritems(fields, sortkey=lambda f, inf=float('inf'): (bibord.get(f, inf), f)):
     for f in sorted(fields, key=sortkey):
         yield f, fields[f]
 
 
 resplittit = re.compile("[\(\)\[\]\:\,\.\s\-\?\!\;\/\~\=]+")
+
 
 def wrds(txt):
     txt = undiacritic(txt.lower())
@@ -300,6 +263,7 @@ def add_inlg_e(e):
 rerpgs = re.compile("([xivmcl]+)\-?([xivmcl]*)")
 repgs = re.compile("([\d]+)\-?([\d]*)")
 
+
 def pagecount(pgstr):
     rpgs = rerpgs.findall(pgstr)
     pgs = repgs.findall(pgstr)
@@ -342,12 +306,14 @@ def romanint(r):
 
 rerom = re.compile("(\d+)")
 
+
 def roman(x):
     return rerom.sub(lambda o: introman(int(o.group(1))), x).upper()
 
 
 rewrdtok = re.compile("[a-zA-Z].+")
 reokkey = re.compile("[^a-z\d\-\_\[\]]")
+
 
 def keyid(fields, fd={}, ti=2, infinity=float('inf')):
     if not fields.has_key('author'):
@@ -396,6 +362,7 @@ reisobrack = re.compile("\[([a-z][a-z][a-z]|NOCODE\_[A-Z][^\s\]]+)\]")
 recomma = re.compile("[\,\/]\s?")
 reiso = re.compile("[a-z][a-z][a-z]$|NOCODE\_[A-Z][^\s\]]+$")
 
+
 def lgcode((typ, fields)):
     if not fields.has_key('lgcode'):
         return []
@@ -417,12 +384,9 @@ def lgcodestr(lgcstr):
 rekillparen = re.compile(" \([^\)]*\)")
 respcomsemic = re.compile("[;,]\s?")
 
+
 def hhtypestr(s):
     return respcomsemic.split(rekillparen.sub("", s))
-
-
-def indextrigs(ts):
-    return grp2([(tuple(sorted(disj)), clslab) for (clslab, t) in ts.iteritems() for disj in t])
 
 
 def sd(es):
@@ -442,12 +406,11 @@ def pcy(pagecountstr):
 
 
 def accd(mi):
-    r = {}
+    r = defaultdict(dict)
     for (k, (hhts, pgs, year)) in mi:
-        #print k
         pci = pcy(pagecount(pgs))
         for t in hhts:
-            setd(r, t, k, (pci/float(len(hhts)), year))
+            r[t][k] = (pci/float(len(hhts)), year)
     return r
 
 
@@ -486,3 +449,64 @@ def lstat_witness(e, unsorted=False):
         return (typ, ks)
     (lsd, lse) = sdlgs(e, unsorted=unsorted)
     return opv(lsd, statwit)
+
+
+def markconservative(m, trigs, ref, outfn="monstermarkrep.txt", blamefield="hhtype"):
+    mafter = markall(m, trigs)
+    ls = lstat(ref)
+    lsafter = lstat_witness(mafter)
+    log = []
+    for (lg, (stat, wits)) in lsafter.items():
+        if not ls.get(lg):
+            print lg, "lacks status", [mafter[k][1]['srctrickle'] for k in wits]
+            continue
+        if hhtype_to_n[stat] > hhtype_to_n.get(ls[lg]):
+            log = log + [
+                (lg, [(mafter[k][1].get(blamefield, "No %s" % blamefield),
+                       k,
+                       mafter[k][1].get('title', 'no title'),
+                       mafter[k][1]['srctrickle']) for k in wits], ls[lg])]
+            for k in wits:
+                (t, f) = mafter[k]
+                if blamefield in f:
+                    del f[blamefield]
+                mafter[k] = (t, f)
+    with UnicodeWriter(outfn, dialect='excel-tab') as writer:
+        writer.writerows(((lg, was) + mis for (lg, miss, was) in log for mis in miss))
+    return mafter
+
+
+def markall(e, trigs, labelab=lambda x: x, verbose=True):
+    clss = set(cls for (cls, _) in trigs.keys())
+    ei = {k: (typ, fields) for k, (typ, fields) in e.items()
+          if [c for c in clss if c not in fields]}
+
+    wk = defaultdict(dict)
+    for (k, (typ, fields)) in ei.items():
+        for w in wrds(fields.get('title', '')):
+            wk[w][k] = None
+
+    u = defaultdict(lambda: defaultdict(dict))
+    it = grp2([(tuple(sorted(disj)), clslab) for (clslab, t) in trigs.items() for disj in t])
+    for (dj, clslabs) in it.items():
+        mkst = [wk.get(w, {}).keys() for (stat, w) in dj if stat]
+        mksf = [set(ei.keys()).difference(wk.get(w, [])) for (stat, w) in dj if not stat]
+        mks = intersectall(mkst + mksf)
+        for k in mks:
+            for cl in clslabs:
+                u[k][cl][dj] = None
+
+    for (k, cd) in u.items():
+        (t, f) = e[k]
+        f2 = {a: b for a, b in f.items()}
+        for (cls, lab), ms in cd.items():
+            a = ';'.join(' and '.join(('' if stat else 'not ') + w for (stat, w) in m) for m in ms)
+            f2[cls] = labelab(lab) + ' (computerized assignment from "' + a + '")'
+            e[k] = (t, f2)
+    if verbose:
+        print "trigs", len(trigs)
+        print "trigger-disjuncts", len(it)
+        print "label classes", len(clss)
+        print "unlabeled refs", len(ei)
+        print "updates", len(u)
+    return e

@@ -1,19 +1,16 @@
 # _bibfiles.py - ordered collection of bibfiles with load/save api
 
-import os
-import io
 import datetime
 
-from clldutils.inifile import INI
+from six import string_types
 
-from pyglottolog.util import references_path
-import _bibtex
-from _bibfiles_db import Database
+from pyglottolog.util import references_path, read_ini
+from pyglottolog.monsterlib import _bibtex
+from pyglottolog.monsterlib._bibfiles_db import Database
 
 __all__ = ['Collection', 'BibFile', 'Database']
 
-DIR = references_path('bibtex').as_posix()
-CONFIG = 'BIBFILES.ini'
+DIR = references_path('bibtex')
 
 
 class Collection(list):
@@ -22,15 +19,14 @@ class Collection(list):
     _encoding = 'utf-8-sig'
 
     @classmethod
-    def _bibfiles(cls, directory, config, endwith):
+    def _bibfiles(cls, directory):
         """Read the INI-file, yield bibfile instances for sections."""
-        cfg = INI(interpolation=None)
-        cfg.read(os.path.join(directory, '..', config))
+        cfg = read_ini(directory.parent.joinpath('BIBFILES.ini'))
         for s in cfg.sections():
-            if not s.endswith(endwith):
+            if not s.endswith('.bib'):
                 continue
-            filepath = os.path.join(directory, s)
-            assert os.path.exists(filepath)
+            filepath = directory.joinpath(s)
+            assert filepath.exists()
             sortkey = cfg.get(s, 'sortkey')
             if sortkey.lower() == 'none':
                 sortkey = None
@@ -43,15 +39,15 @@ class Collection(list):
                 description=cfg.get(s, 'description'),
                 abbr=cfg.get(s, 'abbr'))
 
-    def __init__(self, directory=DIR, config=CONFIG, endwith='.bib'):
+    def __init__(self, directory=DIR):
         self.directory = directory
-        bibfiles = self._bibfiles(directory, config, endwith)
+        bibfiles = self._bibfiles(directory)
         super(Collection, self).__init__(bibfiles)
-        self._map = {b.filename: b for b in self}
+        self._map = {b.filepath.name: b for b in self}
 
     def __getitem__(self, index_or_filename):
         """Retrieve a bibfile by index or filename."""
-        if isinstance(index_or_filename, basestring):
+        if isinstance(index_or_filename, string_types):
             return self._map[index_or_filename]
         return super(Collection, self).__getitem__(index_or_filename)
 
@@ -61,13 +57,11 @@ class Collection(list):
 
     def check_all(self):
         """Check the BibTeX syntax of all bibfiles."""
-        for b in self:
-            b.check()
-            
+        return [b.check() for b in self]
+
     def roundtrip_all(self):
         """Load and save all bibfiles with the current settings."""
-        for b in self:
-            b.roundtrip()
+        return [b.roundtrip() for b in self]
 
 
 class BibFile(object):
@@ -76,7 +70,7 @@ class BibFile(object):
     def __init__(self, filepath, encoding, sortkey, use_pybtex=True, priority=0,
                  name=None, title=None, description=None, abbr=None):
         self.filepath = filepath
-        self.filename = os.path.basename(filepath)
+        self.filename = filepath.name
         self.encoding = encoding
         self.sortkey = sortkey
         self.use_pybtex = use_pybtex
@@ -88,43 +82,47 @@ class BibFile(object):
 
     @property
     def size(self):
-        return os.stat(self.filepath).st_size
+        return self.filepath.stat().st_size
 
     @property
     def mtime(self):
-        return datetime.datetime.fromtimestamp(os.stat(self.filepath).st_mtime)
+        return datetime.datetime.fromtimestamp(self.filepath.stat().st_mtime)
 
     def iterentries(self):
         """Yield entries as (bibkey, (entrytype, fields)) tuples."""
-        return _bibtex.iterentries(filename=self.filepath,
+        return _bibtex.iterentries(
+            filename=self.filepath.as_posix(),
             encoding=self.encoding,
             use_pybtex=self.use_pybtex)
 
     def load(self):
         """Return entries as bibkey -> (entrytype, fields) dict."""
-        return _bibtex.load(filename=self.filepath,
+        return _bibtex.load(
+            filename=self.filepath.as_posix(),
             preserve_order=self.sortkey is None,
             encoding=self.encoding,
             use_pybtex=self.use_pybtex)
 
     def save(self, entries, verbose=True):
         """Write bibkey -> (entrytype, fields) map to file."""
-        _bibtex.save(entries,
-            filename=self.filepath,
+        _bibtex.save(
+            entries,
+            filename=self.filepath.as_posix(),
             sortkey=self.sortkey,
             encoding=self.encoding,
             use_pybtex=self.use_pybtex,
             verbose=verbose)
 
     def __repr__(self):
-        return '<%s %r>' % (self.__class__.__name__, self.filename)
+        return '<%s %r>' % (self.__class__.__name__, self.filepath.name)
 
     def check(self):
         print(self)
         entries = self.load()  # bare BibTeX syntax
-        invalid = _bibtex.check(filename=self.filepath)  # names/macros etc.
+        invalid = _bibtex.check(filename=self.filepath.as_posix())  # names/macros etc.
         verdict = ('(%d invalid)' % invalid) if invalid else 'OK'
         print('%d %s' % (len(entries), verdict))
+        return len(entries), verdict
 
     def roundtrip(self):
         print(self)
@@ -135,15 +133,10 @@ class BibFile(object):
         import collections
         from unicodedata import name
 
-        with io.open(self.filepath, encoding=self.encoding) as fd:
-            data = fd.read()
-        hist = collections.Counter(data)
-        table = '\n'.join('%d\t%-9r\t%s\t%s' % (n, c, c, name(c, ''))
+        with self.filepath.open(encoding=self.encoding) as fd:
+            hist = collections.Counter(fd.read())
+        table = '\n'.join(
+            '%d\t%-9r\t%s\t%s' % (n, c, c, name(c, ''))
             for c, n in hist.most_common()
             if include_plain or not 20 <= ord(c) <= 126)
         print(table)
-
-
-if __name__ == '__main__':
-    c = Collection()
-    d = Database()

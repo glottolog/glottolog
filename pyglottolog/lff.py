@@ -7,10 +7,10 @@ import shutil
 from clldutils.path import Path, as_posix
 
 from pyglottolog.util import build_path
-from pyglottolog.languoids import Languoid, walk_tree, TREE, ID_REGEX, Level
+from pyglottolog.languoids import Languoid, walk_tree, TREE, Level, Glottocode
 
 
-NAME_AND_ID_REGEX = '([^\[]+)(\[' + ID_REGEX + '\])'
+NAME_AND_ID_REGEX = '([^\[]+)(\[' + Glottocode.regex + '\])'
 
 
 def rmtree(d, **kw):
@@ -67,7 +67,6 @@ def lang2tree(lang, lineage, out, old_tree):
                     # rename a subgroup!
                     group.name = name
             else:
-                #assert id_.startswith('NOCODE')
                 group = Languoid.from_name_id_level(name, id_, level)
             group.write_info(groupdir)
 
@@ -81,7 +80,6 @@ def lang2tree(lang, lineage, out, old_tree):
             old_lang.name = lang.name
         old_lang.write_info(langdir)
     else:
-        #assert lang.id.startswith('NOCODE')
         lang.write_info(langdir)
 
 

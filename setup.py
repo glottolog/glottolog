@@ -32,5 +32,5 @@ setup(
     entry_points={
         'console_scripts': ['glottolog=pyglottolog.cli:main'],
     },
-    tests_require=[],
+    tests_require=['mock'],
     test_suite="pyglottolog")
