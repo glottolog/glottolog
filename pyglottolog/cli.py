@@ -12,15 +12,24 @@ The basic invocation looks like
     glottolog [OPTIONS] <command> [args]
 
 """
-from __future__ import unicode_literals
+from __future__ import unicode_literals, print_function
 import sys
+from collections import Counter
+import logging
 
 from clldutils.clilib import ArgumentParser, ParserError
 from clldutils.path import copytree, rmtree, remove
 
 from pyglottolog.monster import main as compile_monster
-from pyglottolog.languoids import make_index, glottocode_for_name, Languoid, find_languoid
+from pyglottolog.languoids import (
+    make_index, Languoid, find_languoid, Glottocode, Glottocodes, walk_tree, TREE, Level,
+)
+from pyglottolog.util import DATA_DIR, languoids_path
 from pyglottolog import lff
+
+
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger(__name__)
 
 
 def monster(args):
@@ -36,13 +45,35 @@ def index(args):
 
     glottolog index (family|language|dialect|all)
     """
-    for level in ['family', 'language', 'dialect']:
-        if args.args[0] in [level, 'all']:
-            make_index(level)
+    for level in Level:
+        if args.args[0] in [level.value, 'all']:
+            make_index(level, repos=args.repos)
 
 
 def check_tree(args):
-    pass
+    tree = languoids_path('tree', repos=args.repos)
+    glottocodes = Glottocodes()
+    log.info('checking tree at %s' % tree)
+    stats = Counter()
+    for lang in walk_tree(tree=tree):
+        stats.update([lang.level])
+        if lang.id not in glottocodes:
+            log.error('unregistered glottocode %s' % lang.id)
+        for attr in ['level', 'name', 'glottocode']:
+            if not getattr(lang, attr):
+                log.error('missing %s: %s' % (attr, lang.id))
+        if not Glottocode.pattern.match(lang.dir.name):
+            log.error('invalid directory name: %s' % lang.dir.name)
+        if lang.level == Level.language:
+            if lang.parent and lang.parent.level != Level.family:
+                log.error('invalid nesting of language under {0}: {1}'.format(
+                    lang.parent.level, lang.id))
+            for child in lang.children:
+                if child.level != Level.dialect:
+                    log.error('invalid nesting of {0} under language: {1}'.format(
+                        child.level, child.id))
+    log.info(stats)
+    return stats
 
 
 def recode(args):
@@ -53,14 +84,13 @@ def recode(args):
     lang = find_languoid(glottocode=args.args[0])
     if not lang:
         raise ParserError('languoid not found')
-    gc = glottocode_for_name(lang.name)
-    lang.id = gc
-    new_dir = lang.dir.parent.joinpath(gc)
+    lang.id = Glottocode.from_name(lang.name)
+    new_dir = lang.dir.parent.joinpath(lang.id)
     copytree(lang.dir, new_dir)
     lang.write_info(new_dir)
     remove(new_dir.joinpath('%s.ini' % args.args[0]))
     rmtree(lang.dir)
-    print("%s -> %s" % (args.args[0], gc))
+    print("%s -> %s" % (args.args[0], lang.id))
 
 
 def new_languoid(args):
@@ -71,7 +101,7 @@ def new_languoid(args):
     assert args.args[1] in ['family', 'language', 'dialect']
     lang = Languoid.from_name_id_level(
         args.args[0],
-        glottocode_for_name(args.args[0]),
+        Glottocode.from_name(args.args[0]),
         args.args[1],
         **dict(prop.split('=') for prop in args.args[2:]))
     #
@@ -137,7 +167,16 @@ to inspect the changes in detail.
 """)
 
 
-def main():
+def main():  # praga: no cover
     parser = ArgumentParser(
-        'pyglottolog', monster, index, tree2lff, lff2tree, new_languoid, recode)
+        'pyglottolog',
+        monster,
+        index,
+        tree2lff,
+        lff2tree,
+        new_languoid,
+        recode,
+        check_tree)
+    parser.add_argument(
+        '--repos', help="path to glottolog data repository", default=DATA_DIR)
     sys.exit(parser.main())

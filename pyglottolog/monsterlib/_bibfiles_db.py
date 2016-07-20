@@ -1,8 +1,6 @@
 # _bibfiles_db.py - load bibfiles into sqlite3, hash, assign ids (split/merge)
 
 import os
-import csv
-import json
 import sqlite3
 import difflib
 import operator
@@ -10,15 +8,19 @@ import itertools
 import contextlib
 import collections
 
-from pyglottolog.util import references_path, build_path
+from six import string_types
+from clldutils.dsv import UnicodeWriter
+from clldutils import jsonlib
+
+from pyglottolog.util import references_path, build_path, unique, group_first
 import _bibtex
 
 __all__ = ['Database']
 
 DBFILE = build_path('_bibfiles.sqlite3').as_posix()
-BIBFILE = build_path('monster-utf8.bib').as_posix()
-CSVFILE = references_path('monster.csv').as_posix()
-REPLACEMENTSFILE = build_path('monster-replacements.json').as_posix()
+BIBFILE = build_path('monster-utf8.bib')
+CSVFILE = references_path('monster.csv')
+REPLACEMENTSFILE = build_path('monster-replacements.json')
 
 UNION_FIELDS = {'fn', 'asjp_name', 'isbn'}
 
@@ -30,14 +32,14 @@ class Database(object):
 
     @staticmethod
     def _get_bibfiles(bibfiles):
-        if bibfiles is None:
+        if bibfiles is None:  # pragma: no cover
             from _bibfiles import Collection
             return Collection()
         return bibfiles
 
     @staticmethod
     def _get_filename(filename, default=DBFILE):
-        if filename is None:
+        if filename is None:  # pragma: no cover
             return default
         return filename
 
@@ -46,7 +48,7 @@ class Database(object):
         """If needed, (re)build the db from the bibfiles, hash, split/merge."""
         bibfiles = cls._get_bibfiles(bibfiles)
         filename = cls._get_filename(filename)
-            
+
         if os.path.exists(filename):
             if not rebuild:
                 self = cls(filename)
@@ -98,18 +100,17 @@ class Database(object):
                 assign_ids(conn, verbose=verbose)
 
     def to_bibfile(self, filename=BIBFILE, encoding='utf-8', ):
-        _bibtex.save(self.merged(), filename, sortkey=None, encoding=encoding)
+        _bibtex.save(self.merged(), filename.as_posix(), sortkey=None, encoding=encoding)
 
-    def to_csvfile(self, filename=CSVFILE, encoding='utf-8', dialect='excel'):
+    def to_csvfile(self, filename=CSVFILE):
         """Write a CSV file with one row for each entry in each bibfile."""
         with self.connect() as conn:
             cursor = conn.execute('SELECT filename, bibkey, hash, cast(id AS text) AS id '
-                'FROM entry ORDER BY lower(filename), lower(bibkey)')
-            with open(filename, 'wb') as fd:
-                writer = csv.writer(fd, dialect=dialect)
-                writer.writerow([col[0].encode(encoding) for col in cursor.description])
+                'FROM entry ORDER BY lower(filename), lower(bibkey), hash, id')
+            with UnicodeWriter(filename) as writer:
+                writer.writerow([col[0] for col in cursor.description])
                 for row in cursor:
-                     writer.writerow([col.encode(encoding) for col in row])
+                     writer.writerow(row)
 
     def to_replacements(self, filename=REPLACEMENTSFILE):
         """Write a JSON file with 301s from merged glottolog_ref_ids."""
@@ -118,8 +119,7 @@ class Database(object):
             cursor = conn.execute('SELECT refid AS id, id AS replacement '
                 'FROM entry WHERE id != refid ORDER BY id')
             pairs = map(dict, cursor)
-        with open(filename, 'wb') as fd:
-            json.dump(pairs, fd, indent=4)
+        jsonlib.dump(pairs, filename, indent=4)
 
     def to_hhmapping(self):
         with self.connect() as conn:
@@ -131,7 +131,7 @@ class Database(object):
         """Write new/changed glottolog_ref_ids back into the bibfiles."""
         bibfiles = self._get_bibfiles(bibfiles)
         if not self.is_uptodate(bibfiles, verbose=True):
-            raise RuntimeError('trickle with an outdated db')
+            raise RuntimeError('trickle with an outdated db')  # pragma: no cover
         with self.connect() as conn:
             filenames = conn.execute('SELECT name FROM file WHERE EXISTS '
                 '(SELECT 1 FROM entry WHERE filename = name '
@@ -198,7 +198,7 @@ class Database(object):
 
     def __getitem__(self, key):
         """Entry by (fn, bk) or merged entry by refid (old grouping) or hash (current grouping)."""
-        if not isinstance(key, (tuple, int, basestring)):
+        if not isinstance(key, (tuple, int)) and not isinstance(key, string_types):
             raise ValueError
         with self.connect() as conn:
             if isinstance(key, tuple):
@@ -610,19 +610,6 @@ def assign_ids(conn, verbose=False):
     print('%d supersede pairs' % superseded)
 
 
-def group_first(iterable, groupkey=operator.itemgetter(0)):
-    for key, group in itertools.groupby(iterable, groupkey):
-        yield key, list(group)
-
-
-def unique(iterable):
-    seen = set()
-    for item in iterable:
-        if item not in seen:
-            seen.add(item)
-            yield item
-
-
 def distance(left, right, weight={'author': 3, 'year': 3, 'title': 3, 'ENTRYTYPE': 2}):
     """Simple measure of the difference between two bibtex-field dicts."""
     if not (left or right):
@@ -633,12 +620,13 @@ def distance(left, right, weight={'author': 3, 'year': 3, 'title': 3, 'ENTRYTYPE
         return 1.0
 
     weights = {k: weight.get(k, 1) for k in keys}
-    ratios = (w * difflib.SequenceMatcher(None, left[k], right[k]).ratio()
+    ratios = (
+        w * difflib.SequenceMatcher(None, left[k], right[k]).ratio()
         for k, w in weights.iteritems())
     return 1 - (sum(ratios) / sum(weights.itervalues()))
 
 
-def _test_merge():
+def _test_merge():  # pragma: no cover
     import sqlalchemy as sa
 
     engine = sa.create_engine('postgresql://postgres@/overrides')
@@ -674,9 +662,3 @@ def _test_merge():
 
     print('\n'.join('%d\t%s\t%s' % (n, f1, f2)
         for f1, f2, n in engine.execute(query)))
-
-
-if __name__ == '__main__':
-    d = Database.from_bibfiles()
-    #d.recompute(hashes=False)
-    #_test_merge()
