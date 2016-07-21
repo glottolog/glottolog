@@ -6,7 +6,7 @@ requires = [
     'six',
     'enum34',
     'clldutils>=1.0.1',
-    'pybtex',
+    'pybtex>=0.20',
     'latexcodec',
     'unidecode',
 ]

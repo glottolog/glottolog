@@ -3,7 +3,6 @@
 # TODO: make check fail on non-whitespace between entries (bibtex 'comments')
 
 import io
-import re
 import mmap
 import contextlib
 import collections
@@ -15,7 +14,7 @@ from pybtex.textutils import whitespace_re
 from pybtex.bibtex.utils import split_name_list
 from pybtex.database import Person
 
-from _bibtex_escaping import u_escape, u_unescape, latex_to_utf8
+from _bibtex_escaping import u_escape, latex_to_utf8, ulatex_postprocess, ulatex_preprocess
 
 __all__ = [
     'load', 'iterentries', 'names',
@@ -37,7 +36,7 @@ def memorymapped(filename, access=mmap.ACCESS_READ):
     fd = open(filename)
     try:
         m = mmap.mmap(fd.fileno(), 0, access=access)
-    except:
+    except:  # pragma: no cover
         fd.close()
         raise
     try:
@@ -48,12 +47,16 @@ def memorymapped(filename, access=mmap.ACCESS_READ):
 
 
 def load(filename, preserve_order=False, encoding=None, use_pybtex=True):
+    print filename, encoding, use_pybtex
+    assert use_pybtex
     cls = collections.OrderedDict if preserve_order else dict
     return cls(iterentries(filename, encoding, use_pybtex))
 
 
 def iterentries(filename, encoding=None, use_pybtex=True):
+    assert use_pybtex
     if not use_pybtex:  # legacy code path for conversion/comparison
+        raise ValueError(filename)
         if encoding not in (None, 'ascii'):
             raise NotImplementedError
         import _libmonster
@@ -66,10 +69,31 @@ def iterentries(filename, encoding=None, use_pybtex=True):
         with memorymapped(filename) as source:
             try:
                 for entrytype, (bibkey, fields) in BibTeXEntryIterator(source):
-                    fields = {
-                        name.decode(encoding).lower():
-                        whitespace_re.sub(' ', ''.join(values).decode(encoding).strip())
-                        for name, values in fields}
+                    _fields = {}
+                    for name, values in fields:
+                        values = ''.join(values)
+                        if encoding == 'ulatex+utf8':
+                            values = ulatex_preprocess(values)
+                        try:
+                            values = values.decode(encoding).strip()
+                        except ValueError as e:
+                            if "unknown token u'%'" in '{0}'.format(e):
+                                if values.startswith('\\url{'):
+                                    values = values[5:]
+                                if values.endswith('}'):
+                                    values = values[:-1]
+                                if not values.startswith('http'):
+                                    print values
+                            else:
+                                raise
+                        if encoding == 'ulatex+utf8':
+                            values = ulatex_postprocess(values)
+                        _fields[name.decode(encoding).lower()] = whitespace_re.sub(' ', values)
+                    fields = _fields
+                    #fields = {
+                    #    name.decode(encoding).lower():
+                    #    whitespace_re.sub(' ', ''.join(values).decode(encoding).strip())
+                    #    for name, values in fields}
                     yield bibkey.decode(encoding), (entrytype.decode(encoding), fields)
             except PybtexSyntaxError as e:
                 debug_pybtex(source, e)
@@ -104,6 +128,7 @@ class Name(collections.namedtuple('Name', 'prelast last given lineage')):
 
 
 def save(entries, filename, sortkey, encoding=None, errors='strict', use_pybtex=True, verbose=True):
+    assert use_pybtex
     if encoding in (None, 'ascii', 'ascii+u_escape'):
         with open(filename, 'w') as fd:
             dump(entries, fd, sortkey, encoding, errors, use_pybtex, verbose)
@@ -114,6 +139,7 @@ def save(entries, filename, sortkey, encoding=None, errors='strict', use_pybtex=
 
 
 def dump(entries, fd, sortkey=None, encoding=None, errors='strict', use_pybtex=True, verbose=True, verbatim=VERBATIM):
+    assert use_pybtex
     if sortkey is None:
         if isinstance(entries, collections.OrderedDict):
             items = entries.iteritems()
@@ -145,6 +171,7 @@ def dump(entries, fd, sortkey=None, encoding=None, errors='strict', use_pybtex=T
       >: \textgreater
     """
     if not use_pybtex:  # legacy code path for conversion/comparison
+        raise NotImplementedError
         if encoding not in (None, 'ascii'):
             raise NotImplementedError
         for bibkey, (entrytype, fields) in items:
@@ -184,7 +211,12 @@ def dump(entries, fd, sortkey=None, encoding=None, errors='strict', use_pybtex=T
             fd.write(u'@%s{%s' % (entrytype, bibkey))
             for k, v in fieldorder.itersorted(fields):
                 if k in verbatim:
-                    v = v.strip().decode('ascii')
+                    v = v.strip()
+                    #if hasattr(v, 'decode'):
+                    #    try:
+                    #        v = v.decode('ascii')
+                    #    except UnicodeEncodeError:
+                    #        v = v.decode('utf8')
                 elif isinstance(v, str):
                     v = latex_to_utf8(v.strip(), verbose=verbose)
                 fd.write(u',\n    %s = {%s}' % (k, v))

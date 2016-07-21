@@ -1,7 +1,7 @@
 # coding: utf8
 from __future__ import unicode_literals, print_function, division
 
-from nose.tools import assert_almost_equal
+from nose.tools import assert_almost_equal, assert_equal
 from clldutils.testing import WithTempDir, capture
 from clldutils.path import copytree, Path
 
@@ -54,6 +54,36 @@ class Tests(WithTempDir):
             with capture(getattr(db, 'show_' + attr)) as out:
                 pass
 
+    def test_load_trigger(self):
+        from pyglottolog.monsterlib._libmonster import load_triggers
+
+        load_triggers(self.references.joinpath('hhtype.ini'))
+
+    def test_markconcservative(self):
+        from pyglottolog.monsterlib._libmonster import markconservative
+
+        markconservative(
+            {1: ('article', {'title': 'Grammar'})},
+            {('hhtype', 'grammar'): [[(True, 'grammar')]]},
+            {1: ('article', {'title': 'Grammar'})},
+            outfn=self.tmp_path('marks.txt'),
+            verbose=False)
+
+
+def test_ulatex_decode():
+    from pyglottolog.monsterlib._bibtex_escaping import ulatex_decode
+
+    for i, o in [
+        ("", ""),
+        ("a\\^o\=\,b", "aôb̦̄"),
+        ("Luise\\~no", "Luiseño"),
+        ("\\textdoublevertline", "‖"),
+        ("\\url{abcdefg}", "abcdefg"),
+        ("\\textdoublegrave{o}", "\u020d"),
+        ("\\textsubu{\\'{v}}a", "v\u032e\u0301a"),
+    ]:
+        assert_equal(ulatex_decode(i), o)
+
 
 def test_distance():
     from pyglottolog.monsterlib._bibfiles_db import distance
@@ -81,3 +111,63 @@ def test_markall():
         {('hhtype', 'grammar'): [[(True, 'grammar')]]},
         verbose=False)
     assert res[1][1]['hhtype'] == 'grammar (computerized assignment from "grammar")'
+
+
+def test_add_inlg_e():
+    from pyglottolog.monsterlib._libmonster import add_inlg_e, INLG
+
+    res = add_inlg_e(
+        {1: ('article', {'title': 'Grammar of Abc'})},
+        {(INLG, 'Abc [abc]'): [[(True, 'abc')]]},
+        verbose=False)
+    assert_equal(res[1][1][INLG], 'Abc [abc]')
+
+
+def test_roman():
+    from pyglottolog.monsterlib._libmonster import romanint, introman
+
+    assert_equal(introman(5), 'v')
+    assert_equal(introman(8), 'viii')
+    for i in range(2000):
+        assert_equal(romanint(introman(i)), i)
+
+
+def test_keyid():
+    from pyglottolog.monsterlib._libmonster import keyid
+
+    for fields, res in [
+        ({}, '__missingcontrib__'),
+        (dict(author='An Author'), 'author_no-titlend'),
+        (dict(editor='An Author'), 'author_no-titlend'),
+        (dict(author='An Author', title='A rather long title'), 'author_rather-longnd'),
+        (dict(author='An Author', title='Title', year='2014'), 'author_title2014'),
+        (dict(author='An Author', volume='IV'), 'author_no-titleivnd'),
+        (dict(author='An Author', extra_hash='a'), 'author_no-titlenda'),
+    ]:
+        assert_equal(keyid(fields, {}), res)
+
+    with capture(keyid, dict(author='An Author and '), {}) as out:
+        assert 'Unparsed' in out
+
+
+def test_pagecount():
+    from pyglottolog.monsterlib._libmonster import pagecount
+
+    for pages, res in [
+        ('', ''),
+        ('1', '1'),
+        ('10-20', '11'),
+        ('10-20,v-viii', '4+11'),
+    ]:
+        assert_equal(pagecount(pages), res)
+
+
+def test_lgcode():
+    from pyglottolog.monsterlib._libmonster import lgcode
+
+    for lgcode_, codes in [
+        ('', []),
+        ('[abc]', ['abc']),
+        ('abc,NOCODE_Abc', ['abc', 'NOCODE_Abc']),
+    ]:
+        assert_equal(lgcode((None, dict(lgcode=lgcode_))), codes)

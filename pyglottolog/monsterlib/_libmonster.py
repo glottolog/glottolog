@@ -5,54 +5,45 @@
 
 import re
 from heapq import nsmallest
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 
 from clldutils.dsv import UnicodeWriter
 
 from pyglottolog import languoids
-from pyglottolog.util import references_path, parse_conjunctions, read_ini, intersectall
+from pyglottolog.util import (
+    references_path, parse_conjunctions, read_ini, intersectall, unique,
+)
 from pyglottolog.monsterlib._bibtex_undiacritic import undiacritic
 
-__all__ = [
-    'add_inlg_e',
-    'keyid',
-    'wrds',
-    'lstat', 'lstat_witness', 
-    'hhtype_to_n', 'expl_to_hhtype', 'lgcode',
-    'load_triggers',
-    'pitems',
-]
 
 HHTYPE = references_path('alt4hhtype.ini')
 
 
-def load_triggers(filename=HHTYPE):
+def visit_sections(visitor, filename=HHTYPE):
     p = read_ini(filename)
-    result = {}
     for s in p.sections():
-        cls, lab = s.split(', ', 1)
-        triggers = p.get(s, 'triggers').strip().splitlines()
-        if not triggers:  # hhtype, unknown
-            continue
-        result[(cls, lab)] = [parse_conjunctions(t) for t in triggers]
-    return result
+        yield visitor(s, p)
+
+
+def load_triggers(filename=HHTYPE):
+    def get_triggers(s, p):
+        triggers = p.get(s, 'triggers').strip().splitlines() or []
+        return s, [parse_conjunctions(t) for t in triggers]
+    return OrderedDict([
+        (tuple(s.split(', ', 1)), v)
+        for s, v in visit_sections(get_triggers, filename=filename) if v])
 
 
 def load_hhtypes(filename=HHTYPE):
-    p = read_ini(filename)
-    result = {}
-    for s in p.sections():
+    def get_hhtype(s, p):
         _, _, expl = s.partition(', ')
-        hht = p.get(s, 'id')
-        rank = p.getint(s, 'rank')
-        abbv = p.get(s, 'abbv')
-        bibabbv = p.get(s, 'bibabbv')
-        result[hht] = (rank, expl, abbv, bibabbv)
-    return result
+        return (p.get(s, 'id'),
+                (p.getint(s, 'rank'), expl, p.get(s, 'abbv'), p.get(s, 'bibabbv')))
+    return OrderedDict([item for item in visit_sections(get_hhtype, filename=filename)])
 
 
 def opv(d, func):
-    return {i: func(v) for i, v in d.iteritems()}
+    return {i: func(v) for i, v in d.items()}
 
 
 def grp2fd(l):
@@ -112,33 +103,30 @@ recapstart = re.compile("\[?[A-Z]")
 
 
 def lowerupper(s):
-    parts = [x for x in relu.split(s) if x]
-    lower = []
-    upper = []
-    for (i, x) in enumerate(parts):
+    parts, lower, upper = [x for x in relu.split(s) if x], [], []
+    for i, x in enumerate(parts):
         if not recapstart.match(undiacritic(x)):
             lower.append(x)
         else:
             upper = parts[i:]
             break
-    return (lower, upper)
+    return lower, upper
 
 
 def lastvon(author):
-    if not author.has_key('firstname'):
+    if 'firstname' not in author:
         return author
-    r = {}
-    (lower, upper) = lowerupper(author['firstname'])
-    r['lastname'] = (' '.join(lower).strip() + ' ' + author['lastname']).strip()
-    r['firstname'] = ' '.join(upper)
-    if author.has_key('jr') and author['jr']:
+    lower, upper = lowerupper(author['firstname'])
+    r = dict(
+        lastname=(' '.join(lower).strip() + ' ' + author['lastname']).strip(),
+        firstname=' '.join(upper))
+    if author.get('jr'):
         r['jr'] = author['jr']
-
     return r
 
 
 def lastnamekey(s):
-    (_, upper) = lowerupper(s)
+    _, upper = lowerupper(s)
     if not upper:
         return ''
     return max(upper)
@@ -146,7 +134,7 @@ def lastnamekey(s):
 
 def rangecomplete(incomplete, complete):
     if len(complete) > len(incomplete):
-        return complete[:len(complete)-len(incomplete)] + incomplete
+        return complete[:len(complete) - len(incomplete)] + incomplete
     return incomplete
 
 
@@ -227,36 +215,47 @@ def wrds(txt):
 
 
 def renfn(e, ups):
-    for (k, field, newvalue) in ups:
-        (typ, fields) = e[k]
-        #fields['mpifn'] = fields['fn']
+    for k, field, newvalue in ups:
+        typ, fields = e[k]
         fields[field] = newvalue
         e[k] = (typ, fields)
     return e
 
 
-def add_inlg_e(e):
-    inlg = languoids.load_triggers(type_='inlg')
-    # FIXME: does not honor 'NOT' for now
-    dh = {word: label  for (cls, label), triggers in inlg.iteritems()
-        for t in triggers for flag, word in t}  
-    ts = [(k, wrds(fields['title']) + wrds(fields.get('booktitle', ''))) for (k, (typ, fields)) in e.iteritems() if fields.has_key('title') and not fields.has_key('inlg')]
-    print len(ts), "without", 'inlg'
-    ann = [(k, set(dh[w] for w in tit if dh.has_key(w))) for (k, tit) in ts]
-    unique = [(k, lgs.pop()) for (k, lgs) in ann if len(lgs) == 1]
-    print len(unique), "cases of unique hits"
-    fnups = [(k, 'inlg', v) for (k, v) in unique]
-    t2 = renfn(e, fnups)
-    #print len(unique), "updates"
+INLG = 'inlg'
 
-    newtrain = grp2fd([(lgcodestr(fields['inlg'])[0], w) for (k, (typ, fields)) in t2.iteritems() if fields.has_key('title') and fields.has_key('inlg') if len(lgcodestr(fields['inlg'])) == 1 for w in wrds(fields['title'])])
-    #newtrain = grp2fd([(cname(lgc), w) for (lgcs, w) in alc if len(lgcs) == 1 for lgc in lgcs])
-    for (lg, wf) in sorted(newtrain.iteritems(), key=lambda x: len(x[1])):
-        cm = [(1+f, float(1-f+sum(owf.get(w, 0) for owf in newtrain.itervalues())), w) for (w, f) in wf.iteritems() if f > 9]
-        cms = [(f/fn, f, fn, w) for (f, fn, w) in cm]
-        cms.sort(reverse=True)
-        ##print lg, cms[:10]
-        ##print ("h['%s'] = " % lg) + str([x[3] for x in cms[:10]])
+
+def add_inlg_e(e, trigs=None, verbose=True, return_newtrain=False):
+    trigs = trigs or languoids.load_triggers(type_=INLG)
+
+    # FIXME: does not honor 'NOT' for now
+    dh = {
+        word: label for (cls, label), triggers in trigs.items()
+        for t in triggers for flag, word in t}
+    ts = [(k, wrds(fields['title']) + wrds(fields.get('booktitle', '')))
+          for (k, (typ, fields)) in e.items() 
+          if 'title' in fields and INLG not in fields]
+    if verbose:
+        print len(ts), "without", INLG
+    ann = [(k, set(dh[w] for w in tit if w in dh)) for k, tit in ts]
+    unique_ = [(k, lgs.pop()) for (k, lgs) in ann if len(lgs) == 1]
+    if verbose:
+        print len(unique_), "cases of unique hits"
+    t2 = renfn(e, [(k, INLG, v) for (k, v) in unique_])
+
+    if return_newtrain:  # pragma: no cover
+        newtrain = grp2fd([
+            (lgcodestr(fields[INLG])[0], w) for (k, (typ, fields)) in t2.items()
+            if 'title' in fields and INLG in fields
+            if len(lgcodestr(fields[INLG])) == 1 for w in wrds(fields['title'])])
+        for (lg, wf) in sorted(newtrain.items(), key=lambda x: len(x[1])):
+            cm = [(1 + f,
+                   float(1 - f + sum(owf.get(w, 0) for owf in newtrain.values())),
+                   w) for (w, f) in wf.items() if f > 9]
+            cms = [(f / fn, f, fn, w) for (f, fn, w) in cm]
+            cms.sort(reverse=True)
+        return t2, newtrain, cms
+
     return t2
 
 
@@ -273,33 +272,34 @@ def pagecount(pgstr):
         return "%s+%s" % (rsump, sump)
     if rsump == 0 and sump == 0:
         return ''
-    return str(rsump + sump)
+    return '%s' % (rsump + sump)
+
+
+roman_map = {'m': 1000, 'd': 500, 'c': 100, 'l': 50, 'x': 10, 'v': 5, 'i': 1}
 
 
 def introman(i):
-    z = {'m': 1000, 'd': 500, 'c': 100, 'l': 50, 'x': 10, 'v': 5, 'i': 1}
-    iz = dict((v, k) for (k, v) in z.iteritems())
+    iz = {v: k for k, v in roman_map.items()}
     x = ""
-    for (v, c) in sorted(iz.items(), reverse=True):
-        (q, r) = divmod(i, v)
+    for v, c in sorted(iz.items(), reverse=True):
+        q, r = divmod(i, v)
         if q == 4 and c != 'm':
-            x = x + c + iz[5*v]
+            x = x + c + iz[5 * v]
         else:
-            x = x + ''.join(c for i in range(q))
+            x += ''.join(c for _ in range(q))
         i = r
     return x
 
 
 def romanint(r):
-    z = {'m': 1000, 'd': 500, 'c': 100, 'l': 50, 'x': 10, 'v': 5, 'i': 1}
     i = 0
     prev = 10000
     for c in r:
-        zc = z[c]
+        zc = roman_map[c]
         if zc > prev:
-            i = i - 2*prev + zc
+            i = i - 2 * prev + zc
         else:
-            i = i + zc
+            i += zc
         prev = zc
     return i
 
@@ -315,11 +315,11 @@ rewrdtok = re.compile("[a-zA-Z].+")
 reokkey = re.compile("[^a-z\d\-\_\[\]]")
 
 
-def keyid(fields, fd={}, ti=2, infinity=float('inf')):
-    if not fields.has_key('author'):
-        if not fields.has_key('editor'):
-            values = ''.join(v for f, v in bibord_iteritems(fields)
-                if f != 'glottolog_ref_id')
+def keyid(fields, fd, ti=2, infinity=float('inf')):
+    if 'author' not in fields:
+        if 'editor' not in fields:
+            values = ''.join(
+                v for f, v in bibord_iteritems(fields) if f != 'glottolog_ref_id')
             return '__missingcontrib__' + reokkey.sub('_', values.lower())
         else:
             astring = fields['editor']
@@ -330,43 +330,38 @@ def keyid(fields, fd={}, ti=2, infinity=float('inf')):
     if len(authors) != len(astring.split(' and ')):
         print "Unparsed author in", authors
         print "   ", astring, astring.split(' and ')
-        print fields['title']
+        print fields.get('title')
 
     ak = [undiacritic(x) for x in sorted(lastnamekey(a['lastname']) for a in authors)]
     yk = pyear(fields.get('year', '[nd]'))[:4]
-    tks = wrds(fields.get("title", "no.title")) #takeuntil :
+    tks = wrds(fields.get("title", "no.title"))  # takeuntil :
     # select the (leftmost) two least frequent words from the title
-    types = uniqued(w for w in tks if rewrdtok.match(w))
+    types = list(unique(w for w in tks if rewrdtok.match(w)))
     tk = nsmallest(ti, types, key=lambda w: fd.get(w, infinity))
     # put them back into the title order (i.e. 'spam eggs' != 'eggs spam')
     order = {w: i for i, w in enumerate(types)}
     tk.sort(key=lambda w: order[w])
-    if fields.has_key('volume') and not fields.has_key('journal') and not fields.has_key('booktitle') and not fields.has_key('series'):
+    if 'volume' in fields and all(
+            f not in fields for f in ['journal', 'booktitle', 'series']):
         vk = roman(fields['volume'])
     else:
         vk = ''
 
-    if fields.has_key('extra_hash'):
+    if 'extra_hash' in fields:
         yk = yk + fields['extra_hash']
 
     key = '-'.join(ak) + "_" + '-'.join(tk) + vk + yk
     return reokkey.sub("", key.lower())
 
 
-def uniqued(items):
-    seen = set()
-    return [i for i in items if i not in seen and not seen.add(i)]
+isoregex = '[a-z]{3}|NOCODE_[A-Z][^\s\]]+'
+reisobrack = re.compile("\[(" + isoregex + ")\]")
+recomma = re.compile("[,/]\s?")
+reiso = re.compile(isoregex + "$")
 
 
-reisobrack = re.compile("\[([a-z][a-z][a-z]|NOCODE\_[A-Z][^\s\]]+)\]")
-recomma = re.compile("[\,\/]\s?")
-reiso = re.compile("[a-z][a-z][a-z]$|NOCODE\_[A-Z][^\s\]]+$")
-
-
-def lgcode((typ, fields)):
-    if not fields.has_key('lgcode'):
-        return []
-    return lgcodestr(fields['lgcode'])
+def lgcode((_, fields)):
+    return lgcodestr(fields['lgcode']) if 'lgcode' in fields else []
 
 
 def lgcodestr(lgcstr):
@@ -390,16 +385,18 @@ def hhtypestr(s):
 
 
 def sd(es):
-    #most signficant piece of descriptive material
-    #hhtype, pages, year
-    mi = [(k, (hhtypestr(fields.get('hhtype', 'unknown')), fields.get('pages', ''), fields.get('year', ''))) for (k, (typ, fields)) in es.iteritems()]
+    # most signficant piece of descriptive material
+    # hhtype, pages, year
+    mi = [(k,
+           (hhtypestr(fields.get('hhtype', 'unknown')),
+            fields.get('pages', ''),
+            fields.get('year', ''))) for (k, (typ, fields)) in es.items()]
     d = accd(mi)
     ordd = [sorted(((p, y, k, t) for (k, (p, y)) in d[t].iteritems()), reverse=True) for t in hhtyperank if d.has_key(t)]
     return ordd
 
 
 def pcy(pagecountstr):
-    #print pagecountstr
     if not pagecountstr:
         return 0
     return eval(pagecountstr) #int(takeafter(pagecountstr, "+"))
@@ -410,7 +407,7 @@ def accd(mi):
     for (k, (hhts, pgs, year)) in mi:
         pci = pcy(pagecount(pgs))
         for t in hhts:
-            r[t][k] = (pci/float(len(hhts)), year)
+            r[t][k] = (pci / float(len(hhts)), year)
     return r
 
 
@@ -451,14 +448,16 @@ def lstat_witness(e, unsorted=False):
     return opv(lsd, statwit)
 
 
-def markconservative(m, trigs, ref, outfn="monstermarkrep.txt", blamefield="hhtype"):
-    mafter = markall(m, trigs)
+def markconservative(
+        m, trigs, ref, outfn="monstermarkrep.txt", blamefield="hhtype", verbose=True):
+    mafter = markall(m, trigs, verbose=verbose)
     ls = lstat(ref)
     lsafter = lstat_witness(mafter)
     log = []
     for (lg, (stat, wits)) in lsafter.items():
         if not ls.get(lg):
-            print lg, "lacks status", [mafter[k][1]['srctrickle'] for k in wits]
+            if verbose:
+                print lg, "lacks status", [mafter[k][1]['srctrickle'] for k in wits]
             continue
         if hhtype_to_n[stat] > hhtype_to_n.get(ls[lg]):
             log = log + [
