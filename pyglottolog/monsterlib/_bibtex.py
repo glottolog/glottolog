@@ -47,7 +47,6 @@ def memorymapped(filename, access=mmap.ACCESS_READ):
 
 
 def load(filename, preserve_order=False, encoding=None, use_pybtex=True):
-    print filename, encoding, use_pybtex
     assert use_pybtex
     cls = collections.OrderedDict if preserve_order else dict
     return cls(iterentries(filename, encoding, use_pybtex))
@@ -207,6 +206,7 @@ def dump(entries, fd, sortkey=None, encoding=None, errors='strict', use_pybtex=T
             fd.write('\n}\n' if fields else ',\n}\n')
     else:
         assert errors is None
+        fd.write(u'# -*- coding: utf-8 -*-\n')
         for bibkey, (entrytype, fields) in items:
             fd.write(u'@%s{%s' % (entrytype, bibkey))
             for k, v in fieldorder.itersorted(fields):
@@ -218,8 +218,9 @@ def dump(entries, fd, sortkey=None, encoding=None, errors='strict', use_pybtex=T
                     #    except UnicodeEncodeError:
                     #        v = v.decode('utf8')
                 elif isinstance(v, str):
+                    raise NotImplementedError
                     v = latex_to_utf8(v.strip(), verbose=verbose)
-                fd.write(u',\n    %s = {%s}' % (k, v))
+                fd.write(u',\n    %s = {%s}' % (k, v.strip() if hasattr(v, 'strip') else v))
             fd.write(u'\n}\n' if fields else u',\n}\n')
 
 

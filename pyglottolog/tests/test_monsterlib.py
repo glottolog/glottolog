@@ -73,16 +73,23 @@ class Tests(WithTempDir):
 def test_ulatex_decode():
     from pyglottolog.monsterlib._bibtex_escaping import ulatex_decode
 
-    for i, o in [
-        ("", ""),
-        ("a\\^o\=\,b", "aôb̦̄"),
-        ("Luise\\~no", "Luiseño"),
-        ("\\textdoublevertline", "‖"),
-        ("\\url{abcdefg}", "abcdefg"),
-        ("\\textdoublegrave{o}", "\u020d"),
-        ("\\textsubu{\\'{v}}a", "v\u032e\u0301a"),
+    for i, o, r in [
+        ("", "", ""),
+        ("\\%\\&\\#", "%&#", "\\%\\&\\#"),
+        ("a\\^o\=\,b", "aôb̦̄", ""),
+        ("Luise\\~no", "Luiseño", ""),
+        ("\\textdoublevertline", "‖", ""),
+        ("\\url{abcdefg}", "abcdefg", ""),
+        ("\\textdoublegrave{o}", "\u020d", ""),
+        ("\\textsubu{\\'{v}}a", "v\u032e\u0301a", ""),
+        ("ng\\~{\\;u}", "ngữ", ""),
+        ('\germ \\"Uber den Wolken', "[deu] Über den Wolken", ""),
+        ('P. V\\u{a}n-T\\;u\\;o', 'P. Văn-Tươ', ""),
+        ('\\textit{\\"{u}bertext}', 'übertext', ""),
     ]:
         assert_equal(ulatex_decode(i), o)
+        if r:
+            assert_equal(o.encode('ulatex+utf8', errors='keep'), r)
 
 
 def test_distance():
