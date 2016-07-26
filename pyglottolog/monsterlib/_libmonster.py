@@ -2,48 +2,20 @@
 
 # TODO: consider replacing pauthor in keyid with _bibtex.names
 # TODO: enusure \emph is dropped from titles in keyid calculation
-
+from __future__ import unicode_literals
 import re
 from heapq import nsmallest
-from collections import defaultdict, OrderedDict
+from collections import defaultdict
+from copy import copy
 
 from clldutils.dsv import UnicodeWriter
 
-from pyglottolog import languoids
-from pyglottolog.util import (
-    references_path, parse_conjunctions, read_ini, intersectall, unique,
-)
+from pyglottolog.util import unique
 from pyglottolog.monsterlib._bibtex_undiacritic import undiacritic
 
 
-HHTYPE = references_path('alt4hhtype.ini')
-
-
-def visit_sections(visitor, filename=HHTYPE):
-    p = read_ini(filename)
-    for s in p.sections():
-        yield visitor(s, p)
-
-
-def load_triggers(filename=HHTYPE):
-    def get_triggers(s, p):
-        triggers = p.get(s, 'triggers').strip().splitlines() or []
-        return s, [parse_conjunctions(t) for t in triggers]
-    return OrderedDict([
-        (tuple(s.split(', ', 1)), v)
-        for s, v in visit_sections(get_triggers, filename=filename) if v])
-
-
-def load_hhtypes(filename=HHTYPE):
-    def get_hhtype(s, p):
-        _, _, expl = s.partition(', ')
-        return (p.get(s, 'id'),
-                (p.getint(s, 'rank'), expl, p.get(s, 'abbv'), p.get(s, 'bibabbv')))
-    return OrderedDict([item for item in visit_sections(get_hhtype, filename=filename)])
-
-
-def opv(d, func):
-    return {i: func(v) for i, v in d.items()}
+def opv(d, func, *args):
+    return {i: func(v, *args) for i, v in d.items()}
 
 
 def grp2fd(l):
@@ -54,10 +26,7 @@ def grp2fd(l):
 
 
 def grp2(l):
-    r = defaultdict(dict)
-    for (a, b) in l:
-        r[a][b] = None
-    return opv(r, lambda x: list(x.keys()))
+    return opv(grp2fd(l), lambda x: list(x.keys()))
 
 
 reauthor = [re.compile(pattern) for pattern in [
@@ -225,9 +194,7 @@ def renfn(e, ups):
 INLG = 'inlg'
 
 
-def add_inlg_e(e, trigs=None, verbose=True, return_newtrain=False):
-    trigs = trigs or languoids.load_triggers(type_=INLG)
-
+def add_inlg_e(e, trigs, verbose=True, return_newtrain=False):
     # FIXME: does not honor 'NOT' for now
     dh = {
         word: label for (cls, label), triggers in trigs.items()
@@ -376,24 +343,16 @@ def lgcodestr(lgcstr):
     return []
 
 
-rekillparen = re.compile(" \([^\)]*\)")
-respcomsemic = re.compile("[;,]\s?")
-
-
-def hhtypestr(s):
-    return respcomsemic.split(rekillparen.sub("", s))
-
-
-def sd(es):
+def sd(es, hht):
     # most signficant piece of descriptive material
     # hhtype, pages, year
     mi = [(k,
-           (hhtypestr(fields.get('hhtype', 'unknown')),
+           (hht.parse(fields.get('hhtype', 'unknown')),
             fields.get('pages', ''),
             fields.get('year', ''))) for (k, (typ, fields)) in es.items()]
     d = accd(mi)
-    ordd = [sorted(((p, y, k, t) for (k, (p, y)) in d[t].iteritems()), reverse=True) for t in hhtyperank if d.has_key(t)]
-    return ordd
+    return [sorted(((p, y, k, t.id) for (k, (p, y)) in d[t.id].iteritems()), reverse=True)
+            for t in hht if t.id in d]
 
 
 def pcy(pagecountstr):
@@ -411,60 +370,50 @@ def accd(mi):
     return r
 
 
-def byid(es, idf=lgcode, unsorted=False):
-    def tftoids(tf):
-        z = idf(tf)
-        if unsorted and not z:
-            return ['!Unsorted']
-        return z
-    return grp2([(cfn, k) for (k, tf) in es.iteritems() for cfn in tftoids(tf)])
+def byid(es):
+    return grp2([(cfn, k) for (k, tf) in es.iteritems() for cfn in lgcode(tf)])
 
 
-hhtypes = load_hhtypes()
-hhtyperank = [hht for (n, expl, abbv, bibabbv, hht) in sorted((info + (hht,) for (hht, info) in hhtypes.iteritems()), reverse=True)]
-hhtype_to_n = dict((x, len(hhtyperank)-i) for (i, x) in enumerate(hhtyperank))
-expl_to_hhtype = dict((expl, hht) for (hht, (n, expl, abbv, bibabbv)) in hhtypes.iteritems())
+def sdlgs(e, hht):
+    eindex = byid(e)
+    fes = opv(eindex, lambda ks: {k: e[k] for k in ks})
+    fsd = opv(fes, sd, hht)
+    return fsd, fes
 
 
-def sdlgs(e, unsorted=False):
-    eindex = byid(e, unsorted=unsorted)
-    fes = opv(eindex, lambda ks: dict((k, e[k]) for k in ks))
-    fsd = opv(fes, sd)
-    return (fsd, fes)
-
-
-def lstat(e, unsorted=False):
-    (lsd, lse) = sdlgs(e, unsorted=unsorted)
+def lstat(e, hht):
+    (lsd, lse) = sdlgs(e, hht)
     return opv(lsd, lambda xs: (xs + [[[None]]])[0][0][-1])
 
 
-def lstat_witness(e, unsorted=False):
+def lstat_witness(e, hht):
     def statwit(xs):
         if len(xs) == 0:
-            return (None, [])
+            return None, []
         [(typ, ks)] = grp2([(t, k) for [p, y, k, t] in xs[0]]).items()
-        return (typ, ks)
-    (lsd, lse) = sdlgs(e, unsorted=unsorted)
+        return typ, ks
+    (lsd, lse) = sdlgs(e, hht)
     return opv(lsd, statwit)
 
 
 def markconservative(
-        m, trigs, ref, outfn="monstermarkrep.txt", blamefield="hhtype", verbose=True):
-    mafter = markall(m, trigs, verbose=verbose)
-    ls = lstat(ref)
-    lsafter = lstat_witness(mafter)
+        m, trigs, ref, hht, outfn="monstermarkrep.txt", blamefield="hhtype", verbose=True,
+        rank=None):
+    mafter = markall(m, trigs, verbose=verbose, rank=rank)
+    ls = lstat(ref, hht)
+    lsafter = lstat_witness(mafter, hht)
     log = []
     for (lg, (stat, wits)) in lsafter.items():
         if not ls.get(lg):
             if verbose:
                 print lg, "lacks status", [mafter[k][1]['srctrickle'] for k in wits]
             continue
-        if hhtype_to_n[stat] > hhtype_to_n.get(ls[lg]):
+        if hht[stat] > hht[ls[lg]]:
             log = log + [
                 (lg, [(mafter[k][1].get(blamefield, "No %s" % blamefield),
                        k,
                        mafter[k][1].get('title', 'no title'),
-                       mafter[k][1]['srctrickle']) for k in wits], ls[lg])]
+                       mafter[k][1].get('srctrickle', 'no srctrickle')) for k in wits], ls[lg])]
             for k in wits:
                 (t, f) = mafter[k]
                 if blamefield in f:
@@ -475,33 +424,49 @@ def markconservative(
     return mafter
 
 
-def markall(e, trigs, labelab=lambda x: x, verbose=True):
+def markall(e, trigs, labelab=lambda x: x, verbose=True, rank=None):
+    # the set of fields triggers relate to:
     clss = set(cls for (cls, _) in trigs.keys())
-    ei = {k: (typ, fields) for k, (typ, fields) in e.items()
-          if [c for c in clss if c not in fields]}
 
-    wk = defaultdict(dict)
-    for (k, (typ, fields)) in ei.items():
+    # all bibitems lacking any of the potential triggered fields:
+    ei = {k: (typ, fields) for k, (typ, fields) in e.items()
+          if any(c not in fields for c in clss)}
+    eikeys = set(list(ei.keys()))
+
+    # map words in titles to lists of bibitem keys having the word in the title:
+    wk = defaultdict(set)
+    for k, (typ, fields) in ei.items():
         for w in wrds(fields.get('title', '')):
-            wk[w][k] = None
+            wk[w].add(k)
 
     u = defaultdict(lambda: defaultdict(dict))
     it = grp2([(tuple(sorted(disj)), clslab) for (clslab, t) in trigs.items() for disj in t])
     for (dj, clslabs) in it.items():
-        mkst = [wk.get(w, {}).keys() for (stat, w) in dj if stat]
-        mksf = [set(ei.keys()).difference(wk.get(w, [])) for (stat, w) in dj if not stat]
-        mks = intersectall(mkst + mksf)
+        # evaluate condition for the trigger (specified in distributive normal form):
+        mks = copy(eikeys)
+        for isin, word in dj:
+            mk = copy(wk[word])
+            if not isin:
+                mk = eikeys.difference(mk)
+            mks.intersection_update(mk)
+
         for k in mks:
             for cl in clslabs:
                 u[k][cl][dj] = None
 
-    for (k, cd) in u.items():
-        (t, f) = e[k]
+    for k, cd in u.items():
+        t, f = e[k]
         f2 = {a: b for a, b in f.items()}
         for (cls, lab), ms in cd.items():
+            if rank and cls in f2:
+                # only update the assigned hhtype if something better comes along:
+                olab = f2[cls].split(' (comp')[0]
+                if rank(olab) >= rank(lab):
+                    continue
             a = ';'.join(' and '.join(('' if stat else 'not ') + w for (stat, w) in m) for m in ms)
             f2[cls] = labelab(lab) + ' (computerized assignment from "' + a + '")'
-            e[k] = (t, f2)
+        e[k] = (t, f2)
+
     if verbose:
         print "trigs", len(trigs)
         print "trigger-disjuncts", len(it)

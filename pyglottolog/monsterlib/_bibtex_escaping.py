@@ -22,9 +22,8 @@ see also:
   http://github.com/mcmtroffaes/latexcodec/blob/develop/latexcodec/codec.py#L97
 
 """
-
+from __future__ import print_function
 import re
-import codecs
 import unicodedata
 
 from six import text_type, unichr
@@ -167,14 +166,18 @@ def is_combining(c):
     try:
         return unicodedata.name(c).startswith('COMBINING')
     except ValueError:
+        # some unicode characters, e.g. \t do not have names.
         return False
 
 
 def ulatex_preprocess(s):
+    # In the post-processing step we rely on all combining characters having been
+    # inserted based on latex markup (because we then reorder the string).
+    # Thus we have to make sure there are no combining characters in the original string.
     s = unicodedata.normalize('NFC', s.decode('utf8'))
     for c in s:
-        if is_combining(c):
-            print s
+        if is_combining(c):  # pragma: no cover
+            print(s)
             raise ValueError
     return s
 
@@ -212,7 +215,7 @@ def recode_language_tags(s):
 
 
 def ulatex_postprocess(s, debracket=re.compile(u"\{([^\}]+)\}")):
-    if not isinstance(s, text_type):
+    if not isinstance(s, text_type):  # pragma: no cover
         s = s.decode('ascii')
     for p in command_patterns:
         s = p.sub(lambda m: m.group('arg'), s)
@@ -237,82 +240,3 @@ def ulatex_postprocess(s, debracket=re.compile(u"\{([^\}]+)\}")):
 
 def ulatex_decode(s):
     return ulatex_postprocess(ulatex_preprocess(s).decode('ulatex'))
-
-
-# legacy
-def u_escape(s):
-    def iterchunks(s):
-        for c in s:
-            o = ord(c)
-            if o <= 127:
-                yield c
-            else:
-                yield r'?[\u%d]' % o
-
-    return ''.join(iterchunks(s))
-
-
-def u_unescape(s, pattern=re.compile(r'\?\[\\u(\d{3,5})\]')):
-    def iterchunks(s, matches):
-        pos = 0
-        for m in matches:
-            start, end = m.span()
-            yield s[pos:start]
-            yield unichr(int(m.group(1)))
-            pos = end
-        yield s[pos:]
-
-    return ''.join(iterchunks(s, pattern.finditer(s)))
-
-
-class U_escapeCodec(codecs.Codec):
-
-    def encode(self, input, erors='strict'):
-        return u_escape(input.encode('ascii')), len(input)
-
-    def decode(self, input, erors='strict'):
-        return u_unescape(input.decode('ascii')), len(input)
-
-
-class U_escapeStreamWriter(U_escapeCodec, codecs.StreamWriter):
-    pass
-
-
-class U_escapeStreamReader(U_escapeCodec, codecs.StreamReader):
-    pass
-
-
-def _find_u_escape(encoding):
-    if encoding == 'ascii+u_escape':
-        return codecs.CodecInfo(name='ascii+u_escape',
-            encode=U_escapeCodec().encode, decode=U_escapeCodec().decode,
-            streamwriter=U_escapeStreamWriter, streamreader=U_escapeStreamReader)
-
-
-codecs.register(_find_u_escape)
-
-# legacy
-
-def latex_to_utf8(s, verbose=True, debracket=re.compile("\{(.)\}")):
-    us = s.decode("latex")
-    us = debracket.sub("\\1", us)
-    if verbose:
-        remaininglatex(us)
-    return us
-
-
-platexspc = [re.compile(pattern) for pattern in [
-    r'''\\(?P<typ>[^\%'\`\^\~\=\_\"\s\{]+)\{(?P<ch>[a-zA-Z]?)\}''',  # \typ{opt ch}
-    r'''\\(?P<typ>['\`\^\~\=\_\"]+?)\{(?P<ch>[a-zA-Z])\}''',  # \typ {ch}
-    r'\\(?P<typ>[^a-zA-Z\s\%\_])(?P<ch>[a-zA-Z])',
-    r'\\(?P<typ>[^a-zA-Z\s\%\{\_]+)(?P<ch>[a-zA-Z])',
-    r'\\(?P<typ>[^\{\%\_]+)\{(?P<ch>[^\}]+)\}',
-    r'\\(?P<typ>[^\{\_\\\s\%]+)(?P<ch>\s)',
-]]
-
-
-def remaininglatex(txt):
-    for pattern in platexspc:
-        o = pattern.findall(txt)
-        if o:
-            print o[:100] #txt[o.start()-10:o.start()+10], o.groups()

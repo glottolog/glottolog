@@ -5,7 +5,7 @@ from unittest import TestCase
 from clldutils.testing import WithTempDir
 from clldutils import jsonlib
 
-from pyglottolog.tests.util import WithTree
+from pyglottolog.tests.util import WithRepos
 
 
 class TestGlottocodes(WithTempDir):
@@ -60,7 +60,7 @@ class TestGlottocode(TestCase):
             Glottocode('a2')
 
 
-class TestLanguoid(WithTree):
+class TestLanguoid(WithRepos):
     def test_factory(self):
         from pyglottolog.languoids import Languoid, Level
 

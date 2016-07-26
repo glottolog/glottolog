@@ -2,16 +2,12 @@
 from __future__ import unicode_literals, print_function, division
 
 from nose.tools import assert_almost_equal, assert_equal
-from clldutils.testing import WithTempDir, capture
-from clldutils.path import copytree, Path
+from clldutils.testing import capture
+
+from pyglottolog.tests.util import WithRepos
 
 
-class Tests(WithTempDir):
-    def setUp(self):
-        WithTempDir.setUp(self)
-        copytree(Path(__file__).parent.joinpath('data'), self.tmp_path('repos'))
-        self.references = self.tmp_path('repos', 'references')
-
+class Tests(WithRepos):
     def test_Collection(self):
         from pyglottolog.monsterlib._bibfiles import Collection
         from pyglottolog.monsterlib._bibfiles_db import Database
@@ -54,20 +50,51 @@ class Tests(WithTempDir):
             with capture(getattr(db, 'show_' + attr)) as out:
                 pass
 
-    def test_load_trigger(self):
-        from pyglottolog.monsterlib._libmonster import load_triggers
-
-        load_triggers(self.references.joinpath('hhtype.ini'))
-
     def test_markconcservative(self):
         from pyglottolog.monsterlib._libmonster import markconservative
+        from pyglottolog.references import HHTypes
 
-        markconservative(
+        hht = HHTypes(repos=self.repos)
+        res = markconservative(
             {1: ('article', {'title': 'Grammar'})},
-            {('hhtype', 'grammar'): [[(True, 'grammar')]]},
+            hht.triggers,
             {1: ('article', {'title': 'Grammar'})},
             outfn=self.tmp_path('marks.txt'),
+            hht=hht,
             verbose=False)
+        self.assertEqual(res[1][1]['hhtype'].split()[0], 'grammar')
+
+        # If a higher hhtype is computed, this cancels out previous computations.
+        res = markconservative(
+            {1: ('article', {'title': 'grammar', 'lgcode': 'abc'})},
+            hht.triggers,
+            {1: ('article', {'title': 'other', 'hhtype': 'other', 'lgcode': 'abc'})},
+            outfn=self.tmp_path('marks.txt'),
+            hht=hht,
+            verbose=False)
+        self.assertNotIn('hhtype', res[1][1])
+
+    def test_markall(self):
+        from pyglottolog.monsterlib._libmonster import markall
+        from pyglottolog.references import HHTypes
+
+        bib = {
+            1: ('article', {'title': "other grammar"}),
+            2: ('article', {'title': "grammar"}),
+            3: ('article', {'title': "other"}),
+        }
+        hht = HHTypes(repos=self.repos)
+        markall(bib, hht.triggers, verbose=False, rank=lambda l: hht[l].rank)
+        self.assertIn('grammar', bib[1][1]['hhtype'])
+
+
+def test_undiacritic():
+    from pyglottolog.monsterlib._bibtex_undiacritic import undiacritic
+
+    for i, o in [
+        ("\\cmd{äöüß}", "aouss"),
+    ]:
+        assert_equal(undiacritic(i), o)
 
 
 def test_ulatex_decode():
@@ -75,6 +102,8 @@ def test_ulatex_decode():
 
     for i, o, r in [
         ("", "", ""),
+        ("&#97;", "a", ""),
+        ("a\tb", "a\tb", ""),
         ("\\%\\&\\#", "%&#", "\\%\\&\\#"),
         ("a\\^o\=\,b", "aôb̦̄", ""),
         ("Luise\\~no", "Luiseño", ""),
