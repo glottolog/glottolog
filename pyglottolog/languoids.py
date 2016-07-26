@@ -12,7 +12,7 @@ from clldutils import jsonlib
 from clldutils.path import Path, walk
 from clldutils.inifile import INI
 
-from pyglottolog.util import languoids_path, parse_conjunctions
+from pyglottolog.util import languoids_path, Trigger
 
 
 TREE = languoids_path('tree')
@@ -366,13 +366,14 @@ def macro_area_from_hid(tree=TREE):
     return res
 
 
-def load_triggers(tree=TREE, type_='lgcode'):
-    res = {}
+def load_triggers(tree=TREE):
+    res = {'inlg': [], 'lgcode': []}
     for lang in walk_tree(tree):
-        if lang.hid and lang.cfg.has_option('triggers', type_):
-            triggers = lang.cfg.getlist('triggers', type_)
-            if not triggers:
-                continue
-            res[(type_, '%s [%s]' % (lang.name, lang.hid))] = [
-                parse_conjunctions(t) for t in triggers]
+        for type_ in res:
+            if lang.cfg.has_option('triggers', type_):
+                triggers = lang.cfg.getlist('triggers', type_)
+                if not triggers:
+                    continue
+                label = '%s [%s]' % (lang.name, lang.hid or lang.id)
+                res[type_].extend([Trigger(type_, label, t) for t in triggers])
     return res

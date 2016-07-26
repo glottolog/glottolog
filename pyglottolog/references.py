@@ -1,12 +1,12 @@
 # coding: utf8
 from __future__ import unicode_literals, print_function, division
-from collections import OrderedDict
 import re
 import functools
+from itertools import chain
 
 from clldutils.misc import cached_property
 
-from pyglottolog.util import references_path, parse_conjunctions, read_ini
+from pyglottolog.util import references_path, read_ini, Trigger
 
 
 @functools.total_ordering
@@ -17,7 +17,8 @@ class HHType(object):
         self.rank = p.getint(s, 'rank')
         self.abbv = p.get(s, 'abbv')
         self.bibabbv = p.get(s, 'bibabbv')
-        self.triggers = p.get(s, 'triggers').strip().splitlines() or []
+        self.triggers = [Trigger('hhtype', self.id, t)
+                         for t in p.get(s, 'triggers').strip().splitlines() or []]
 
     def __repr__(self):
         return '<%s %s rank=%s>' % (self.__class__.__name__, self.id, self.rank)
@@ -45,15 +46,14 @@ class HHTypes(object):
     def __iter__(self):
         return iter(self._types)
 
+    def __len__(self):
+        return len(self._types)
+
     def __getitem__(self, item):
+        if isinstance(item, int):
+            return self._types[0]
         return self._type_by_id.get(item, self._type_by_id.get('unknown'))
 
     @cached_property()
     def triggers(self):
-        return OrderedDict(
-            [(('hhtype', t.id), [parse_conjunctions(trig) for trig in t.triggers])
-             for t in self if t.triggers])
-
-    @cached_property()
-    def hhtypes(self):
-        return OrderedDict([(t.id, (t.rank, t.name, t.abbv, t.bibabbv)) for t in self])
+        return list(chain(*[t.triggers for t in self]))

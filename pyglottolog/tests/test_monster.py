@@ -10,4 +10,6 @@ class Tests(WithRepos):
         from pyglottolog.monster import main
 
         with capture(main, repos=self.repos) as out:
-            self.assertEqual(len(out.splitlines()), 69)
+            self.assertEqual(len(out.splitlines()), 70)
+            self.assertIn('2 splitted', out)
+            self.assertIn('2 merged', out)

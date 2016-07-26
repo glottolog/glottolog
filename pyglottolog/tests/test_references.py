@@ -17,4 +17,6 @@ class Tests(WithRepos):
                 self.assertGreater(prev, t)
             prev = t
 
+        self.assertEqual(len(hht), 2)
+        self.assertIn('rank', repr(hht[0]))
         self.assertEqual(HHTypes.parse('grammar'), ['grammar'])

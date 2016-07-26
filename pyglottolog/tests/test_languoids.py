@@ -108,6 +108,12 @@ class TestLanguoid(WithRepos):
 
         self.assertEqual(len(list(walk_tree(tree=self.tree))), 3)
 
+    def test_load_triggers(self):
+        from pyglottolog.languoids import load_triggers
+
+        res = load_triggers(tree=self.tree)
+        self.assertEqual(len(res), 2)
+
     def test_macro_area_from_hid(self):
         from pyglottolog.languoids import macro_area_from_hid
 

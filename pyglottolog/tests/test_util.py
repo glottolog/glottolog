@@ -5,12 +5,6 @@ from unittest import TestCase
 
 
 class Tests(TestCase):
-    def test_intersectall(self):
-        from pyglottolog.util import intersectall
-
-        self.assertEqual(intersectall([{1, 2}, {2, 3}, {3, 4}]), set())
-        self.assertEqual(intersectall([{1, 2}, {2, 3}, {2, 4}]), {2})
-
     def test_unique(self):
         from pyglottolog.util import unique
 
@@ -24,3 +18,21 @@ class Tests(TestCase):
             self.assertEqual(key, 1)
             self.assertEqual(len(list(items)), 2)
             break
+
+    def test_Trigger(self):
+        from pyglottolog.util import Trigger
+
+        t1 = Trigger('hhtype', 'grammar', 'phonologie AND NOT morphologie')
+        t2 = Trigger('hhtype', 'phonology', 'phonologie')
+        t3 = Trigger('hhtype', 'grammar', 'grammar')
+
+        assert t1 != t3 and t1 == t1
+        allkeys = range(5)
+        keys_by_word = dict(grammar=[1, 2], phonologie=[2, 3], morphologie=[3, 4])
+        self.assertEqual(t1(allkeys, keys_by_word), {2})
+        self.assertEqual(t2(allkeys, keys_by_word), {2, 3})
+        self.assertEqual(t3(allkeys, keys_by_word), {1, 2})
+        self.assertIn('not morphologie and phonologie', Trigger.format('a', t1))
+
+        for t in sorted([t1, t2, t3]):
+            self.assertIn(t.type, Trigger.format(t.type, t))

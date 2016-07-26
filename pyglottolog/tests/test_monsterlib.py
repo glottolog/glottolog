@@ -5,6 +5,8 @@ from nose.tools import assert_almost_equal, assert_equal
 from clldutils.testing import capture
 
 from pyglottolog.tests.util import WithRepos
+from pyglottolog.languoids import load_triggers
+from pyglottolog.references import HHTypes
 
 
 class Tests(WithRepos):
@@ -38,8 +40,9 @@ class Tests(WithRepos):
         db.to_bibfile(self.tmp_path('out.bib'))
         db.to_csvfile(self.tmp_path('out.csv'))
         db.to_replacements(self.tmp_path('out.json'))
-        self.assertEqual(db.to_hhmapping(), {})
-        db.trickle(c)
+        self.assertEqual(db.to_hhmapping(), {'s:Karang:Tati-Harzani': 41999})
+        with capture(db.trickle, c) as out:
+            self.assertIn('2 changed 0 added in a.bib', out)
         key, (entrytype, fields) = db[('b.bib', 'arakawa97')]
         self.assertEqual(entrytype, 'article')
         self.assertEqual(fields['volume'], '16')
@@ -52,15 +55,14 @@ class Tests(WithRepos):
 
     def test_markconcservative(self):
         from pyglottolog.monsterlib._libmonster import markconservative
-        from pyglottolog.references import HHTypes
 
         hht = HHTypes(repos=self.repos)
         res = markconservative(
             {1: ('article', {'title': 'Grammar'})},
             hht.triggers,
             {1: ('article', {'title': 'Grammar'})},
-            outfn=self.tmp_path('marks.txt'),
-            hht=hht,
+            hht,
+            self.tmp_path('marks.txt'),
             verbose=False)
         self.assertEqual(res[1][1]['hhtype'].split()[0], 'grammar')
 
@@ -69,23 +71,44 @@ class Tests(WithRepos):
             {1: ('article', {'title': 'grammar', 'lgcode': 'abc'})},
             hht.triggers,
             {1: ('article', {'title': 'other', 'hhtype': 'other', 'lgcode': 'abc'})},
-            outfn=self.tmp_path('marks.txt'),
-            hht=hht,
+            hht,
+            self.tmp_path('marks.txt'),
             verbose=False)
         self.assertNotIn('hhtype', res[1][1])
 
     def test_markall(self):
         from pyglottolog.monsterlib._libmonster import markall
-        from pyglottolog.references import HHTypes
 
         bib = {
-            1: ('article', {'title': "other grammar"}),
-            2: ('article', {'title': "grammar"}),
+            1: ('article', {'title': "other grammar of lang"}),
+            2: ('article', {'title': "grammar of lang and dial"}),
             3: ('article', {'title': "other"}),
+            4: ('article', {'title': "grammar and phonologie and morphologie"})
         }
         hht = HHTypes(repos=self.repos)
         markall(bib, hht.triggers, verbose=False, rank=lambda l: hht[l].rank)
         self.assertIn('grammar', bib[1][1]['hhtype'])
+        self.assertIn('morphologie and phonologie;grammar', bib[4][1]['hhtype'])
+
+        markall(bib, load_triggers(tree=self.tree)['lgcode'], verbose=False)
+        self.assertIn('language', bib[1][1]['lgcode'])
+
+    def test_add_inlg_e(self):
+        from pyglottolog.monsterlib._libmonster import add_inlg_e, INLG
+
+        res = add_inlg_e(
+            {1: ('article', {'title': 'Grammar of language'})},
+            load_triggers(tree=self.tree)[INLG],
+            verbose=False)
+        assert_equal(res[1][1][INLG], 'language [abc]')
+
+
+def test_names():
+    from pyglottolog.monsterlib._bibtex import names
+
+    assert_equal(
+        [n.last for n in names('Alfred Meier and Peter von Bohr')],
+        ['Meier', 'Bohr'])
 
 
 def test_undiacritic():
@@ -134,29 +157,6 @@ def test_distance():
         (dict(author='An Author', title='Another Title'), 0.13636),
     ]:
         assert_almost_equal(distance(d1, d2), dist, places=3)
-
-
-def test_markall():
-    from pyglottolog.monsterlib._libmonster import markall
-
-    with capture(markall, {}, {}) as out:
-        assert 'updates 0' in out
-
-    res = markall(
-        {1: ('article', {'title': 'Grammar'})},
-        {('hhtype', 'grammar'): [[(True, 'grammar')]]},
-        verbose=False)
-    assert res[1][1]['hhtype'] == 'grammar (computerized assignment from "grammar")'
-
-
-def test_add_inlg_e():
-    from pyglottolog.monsterlib._libmonster import add_inlg_e, INLG
-
-    res = add_inlg_e(
-        {1: ('article', {'title': 'Grammar of Abc'})},
-        {(INLG, 'Abc [abc]'): [[(True, 'abc')]]},
-        verbose=False)
-    assert_equal(res[1][1][INLG], 'Abc [abc]')
 
 
 def test_roman():

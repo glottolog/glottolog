@@ -162,21 +162,13 @@ def numcharref_repl(m):
     return unichr(int(m.group('dec')))
 
 
-def is_combining(c):
-    try:
-        return unicodedata.name(c).startswith('COMBINING')
-    except ValueError:
-        # some unicode characters, e.g. \t do not have names.
-        return False
-
-
 def ulatex_preprocess(s):
     # In the post-processing step we rely on all combining characters having been
     # inserted based on latex markup (because we then reorder the string).
     # Thus we have to make sure there are no combining characters in the original string.
     s = unicodedata.normalize('NFC', s.decode('utf8'))
     for c in s:
-        if is_combining(c):  # pragma: no cover
+        if unicodedata.combining(c):  # pragma: no cover
             print(s)
             raise ValueError
     return s
@@ -223,7 +215,7 @@ def ulatex_postprocess(s, debracket=re.compile(u"\{([^\}]+)\}")):
     n = []
     comb = []
     for c in s:
-        if is_combining(c):
+        if unicodedata.combining(c):
             comb.append(c)
         else:
             n.append(c)

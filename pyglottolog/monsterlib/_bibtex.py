@@ -15,12 +15,6 @@ from pybtex.bibtex.utils import split_name_list
 from pybtex.database import Person
 
 
-__all__ = [
-    'load', 'iterentries', 'names',
-    'save', 'dump',
-    'check',
-]
-
 FIELDORDER = [
     'author', 'editor', 'title', 'booktitle', 'journal',
     'school', 'publisher', 'address',
@@ -58,11 +52,11 @@ def iterentries(filename, encoding=None):
                     whitespace_re.sub(' ', ''.join(values).decode(encoding).strip())
                     for name, values in fields}
                 yield bibkey.decode(encoding), (entrytype.decode(encoding), fields)
-        except PybtexSyntaxError as e:
+        except PybtexSyntaxError as e:  # pragma: no cover
             debug_pybtex(source, e)
 
 
-def debug_pybtex(source, e):
+def debug_pybtex(source, e):  # pragma: no cover
     start, line, pos = e.error_context_info
     print('BIBTEX ERROR on line %d, last parsed lines:' % line)
     print(source[start:start + 500] + '...')
@@ -84,7 +78,8 @@ class Name(collections.namedtuple('Name', 'prelast last given lineage')):
     @classmethod
     def from_string(cls, name):
         person = Person(name)
-        prelast, last, first, middle, lineage = (' '.join(getattr(person, part)())
+        prelast, last, first, middle, lineage = (
+            ' '.join(getattr(person, part)())
             for part in ('prelast', 'last', 'first', 'middle', 'lineage'))
         given = ' '.join(n for n in (first, middle) if n)
         return cls(prelast, last, given, lineage)

@@ -1,16 +1,17 @@
-# _libmonster.py - mixed support library
+"""
+_libmonster.py - mixed support library
 
 # TODO: consider replacing pauthor in keyid with _bibtex.names
 # TODO: enusure \emph is dropped from titles in keyid calculation
+"""
 from __future__ import unicode_literals
 import re
 from heapq import nsmallest
 from collections import defaultdict
-from copy import copy
 
 from clldutils.dsv import UnicodeWriter
 
-from pyglottolog.util import unique
+from pyglottolog.util import unique, Trigger
 from pyglottolog.monsterlib._bibtex_undiacritic import undiacritic
 
 
@@ -43,16 +44,16 @@ reauthor = [re.compile(pattern) for pattern in [
 ]]
 
 
-def psingleauthor(n, vonlastname=True):
+def psingleauthor(n):
+    if not n:
+        return
+
     for pattern in reauthor:
         o = pattern.match(n)
         if o:
-            if vonlastname:
-                return lastvon(o.groupdict())
             return o.groupdict()
-    if n:
+    else:
         print "Couldn't parse name:", n
-    return None
 
 
 def pauthor(s):
@@ -82,18 +83,6 @@ def lowerupper(s):
     return lower, upper
 
 
-def lastvon(author):
-    if 'firstname' not in author:
-        return author
-    lower, upper = lowerupper(author['firstname'])
-    r = dict(
-        lastname=(' '.join(lower).strip() + ' ' + author['lastname']).strip(),
-        firstname=' '.join(upper))
-    if author.get('jr'):
-        r['jr'] = author['jr']
-    return r
-
-
 def lastnamekey(s):
     _, upper = lowerupper(s)
     if not upper:
@@ -120,30 +109,6 @@ def pyear(s):
     if len(my) != 1:
         return my[0] + "-" + rangecomplete(my[-1], my[0])
     return my[-1]
-
-
-refields = re.compile('\s*(?P<field>[a-zA-Z\_]+)\s*=\s*[{"](?P<data>.*)[}"],\r?\n')
-refieldsnum = re.compile('\s*(?P<field>[a-zA-Z\_]+)\s*=\s*(?P<data>\d+),\r?\n')
-refieldsacronym = re.compile('\s*(?P<field>[a-zA-Z\_]+)\s*=\s*(?P<data>[A-Za-z]+),\r?\n')
-#refieldslast = re.compile('\s*(?P<field>[a-zA-Z\_]+)\s*=\s*[{"]*(?P<data>.+?)[}"]*\r?\n}')
-refieldslast = re.compile('\s*(?P<field>[a-zA-Z\_]+)\s*=\s*[\{\"]?(?P<data>[^\r\n]+?)[\}\"]?(?<!\,)(?:$|\r?\n)')
-retypekey = re.compile("@(?P<type>[a-zA-Z]+){(?P<key>[^,\s]*)[,\r\n]")
-reitem = re.compile("@[a-zA-Z]+{[^@]+}")
-
-trf = '@Book{g:Fourie:Mbalanhu,\n  author =   {David J. Fourie},\n  title =    {Mbalanhu},\n  publisher =    LINCOM,\n  series =       LWM,\n  volume =       03,\n  year = 1993\n}'
-
-
-def pitems(txt):
-    for m in reitem.finditer(txt):
-        item = m.group()
-        o = retypekey.search(item)
-        if o is None:
-            continue
-        key = o.group("key")
-        typ = o.group("type")
-        fields = refields.findall(item) + refieldsacronym.findall(item) + refieldsnum.findall(item) + refieldslast.findall(item)
-        fieldslower = ((x.lower(), y) for x, y in fields)
-        yield key, typ.lower(), dict(fieldslower)
 
 
 #	Author = ac # { and Howard Coate},
@@ -195,19 +160,25 @@ INLG = 'inlg'
 
 
 def add_inlg_e(e, trigs, verbose=True, return_newtrain=False):
-    # FIXME: does not honor 'NOT' for now
-    dh = {
-        word: label for (cls, label), triggers in trigs.items()
-        for t in triggers for flag, word in t}
+    # FIXME: does not honor 'NOT' for now, only maps words to iso codes.
+    dh = {word: t.type for t in trigs for _, word in t.clauses}
+
+    # map record keys to lists of words in titles:
     ts = [(k, wrds(fields['title']) + wrds(fields.get('booktitle', '')))
           for (k, (typ, fields)) in e.items() 
           if 'title' in fields and INLG not in fields]
+
     if verbose:
         print len(ts), "without", INLG
+
+    # map record keys to sets of assigned iso codes, based on words in the title
     ann = [(k, set(dh[w] for w in tit if w in dh)) for k, tit in ts]
+
+    # list of record keys which have been assigned exactly one iso code
     unique_ = [(k, lgs.pop()) for (k, lgs) in ann if len(lgs) == 1]
     if verbose:
         print len(unique_), "cases of unique hits"
+
     t2 = renfn(e, [(k, INLG, v) for (k, v) in unique_])
 
     if return_newtrain:  # pragma: no cover
@@ -396,9 +367,8 @@ def lstat_witness(e, hht):
     return opv(lsd, statwit)
 
 
-def markconservative(
-        m, trigs, ref, hht, outfn="monstermarkrep.txt", blamefield="hhtype", verbose=True,
-        rank=None):
+def markconservative(m, trigs, ref, hht, outfn, verbose=True, rank=None):
+    blamefield = "hhtype"
     mafter = markall(m, trigs, verbose=verbose, rank=rank)
     ls = lstat(ref, hht)
     lsafter = lstat_witness(mafter, hht)
@@ -424,9 +394,9 @@ def markconservative(
     return mafter
 
 
-def markall(e, trigs, labelab=lambda x: x, verbose=True, rank=None):
+def markall(e, trigs, verbose=True, rank=None):
     # the set of fields triggers relate to:
-    clss = set(cls for (cls, _) in trigs.keys())
+    clss = set(t.field for t in trigs)
 
     # all bibitems lacking any of the potential triggered fields:
     ei = {k: (typ, fields) for k, (typ, fields) in e.items()
@@ -439,37 +409,27 @@ def markall(e, trigs, labelab=lambda x: x, verbose=True, rank=None):
         for w in wrds(fields.get('title', '')):
             wk[w].add(k)
 
-    u = defaultdict(lambda: defaultdict(dict))
-    it = grp2([(tuple(sorted(disj)), clslab) for (clslab, t) in trigs.items() for disj in t])
-    for (dj, clslabs) in it.items():
-        # evaluate condition for the trigger (specified in distributive normal form):
-        mks = copy(eikeys)
-        for isin, word in dj:
-            mk = copy(wk[word])
-            if not isin:
-                mk = eikeys.difference(mk)
-            mks.intersection_update(mk)
+    u = defaultdict(lambda: defaultdict(list))
+    for clauses, triggers in Trigger.group(trigs):
+        for k in triggers[0](eikeys, wk):
+            for t in triggers:
+                u[k][t.cls].append(t)
 
-        for k in mks:
-            for cl in clslabs:
-                u[k][cl][dj] = None
-
-    for k, cd in u.items():
+    for k, t_by_c in u.items():
         t, f = e[k]
         f2 = {a: b for a, b in f.items()}
-        for (cls, lab), ms in cd.items():
-            if rank and cls in f2:
+        for (field, type_), triggers in sorted(t_by_c.items(), key=lambda i: len(i[1])):
+            # Make sure we handle the trigger class with the biggest number of matching
+            # triggers last.
+            if rank and field in f2:
                 # only update the assigned hhtype if something better comes along:
-                olab = f2[cls].split(' (comp')[0]
-                if rank(olab) >= rank(lab):
+                if rank(f2[field].split(' (comp')[0]) >= rank(type_):
                     continue
-            a = ';'.join(' and '.join(('' if stat else 'not ') + w for (stat, w) in m) for m in ms)
-            f2[cls] = labelab(lab) + ' (computerized assignment from "' + a + '")'
+            f2[field] = Trigger.format(type_, triggers)
         e[k] = (t, f2)
 
     if verbose:
         print "trigs", len(trigs)
-        print "trigger-disjuncts", len(it)
         print "label classes", len(clss)
         print "unlabeled refs", len(ei)
         print "updates", len(u)

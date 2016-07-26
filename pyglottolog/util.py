@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 from functools import partial
 import itertools
 import operator
+import functools
+from copy import copy
 
 from clldutils.path import Path
 from clldutils.inifile import INI
@@ -11,6 +13,52 @@ import pyglottolog
 
 
 DATA_DIR = Path(pyglottolog.__file__).parent.parent
+
+
+@functools.total_ordering
+class Trigger(object):
+    def __init__(self, field, type_, string):
+        self.field = field
+        self.type = type_
+        self._string = string
+        self.clauses = tuple(sorted([
+            (False, w[4:].strip()) if w.startswith('NOT ') else (True, w.strip())
+            for w in string.split(' AND ')]))
+
+    def __eq__(self, other):
+        # make triggers sortable so that we can easily group them by clauses.
+        return self.clauses == other.clauses and self.cls == other.cls
+
+    def __lt__(self, other):
+        # make triggers sortable so that we can easily group them by clauses.
+        return (self.clauses, self.cls) < (other.clauses, other.cls)
+
+    @property
+    def cls(self):
+        return self.field, self.type
+
+    def __call__(self, allkeys, keys_by_word):
+        allkeys = set(allkeys)
+        matching = copy(allkeys)
+        for isin, word in self.clauses:
+            matching_for_clause = copy(keys_by_word[word])
+            if not isin:
+                matching_for_clause = allkeys.difference(matching_for_clause)
+            matching.intersection_update(matching_for_clause)
+        return matching
+
+    @staticmethod
+    def format(label, triggers):
+        trigs = [triggers] if isinstance(triggers, Trigger) else reversed(triggers)
+        from_ = ';'.join(
+            [' and '.join(
+                [('' if c else 'not ') + w for c, w in t.clauses]) for t in trigs])
+        return '%s (computerized assignment from "%s")' % (label, from_)
+
+    @staticmethod
+    def group(triggers):
+        return [(clauses, list(triggers)) for clauses, triggers
+                in itertools.groupby(sorted(triggers), lambda t: t.clauses)]
 
 
 def subdir_path(subdir, *comps, **kw):
@@ -33,19 +81,6 @@ def read_ini(filename, interpolation=None):
     p = INI(interpolation=interpolation)
     p.read(filename)
     return p
-
-
-def parse_conjunctions(expr):
-    return [
-        (False, w[4:].strip()) if w.startswith('NOT ') else (True, w.strip())
-        for w in expr.split(' AND ')]
-
-
-def intersectall(xs):
-    a = set(xs[0])
-    for x in xs[1:]:
-        a.intersection_update(x)
-    return a
 
 
 def group_first(iterable, groupkey=operator.itemgetter(0)):

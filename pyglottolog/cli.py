@@ -18,11 +18,11 @@ from collections import Counter
 import logging
 
 from clldutils.clilib import ArgumentParser, ParserError
-from clldutils.path import copytree, rmtree, remove
+from clldutils.path import copytree, rmtree, remove, Path
 
 from pyglottolog.monster import main as compile_monster
 from pyglottolog.languoids import (
-    make_index, Languoid, find_languoid, Glottocode, Glottocodes, walk_tree, TREE, Level,
+    make_index, Languoid, find_languoid, Glottocode, Glottocodes, walk_tree, Level,
 )
 from pyglottolog.util import DATA_DIR, languoids_path
 from pyglottolog import lff
@@ -37,7 +37,7 @@ def monster(args):
 
     glottolog monster
     """
-    compile_monster()
+    compile_monster(repos=args.repos)
 
 
 def index(args):
@@ -115,7 +115,7 @@ def tree2lff(args):
 
     glottolog tree2lff
     """
-    lff.tree2lff()
+    lff.tree2lff(tree=languoids_path('tree', repos=args.repos))
 
 
 def lff2tree(args):
@@ -167,7 +167,7 @@ to inspect the changes in detail.
 """)
 
 
-def main():  # praga: no cover
+def main():  # pragma: no cover
     parser = ArgumentParser(
         'pyglottolog',
         monster,
@@ -178,5 +178,5 @@ def main():  # praga: no cover
         recode,
         check_tree)
     parser.add_argument(
-        '--repos', help="path to glottolog data repository", default=DATA_DIR)
+        '--repos', help="path to glottolog data repository", type=Path, default=DATA_DIR)
     sys.exit(parser.main())

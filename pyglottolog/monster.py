@@ -101,23 +101,23 @@ def main(repos=DATA_DIR, rebuild=False):
         hht.triggers,
         hhbib,
         hht,
-        outfn=build_path('monstermark-hht.txt', repos=repos).as_posix(),
-        blamefield="hhtype",
+        build_path('monstermark-hht.txt', repos=repos),
         rank=lambda l: hht[l])
+
+    ltriggers = languoids.load_triggers(tree=tree)
 
     # Annotate with lgcode
     print('%s annotate lgcode' % time.ctime())
     m = markconservative(
         m,
-        languoids.load_triggers(tree=tree),
+        ltriggers['lgcode'],
         hhbib,
         hht,
-        outfn=build_path('monstermark-lgc.txt', repos=repos).as_posix(),
-        blamefield="hhtype")
+        build_path('monstermark-lgc.txt', repos=repos))
 
     # Annotate with inlg
     print('%s add_inlg_e' % time.ctime())
-    m = add_inlg_e(m, languoids.load_triggers(type_='inlg', tree=tree))
+    m = add_inlg_e(m, ltriggers['inlg'])
 
     # Print some statistics
     stats = Counter()
