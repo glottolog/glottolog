@@ -3,10 +3,10 @@ from __future__ import unicode_literals, print_function, division
 
 from mock import Mock
 
-from pyglottolog.tests.util import WithTree
+from pyglottolog.tests.util import WithRepos
 
 
-class Tests(WithTree):
+class Tests(WithRepos):
     def test_check(self):
         from pyglottolog.cli import check_tree
 

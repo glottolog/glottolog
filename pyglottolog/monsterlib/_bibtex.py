@@ -14,7 +14,6 @@ from pybtex.textutils import whitespace_re
 from pybtex.bibtex.utils import split_name_list
 from pybtex.database import Person
 
-from _bibtex_escaping import u_escape, latex_to_utf8, ulatex_postprocess, ulatex_preprocess
 
 __all__ = [
     'load', 'iterentries', 'names',
@@ -27,8 +26,6 @@ FIELDORDER = [
     'school', 'publisher', 'address',
     'series', 'volume', 'number', 'pages', 'year', 'issn', 'url',
 ]
-
-VERBATIM = {'doi', 'eprint', 'file', 'url', 'pdf', 'fn', 'fnnote'}
 
 
 @contextlib.contextmanager
@@ -46,57 +43,23 @@ def memorymapped(filename, access=mmap.ACCESS_READ):
         fd.close()
 
 
-def load(filename, preserve_order=False, encoding=None, use_pybtex=True):
-    print filename, encoding, use_pybtex
-    assert use_pybtex
+def load(filename, preserve_order=False, encoding=None):
     cls = collections.OrderedDict if preserve_order else dict
-    return cls(iterentries(filename, encoding, use_pybtex))
+    return cls(iterentries(filename, encoding))
 
 
-def iterentries(filename, encoding=None, use_pybtex=True):
-    assert use_pybtex
-    if not use_pybtex:  # legacy code path for conversion/comparison
-        raise ValueError(filename)
-        if encoding not in (None, 'ascii'):
-            raise NotImplementedError
-        import _libmonster
-        with memorymapped(filename) as source:
-            for bibkey, entrytype, fields in _libmonster.pitems(source):
-                yield bibkey, (entrytype, fields)  
-    elif encoding is None:
-        raise NotImplementedError
-    else:
-        with memorymapped(filename) as source:
-            try:
-                for entrytype, (bibkey, fields) in BibTeXEntryIterator(source):
-                    _fields = {}
-                    for name, values in fields:
-                        values = ''.join(values)
-                        if encoding == 'ulatex+utf8':
-                            values = ulatex_preprocess(values)
-                        try:
-                            values = values.decode(encoding).strip()
-                        except ValueError as e:
-                            if "unknown token u'%'" in '{0}'.format(e):
-                                if values.startswith('\\url{'):
-                                    values = values[5:]
-                                if values.endswith('}'):
-                                    values = values[:-1]
-                                if not values.startswith('http'):
-                                    print values
-                            else:
-                                raise
-                        if encoding == 'ulatex+utf8':
-                            values = ulatex_postprocess(values)
-                        _fields[name.decode(encoding).lower()] = whitespace_re.sub(' ', values)
-                    fields = _fields
-                    #fields = {
-                    #    name.decode(encoding).lower():
-                    #    whitespace_re.sub(' ', ''.join(values).decode(encoding).strip())
-                    #    for name, values in fields}
-                    yield bibkey.decode(encoding), (entrytype.decode(encoding), fields)
-            except PybtexSyntaxError as e:
-                debug_pybtex(source, e)
+def iterentries(filename, encoding=None):
+    encoding = encoding or 'utf8'
+    with memorymapped(filename) as source:
+        try:
+            for entrytype, (bibkey, fields) in BibTeXEntryIterator(source):
+                fields = {
+                    name.decode(encoding).lower():
+                    whitespace_re.sub(' ', ''.join(values).decode(encoding).strip())
+                    for name, values in fields}
+                yield bibkey.decode(encoding), (entrytype.decode(encoding), fields)
+        except PybtexSyntaxError as e:
+            debug_pybtex(source, e)
 
 
 def debug_pybtex(source, e):
@@ -127,19 +90,13 @@ class Name(collections.namedtuple('Name', 'prelast last given lineage')):
         return cls(prelast, last, given, lineage)
 
 
-def save(entries, filename, sortkey, encoding=None, errors='strict', use_pybtex=True, verbose=True):
-    assert use_pybtex
-    if encoding in (None, 'ascii', 'ascii+u_escape'):
-        with open(filename, 'w') as fd:
-            dump(entries, fd, sortkey, encoding, errors, use_pybtex, verbose)
-    else:
-        assert errors == 'strict'
-        with io.open(filename, 'w', encoding=encoding, errors=errors) as fd:
-            dump(entries, fd, sortkey, encoding, None, use_pybtex, verbose)
+def save(entries, filename, sortkey, encoding=None, errors='strict', verbose=True):
+    assert errors == 'strict'
+    with io.open(filename, 'w', encoding=encoding or 'utf8', errors=errors) as fd:
+        dump(entries, fd, sortkey, encoding, None, verbose)
 
 
-def dump(entries, fd, sortkey=None, encoding=None, errors='strict', use_pybtex=True, verbose=True, verbatim=VERBATIM):
-    assert use_pybtex
+def dump(entries, fd, sortkey=None, encoding=None, errors='strict', verbose=True):
     if sortkey is None:
         if isinstance(entries, collections.OrderedDict):
             items = entries.iteritems()
@@ -170,57 +127,14 @@ def dump(entries, fd, sortkey=None, encoding=None, errors='strict', use_pybtex=T
       <: \textless
       >: \textgreater
     """
-    if not use_pybtex:  # legacy code path for conversion/comparison
-        raise NotImplementedError
-        if encoding not in (None, 'ascii'):
-            raise NotImplementedError
-        for bibkey, (entrytype, fields) in items:
-            fd.write('@%s{%s' % (entrytype, bibkey))
-            for k, v in fieldorder.itersorted(fields):
-                if k in verbatim:
-                    v = v.strip().encode('ascii', errors)
-                else:
-                    v = v.strip().encode('latex', errors).replace(r'\#', '#').replace(r'\&', r'&').replace(r'\_', '_')
-                fd.write(',\n    %s = {%s}' % (k, v))
-            fd.write('\n}\n' if fields else ',\n}\n')
-    elif encoding is None:
-        raise NotImplementedError
-    elif encoding == 'ascii+u_escape':
-        for bibkey, (entrytype, fields) in items:
-            fd.write('@%s{%s' % (entrytype, bibkey))
-            for k, v in fieldorder.itersorted(fields):
-                if k in verbatim:
-                    v = v.strip().encode('ascii')
-                else:
-                    v = u_escape(v).strip().encode('latex', errors).replace(r'\#', '#').replace(r'\\&', r'\&').replace(r'\_', '_')
-                fd.write(',\n    %s = {%s}' % (k, v))
-            fd.write('\n}\n' if fields else ',\n}\n')
-    elif encoding == 'ascii':
-        for bibkey, (entrytype, fields) in items:
-            fd.write('@%s{%s' % (entrytype, bibkey))
-            for k, v in fieldorder.itersorted(fields):
-                if k in verbatim:
-                    v = v.strip().encode('ascii')
-                else:
-                    v = v.strip().encode('latex', errors).replace(r'\#', '#').replace(r'\\&', r'\&').replace(r'\_', '_')
-                fd.write(',\n    %s = {%s}' % (k, v))
-            fd.write('\n}\n' if fields else ',\n}\n')
-    else:
-        assert errors is None
-        for bibkey, (entrytype, fields) in items:
-            fd.write(u'@%s{%s' % (entrytype, bibkey))
-            for k, v in fieldorder.itersorted(fields):
-                if k in verbatim:
-                    v = v.strip()
-                    #if hasattr(v, 'decode'):
-                    #    try:
-                    #        v = v.decode('ascii')
-                    #    except UnicodeEncodeError:
-                    #        v = v.decode('utf8')
-                elif isinstance(v, str):
-                    v = latex_to_utf8(v.strip(), verbose=verbose)
-                fd.write(u',\n    %s = {%s}' % (k, v))
-            fd.write(u'\n}\n' if fields else u',\n}\n')
+    assert encoding
+    assert errors is None
+    fd.write(u'# -*- coding: utf-8 -*-\n')
+    for bibkey, (entrytype, fields) in items:
+        fd.write(u'@%s{%s' % (entrytype, bibkey))
+        for k, v in fieldorder.itersorted(fields):
+            fd.write(u',\n    %s = {%s}' % (k, v.strip() if hasattr(v, 'strip') else v))
+        fd.write(u'\n}\n' if fields else u',\n}\n')
 
 
 class Ordering(dict):

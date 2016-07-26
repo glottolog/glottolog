@@ -33,7 +33,6 @@ class Collection(list):
             yield BibFile(
                 filepath=filepath,
                 encoding=cfg.get(s, 'encoding'), sortkey=sortkey,
-                use_pybtex=cfg.getboolean(s, 'use_pybtex'),
                 priority=cfg.getint(s, 'priority'),
                 name=cfg.get(s, 'name'), title=cfg.get(s, 'title'),
                 description=cfg.get(s, 'description'),
@@ -51,7 +50,7 @@ class Collection(list):
             return self._map[index_or_filename]
         return super(Collection, self).__getitem__(index_or_filename)
 
-    def to_sqlite(self, filename=None, rebuild=False):
+    def to_sqlite(self, filename, rebuild=False):
         """Return a database with the bibfiles loaded."""
         return Database.from_bibfiles(self, filename, rebuild=rebuild)
 
@@ -67,13 +66,12 @@ class Collection(list):
 class BibFile(object):
     """BibTeX source file with configurable load/save options and meta data."""
 
-    def __init__(self, filepath, encoding, sortkey, use_pybtex=True, priority=0,
+    def __init__(self, filepath, encoding, sortkey, priority=0,
                  name=None, title=None, description=None, abbr=None):
         self.filepath = filepath
         self.filename = filepath.name
         self.encoding = encoding
         self.sortkey = sortkey
-        self.use_pybtex = use_pybtex
         self.priority = priority
         self.name = name
         self.title = title
@@ -92,16 +90,14 @@ class BibFile(object):
         """Yield entries as (bibkey, (entrytype, fields)) tuples."""
         return _bibtex.iterentries(
             filename=self.filepath.as_posix(),
-            encoding=self.encoding,
-            use_pybtex=self.use_pybtex)
+            encoding=self.encoding)
 
     def load(self):
         """Return entries as bibkey -> (entrytype, fields) dict."""
         return _bibtex.load(
             filename=self.filepath.as_posix(),
             preserve_order=self.sortkey is None,
-            encoding=self.encoding,
-            use_pybtex=self.use_pybtex)
+            encoding=self.encoding)
 
     def save(self, entries, verbose=True):
         """Write bibkey -> (entrytype, fields) map to file."""
@@ -110,7 +106,6 @@ class BibFile(object):
             filename=self.filepath.as_posix(),
             sortkey=self.sortkey,
             encoding=self.encoding,
-            use_pybtex=self.use_pybtex,
             verbose=verbose)
 
     def __repr__(self):

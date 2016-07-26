@@ -12,18 +12,14 @@ from six import string_types
 from clldutils.dsv import UnicodeWriter
 from clldutils import jsonlib
 
-from pyglottolog.util import references_path, build_path, unique, group_first
+from pyglottolog.util import build_path, unique, group_first
 import _bibtex
 
 __all__ = ['Database']
 
 DBFILE = build_path('_bibfiles.sqlite3').as_posix()
-BIBFILE = build_path('monster-utf8.bib')
-CSVFILE = references_path('monster.csv')
-REPLACEMENTSFILE = build_path('monster-replacements.json')
 
 UNION_FIELDS = {'fn', 'asjp_name', 'isbn'}
-
 IGNORE_FIELDS = {'crossref', 'numnote', 'glotto_id'}
 
 
@@ -44,7 +40,7 @@ class Database(object):
         return filename
 
     @classmethod
-    def from_bibfiles(cls, bibfiles=None, filename=None, rebuild=False):
+    def from_bibfiles(cls, bibfiles, filename, rebuild=False):
         """If needed, (re)build the db from the bibfiles, hash, split/merge."""
         bibfiles = cls._get_bibfiles(bibfiles)
         filename = cls._get_filename(filename)
@@ -99,10 +95,10 @@ class Database(object):
             with conn:
                 assign_ids(conn, verbose=verbose)
 
-    def to_bibfile(self, filename=BIBFILE, encoding='utf-8', ):
+    def to_bibfile(self, filename, encoding='utf-8', ):
         _bibtex.save(self.merged(), filename.as_posix(), sortkey=None, encoding=encoding)
 
-    def to_csvfile(self, filename=CSVFILE):
+    def to_csvfile(self, filename):
         """Write a CSV file with one row for each entry in each bibfile."""
         with self.connect() as conn:
             cursor = conn.execute('SELECT filename, bibkey, hash, cast(id AS text) AS id '
@@ -112,7 +108,7 @@ class Database(object):
                 for row in cursor:
                      writer.writerow(row)
 
-    def to_replacements(self, filename=REPLACEMENTSFILE):
+    def to_replacements(self, filename):
         """Write a JSON file with 301s from merged glottolog_ref_ids."""
         with self.connect() as conn:
             conn.row_factory = sqlite3.Row
@@ -631,7 +627,8 @@ def _test_merge():  # pragma: no cover
 
     engine = sa.create_engine('postgresql://postgres@/overrides')
     metadata = sa.MetaData()
-    overrides = sa.Table('overrides', metadata,
+    overrides = sa.Table(
+        'overrides', metadata,
         sa.Column('hash', sa.Text, primary_key=True),
         sa.Column('field', sa.Text, primary_key=True),
         sa.Column('file1', sa.Text, primary_key=True),
