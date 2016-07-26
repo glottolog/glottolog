@@ -91,6 +91,13 @@ Abkhazian [abkh1244]
         with self.tmp_path('dff').open() as fp:
             self.assertEqual(fp.read(), _d)
 
+        lffs_ = {Level.language: lff(_l.replace('Abaza', 'Abazul')),
+                 Level.dialect: lff(_d)}
+        lff2tree(old, new, builddir=self.tmp_path('build2'), lffs=lffs_)
+        l = Languoid.from_dir(new.joinpath('abkh1242', 'abkh1243', 'abaz1241'))
+        self.assertEqual(l.name, 'Abazul')
+        self.assertEqual(l.parent.name, 'Abkhaz-Abazul')
+
 
 class Tests(TestCase):
     def test_read_lff(self):

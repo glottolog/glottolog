@@ -109,9 +109,9 @@ def lff2tree(tree=TREE, outdir=None, builddir=None, lffs=None):
         if builddir.exists():
             try:
                 rmtree(builddir)
-            except:
+            except:  # pragma: no cover
                 pass
-            if builddir.exists():
+            if builddir.exists():  # pragma: no cover
                 raise ValueError('please remove %s before proceeding' % builddir)
         # move the old tree out of the way
         shutil.move(out.as_posix(), builddir.as_posix())
@@ -125,7 +125,7 @@ def lff2tree(tree=TREE, outdir=None, builddir=None, lffs=None):
 
     for lang in read_lff(Level.dialect, fp=lffs.get(Level.dialect)):
         if not lang.lineage or lang.lineage[0][1] not in languages:
-            raise ValueError('unattached dialect')
+            raise ValueError('unattached dialect')  # pragma: no cover
 
         lang2tree(
             lang, languages[lang.lineage[0][1]].lineage + lang.lineage, out, old_tree)

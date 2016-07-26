@@ -85,29 +85,24 @@ class Name(collections.namedtuple('Name', 'prelast last given lineage')):
         return cls(prelast, last, given, lineage)
 
 
-def save(entries, filename, sortkey, encoding=None, errors='strict', verbose=True):
-    assert errors == 'strict'
-    with io.open(filename, 'w', encoding=encoding or 'utf8', errors=errors) as fd:
+def save(entries, filename, sortkey, encoding=None, verbose=True):
+    with io.open(filename, 'w', encoding=encoding or 'utf8', errors='strict') as fd:
         dump(entries, fd, sortkey, encoding, None, verbose)
 
 
 def dump(entries, fd, sortkey=None, encoding=None, errors='strict', verbose=True):
+    assert sortkey in [None, 'bibkey']
     if sortkey is None:
         if isinstance(entries, collections.OrderedDict):
-            items = entries.iteritems()
-        elif isinstance(entries, dict):
+            items = entries.items()
+        elif isinstance(entries, dict):  # pragma: no cover
             raise ValueError('dump needs sortkey or ordered entries')
         else:
             items = entries
-    elif sortkey == 'bibkey':
-        items = ((bibkey, entries[bibkey]) for bibkey in
-            sorted(entries, key=lambda bibkey: bibkey.lower()))
-    elif sortkey == 'authorbibkey_colon':  # legacy order for hh.bib
-        def sortkey((bibkey, (entrytype, fields))):
-            return fields.get('author', '') + ':'.join(bibkey.split(':', 1)[::-1])
-        items = sorted(entries.iteritems(), key=sortkey)
-    else:
-        raise ValueError(sortkey)
+    else:  # elif sortkey == 'bibkey':
+        items = (
+            (bibkey, entries[bibkey])
+            for bibkey in sorted(entries, key=lambda bibkey: bibkey.lower()))
     """Reserved characters (* -> en-/decoded by latexcodec)
     * #: \#
       $: \$

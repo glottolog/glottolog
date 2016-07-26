@@ -36,7 +36,9 @@ class Tests(WithRepos):
 
         db = Database(db)
         with capture(db.recompute, reload_priorities=c) as out:
-            pass
+            self.assertEqual(len(out.splitlines()), 32)
+        with capture(db.is_uptodate, c[1:], verbose=True) as out:
+            self.assertEqual(len(out.splitlines()), 3)
         db.to_bibfile(self.tmp_path('out.bib'))
         db.to_csvfile(self.tmp_path('out.csv'))
         db.to_replacements(self.tmp_path('out.json'))

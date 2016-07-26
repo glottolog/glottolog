@@ -257,6 +257,13 @@ class Database(object):
             hashstats(conn)
             hashidstats(conn)
 
+    @staticmethod
+    def print_group(conn, group):
+        for row in group:
+            print(row)
+        for row in group:
+            print('\t%r, %r, %r, %r' % hashfields(conn, row[-2], row[-1]))
+
     def show_splits(self):
         with self.connect() as conn:
             cursor = conn.execute('SELECT refid, hash, filename, bibkey '
@@ -264,10 +271,7 @@ class Database(object):
             'WHERE refid = e.refid AND hash != e.hash) '
             'ORDER BY refid, hash, filename, bibkey')
             for refid, group in group_first(cursor):
-                for row in group:
-                    print(row)
-                for ri, hs, fn, bk in group:
-                    print('\t%r, %r, %r, %r' % hashfields(conn, fn, bk))
+                self.print_group(conn, group)
                 old = self._merged_entry(self._entrygrp(conn, refid), raw=True)
                 cand = [(hs, self._merged_entry(self._entrygrp(conn, hs), raw=True))
                     for hs in unique(hs for ri, hs, fn, bk in group)]
@@ -281,44 +285,36 @@ class Database(object):
             'WHERE hash = e.hash AND refid != e.refid) '
             'ORDER BY hash, refid DESC, filename, bibkey')
             for hash, group in group_first(cursor):
-                for row in group:
-                    print(row)
-                for hs, ri, fn, bk in group:
-                    print('\t%r, %r, %r, %r' % hashfields(conn, fn, bk))
+                self.print_group(conn, group)
                 new = self._merged_entry(self._entrygrp(conn, hash), raw=True)
                 cand = [(ri, self._merged_entry(self._entrygrp(conn, ri), raw=True))
                     for ri in unique(ri for hs, ri, fn, bk in group)]
                 old = min(cand, key=lambda (ri, fields): distance(new, fields))[0]
                 print('-> %s\n' % old)
 
-    def show_identified(self):
+    def _show(self, sql):
         with self.connect() as conn:
-            cursor = conn.execute('SELECT hash, refid, filename, bibkey '
+            cursor = conn.execute(sql)
+            for hash, group in group_first(cursor):
+                self.print_group(conn, group)
+                print()
+
+    def show_identified(self):
+        self._show(
+            'SELECT hash, refid, filename, bibkey '
             'FROM entry AS e WHERE EXISTS (SELECT 1 FROM entry '
             'WHERE refid IS NULL AND hash = e.hash) '
             'AND EXISTS (SELECT 1 FROM entry '
             'WHERE refid IS NOT NULL AND hash = e.hash) '
             'ORDER BY hash, refid IS NOT NULL, refid, filename, bibkey')
-            for hash, group in group_first(cursor):
-                for row in group:
-                    print(row)
-                for hs, ri, fn, bk in group:
-                    print('\t%r, %r, %r, %r' % hashfields(conn, fn, bk))
-                print
 
     def show_combined(self):
-        with self.connect() as conn:
-            cursor = conn.execute('SELECT hash, filename, bibkey '
+        self._show(
+            'SELECT hash, filename, bibkey '
             'FROM entry AS e WHERE refid IS NULL AND EXISTS (SELECT 1 FROM entry '
             'WHERE refid IS NULL AND hash = e.hash '
             'AND (filename != e.filename OR bibkey != e.bibkey)) '
             'ORDER BY hash, filename, bibkey')
-            for hash, group in group_first(cursor):
-                for row in group:
-                    print(row)
-                for hs, fn, bk in group:
-                    print('\t%r, %r, %r, %r' % hashfields(conn, fn, bk))
-                print
 
 
 def create_tables(conn, page_size=32768):
