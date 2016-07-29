@@ -141,7 +141,7 @@ def tree2lff(tree=TREE, out_paths=None):
             languoids[l.level][l.lff_group()].append(l.lff_language())
 
     for level, languages in languoids.items():
-        out_path = out_paths.get(level, build_path('%sff.txt' % level.value[0]))
+        out_path = out_paths.get(level, build_path('%sff.txt' % level.name[0]))
         with out_path.open('w', encoding='utf8') as fp:
             fp.write('# -*- coding: utf-8 -*-\n')
             for path in sorted(languages):

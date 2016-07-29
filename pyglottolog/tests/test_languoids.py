@@ -65,21 +65,42 @@ class TestLanguoid(WithRepos):
         from pyglottolog.languoids import Languoid, Level
 
         f = Languoid.from_dir(self.tree.joinpath('abcd1234'))
+        self.assertEqual(f.category, 'Family')
         l = Languoid.from_dir(self.tree.joinpath(f.id, 'abcd1235'))
         self.assertEqual(l.name, 'language')
         self.assertEqual(l.level, Level.language)
         self.assertAlmostEqual(l.latitude, 0.5)
         self.assertAlmostEqual(l.longitude, 0.5)
+        l.latitude, l.longitude = 1.0, 1.0
+        self.assertAlmostEqual(l.latitude, 1.0)
+        self.assertAlmostEqual(l.longitude, 1.0)
+        self.assertEqual(l.iso_code, 'abc')
+        l.iso_code = 'cde'
+        self.assertEqual(l.iso, 'cde')
+        self.assertEqual(l.hid, 'abc')
+        l.hid = 'abo'
+        self.assertEqual(l.hid, 'abo')
         self.assertEqual(l.id, 'abcd1235')
         self.assertEqual(l.macroareas, ['a', 'b'])
+        l.macroareas = ['a']
+        self.assertEqual(l.macroareas, ['a'])
         self.assertEqual(l.parent, f)
         self.assertEqual(f.children[0], l)
         self.assertEqual(l.children[0].family, f)
+        l.write_info(self.tmp_path('new').as_posix())
+
+    def test_isolate(self):
+        from pyglottolog.languoids import Languoid
+
+        l = Languoid.from_dir(self.tree.joinpath('isol1234'))
+        self.assertTrue(l.isolate)
+        self.assertIsNone(l.parent)
+        self.assertIsNone(l.family)
 
     def test_attrs(self):
         from pyglottolog.languoids import Languoid, Level
 
-        l = Languoid.from_name_id_level('name', 'abcd1235', Level.language)
+        l = Languoid.from_name_id_level('name', 'abcd1235', Level.language, hid='NOCODE')
         l.name = 'other'
         self.assertEqual(l.name, 'other')
         with self.assertRaises(ValueError):
@@ -87,14 +108,14 @@ class TestLanguoid(WithRepos):
         with self.assertRaises(ValueError):
             l.id = 'x'
         self.assertEqual(l.id, l.glottocode)
-        self.assertIsNone(l.hid)
+        self.assertEqual(l.hid, 'NOCODE')
 
     def test_make_index(self):
         from pyglottolog.languoids import make_index, Level
 
         for level in Level:
             res = make_index(level, repos=self.tmp_path())
-            self.assertEqual(len(res), 2)
+            self.assertEqual(len(res), 3 if level == Level.language else 2)
             self.assertTrue(all(p.exists() for p in res))
 
     def test_find_languoid(self):
@@ -106,7 +127,7 @@ class TestLanguoid(WithRepos):
     def test_walk_tree(self):
         from pyglottolog.languoids import walk_tree
 
-        self.assertEqual(len(list(walk_tree(tree=self.tree))), 3)
+        self.assertEqual(len(list(walk_tree(tree=self.tree))), 4)
 
     def test_load_triggers(self):
         from pyglottolog.languoids import load_triggers

@@ -76,11 +76,7 @@ build_path = partial(subdir_path, 'build')
 
 
 def read_ini(filename, interpolation=None):
-    if isinstance(filename, Path):
-        filename = filename.as_posix()
-    p = INI(interpolation=interpolation)
-    p.read(filename)
-    return p
+    return INI.from_file(filename, interpolation=interpolation)
 
 
 def group_first(iterable, groupkey=operator.itemgetter(0)):

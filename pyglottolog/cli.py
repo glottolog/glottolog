@@ -19,16 +19,18 @@ import logging
 
 from clldutils.clilib import ArgumentParser, ParserError
 from clldutils.path import copytree, rmtree, remove, Path
+from clldutils.iso_639_3 import ISO
 
 from pyglottolog.monster import main as compile_monster
 from pyglottolog.languoids import (
     make_index, Languoid, find_languoid, Glottocode, Glottocodes, walk_tree, Level,
+    ascii_tree,
 )
 from pyglottolog.util import DATA_DIR, languoids_path
 from pyglottolog import lff
 
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 log = logging.getLogger(__name__)
 
 
@@ -46,18 +48,40 @@ def index(args):
     glottolog index (family|language|dialect|all)
     """
     for level in Level:
-        if args.args[0] in [level.value, 'all']:
+        if args.args[0] in [level.name, 'all']:
             make_index(level, repos=args.repos)
 
 
+def tree(args):
+    ascii_tree(
+        args.args[0],
+        getattr(Level, args.args[1], None) if len(args.args) > 1 else None,
+        tree=languoids_path('tree', repos=args.repos))
+
+
 def check_tree(args):
+    if args.args:
+        iso = ISO()
+    else:
+        iso = None
+
     tree = languoids_path('tree', repos=args.repos)
     glottocodes = Glottocodes()
     log.info('checking tree at %s' % tree)
-    stats = Counter()
+    by_level = Counter()
+    by_category = Counter()
     for lang in walk_tree(tree=tree):
-        stats.update([lang.level])
-        if lang.id not in glottocodes:
+        by_level.update([lang.level.name])
+        if lang.level == Level.language:
+            by_category.update([lang.category])
+
+        if iso and lang.iso:
+            if lang.iso not in iso:
+                log.warn('invalid ISO-639-3 code: %s [%s]' % (lang.id, lang.iso))
+            elif lang.iso in iso.retired and lang.category != 'Bookkeeping':
+                log.warn('retired ISO-639-3 code: %s [%s]' % (lang.id, lang.iso))
+
+        if not lang.id.startswith('unun9') and lang.id not in glottocodes:
             log.error('unregistered glottocode %s' % lang.id)
         for attr in ['level', 'name', 'glottocode']:
             if not getattr(lang, attr):
@@ -72,8 +96,24 @@ def check_tree(args):
                 if child.level != Level.dialect:
                     log.error('invalid nesting of {0} under language: {1}'.format(
                         child.level, child.id))
-    log.info(stats)
-    return stats
+        elif lang.level == Level.family:
+            for d in lang.dir.iterdir():
+                if d.is_dir():
+                    break
+            else:
+                log.error('family without children: {0}'.format(lang.id))
+
+    def log_counter(counter, name):
+        msg = [name + ':']
+        maxl = max([len(k) for k in counter.keys()]) + 1
+        for k, l in counter.most_common():
+            msg.append(('{0:<%s} {1:>8,}' % maxl).format(k + ':', l))
+        msg.append(('{0:<%s} {1:>8,}' % maxl).format('', sum(list(counter.values()))))
+        log.info('\n'.join(msg))
+
+    log_counter(by_level, 'Languoids by level')
+    log_counter(by_category, 'Languages by category')
+    return by_level
 
 
 def recode(args):
@@ -176,6 +216,7 @@ def main():  # pragma: no cover
         lff2tree,
         new_languoid,
         recode,
+        tree,
         check_tree)
     parser.add_argument(
         '--repos', help="path to glottolog data repository", type=Path, default=DATA_DIR)

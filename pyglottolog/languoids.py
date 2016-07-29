@@ -5,7 +5,7 @@ import re
 from itertools import takewhile
 from collections import defaultdict, OrderedDict
 
-from enum import Enum
+from enum import IntEnum
 from six import text_type
 from clldutils.misc import slug
 from clldutils import jsonlib
@@ -18,10 +18,10 @@ from pyglottolog.util import languoids_path, Trigger
 TREE = languoids_path('tree')
 
 
-class Level(Enum):
-    family = 'family'
-    language = 'language'
-    dialect = 'dialect'
+class Level(IntEnum):
+    family = 1
+    language = 2
+    dialect = 3
 
 
 class Glottocodes(object):
@@ -84,6 +84,9 @@ class Languoid(object):
 
     def __eq__(self, other):
         return self.id == other.id
+
+    def __repr__(self):
+        return '<%s %s>' % (self.level.name.capitalize(), self.id)
 
     @classmethod
     def from_dir(cls, directory, **kw):
@@ -152,6 +155,34 @@ class Languoid(object):
         if isocode:
             res.iso = isocode
         return res
+
+    @property
+    def category(self):
+        fid = self.lineage[0][1] if self.lineage else None
+        category_map = defaultdict(
+            lambda: 'Spoken L1 Language',
+            **{
+                'book1242': 'Bookkeeping',
+                'unat1236': 'Unattested',
+                'uncl1493': 'Unclassifiable',
+                'sign1238': 'Sign Language',
+                'arti1236': 'Artificial Language',
+                'spee1234': 'Speech Register',
+                'pidg1258': 'Pidgin',
+                'mixe1287': 'Mixed Language',
+            })
+        if self.level == Level.language:
+            return category_map[fid]
+        cat = self.level.name.capitalize()
+        if self.level == Level.family:
+            if self.id.startswith('unun9') or \
+                    self.id in category_map or fid in category_map:
+                cat = 'Pseudo ' + cat
+        return cat
+
+    @property
+    def isolate(self):
+        return self.level == Level.language and not self.lineage
 
     @property
     def children(self):
@@ -247,11 +278,11 @@ class Languoid(object):
 
     @property
     def level(self):
-        return self._get('level', Level)
+        return self._get('level', lambda v: getattr(Level, v))
 
     @level.setter
     def level(self, value):
-        self._set('level', Level(value).value)
+        self._set('level', value.name)
 
     @property
     def iso(self):
@@ -268,14 +299,6 @@ class Languoid(object):
     @iso_code.setter
     def iso_code(self, value):
         self._set('iso639-3', value)
-
-    @property
-    def classification_status(self):
-        return self._get('classification_status')
-
-    @classification_status.setter
-    def classification_status(self, value):
-        self._set('classification_status', value)
 
     def fname(self, suffix=''):
         return '%s%s' % (self.id, suffix)
@@ -307,16 +330,32 @@ class Languoid(object):
         return res or 'ERROR [-unclassified-]'
 
     def lff_language(self):
-        res = '    %s [%s][%s]' % (self.name, self.id, self.iso or '')
-        if self.classification_status:
-            res = '%s %s' % (res, self.classification_status)
-        return res
+        return '    %s [%s][%s]' % (self.name, self.id, self.iso or '')
 
 
 def find_languoid(tree=TREE, glottocode=None, **kw):
     for fname in walk(tree, mode='dirs', followlinks=True):
         if fname.name == glottocode:
             return Languoid.from_dir(fname)
+
+
+def _ascii_node(n, level, last, maxlevel, prefix):
+    if maxlevel:
+        if (isinstance(maxlevel, Level) and n.level > maxlevel) or \
+                (not isinstance(maxlevel, Level) and level > maxlevel):
+            return
+    s = '\u2514' if last else '\u251c'
+    s += '\u2500 '
+    nprefix = prefix + ('   ' if last else '\u2502  ')
+    print('{0}{1}{2} [{3}] <{4}>'.format(
+        prefix, s if level else '', n.name, n.id, n.level.name[0]).encode('utf8'))
+    for i, c in enumerate(sorted(n.children, key=lambda nn: nn.name)):
+        _ascii_node(c, level + 1, i == len(n.children) - 1, maxlevel, nprefix)
+
+
+def ascii_tree(start, maxlevel=None, tree=TREE):
+    start = find_languoid(tree=tree, glottocode=start)
+    _ascii_node(start, 0, True, maxlevel, '')
 
 
 def walk_tree(tree=TREE, **kw):
@@ -327,7 +366,7 @@ def walk_tree(tree=TREE, **kw):
 
 def make_index(level, repos=None):
     fname = dict(
-        language='languages', family='families', dialect='dialects')[level.value]
+        language='languages', family='families', dialect='dialects')[level.name]
     links = defaultdict(dict)
     for lang in walk_tree(tree=languoids_path('tree', repos=repos)):
         if lang.level == level:
@@ -371,9 +410,7 @@ def load_triggers(tree=TREE):
     for lang in walk_tree(tree):
         for type_ in res:
             if lang.cfg.has_option('triggers', type_):
-                triggers = lang.cfg.getlist('triggers', type_)
-                if not triggers:
-                    continue
                 label = '%s [%s]' % (lang.name, lang.hid or lang.id)
-                res[type_].extend([Trigger(type_, label, t) for t in triggers])
+                res[type_].extend([Trigger(type_, label, text)
+                                   for text in lang.cfg.getlist('triggers', type_)])
     return res
