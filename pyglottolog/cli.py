@@ -59,9 +59,29 @@ def tree(args):
         tree=languoids_path('tree', repos=args.repos))
 
 
+def missing_iso(args):
+    tree = languoids_path('tree', repos=args.repos)
+    iso = ISO(args.args[0] if args.args else None)
+
+    changed_to = []
+    for code in iso.retirements:
+        changed_to.extend(code.change_to)
+    changed_to = set(changed_to)
+
+    ingl = set()
+    for lang in walk_tree(tree=tree):
+        if lang.iso:
+            ingl.add(lang.iso)
+    for code in sorted(iso.languages):
+        if code.type == 'Individual/Living':
+            if code not in changed_to:
+                if code.code not in ingl:
+                    print(code, code.type)
+
+
 def check_tree(args):
     if args.args:
-        iso = ISO()
+        iso = ISO(args.args[0] if Path(args.args[0]).exists() else None)
     else:
         iso = None
 
@@ -78,8 +98,13 @@ def check_tree(args):
         if iso and lang.iso:
             if lang.iso not in iso:
                 log.warn('invalid ISO-639-3 code: %s [%s]' % (lang.id, lang.iso))
-            elif lang.iso in iso.retired and lang.category != 'Bookkeeping':
-                log.warn('retired ISO-639-3 code: %s [%s]' % (lang.id, lang.iso))
+            else:
+                isocode = iso[lang.iso]
+                if isocode.is_retired and lang.category != 'Bookkeeping':
+                    msg = '%s %s' % (lang.id, repr(isocode))
+                    if len(isocode.change_to) == 1:
+                        msg += ' changed to %s' % repr(isocode.change_to[0])
+                    log.warn(msg)
 
         if not lang.id.startswith('unun9') and lang.id not in glottocodes:
             log.error('unregistered glottocode %s' % lang.id)
@@ -217,6 +242,7 @@ def main():  # pragma: no cover
         new_languoid,
         recode,
         tree,
+        missing_iso,
         check_tree)
     parser.add_argument(
         '--repos', help="path to glottolog data repository", type=Path, default=DATA_DIR)
