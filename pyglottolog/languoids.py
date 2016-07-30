@@ -122,10 +122,14 @@ class Languoid(object):
 
     @classmethod
     def from_name_id_level(cls, name, id, level, **kw):
+        if not isinstance(level, Level):
+            level = getattr(Level, level)
+        if id is None:
+            id = Glottocode.from_name(name)
         cfg = INI(interpolation=None)
         cfg.read_dict(dict(core=dict(name=name, glottocode=id)))
         res = cls(cfg, [])
-        res.level = Level(level)
+        res.level = level
         for k, v in kw.items():
             setattr(res, k, v)
         return res
