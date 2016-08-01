@@ -10,7 +10,7 @@ from pyglottolog.util import build_path
 from pyglottolog.languoids import Languoid, walk_tree, TREE, Level, Glottocode
 
 
-NAME_AND_ID_REGEX = '([^\[]+)(\[' + Glottocode.regex + '\])'
+NAME_AND_ID_REGEX = '([^\[]+)(\[(' + Glottocode.regex + ')?\])'
 
 
 def rmtree(d, **kw):
@@ -24,7 +24,7 @@ def rmtree(d, **kw):
     os.rmdir(d)
 
 
-def read_lff(level, fp=None):
+def read_lff(level, fp=None, dry_run=False):
     assert isinstance(level, Level)
     lang_line = re.compile('\s+' + NAME_AND_ID_REGEX + '(\[([a-z]{3}|NOCODE\_[^\]]+)?\])$')
     class_line = re.compile(NAME_AND_ID_REGEX + '(,\s*' + NAME_AND_ID_REGEX + ')*$')
@@ -41,7 +41,10 @@ def read_lff(level, fp=None):
             if match:
                 assert path
                 yield Languoid.from_lff(
-                    None if path == 'isolate' else path, line.strip(), level)
+                    None if path == 'isolate' else path,
+                    line.strip(),
+                    level,
+                    dry_run=dry_run)
             else:
                 match = isolate_line.match(line)
                 if match:

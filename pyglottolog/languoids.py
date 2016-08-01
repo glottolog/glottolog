@@ -131,11 +131,13 @@ class Languoid(object):
         return res
 
     @classmethod
-    def from_lff(cls, path, name_and_codes, level):
+    def from_lff(cls, path, name_and_codes, level, dry_run=False):
         assert isinstance(level, Level)
         lname, codes = name_and_codes.split('[', 1)
         lname = lname.strip()
         glottocode, isocode = codes[:-1].split('][')
+        if not glottocode:
+            glottocode = Glottocode.from_name(lname, dry_run=dry_run)
 
         lineage = []
         if path:
