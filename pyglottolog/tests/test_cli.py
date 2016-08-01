@@ -24,7 +24,7 @@ class Tests(WithRepos):
     def test_check(self):
         from pyglottolog.cli import check_tree
 
-        check_tree(Mock(repos=self.repos))
+        check_tree(Mock(args=[], repos=self.repos))
 
     def test_monster(self):
         from pyglottolog.cli import monster

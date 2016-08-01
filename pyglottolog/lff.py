@@ -31,7 +31,7 @@ def read_lff(level, fp=None):
     isolate_line = re.compile('([^\[]+)(\[-isolate-\])$')
 
     path = None
-    with fp or build_path('%sff.txt' % level.value[0]).open(encoding='utf8') as fp:
+    with fp or build_path('%sff.txt' % level.name[0]).open(encoding='utf8') as fp:
         for line in fp:
             line = line.rstrip()
             if line.startswith('#') or not line.strip():
@@ -78,6 +78,8 @@ def lang2tree(lang, lineage, out, old_tree):
         assert old_lang.level == lang.level
         if old_lang.name != lang.name:
             old_lang.name = lang.name
+        if old_lang.iso != lang.iso:
+            old_lang.iso = lang.iso
         old_lang.write_info(langdir)
     else:
         lang.write_info(langdir)
