@@ -110,6 +110,7 @@ def lff2tree(tree=TREE, outdir=None, builddir=None, lffs=None):
     out = Path(outdir or tree)
     if not out.parent.exists():
         out.parent.mkdir()
+
     if out.exists():
         if builddir.exists():
             try:
