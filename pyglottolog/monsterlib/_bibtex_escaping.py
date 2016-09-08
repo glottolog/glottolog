@@ -26,7 +26,7 @@ from __future__ import print_function
 import re
 import unicodedata
 
-from six import text_type, unichr
+from six import text_type, unichr, PY2
 import latexcodec
 
 __all__ = [
@@ -136,17 +136,18 @@ LATEX_TABLE = {
 _LC_TABLES = (
     latexcodec.codec._LATEX_UNICODE_TABLE, latexcodec.codec._ULATEX_UNICODE_TABLE)
 
-assert u'\xe4'.encode('latex') == r'\"a'
-assert r'\"a'.decode('latex') == u'\xe4'
+if PY2:
+    assert u'\xe4'.encode('latex') == r'\"a'
+    assert r'\"a'.decode('latex') == u'\xe4'
 
-for unicode_text, latex_text in sorted(
-        list(LATEX_TABLE.items()), key=lambda t: t[0], reverse=True):
-    if not isinstance(latex_text, (list, tuple)):
-        latex_text = [latex_text]
-    uchar = unicodedata.lookup(unicode_text)
-    for table in _LC_TABLES:
-        for lt in latex_text:
-            table.register(uchar, lt)
+    for unicode_text, latex_text in sorted(
+            list(LATEX_TABLE.items()), key=lambda t: t[0], reverse=True):
+        if not isinstance(latex_text, (list, tuple)):
+            latex_text = [latex_text]
+        uchar = unicodedata.lookup(unicode_text)
+        for table in _LC_TABLES:
+            for lt in latex_text:
+                table.register(uchar, lt)
 
 
 numcharref_patterns = [

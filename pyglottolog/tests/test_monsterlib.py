@@ -1,6 +1,7 @@
 # coding: utf8
 from __future__ import unicode_literals, print_function, division
 
+from six import PY2
 from nose.tools import assert_almost_equal, assert_equal
 from clldutils.testing import capture
 
@@ -13,6 +14,9 @@ class Tests(WithRepos):
     def test_Collection(self):
         from pyglottolog.monsterlib._bibfiles import Collection
         from pyglottolog.monsterlib._bibfiles_db import Database
+
+        if not PY2:  # pragma: no cover
+            return
 
         c = Collection(self.references.joinpath('bibtex'))
         with capture(c.check_all) as out:
@@ -116,6 +120,9 @@ def test_names():
 def test_undiacritic():
     from pyglottolog.monsterlib._bibtex_undiacritic import undiacritic
 
+    if not PY2:
+        return
+
     for i, o in [
         ("\\cmd{äöüß}", "aouss"),
     ]:
@@ -124,6 +131,9 @@ def test_undiacritic():
 
 def test_ulatex_decode():
     from pyglottolog.monsterlib._bibtex_escaping import ulatex_decode
+
+    if not PY2:
+        return
 
     for i, o, r in [
         ("", "", ""),

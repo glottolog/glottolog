@@ -4,7 +4,7 @@ _libmonster.py - mixed support library
 # TODO: consider replacing pauthor in keyid with _bibtex.names
 # TODO: enusure \emph is dropped from titles in keyid calculation
 """
-from __future__ import unicode_literals
+from __future__ import unicode_literals, print_function
 import re
 from heapq import nsmallest
 from collections import defaultdict
@@ -53,14 +53,14 @@ def psingleauthor(n):
         if o:
             return o.groupdict()
     else:
-        print "Couldn't parse name:", n
+        print("Couldn't parse name:", n)
 
 
 def pauthor(s):
     pas = [psingleauthor(a) for a in s.split(' and ')]
     if [a for a in pas if not a]:
         if s:
-            print s
+            print(s)
     return [a for a in pas if a]
 
 
@@ -169,7 +169,7 @@ def add_inlg_e(e, trigs, verbose=True, return_newtrain=False):
           if 'title' in fields and INLG not in fields]
 
     if verbose:
-        print len(ts), "without", INLG
+        print(len(ts), "without", INLG)
 
     # map record keys to sets of assigned iso codes, based on words in the title
     ann = [(k, set(dh[w] for w in tit if w in dh)) for k, tit in ts]
@@ -177,7 +177,7 @@ def add_inlg_e(e, trigs, verbose=True, return_newtrain=False):
     # list of record keys which have been assigned exactly one iso code
     unique_ = [(k, lgs.pop()) for (k, lgs) in ann if len(lgs) == 1]
     if verbose:
-        print len(unique_), "cases of unique hits"
+        print(len(unique_), "cases of unique hits")
 
     t2 = renfn(e, [(k, INLG, v) for (k, v) in unique_])
 
@@ -266,9 +266,9 @@ def keyid(fields, fd, ti=2, infinity=float('inf')):
 
     authors = pauthor(astring)
     if len(authors) != len(astring.split(' and ')):
-        print "Unparsed author in", authors
-        print "   ", astring, astring.split(' and ')
-        print fields.get('title')
+        print("Unparsed author in", authors)
+        print("   ", astring, astring.split(' and '))
+        print(fields.get('title'))
 
     ak = [undiacritic(x) for x in sorted(lastnamekey(a['lastname']) for a in authors)]
     yk = pyear(fields.get('year', '[nd]'))[:4]
@@ -298,7 +298,8 @@ recomma = re.compile("[,/]\s?")
 reiso = re.compile(isoregex + "$")
 
 
-def lgcode((_, fields)):
+def lgcode(arg):
+    fields = arg[1]
     return lgcodestr(fields['lgcode']) if 'lgcode' in fields else []
 
 
@@ -322,7 +323,7 @@ def sd(es, hht):
             fields.get('pages', ''),
             fields.get('year', ''))) for (k, (typ, fields)) in es.items()]
     d = accd(mi)
-    return [sorted(((p, y, k, t.id) for (k, (p, y)) in d[t.id].iteritems()), reverse=True)
+    return [sorted(((p, y, k, t.id) for (k, (p, y)) in d[t.id].items()), reverse=True)
             for t in hht if t.id in d]
 
 
@@ -342,7 +343,7 @@ def accd(mi):
 
 
 def byid(es):
-    return grp2([(cfn, k) for (k, tf) in es.iteritems() for cfn in lgcode(tf)])
+    return grp2([(cfn, k) for (k, tf) in es.items() for cfn in lgcode(tf)])
 
 
 def sdlgs(e, hht):
@@ -376,7 +377,7 @@ def markconservative(m, trigs, ref, hht, outfn, verbose=True, rank=None):
     for (lg, (stat, wits)) in lsafter.items():
         if not ls.get(lg):
             if verbose:
-                print lg, "lacks status", [mafter[k][1]['srctrickle'] for k in wits]
+                print(lg, "lacks status", [mafter[k][1]['srctrickle'] for k in wits])
             continue
         if hht[stat] > hht[ls[lg]]:
             log = log + [
@@ -429,8 +430,8 @@ def markall(e, trigs, verbose=True, rank=None):
         e[k] = (t, f2)
 
     if verbose:
-        print "trigs", len(trigs)
-        print "label classes", len(clss)
-        print "unlabeled refs", len(ei)
-        print "updates", len(u)
+        print("trigs", len(trigs))
+        print("label classes", len(clss))
+        print("unlabeled refs", len(ei))
+        print("updates", len(u))
     return e

@@ -1,6 +1,7 @@
 # coding: utf8
 from __future__ import unicode_literals, print_function, division
 
+from six import text_type, PY2
 from mock import Mock
 from clldutils.testing import capture
 
@@ -17,7 +18,8 @@ class Tests(WithRepos):
         from pyglottolog.cli import tree
 
         with capture(tree, Mock(repos=self.repos, args=['abcd1234', 'language'])) as out:
-            out = out.decode('utf8')
+            if not isinstance(out, text_type):
+                out = out.decode('utf8')
             self.assertIn('<l>', out)
             self.assertNotIn('<d>', out)
 
@@ -28,6 +30,9 @@ class Tests(WithRepos):
 
     def test_monster(self):
         from pyglottolog.cli import monster
+
+        if not PY2:  # pragma: no cover
+            return
 
         with capture(monster, Mock(repos=self.repos)) as out:
             assert out
