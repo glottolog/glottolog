@@ -8,12 +8,12 @@ import itertools
 import contextlib
 import collections
 
-from six import string_types
+from six import string_types, viewkeys
 from clldutils.dsv import UnicodeWriter
 from clldutils import jsonlib
 
 from pyglottolog.util import build_path, unique, group_first
-import _bibtex
+from pyglottolog.monsterlib import _bibtex
 
 __all__ = ['Database']
 
@@ -275,7 +275,7 @@ class Database(object):
                 old = self._merged_entry(self._entrygrp(conn, refid), raw=True)
                 cand = [(hs, self._merged_entry(self._entrygrp(conn, hs), raw=True))
                     for hs in unique(hs for ri, hs, fn, bk in group)]
-                new = min(cand, key=lambda (hs, fields): distance(old, fields))[0]
+                new = min(cand, key=lambda p: distance(old, p[1]))[0]
                 print('-> %s\n' % new)
 
     def show_merges(self):
@@ -289,7 +289,7 @@ class Database(object):
                 new = self._merged_entry(self._entrygrp(conn, hash), raw=True)
                 cand = [(ri, self._merged_entry(self._entrygrp(conn, ri), raw=True))
                     for ri in unique(ri for hs, ri, fn, bk in group)]
-                old = min(cand, key=lambda (ri, fields): distance(new, fields))[0]
+                old = min(cand, key=lambda p: distance(new, p[1]))[0]
                 print('-> %s\n' % old)
 
     def _show(self, sql):
@@ -362,7 +362,7 @@ def import_bibfiles(conn, bibfiles):
         for bibkey, (entrytype, fields) in b.iterentries():
             conn.execute('INSERT INTO entry (filename, bibkey, refid) VALUES (?, ?, ?)',
                 (b.filename, bibkey, fields.get('glottolog_ref_id')))
-            fields = itertools.chain([('ENTRYTYPE', entrytype)], fields.iteritems())
+            fields = itertools.chain([('ENTRYTYPE', entrytype)], fields.items())
             conn.executemany('INSERT INTO value '
                 '(filename, bibkey, field, value) VALUES (?, ?, ?, ?)',
                 ((b.filename, bibkey, field, value) for field, value in fields))
@@ -460,7 +460,7 @@ def generate_hashes(conn):
         for title, in rows:
             words.update(wrds(title))
     # TODO: consider dropping stop words/hapaxes from freq. distribution
-    print('%d title words (from %d tokens)' % (len(words), sum(words.itervalues())))
+    print('%d title words (from %d tokens)' % (len(words), sum(words.values())))
 
     get_bibkey = operator.itemgetter(0)
     for filename, first, last in windowed_entries(conn, 500):
@@ -536,7 +536,7 @@ def assign_ids(conn, verbose=False):
         nsplit += len(group)
         cand = [(hs, merged_entry(entrygrp(conn, hs), raw=True))
             for hs in unique(hs for ri, hs, fn, bk in group)]
-        new = min(cand, key=lambda (hs, fields): distance(old, fields))[0]
+        new = min(cand, key=lambda p: distance(old, p[1]))[0]
         separated = conn.execute('UPDATE entry SET srefid = NULL WHERE refid = ? AND hash != ?',
             (refid, new)).rowcount
         if verbose:
@@ -562,7 +562,7 @@ def assign_ids(conn, verbose=False):
         nmerge += len(group)
         cand = [(ri, merged_entry(entrygrp(conn, ri), raw=True))
             for ri in unique(ri for hs, ri, fn, bk in group)]
-        old = min(cand, key=lambda (ri, fields): distance(new, fields))[0]
+        old = min(cand, key=lambda p: distance(new, p[1]))[0]
         merged = conn.execute('UPDATE entry SET id = ? WHERE hash = ? AND srefid != ?',
             (old, hash, old)).rowcount
         if verbose:
@@ -607,15 +607,15 @@ def distance(left, right, weight={'author': 3, 'year': 3, 'title': 3, 'ENTRYTYPE
     if not (left or right):
         return 0.0
 
-    keys = left.viewkeys() & right.viewkeys()
+    keys = viewkeys(left) & viewkeys(right)
     if not keys:
         return 1.0
 
     weights = {k: weight.get(k, 1) for k in keys}
     ratios = (
         w * difflib.SequenceMatcher(None, left[k], right[k]).ratio()
-        for k, w in weights.iteritems())
-    return 1 - (sum(ratios) / sum(weights.itervalues()))
+        for k, w in weights.items())
+    return 1 - (sum(ratios) / sum(weights.values()))
 
 
 def _test_merge():  # pragma: no cover

@@ -61,7 +61,8 @@ from pyglottolog import languoids
 def macro_area_from_lgcode(m, tree):
     lgd = languoids.macro_area_from_hid(tree=tree)
 
-    def inject_macro_area((typ, fields)):
+    def inject_macro_area(arg):
+        typ, fields = arg
         mas = set(lgd[x] for x in lgcode((typ, fields)) if x in lgd and lgd[x])
         if mas:
             fields['macro_area'] = ', '.join(sorted(mas))

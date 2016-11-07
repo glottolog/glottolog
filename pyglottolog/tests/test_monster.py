@@ -1,6 +1,7 @@
 # coding: utf8
 from __future__ import unicode_literals, print_function, division
 
+from six import PY2
 from clldutils.testing import capture
 from pyglottolog.tests.util import WithRepos
 
@@ -8,6 +9,9 @@ from pyglottolog.tests.util import WithRepos
 class Tests(WithRepos):
     def test_main(self):
         from pyglottolog.monster import main
+
+        if not PY2:  # pragma: no cover
+            return
 
         with capture(main, repos=self.repos) as out:
             self.assertEqual(len(out.splitlines()), 70)
