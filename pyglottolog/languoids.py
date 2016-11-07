@@ -97,7 +97,8 @@ class Languoid(object):
 
     @classmethod
     def from_ini(cls, ini, nodes=None):
-        nodes = nodes or {}
+        if nodes is None:
+            nodes = {}
         ini = Path(ini)
         directory = ini.parent
         cfg = INI(interpolation=None)
