@@ -24,7 +24,7 @@ def rmtree(d, **kw):
     os.rmdir(d)
 
 
-def read_lff(level, fp=None, dry_run=False):
+def read_lff(new, level, fp=None, dry_run=False):
     assert isinstance(level, Level)
     lang_line = re.compile('\s+' + NAME_AND_ID_REGEX + '(\[([a-z]{3}|NOCODE\_[^\]]+)?\])$')
     class_line = re.compile(NAME_AND_ID_REGEX + '(,\s*' + NAME_AND_ID_REGEX + ')*$')
@@ -41,6 +41,7 @@ def read_lff(level, fp=None, dry_run=False):
             if match:
                 assert path
                 yield Languoid.from_lff(
+                    new,
                     None if path == 'isolate' else path,
                     line.strip(),
                     level,
@@ -78,7 +79,8 @@ def lang2tree(lang, lineage, out, old_tree):
 
     if lang.id in old_tree:
         old_lang = old_tree[lang.id]
-        assert old_lang.level == lang.level
+        if old_lang.level != lang.level:
+            old_lang.level = lang.level
         if old_lang.name != lang.name:
             old_lang.name = lang.name
         if old_lang.iso != lang.iso:
@@ -123,18 +125,25 @@ def lff2tree(tree=TREE, outdir=None, builddir=None, lffs=None):
         shutil.move(out.as_posix(), builddir.as_posix())
     out.mkdir()
 
+    new = {}
     lffs = lffs or {}
     languages = {}
-    for lang in read_lff(Level.language, fp=lffs.get(Level.language)):
+    for lang in read_lff(new, Level.language, fp=lffs.get(Level.language)):
         languages[lang.id] = lang
         lang2tree(lang, lang.lineage, out, old_tree)
 
-    for lang in read_lff(Level.dialect, fp=lffs.get(Level.dialect)):
+    missing = set()
+    for lang in read_lff(new, Level.dialect, fp=lffs.get(Level.dialect)):
         if not lang.lineage or lang.lineage[0][1] not in languages:
-            raise ValueError('unattached dialect')  # pragma: no cover
+            #raise ValueError('unattached dialect')  # pragma: no cover
+            missing.add(lang.lineage[0])
+            continue
 
         lang2tree(
             lang, languages[lang.lineage[0][1]].lineage + lang.lineage, out, old_tree)
+
+    for m in missing:
+        print('--- missing language referenced from dff.txt: {0[0]} [{0[1]}]'.format(m))
 
 
 def tree2lff(tree=TREE, out_paths=None):

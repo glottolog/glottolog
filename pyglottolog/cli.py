@@ -175,12 +175,12 @@ def new_languoid(args):
     print("Info written to %s" % lang.write_info())
 
 
-def tree2lff(args):
+def tree2lff(args, **test_kw):
     """Create lff.txt and dff.txt from the current languoid tree.
 
     glottolog tree2lff
     """
-    lff.tree2lff(tree=languoids_path('tree', repos=args.repos))
+    lff.tree2lff(tree=languoids_path('tree', repos=args.repos), **test_kw)
 
 
 def lff2tree(args):

@@ -6,13 +6,19 @@ from mock import Mock
 from clldutils.testing import capture
 
 from pyglottolog.tests.util import WithRepos
+from pyglottolog.languoids import Level
 
 
 class Tests(WithRepos):
     def test_tree2lff(self):
         from pyglottolog.cli import tree2lff
 
-        tree2lff(Mock(repos=self.repos))
+        tree2lff(
+            Mock(repos=self.repos),
+            out_paths={
+                Level.language: self.tmp_path('lff.txt'),
+                Level.dialect: self.tmp_path('dff.txt'),
+            })
 
     def test_tree(self):
         from pyglottolog.cli import tree

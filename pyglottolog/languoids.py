@@ -76,8 +76,8 @@ class Languoid(object):
         :param lineage: list of ancestors, given as (id, name) pairs.
         """
         lineage = lineage or []
-        assert all(
-            [Glottocode.pattern.match(id) and Level(level) for name, id, level in lineage])
+        assert all([
+            Glottocode.pattern.match(id) and Level(level) for name, id, level in lineage])
         self.lineage = [(name, id, Level(level)) for name, id, level in lineage]
         self.cfg = cfg
         self.dir = directory or TREE.joinpath(*[id for name, id, _ in self.lineage])
@@ -132,13 +132,16 @@ class Languoid(object):
         return res
 
     @classmethod
-    def from_lff(cls, path, name_and_codes, level, dry_run=False):
+    def from_lff(cls, new, path, name_and_codes, level, dry_run=False):
         assert isinstance(level, Level)
         lname, codes = name_and_codes.split('[', 1)
         lname = lname.strip()
         glottocode, isocode = codes[:-1].split('][')
         if not glottocode:
-            glottocode = Glottocode.from_name(lname, dry_run=dry_run)
+            glottocode = new.get((lname, level))
+        if not glottocode:
+            new[lname, level] = glottocode = Glottocode.from_name(lname, dry_run=dry_run)
+            print('+++ {0} {1}: {2}'.format(level, lname, glottocode))
 
         lineage = []
         if path:
@@ -146,9 +149,17 @@ class Languoid(object):
                 if comp.endswith(']'):
                     comp = comp[:-1]
                 name, id_ = comp.split(' [', 1)
+
                 _level = Level.family
                 if level == Level.dialect:
                     _level = Level.language if i == 0 else Level.dialect
+
+                if not id_:
+                    id_ = new.get((name, _level))
+                if not id_:
+                    new[name, _level] = id_ = Glottocode.from_name(name, dry_run=dry_run)
+                    print('+++ {0} {1}: {2}'.format(_level, name, id_))
+
                 lineage.append((name, id_, _level))
 
         cfg = INI(interpolation=None)
@@ -156,7 +167,10 @@ class Languoid(object):
         res = cls(cfg, lineage)
         res.level = level
         if isocode:
-            res.iso = isocode
+            if len(isocode) == 3:
+                res.iso = isocode
+            else:
+                res.hid = isocode
         return res
 
     @property
