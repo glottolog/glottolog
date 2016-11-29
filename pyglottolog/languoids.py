@@ -347,7 +347,7 @@ class Languoid(object):
         return res or 'ERROR [-unclassified-]'
 
     def lff_language(self):
-        return '    %s [%s][%s]' % (self.name, self.id, self.iso or '')
+        return '    %s [%s][%s]' % (self.name, self.id, self.iso or self.hid or '')
 
 
 def find_languoid(tree=TREE, glottocode=None, **kw):
