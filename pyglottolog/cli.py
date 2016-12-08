@@ -20,14 +20,16 @@ import logging
 from clldutils.clilib import ArgumentParser, ParserError
 from clldutils.path import copytree, rmtree, remove, Path
 from clldutils.iso_639_3 import ISO
+from clldutils.markup import Table
 
 from pyglottolog.monster import main as compile_monster
 from pyglottolog.languoids import (
     make_index, Languoid, find_languoid, Glottocode, Glottocodes, walk_tree, Level,
     ascii_tree,
 )
-from pyglottolog.util import DATA_DIR, languoids_path
+from pyglottolog.util import DATA_DIR, languoids_path, build_path
 from pyglottolog import lff
+from pyglottolog import fts
 
 
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
@@ -232,6 +234,28 @@ to inspect the changes in detail.
 """)
 
 
+def search(args):
+    """
+    Search Glottolog references
+    """
+    count, results = fts.search(args.args[0], repos=args.repos)
+    table = Table('ID', 'Author', 'Year', 'Title')
+    print('{} matches'.format(count))
+    for res in results:
+        table.append([res.id, res.author, res.year, res.title])
+    print(table.render(tablefmt='simple'))
+
+
+def ftsindex(args):
+    """
+    Index monster.bib for use with the whoosh search engine.
+    """
+    monster = build_path('monster-utf8.bib', repos=args.repos)
+    if not monster.exists():
+        compile_monster(repos=args.repos)
+    return fts.build_index(args.repos, monster)
+
+
 def main():  # pragma: no cover
     parser = ArgumentParser(
         'pyglottolog',
@@ -243,7 +267,9 @@ def main():  # pragma: no cover
         recode,
         tree,
         missing_iso,
-        check_tree)
+        check_tree,
+        search,
+        ftsindex)
     parser.add_argument(
         '--repos', help="path to glottolog data repository", type=Path, default=DATA_DIR)
     sys.exit(parser.main())
