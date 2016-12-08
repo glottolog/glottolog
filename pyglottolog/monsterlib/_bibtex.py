@@ -14,6 +14,8 @@ from pybtex.textutils import whitespace_re
 from pybtex.bibtex.utils import split_name_list
 from pybtex.database import Person
 
+from clldutils.path import as_posix
+
 
 FIELDORDER = [
     'author', 'editor', 'title', 'booktitle', 'journal',
@@ -24,7 +26,7 @@ FIELDORDER = [
 
 @contextlib.contextmanager
 def memorymapped(filename, access=mmap.ACCESS_READ):
-    fd = open(filename)
+    fd = open(as_posix(filename))
     try:
         m = mmap.mmap(fd.fileno(), 0, access=access)
     except:  # pragma: no cover
