@@ -84,6 +84,7 @@ def missing_iso(args):
 def check_tree(args):
     iso_tables = list(args.repos.joinpath('iso639-3').glob('*.zip'))
     if iso_tables:
+        log.info('Checking ISO codes against %s' % iso_tables[0].name)
         iso = ISO(iso_tables[0])
     else:
         iso = None
