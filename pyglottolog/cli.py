@@ -220,7 +220,7 @@ to inspect the changes in detail.
 
 - To commit and push changes, run
 
-    git add languoids/tree/...
+    git add -A languoids/tree/...
 
   for any newly created nodes listed under
 
