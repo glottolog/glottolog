@@ -26,6 +26,12 @@ class Level(IntEnum):
 
 
 @attr.s
+class ClassificationComment(object):
+    sub = attr.ib(default=None)
+    family = attr.ib(default=None)
+
+
+@attr.s
 class ISORetirement(object):
     code = attr.ib()
     comment = attr.ib()
@@ -45,25 +51,25 @@ class EndangermentStatus(IntEnum):
     """
     # language is spoken by all generations;
     # intergenerational transmission is uninterrupted:
-    safe = 1
+    safe = 0
 
     # most children speak the language, but it may be restricted to certain domains
     # (e.g., home):
-    vulnerable = 2
+    vulnerable = 1
 
     # children no longer learn the language as mother tongue in the home:
-    definite = 3
+    definite = 2
 
     # language is spoken by grandparents and older generations; while the parent
     # generation may understand it, they do not speak it to children or among themselves:
-    severe = 4
+    severe = 3
 
     # the youngest speakers are grandparents and older, and they speak the language
     # partially and infrequently:
-    critical = 5
+    critical = 4
 
     # there are no speakers left since the 1950s:
-    extinct = 6
+    extinct = 5
 
     @classmethod
     def from_name(cls, value):
@@ -287,13 +293,19 @@ class Languoid(object):
 
     @property
     def endangerment(self):
-        res = self.cfg.get(self.section_core, 'status')
-        if res:
-            return EndangermentStatus.from_name(res)
+        if 'status' in self.cfg[self.section_core]:
+            res = self.cfg.get(self.section_core, 'status')
+            if res:
+                return EndangermentStatus.from_name(res)
 
     @endangerment.setter
     def endangerment(self, value):
         self._set('status', EndangermentStatus.from_name(value).name)
+
+    @property
+    def classification_comment(self):
+        cfg = self.cfg['classification'] if 'classification' in self.cfg else {}
+        return ClassificationComment(**cfg)
 
     @property
     def macroareas(self):

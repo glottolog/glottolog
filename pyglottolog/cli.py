@@ -270,6 +270,14 @@ def stats(args):
     print(t.render(condensed=False, floatfmt=',.0f'))
 
 
+def classification(args):
+    for l in Glottolog(args.repos).languoids():
+        if l.classification_comment.family:
+            print('{0} family classification: {1}'.format(l.id, l.classification_comment.family))
+        if l.classification_comment.sub:
+            print('{0} subclassification: {1}'.format(l.id, l.classification_comment.sub))
+
+
 def main():  # pragma: no cover
     parser = ArgumentParser(
         'pyglottolog',
@@ -284,6 +292,7 @@ def main():  # pragma: no cover
         missing_iso,
         check_tree,
         search,
+        classification,
         ftsindex)
     parser.add_argument(
         '--repos', help="path to glottolog data repository", type=Path, default=DATA_DIR)
