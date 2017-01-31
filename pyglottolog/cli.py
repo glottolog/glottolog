@@ -14,7 +14,7 @@ The basic invocation looks like
 """
 from __future__ import unicode_literals, print_function
 import sys
-from collections import Counter
+from collections import Counter, defaultdict
 import logging
 
 from clldutils.clilib import ArgumentParser, ParserError
@@ -30,6 +30,7 @@ from pyglottolog.languoids import (
 from pyglottolog.util import DATA_DIR, languoids_path, build_path
 from pyglottolog import lff
 from pyglottolog import fts
+from pyglottolog.api import Glottolog
 
 
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
@@ -62,18 +63,13 @@ def tree(args):
 
 
 def missing_iso(args):
-    tree = languoids_path('tree', repos=args.repos)
     iso = ISO(args.args[0] if args.args else None)
-
     changed_to = []
     for code in iso.retirements:
         changed_to.extend(code.change_to)
     changed_to = set(changed_to)
 
-    ingl = set()
-    for lang in walk_tree(tree=tree):
-        if lang.iso:
-            ingl.add(lang.iso)
+    ingl = set([l.iso for l in Glottolog(args.repos).languoids() if l.iso])
     for code in sorted(iso.languages):
         if code.type == 'Individual/Living':
             if code not in changed_to:
@@ -89,12 +85,11 @@ def check_tree(args):
     else:
         iso = None
 
-    tree = languoids_path('tree', repos=args.repos)
     glottocodes = Glottocodes()
-    log.info('checking tree at %s' % tree)
+    log.info('checking tree at %s' % args.repos)
     by_level = Counter()
     by_category = Counter()
-    for lang in walk_tree(tree=tree):
+    for lang in Glottolog(args.repos).languoids():
         by_level.update([lang.level.name])
         if lang.level == Level.language:
             by_category.update([lang.category])
@@ -258,9 +253,27 @@ def ftsindex(args):
     return fts.build_index(args.repos, monster)
 
 
+def stats(args):
+    ops = defaultdict(Counter)
+
+    for l in Glottolog(args.repos).languoids():
+        for sec in l.cfg:
+            for opt in l.cfg[sec]:
+                if l.cfg.get(sec, opt):
+                    ops[sec].update([opt])
+
+    t = Table('section', 'option', 'count')
+    for section, options in ops.items():
+        t.append([section, '', 0.0])
+        for k, n in options.most_common():
+            t.append(['', k, float(n)])
+    print(t.render(condensed=False, floatfmt=',.0f'))
+
+
 def main():  # pragma: no cover
     parser = ArgumentParser(
         'pyglottolog',
+        stats,
         monster,
         index,
         tree2lff,

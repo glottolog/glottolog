@@ -11,6 +11,7 @@ from clldutils.misc import slug
 from clldutils import jsonlib
 from clldutils.path import Path, walk
 from clldutils.inifile import INI
+import attr
 
 from pyglottolog.util import languoids_path, Trigger
 
@@ -22,6 +23,54 @@ class Level(IntEnum):
     family = 1
     language = 2
     dialect = 3
+
+
+@attr.s
+class ISORetirement(object):
+    code = attr.ib()
+    comment = attr.ib()
+    name = attr.ib()
+    effective = attr.ib()
+    reason = attr.ib(default=None)
+    remedy = attr.ib(default=None)
+    change_request = attr.ib(default=None)
+
+    def asdict(self):
+        return attr.asdict(self)
+
+
+class EndangermentStatus(IntEnum):
+    """
+    http://www.unesco.org/new/en/culture/themes/endangered-languages/atlas-of-languages-in-danger/
+    """
+    # language is spoken by all generations;
+    # intergenerational transmission is uninterrupted:
+    safe = 1
+
+    # most children speak the language, but it may be restricted to certain domains
+    # (e.g., home):
+    vulnerable = 2
+
+    # children no longer learn the language as mother tongue in the home:
+    definite = 3
+
+    # language is spoken by grandparents and older generations; while the parent
+    # generation may understand it, they do not speak it to children or among themselves:
+    severe = 4
+
+    # the youngest speakers are grandparents and older, and they speak the language
+    # partially and infrequently:
+    critical = 5
+
+    # there are no speakers left since the 1950s:
+    extinct = 6
+
+    @classmethod
+    def from_name(cls, value):
+        value = value.lower().split()[0]
+        if value.endswith('ly'):
+            value = value[:-2]
+        return getattr(cls, value)
 
 
 class Glottocodes(object):
@@ -237,6 +286,16 @@ class Languoid(object):
         return res
 
     @property
+    def endangerment(self):
+        res = self.cfg.get(self.section_core, 'status')
+        if res:
+            return EndangermentStatus.from_name(res)
+
+    @endangerment.setter
+    def endangerment(self, value):
+        self._set('status', EndangermentStatus.from_name(value).name)
+
+    @property
     def macroareas(self):
         return self.cfg.getlist(self.section_core, 'macroareas')
 
@@ -316,6 +375,15 @@ class Languoid(object):
     @iso_code.setter
     def iso_code(self, value):
         self._set('iso639-3', value)
+
+    @property
+    def iso_retirement(self):
+        if 'iso_retirement' in self.cfg:
+            try:
+                return ISORetirement(**self.cfg['iso_retirement'])
+            except:
+                print(self.cfg['iso_retirement'].keys())
+                raise
 
     def fname(self, suffix=''):
         return '%s%s' % (self.id, suffix)
