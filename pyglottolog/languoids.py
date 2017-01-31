@@ -292,6 +292,12 @@ class Languoid(object):
         return res
 
     @property
+    def identifier(self):
+        if 'identifier' in self.cfg:
+            return self.cfg['identifier']
+        return {}
+
+    @property
     def endangerment(self):
         if 'status' in self.cfg[self.section_core]:
             res = self.cfg.get(self.section_core, 'status')
