@@ -292,6 +292,12 @@ class Languoid(object):
         return res
 
     @property
+    def names(self):
+        if 'altnames' in self.cfg:
+            return {k: self.cfg.getlist('altnames', k) for k in self.cfg['altnames']}
+        return {}
+
+    @property
     def identifier(self):
         if 'identifier' in self.cfg:
             return self.cfg['identifier']
