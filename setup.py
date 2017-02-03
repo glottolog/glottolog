@@ -11,6 +11,7 @@ requires = [
     'unidecode',
     'whoosh',
     'attrs',
+    'pycountry',
 ]
 
 setup(
