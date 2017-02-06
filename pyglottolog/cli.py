@@ -21,11 +21,11 @@ from clldutils.clilib import ArgumentParser, ParserError
 from clldutils.path import copytree, rmtree, remove, Path
 from clldutils.iso_639_3 import ISO
 from clldutils.markup import Table
+from clldutils.misc import slug
 
 from pyglottolog.monster import main as compile_monster
 from pyglottolog.languoids import (
-    make_index, Languoid, find_languoid, Glottocode, Glottocodes, walk_tree, Level,
-    ascii_tree,
+    Languoid, find_languoid, Glottocode, Glottocodes, Level, ascii_tree,
 )
 from pyglottolog.util import DATA_DIR, languoids_path, build_path
 from pyglottolog import lff
@@ -50,9 +50,36 @@ def index(args):
 
     glottolog index (family|language|dialect|all)
     """
+    def make_index(level, languoids, repos):
+        fname = dict(
+            language='languages', family='families', dialect='dialects')[level.name]
+        links = defaultdict(dict)
+        for lang in languoids:
+            label = '{0.name} [{0.id}]'.format(lang)
+            if lang.iso:
+                label += '[%s]' % lang.iso
+            links[slug(lang.name)[0]][label] = \
+                lang.dir.joinpath(lang.fname('.ini')) \
+                    .relative_to(languoids_path(repos=repos))
+
+        res = [languoids_path(fname + '.md', repos=repos)]
+        with res[0].open('w', encoding='utf8') as fp:
+            fp.write('## %s\n\n' % fname.capitalize())
+            fp.write(' '.join(
+                '[-%s-](%s_%s.md)' % (i.upper(), fname, i) for i in sorted(links.keys())))
+            fp.write('\n')
+
+        for i, langs in links.items():
+            res.append(languoids_path('%s_%s.md' % (fname, i), repos=repos))
+            with res[-1].open('w', encoding='utf8') as fp:
+                for label in sorted(langs.keys()):
+                    fp.write('- [%s](%s)\n' % (label, langs[label]))
+        return res
+
+    langs = list(Glottolog(args.repos).languoids())
     for level in Level:
         if args.args[0] in [level.name, 'all']:
-            make_index(level, repos=args.repos)
+            make_index(level, [l for l in langs if l.level == level], args.repos)
 
 
 def tree(args):

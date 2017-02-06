@@ -71,4 +71,3 @@ class Glottolog(object):
 
     def add_languoid(self):
         pass
-

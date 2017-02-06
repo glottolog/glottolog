@@ -473,34 +473,6 @@ def walk_tree(tree=TREE, **kw):
             yield Languoid.from_ini(fname, **kw)
 
 
-def make_index(level, repos=None):
-    fname = dict(
-        language='languages', family='families', dialect='dialects')[level.name]
-    links = defaultdict(dict)
-    for lang in walk_tree(tree=languoids_path('tree', repos=repos)):
-        if lang.level == level:
-            label = '{0.name} [{0.id}]'.format(lang)
-            if lang.iso:
-                label += '[%s]' % lang.iso
-            links[slug(lang.name)[0]][label] = \
-                lang.dir.joinpath(lang.fname('.ini'))\
-                    .relative_to(languoids_path(repos=repos))
-
-    res = [languoids_path(fname + '.md', repos=repos)]
-    with res[0].open('w', encoding='utf8') as fp:
-        fp.write('## %s\n\n' % fname.capitalize())
-        fp.write(' '.join(
-            '[-%s-](%s_%s.md)' % (i.upper(), fname, i) for i in sorted(links.keys())))
-        fp.write('\n')
-
-    for i, langs in links.items():
-        res.append(languoids_path('%s_%s.md' % (fname, i), repos=repos))
-        with res[-1].open('w', encoding='utf8') as fp:
-            for label in sorted(langs.keys()):
-                fp.write('- [%s](%s)\n' % (label, langs[label]))
-    return res
-
-
 #
 # The following two functions are necessary to make the compilation of the monster bib
 # compatible with the new way of storing languoid data.
