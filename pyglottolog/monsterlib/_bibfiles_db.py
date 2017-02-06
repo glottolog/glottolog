@@ -115,7 +115,8 @@ class Database(object):
             cursor = conn.execute('SELECT refid AS id, id AS replacement '
                 'FROM entry WHERE id != refid ORDER BY id')
             pairs = map(dict, cursor)
-        jsonlib.dump(pairs, filename, indent=4)
+        with jsonlib.update(filename, default={}, indent=4) as repls:
+            repls.update(pairs)
 
     def to_hhmapping(self):
         with self.connect() as conn:
