@@ -1,4 +1,5 @@
 - [Xasonka [xaso1239]](tree/mand1469/west2780/mand1431/cent2047/mand1432/mand1433/mand1434/mand1435/west2499/xaso1239/xaso1239.ini)
 - [Xinca Shared Grammatical Traits [xinc1244]](tree/xinc1237/xinc1244/xinc1244.ini)
 - [Xincan [xinc1237]](tree/xinc1237/xinc1237.ini)
+- [Xinguan Arawak [xing1249]](tree/araw1281/cent2226/xing1249/xing1249.ini)
 - [Xinguan [xing1247]](tree/cari1283/peko1235/xing1247/xing1247.ini)
