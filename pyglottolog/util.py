@@ -32,7 +32,7 @@ def get_iso(d):
     if zips:
         return DatedISO(zips[-1])
 
-    return DatedISO(download_tables(d))
+    return DatedISO(download_tables(d))  # pragma: no cover
 
 
 @functools.total_ordering

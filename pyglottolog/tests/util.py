@@ -12,5 +12,4 @@ class WithApi(WithTempDir):
         WithTempDir.setUp(self)
         self.repos = self.tmp_path('repos')
         copytree(Path(__file__).parent.joinpath('data'), self.repos)
-        self.repos.joinpath('build').mkdir()
         self.api = Glottolog(self.repos)

@@ -54,7 +54,7 @@ Abkhazian [abkh1244]
         lff2tree(self.api)
         self.assertEqual(self.api.languoid('ashk1247').level, Level.dialect)
         self.assertEqual(self.api.languoid('abaz1241').level, Level.language)
-        self.assertEqual(self.api.languoid('abaz1241').iso, 'abq')
+        self.assertEqual(self.api.languoid('abaz1241').hid, 'abq')
 
         self._set_lff(lfftext.replace('Abkhaz-Abaza', 'Abkhaz-Abazzza'), 'lff.txt')
         lff2tree(self.api)

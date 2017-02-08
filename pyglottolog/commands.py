@@ -2,11 +2,15 @@
 from __future__ import unicode_literals, print_function, division
 from collections import defaultdict, Counter
 from itertools import chain
+import os
+import sys
+import subprocess
 
-from termcolor import cprint
+from termcolor import colored
 from clldutils.clilib import command, ParserError
 from clldutils.misc import slug
 from clldutils.markup import Table
+from clldutils.path import Path
 
 from pyglottolog.languoids import Level, Glottocode, Languoid
 from pyglottolog import fts
@@ -14,20 +18,49 @@ from pyglottolog import lff
 from pyglottolog.monster import compile
 
 
+def existing_lang(args):
+    if not args.args:
+        raise ParserError('No languoid specified')
+    lang = args.repos.languoid(args.args[0])
+    if not lang:
+        raise ParserError('Invalid languoid spec')
+    return lang
+
+
+def cprint(text, color=None, attrs=None):
+    print(colored(text, color, attrs=attrs or []).encode('utf8'))
+
+
 @command()
 def show(args):
-    lang = args.repos.languoid(args.args[0])
+    lang = existing_lang(args)
     print()
-    cprint('Glottolog languoid {0}'.format(lang.id), None, attrs=['bold', 'underline'])
+    cprint('Glottolog languoid {0}'.format(lang.id), attrs=['bold', 'underline'])
     print()
-    cprint('Classification:', None, attrs=['bold', 'underline'])
+    cprint('Classification:', attrs=['bold', 'underline'])
     args.repos.ascii_tree(lang, maxlevel=1)
     print()
-    cprint('Info:', None, attrs=['bold', 'underline'])
+    cprint('Info:', attrs=['bold', 'underline'])
     cprint('Path: {0}'.format(lang.fname), 'green', attrs=['bold'])
     for line in lang.cfg.write_string().split('\n'):
         if not line.startswith('#'):
             cprint(line, None, attrs=['bold'] if line.startswith('[') else [])
+
+
+@command()
+def edit(args):
+    lang = existing_lang(args)
+    if sys.platform.startswith('os2'):  # pragma: no cover
+        cmd = ['open']
+    elif sys.platform.startswith('linux'):
+        cmd = ['xdg-open']
+    elif sys.platform.startswith('win'):  # pragma: no cover
+        cmd = []
+    else:  # pragma: no cover
+        print(lang.fname)
+        return
+    cmd.append(lang.fname.as_posix())
+    subprocess.call(cmd)
 
 
 @command()
@@ -63,11 +96,7 @@ def tree(args):
 
     glottolog tree GLOTTOCODE
     """
-    if not args.args:
-        raise ParserError('No root glottocode specified')
-    start = args.repos.languoid(args.args[0])
-    if not start:
-        raise ParserError('Start glottocode does not exist')
+    start = existing_lang(args)
     maxlevel = None
     if len(args.args) > 1:
         try:
@@ -223,7 +252,7 @@ def metadata(args):
 
 
 @command()
-def ftssearch(args):
+def refsearch(args):
     """
     Search Glottolog references
 
@@ -242,11 +271,44 @@ def ftssearch(args):
 
 
 @command()
-def ftsindex(args):
+def refindex(args):
     """
     Index all bib files for use with the whoosh search engine.
     """
     return fts.build_index(args.repos, args.log)
+
+
+@command()
+def langsearch(args):
+    """
+    Search Glottolog languoids
+
+    """
+    def highlight(text):
+        pre, rem = text.split('[[', 1)
+        hl, post = rem.split(']]', 1)
+        return pre + colored(hl, 'red', attrs=['bold']) + post + '\n'
+
+    count, results = fts.search_langs(args.repos, args.args[0])
+    cwd = os.getcwd()
+    print('{} matches'.format(count))
+    for res in results:
+        try:
+            p = Path(res.fname).relative_to(Path(cwd))
+        except ValueError:
+            p = res.fname
+        cprint('{0.name} [{0.id}] {0.level}'.format(res), None, attrs=['bold'])
+        cprint(p, 'green')
+        print(highlight(res.highlights) if res.highlights else '')
+    print('{} matches'.format(count))
+
+
+@command()
+def langindex(args):
+    """
+    Index all bib files for use with the whoosh search engine.
+    """
+    return fts.build_langs_index(args.repos, args.log)
 
 
 @command()

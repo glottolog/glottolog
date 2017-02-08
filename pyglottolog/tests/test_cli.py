@@ -2,7 +2,7 @@
 from __future__ import unicode_literals, print_function, division
 
 from six import text_type, PY2
-from mock import Mock
+from mock import Mock, patch
 from clldutils.testing import capture
 
 from pyglottolog.tests.util import WithApi
@@ -15,8 +15,14 @@ class Tests(WithApi):
     def test_show(self):
         from pyglottolog.commands import show
 
-        #with capture(show, self._args('abcd1234')) as out:
-        #    self.assertIn('Classification', out)
+        with capture(show, self._args('abcd1236')) as out:
+            self.assertIn('Classification'.encode('utf8'), out)
+
+    def test_edit(self):
+        from pyglottolog.commands import edit
+
+        with patch('pyglottolog.commands.subprocess', Mock()):
+            edit(self._args('abcd1236'))
 
     def test_create(self):
         from pyglottolog.commands import create
@@ -27,11 +33,18 @@ class Tests(WithApi):
                 'new name', [c.name for c in self.api.languoid('abcd1234').children])
 
     def test_fts(self):
-        from pyglottolog.commands import ftsindex, ftssearch
+        from pyglottolog.commands import refindex, refsearch, langindex, langsearch
 
-        ftsindex(self._args())
-        with capture(ftssearch, self._args('Harzani year:1334')) as out:
+        refindex(self._args())
+        with capture(refsearch, self._args('Harzani year:1334')) as out:
             self.assertIn("'Abd-al-'Ali Karang", out)
+
+        langindex(self._args())
+        with capture(langsearch, self._args('id:abcd*')) as out:
+            self.assertIn("abcd1234", out)
+
+        with capture(langsearch, self._args('classification')) as out:
+            self.assertIn("abcd1234", out)
 
     def test_metadata(self):
         from pyglottolog.commands import metadata
