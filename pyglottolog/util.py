@@ -7,11 +7,32 @@ import functools
 from copy import copy
 
 from clldutils.path import Path
+from clldutils.iso_639_3 import ISO, download_tables
+from clldutils.misc import UnicodeMixin
 
 import pyglottolog
 
 
 DATA_DIR = Path(pyglottolog.__file__).parent.parent
+
+
+class DatedISO(ISO, UnicodeMixin):
+    def __init__(self, zip):
+        self.name = zip.stem
+        ISO.__init__(self, zip)
+
+    def __unicode__(self):
+        return self.name
+
+
+def get_iso(d):
+    zips = sorted(
+        list(Path(d).glob('iso-639-3_Code_Tables_*.zip')),
+        key=lambda p: p.name)
+    if zips:
+        return DatedISO(zips[-1])
+
+    return DatedISO(download_tables(d))
 
 
 @functools.total_ordering

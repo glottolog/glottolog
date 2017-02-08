@@ -5,10 +5,7 @@ import os
 
 from clldutils.path import as_posix, move, readlines
 
-from pyglottolog.util import build_path
-from pyglottolog.languoids import Languoid, TREE, Level, Glottocode
-from pyglottolog.api import Glottolog
-
+from pyglottolog.languoids import Languoid, Level, Glottocode
 
 NAME_AND_ID_REGEX = '([^\[]+)(\[(' + Glottocode.regex + ')?\])'
 
@@ -55,10 +52,9 @@ def languoid(api, new, path, name_and_codes, level):
 
     lang = Languoid.from_name_id_level(lname, glottocode, level, lineage=lineage)
     if isocode:
-        if len(isocode) == 3:
+        if isocode in api.iso:
             lang.iso = isocode
-        else:
-            lang.hid = isocode
+        lang.hid = isocode
     return lang
 
 

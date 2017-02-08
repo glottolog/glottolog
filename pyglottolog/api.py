@@ -69,6 +69,10 @@ class Glottolog(UnicodeMixin):
     def languoids_path(self, *comps):
         return util.languoids_path(*comps, **{'repos': self.repos})
 
+    @cached_property()
+    def iso(self):
+        return util.get_iso(self.build_path())
+
     @property
     def glottocodes(self):
         return languoids.Glottocodes(self.languoids_path('glottocodes.json'))

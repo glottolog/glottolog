@@ -6,7 +6,6 @@ from itertools import chain
 from termcolor import cprint
 from clldutils.clilib import command, ParserError
 from clldutils.misc import slug
-from clldutils.iso_639_3 import ISO
 from clldutils.markup import Table
 
 from pyglottolog.languoids import Level, Glottocode, Languoid
@@ -129,12 +128,8 @@ def check(args):
     if what not in ['all', 'tree']:
         return
 
-    iso_tables = list(args.repos.repos.joinpath('iso639-3').glob('*.zip'))
-    if iso_tables:
-        args.log.info('Checking ISO codes against %s' % iso_tables[0].name)
-        iso = ISO(iso_tables[0])
-    else:
-        iso = None
+    iso = args.repos.iso
+    args.log.info('Checking ISO codes against %s' % iso)
 
     args.log.info('checking tree at %s' % args.repos)
     by_level = Counter()

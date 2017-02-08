@@ -5,7 +5,7 @@ requires = [
     # list required third-party packages here
     'six',
     'enum34',
-    'clldutils>=1.7.4',
+    'clldutils>=1.7.5',
     'pybtex>=0.20',
     'latexcodec',
     'unidecode',
