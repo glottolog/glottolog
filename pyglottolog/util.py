@@ -7,7 +7,6 @@ import functools
 from copy import copy
 
 from clldutils.path import Path
-from clldutils.inifile import INI
 
 import pyglottolog
 
@@ -73,10 +72,6 @@ def subdir_path(subdir, *comps, **kw):
 languoids_path = partial(subdir_path, 'languoids')
 references_path = partial(subdir_path, 'references')
 build_path = partial(subdir_path, 'build')
-
-
-def read_ini(filename, interpolation=None):
-    return INI.from_file(filename, interpolation=interpolation)
 
 
 def group_first(iterable, groupkey=operator.itemgetter(0)):

@@ -4,17 +4,13 @@ from __future__ import unicode_literals, print_function, division
 from clldutils.path import Path, copytree
 from clldutils.testing import WithTempDir
 
+from pyglottolog.api import Glottolog
 
-class WithRepos(WithTempDir):
+
+class WithApi(WithTempDir):
     def setUp(self):
         WithTempDir.setUp(self)
-        self.repos = self.tmp_path()
-
-        self.languoids = self.tmp_path('languoids')
-        copytree(Path(__file__).parent.joinpath('data', 'languoids'), self.languoids)
-        self.tree = self.languoids.joinpath('tree')
-
-        self.references = self.tmp_path('references')
-        copytree(Path(__file__).parent.joinpath('data', 'references'), self.references)
-
-        self.tmp_path('build').mkdir()
+        self.repos = self.tmp_path('repos')
+        copytree(Path(__file__).parent.joinpath('data'), self.repos)
+        self.repos.joinpath('build').mkdir()
+        self.api = Glottolog(self.repos)

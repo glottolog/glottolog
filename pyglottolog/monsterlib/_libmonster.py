@@ -13,6 +13,7 @@ from clldutils.dsv import UnicodeWriter
 
 from pyglottolog.util import unique, Trigger
 from pyglottolog.monsterlib._bibtex_undiacritic import undiacritic
+from pyglottolog.monsterlib.roman import roman, romanint, introman
 
 
 def opv(d, func, *args):
@@ -213,41 +214,6 @@ def pagecount(pgstr):
     return '%s' % (rsump + sump)
 
 
-roman_map = {'m': 1000, 'd': 500, 'c': 100, 'l': 50, 'x': 10, 'v': 5, 'i': 1}
-
-
-def introman(i):
-    iz = {v: k for k, v in roman_map.items()}
-    x = ""
-    for v, c in sorted(iz.items(), reverse=True):
-        q, r = divmod(i, v)
-        if q == 4 and c != 'm':
-            x = x + c + iz[5 * v]
-        else:
-            x += ''.join(c for _ in range(q))
-        i = r
-    return x
-
-
-def romanint(r):
-    i = 0
-    prev = 10000
-    for c in r:
-        zc = roman_map[c]
-        if zc > prev:
-            i = i - 2 * prev + zc
-        else:
-            i += zc
-        prev = zc
-    return i
-
-
-rerom = re.compile("(\d+)")
-
-
-def roman(x):
-    return rerom.sub(lambda o: introman(int(o.group(1))), x).upper()
-
 
 rewrdtok = re.compile("[a-zA-Z].+")
 reokkey = re.compile("[^a-z\d\-\_\[\]]")
@@ -374,10 +340,13 @@ def markconservative(m, trigs, ref, hht, outfn, verbose=True, rank=None):
     ls = lstat(ref, hht)
     lsafter = lstat_witness(mafter, hht)
     log = []
+    no_status = defaultdict(set)
     for (lg, (stat, wits)) in lsafter.items():
         if not ls.get(lg):
-            if verbose:
-                print(lg, "lacks status", [mafter[k][1]['srctrickle'] for k in wits])
+            srctrickles = [mafter[k][1]['srctrickle'] for k in wits]
+            for t in srctrickles:
+                if not t.startswith('iso6393'):
+                    no_status[lg].add(t)
             continue
         if hht[stat] > hht[ls[lg]]:
             log = log + [
@@ -390,6 +359,8 @@ def markconservative(m, trigs, ref, hht, outfn, verbose=True, rank=None):
                 if blamefield in f:
                     del f[blamefield]
                 mafter[k] = (t, f)
+    for lg in no_status:
+        print('{0} lacks status'.format(lg))
     with UnicodeWriter(outfn, dialect='excel-tab') as writer:
         writer.writerows(((lg, was) + mis for (lg, miss, was) in log for mis in miss))
     return mafter

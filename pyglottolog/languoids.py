@@ -7,13 +7,13 @@ from collections import defaultdict, OrderedDict
 
 from enum import IntEnum
 from six import text_type
-from clldutils.misc import slug
+from clldutils.misc import slug, UnicodeMixin
 from clldutils import jsonlib
-from clldutils.path import Path, walk
+from clldutils.path import Path
 from clldutils.inifile import INI
 import attr
 
-from pyglottolog.util import languoids_path, Trigger
+from pyglottolog.util import languoids_path
 
 
 TREE = languoids_path('tree')
@@ -80,15 +80,19 @@ class EndangermentStatus(IntEnum):
 
 
 class Glottocodes(object):
-    def __init__(self, **kw):
-        self._fname = languoids_path('glottocodes.json', **kw)
+    def __init__(self, fname):
+        self._fname = fname
         self._store = jsonlib.load(self._fname)
 
     def __contains__(self, item):
         alpha, num = Glottocode(item).split()
         return alpha in self._store and num <= self._store[alpha]
 
-    def new(self, alpha, dry_run=False):
+    def new(self, name, dry_run=False):
+        alpha = slug(text_type(name))[:4]
+        assert alpha
+        while len(alpha) < 4:
+            alpha += alpha[-1]
         num = self._store.get(alpha, 1233) + 1
         if not dry_run:
             self._store[alpha] = num
@@ -112,16 +116,8 @@ class Glottocode(text_type):
     def split(self):
         return self[:4], int(self[4:])
 
-    @classmethod
-    def from_name(cls, name, dry_run=False, repos=None):
-        alpha = slug(text_type(name))[:4]
-        assert alpha
-        while len(alpha) < 4:
-            alpha += alpha[-1]
-        return Glottocodes(repos=repos).new(alpha, dry_run=dry_run)
 
-
-class Languoid(object):
+class Languoid(UnicodeMixin):
     section_core = 'core'
 
     def __init__(self, cfg, lineage=None, directory=None):
@@ -143,15 +139,13 @@ class Languoid(object):
     def __repr__(self):
         return '<%s %s>' % (self.level.name.capitalize(), self.id)
 
-    @classmethod
-    def from_dir(cls, directory, **kw):
-        for p in directory.iterdir():
-            if p.is_file():
-                assert p.suffix == '.ini' and Glottocode.pattern.match(p.stem)
-                return cls.from_ini(p, **kw)
+    def __unicode__(self):
+        return '%s [%s]' % (self.name, self.id)
 
     @classmethod
-    def from_ini(cls, ini, nodes=None):
+    def from_dir(cls, directory, nodes=None, **kw):
+        assert Glottocode.pattern.match(directory.name)
+        ini = directory.joinpath(directory.name + '.ini')
         if nodes is None:
             nodes = {}
         ini = Path(ini)
@@ -180,52 +174,10 @@ class Languoid(object):
     def from_name_id_level(cls, name, id, level, **kw):
         cfg = INI(interpolation=None)
         cfg.read_dict(dict(core=dict(name=name, glottocode=id)))
-        res = cls(cfg, [])
+        res = cls(cfg, kw.pop('lineage', []))
         res.level = Level(level)
         for k, v in kw.items():
             setattr(res, k, v)
-        return res
-
-    @classmethod
-    def from_lff(cls, new, path, name_and_codes, level, dry_run=False):
-        assert isinstance(level, Level)
-        lname, codes = name_and_codes.split('[', 1)
-        lname = lname.strip()
-        glottocode, isocode = codes[:-1].split('][')
-        if not glottocode:
-            glottocode = new.get((lname, level))
-        if not glottocode:
-            new[lname, level] = glottocode = Glottocode.from_name(lname, dry_run=dry_run)
-            print('+++ {0} {1}: {2}'.format(level, lname, glottocode))
-
-        lineage = []
-        if path:
-            for i, comp in enumerate(path.split('], ')):
-                if comp.endswith(']'):
-                    comp = comp[:-1]
-                name, id_ = comp.split(' [', 1)
-
-                _level = Level.family
-                if level == Level.dialect:
-                    _level = Level.language if i == 0 else Level.dialect
-
-                if not id_:
-                    id_ = new.get((name, _level))
-                if not id_:
-                    new[name, _level] = id_ = Glottocode.from_name(name, dry_run=dry_run)
-                    print('+++ {0} {1}: {2}'.format(_level, name, id_))
-
-                lineage.append((name, id_, _level))
-
-        cfg = INI(interpolation=None)
-        cfg.read_dict(dict(core=dict(name=lname, glottocode=glottocode)))
-        res = cls(cfg, lineage)
-        res.level = level
-        if isocode:
-            if len(isocode) == 3:
-                res.iso = isocode
-            else:
-                res.hid = isocode
         return res
 
     @property
@@ -440,58 +392,3 @@ class Languoid(object):
 
     def lff_language(self):
         return '    %s [%s][%s]' % (self.name, self.id, self.iso or self.hid or '')
-
-
-def find_languoid(tree=TREE, glottocode=None, **kw):
-    for fname in walk(tree, mode='dirs', followlinks=True):
-        if fname.name == glottocode:
-            return Languoid.from_dir(fname)
-
-
-def _ascii_node(n, level, last, maxlevel, prefix):
-    if maxlevel:
-        if (isinstance(maxlevel, Level) and n.level > maxlevel) or \
-                (not isinstance(maxlevel, Level) and level > maxlevel):
-            return
-    s = '\u2514' if last else '\u251c'
-    s += '\u2500 '
-    nprefix = prefix + ('   ' if last else '\u2502  ')
-    print('{0}{1}{2} [{3}] <{4}>'.format(
-        prefix, s if level else '', n.name, n.id, n.level.name[0]).encode('utf8'))
-    for i, c in enumerate(sorted(n.children, key=lambda nn: nn.name)):
-        _ascii_node(c, level + 1, i == len(n.children) - 1, maxlevel, nprefix)
-
-
-def ascii_tree(start, maxlevel=None, tree=TREE):
-    start = find_languoid(tree=tree, glottocode=start)
-    _ascii_node(start, 0, True, maxlevel, '')
-
-
-def walk_tree(tree=TREE, **kw):
-    for fname in walk(tree, mode='files', followlinks=True):
-        if fname.suffix == '.ini':
-            yield Languoid.from_ini(fname, **kw)
-
-
-#
-# The following two functions are necessary to make the compilation of the monster bib
-# compatible with the new way of storing languoid data.
-#
-def macro_area_from_hid(tree=TREE):
-    res = {}
-    for lang in walk_tree(tree):
-        if lang.hid:
-            macroareas = lang.macroareas
-            res[lang.hid] = macroareas[0] if macroareas else ''
-    return res
-
-
-def load_triggers(tree=TREE):
-    res = {'inlg': [], 'lgcode': []}
-    for lang in walk_tree(tree):
-        for type_ in res:
-            if lang.cfg.has_option('triggers', type_):
-                label = '%s [%s]' % (lang.name, lang.hid or lang.id)
-                res[type_].extend([Trigger(type_, label, text)
-                                   for text in lang.cfg.getlist('triggers', type_)])
-    return res

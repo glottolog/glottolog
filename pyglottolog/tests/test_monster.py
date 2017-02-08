@@ -3,17 +3,17 @@ from __future__ import unicode_literals, print_function, division
 
 from six import PY2
 from clldutils.testing import capture
-from pyglottolog.tests.util import WithRepos
+from pyglottolog.tests.util import WithApi
 
 
-class Tests(WithRepos):
+class Tests(WithApi):
     def test_main(self):
-        from pyglottolog.monster import main
+        from pyglottolog.monster import compile
 
         if not PY2:  # pragma: no cover
             return
 
-        with capture(main, repos=self.repos) as out:
-            self.assertEqual(len(out.splitlines()), 70)
+        with capture(compile, self.api) as out:
+            self.assertEqual(len(out.splitlines()), 42)
             self.assertIn('2 splitted', out)
             self.assertIn('2 merged', out)

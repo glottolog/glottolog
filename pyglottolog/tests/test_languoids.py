@@ -5,34 +5,33 @@ from unittest import TestCase
 from clldutils.testing import WithTempDir
 from clldutils import jsonlib
 
-from pyglottolog.tests.util import WithRepos
+from pyglottolog.tests.util import WithApi
 
 
 class TestGlottocodes(WithTempDir):
     def test_Glottocodes(self):
         from pyglottolog.languoids import Glottocodes
 
-        languoids = self.tmp_path('languoids')
-        languoids.mkdir()
-        jsonlib.dump({}, languoids.joinpath('glottocodes.json'))
+        gcjson = self.tmp_path('glottocodes.json')
+        jsonlib.dump({}, gcjson)
 
-        glottocodes = Glottocodes(repos=self.tmp_path())
-        gc = glottocodes.new('abcd', dry_run=True)
+        glottocodes = Glottocodes(gcjson)
+        gc = glottocodes.new('a', dry_run=True)
+        self.assertTrue(gc.startswith('aaaa'))
         self.assertNotIn(gc, glottocodes)
-        gc = glottocodes.new('abcd')
+        gc = glottocodes.new('a')
         self.assertIn(gc, glottocodes)
         # make sure it's also written to file:
-        self.assertIn(gc, Glottocodes(repos=self.tmp_path()))
+        self.assertIn(gc, Glottocodes(gcjson))
 
 
-class TestGlottocode(TestCase):
-    def test_glottocode_from_name(self):
-        from pyglottolog.languoids import Glottocode, Glottocodes
+class Tests(TestCase):
+    def test_es(self):
+        from pyglottolog.languoids import EndangermentStatus
 
-        gc = Glottocode.from_name('a', dry_run=True)
-        # only a dry-run, so not really added to glottocodes:
-        self.assertNotIn(gc, Glottocodes())
-        self.assertEqual(gc.split()[0], 'aaaa')
+        self.assertEqual(
+            EndangermentStatus.critical,
+            EndangermentStatus.from_name('Critically endangered'))
 
     def test_pattern(self):
         from pyglottolog.languoids import Glottocode
@@ -60,14 +59,16 @@ class TestGlottocode(TestCase):
             Glottocode('a2')
 
 
-class TestLanguoid(WithRepos):
+class TestLanguoid(WithApi):
     def test_factory(self):
         from pyglottolog.languoids import Languoid, Level
 
-        f = Languoid.from_dir(self.tree.joinpath('abcd1234'))
+        f = Languoid.from_dir(self.api.tree.joinpath('abcd1234'))
         self.assertEqual(f.category, 'Family')
-        l = Languoid.from_dir(self.tree.joinpath(f.id, 'abcd1235'))
+        l = Languoid.from_dir(self.api.tree.joinpath(f.id, 'abcd1235'))
         self.assertEqual(l.name, 'language')
+        self.assertIn('abcd1235', repr(l))
+        self.assertIn('language', '%s' % l)
         self.assertEqual(l.level, Level.language)
         self.assertAlmostEqual(l.latitude, 0.5)
         self.assertAlmostEqual(l.longitude, 0.5)
@@ -92,7 +93,7 @@ class TestLanguoid(WithRepos):
     def test_isolate(self):
         from pyglottolog.languoids import Languoid
 
-        l = Languoid.from_dir(self.tree.joinpath('isol1234'))
+        l = Languoid.from_dir(self.api.tree.joinpath('isol1234'))
         self.assertTrue(l.isolate)
         self.assertIsNone(l.parent)
         self.assertIsNone(l.family)
@@ -109,34 +110,3 @@ class TestLanguoid(WithRepos):
             l.id = 'x'
         self.assertEqual(l.id, l.glottocode)
         self.assertEqual(l.hid, 'NOCODE')
-
-    def test_make_index(self):
-        from pyglottolog.languoids import make_index, Level
-
-        for level in Level:
-            res = make_index(level, repos=self.tmp_path())
-            self.assertEqual(len(res), 3 if level == Level.language else 2)
-            self.assertTrue(all(p.exists() for p in res))
-
-    def test_find_languoid(self):
-        from pyglottolog.languoids import find_languoid
-
-        self.assertEqual(
-            find_languoid(tree=self.tree, glottocode='abcd1234').name, 'family')
-
-    def test_walk_tree(self):
-        from pyglottolog.languoids import walk_tree
-
-        self.assertEqual(len(list(walk_tree(tree=self.tree))), 4)
-
-    def test_load_triggers(self):
-        from pyglottolog.languoids import load_triggers
-
-        res = load_triggers(tree=self.tree)
-        self.assertEqual(len(res), 2)
-
-    def test_macro_area_from_hid(self):
-        from pyglottolog.languoids import macro_area_from_hid
-
-        res = macro_area_from_hid(tree=self.tree)
-        self.assertEqual(res['abc'], 'a')

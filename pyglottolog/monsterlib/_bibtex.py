@@ -69,7 +69,7 @@ def names(s):
     for name in split_name_list(s):
         try:
             yield Name.from_string(name)
-        except PybtexError as e:
+        except PybtexError as e:  # pragma: no cover
             print(repr(e))
 
 
@@ -95,7 +95,7 @@ def save(entries, filename, sortkey, encoding=None, verbose=True):
 def dump(entries, fd, sortkey=None, encoding=None, errors='strict', verbose=True):
     assert sortkey in [None, 'bibkey']
     if sortkey is None:
-        if isinstance(entries, collections.OrderedDict):
+        if isinstance(entries, collections.OrderedDict):  # pragma: no cover
             items = entries.items()
         elif isinstance(entries, dict):  # pragma: no cover
             raise ValueError('dump needs sortkey or ordered entries')
@@ -145,7 +145,7 @@ class Ordering(dict):
             yield key, dct[key]
 
     def _itersorted_key(self, key):
-         return self[key], key
+        return self[key], key
 
     def __missing__(self, key):
         return self._missing
@@ -167,7 +167,7 @@ class CheckParser(Parser):
         super(CheckParser, self).__init__(*args, **kwargs)
         self.error_count = 0
 
-    def handle_error(self, error):
+    def handle_error(self, error):  # pragma: no cover
         print('%r' % error)
         self.error_count += 1
         if not isinstance(error, UndefinedMacro):
@@ -176,15 +176,6 @@ class CheckParser(Parser):
     def process_entry(self, *args, **kwargs):
         try:
             super(CheckParser, self).process_entry(*args, **kwargs)
-        except PybtexError as e:
+        except PybtexError as e:  # pragma: no cover
             print(e)
             self.error_count += 1
-
-
-def _test_load():
-    import _bibfiles
-    _bibfiles.Collection().check_all()
-
-
-if __name__ == '__main__':
-    _test_load()

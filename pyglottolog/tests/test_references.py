@@ -1,14 +1,12 @@
 # coding: utf8
 from __future__ import unicode_literals, print_function, division
 
-from pyglottolog.tests.util import WithRepos
+from pyglottolog.tests.util import WithApi
 
 
-class Tests(WithRepos):
+class Tests(WithApi):
     def test_HHTypes(self):
-        from pyglottolog.references import HHTypes
-
-        hht = HHTypes(repos=self.repos)
+        hht = self.api.hhtypes
         self.assertEqual(hht['grammar'].rank, 17)
 
         prev = None
@@ -19,4 +17,4 @@ class Tests(WithRepos):
 
         self.assertEqual(len(hht), 2)
         self.assertIn('rank', repr(hht[0]))
-        self.assertEqual(HHTypes.parse('grammar'), ['grammar'])
+        self.assertEqual(hht.parse('grammar'), ['grammar'])

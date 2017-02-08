@@ -12,6 +12,9 @@ requires = [
     'whoosh',
     'attrs',
     'pycountry',
+    'termcolor',
+    'colorlog',
+    'newick',
 ]
 
 setup(

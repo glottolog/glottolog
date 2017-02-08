@@ -1,24 +1,24 @@
 # _bibfiles_db.py - load bibfiles into sqlite3, hash, assign ids (split/merge)
 
-import os
 import sqlite3
 import difflib
 import operator
 import itertools
 import contextlib
 import collections
+import logging
 
 from six import string_types, viewkeys
 from clldutils.dsv import UnicodeWriter
 from clldutils import jsonlib
+from clldutils.path import remove
 
-from pyglottolog.util import build_path, unique, group_first
+from pyglottolog.util import unique, group_first
 from pyglottolog.monsterlib import _bibtex
 
 __all__ = ['Database']
 
-DBFILE = build_path('_bibfiles.sqlite3').as_posix()
-
+log = logging.getLogger('pyglottolog')
 UNION_FIELDS = {'fn', 'asjp_name', 'isbn'}
 IGNORE_FIELDS = {'crossref', 'numnote', 'glotto_id'}
 
@@ -26,33 +26,17 @@ IGNORE_FIELDS = {'crossref', 'numnote', 'glotto_id'}
 class Database(object):
     """Bibfile collection parsed into an sqlite3 file."""
 
-    @staticmethod
-    def _get_bibfiles(bibfiles):
-        if bibfiles is None:  # pragma: no cover
-            from _bibfiles import Collection
-            return Collection()
-        return bibfiles
-
-    @staticmethod
-    def _get_filename(filename, default=DBFILE):
-        if filename is None:  # pragma: no cover
-            return default
-        return filename
-
     @classmethod
     def from_bibfiles(cls, bibfiles, filename, rebuild=False):
         """If needed, (re)build the db from the bibfiles, hash, split/merge."""
-        bibfiles = cls._get_bibfiles(bibfiles)
-        filename = cls._get_filename(filename)
-
-        if os.path.exists(filename):
+        if filename.exists():
             if not rebuild:
-                self = cls(filename)
+                self = cls(filename, bibfiles)
                 if self.is_uptodate():
                     return self
-            os.remove(filename)
+            remove(filename)
 
-        self = cls(filename)
+        self = cls(filename, bibfiles)
         with self.connect(async=True) as conn:
             create_tables(conn)
             with conn:
@@ -70,14 +54,14 @@ class Database(object):
 
         return self
 
-    def __init__(self, filename=None):
-        self.filename = self._get_filename(filename)
+    def __init__(self, filename, bibfiles):
+        self.filename = filename.as_posix()
+        self._bibfiles = bibfiles
 
     def is_uptodate(self, bibfiles=None, verbose=False):
         """Does the db have the same filenames, sizes, and mtimes as bibfiles?"""
-        bibfiles = self._get_bibfiles(bibfiles)
         with self.connect() as conn:
-            return compare_bibfiles(conn, bibfiles, verbose=verbose)
+            return compare_bibfiles(conn, bibfiles or self._bibfiles, verbose=verbose)
 
     def recompute(self, hashes=True, reload_priorities=True, verbose=True):
         """Call _libmonster.keyid for all entries, splits/merges -> new ids."""
@@ -89,9 +73,8 @@ class Database(object):
                 hashidstats(conn)
             if reload_priorities:
                 source = None if reload_priorities is True else reload_priorities
-                bibfiles = self._get_bibfiles(source)
                 with conn:
-                    update_priorities(conn, bibfiles)
+                    update_priorities(conn, self._bibfiles)
             with conn:
                 assign_ids(conn, verbose=verbose)
 
@@ -115,8 +98,8 @@ class Database(object):
             cursor = conn.execute('SELECT refid AS id, id AS replacement '
                 'FROM entry WHERE id != refid ORDER BY id')
             pairs = map(dict, cursor)
-        with jsonlib.update(filename, default={}, indent=4) as repls:
-            repls.update(pairs)
+        with jsonlib.update(filename, default=[], indent=4) as repls:
+            repls.extend(pairs)
 
     def to_hhmapping(self):
         with self.connect() as conn:
@@ -124,10 +107,10 @@ class Database(object):
             query = 'SELECT bibkey, id FROM entry WHERE filename = ?'
             return dict(conn.execute(query, ('hh.bib',)))
 
-    def trickle(self, bibfiles=None):
+    def trickle(self):
         """Write new/changed glottolog_ref_ids back into the bibfiles."""
-        bibfiles = self._get_bibfiles(bibfiles)
-        if not self.is_uptodate(bibfiles, verbose=True):
+        bibfiles = self._bibfiles
+        if not self.is_uptodate(verbose=True):
             raise RuntimeError('trickle with an outdated db')  # pragma: no cover
         with self.connect() as conn:
             filenames = conn.execute('SELECT name FROM file WHERE EXISTS '
@@ -196,7 +179,7 @@ class Database(object):
     def __getitem__(self, key):
         """Entry by (fn, bk) or merged entry by refid (old grouping) or hash (current grouping)."""
         if not isinstance(key, (tuple, int)) and not isinstance(key, string_types):
-            raise ValueError
+            raise ValueError  # pragma: no cover
         with self.connect() as conn:
             if isinstance(key, tuple):
                 filename, bibkey = key
@@ -356,8 +339,8 @@ def create_tables(conn, page_size=32768):
  
 
 def import_bibfiles(conn, bibfiles):
+    log.info('importing bibfiles into a new db')
     for b in bibfiles:
-        print(b.filepath)
         conn.execute('INSERT INTO file (name, size, mtime, priority)'
             'VALUES (?, ?, ?, ?)', (b.filename, b.size, b.mtime, b.priority))
         for bibkey, (entrytype, fields) in b.iterentries():
@@ -411,9 +394,9 @@ def onetoone(conn):
 
 
 def entrystats(conn):
-    print('\n'.join('%s %d' % (f, n) for f, n in conn.execute(
+    log.info('entry stats:\n' + '\n'.join('%s %d' % (f, n) for f, n in conn.execute(
         'SELECT filename, count(*) FROM entry GROUP BY filename')))
-    print('%d entries total' % conn.execute('SELECT count(*) FROM entry').fetchone())
+    log.info('%d entries total' % conn.execute('SELECT count(*) FROM entry').fetchone())
 
 
 def fieldstats(conn, with_files=False):

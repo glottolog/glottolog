@@ -10,41 +10,42 @@ from whoosh.qparser import QueryParser
 from clldutils.path import rmtree
 from clldutils.misc import slug
 
-from pyglottolog.util import build_path
-from pyglottolog.monsterlib._bibtex import iterentries
-
 
 @attr.s
 class Document(object):
     id = attr.ib()
+    provider = attr.ib()
     title = attr.ib()
     author = attr.ib()
     authoryear = attr.ib()
     year = attr.ib()
     doctype = attr.ib()
+    lgcode = attr.ib()
 
 
-def get_index(repos=None, recreate=False):
-    index_dir = build_path('whoosh', repos=repos)
+def get_index(api, recreate=False):
+    index_dir = api.ftsindex
     if index_dir.exists() and recreate:
-        rmtree(index_dir)
+        rmtree(index_dir)  # pragma: no cover
     if not index_dir.exists():
         index_dir.mkdir()
         schema = Schema(
             id=ID(stored=True),
+            provider=KEYWORD(stored=True),
             authoryear=TEXT(stored=True),
             title=TEXT(analyzer=StemmingAnalyzer(), stored=True),
             author=TEXT(stored=True),
             year=TEXT(stored=True),
             doctype=TEXT(stored=True),
+            lgcode=TEXT(stored=True),
             body=TEXT(),
             tags=KEYWORD)
         return index.create_in(index_dir.as_posix(), schema)
     return index.open_dir(index_dir.as_posix())
 
 
-def search(q, limit=1000, **kw):
-    index_ = get_index(repos=kw.pop('repos', None))
+def search(repos, q, limit=1000, **kw):
+    index_ = get_index(repos)
     qp = QueryParser("body", schema=index_.schema)
     q = '{0} {1}'.format(q, ' '.join('{0}:"{1}"'.format(k, v) for k, v in kw.items()))
 
@@ -53,24 +54,22 @@ def search(q, limit=1000, **kw):
         return len(results), [Document(**res) for res in results]
 
 
-def build_index(repos, monster):
-    writer = get_index(recreate=True, repos=repos).writer()
-    no_id = 0
-    for id_, (type_, fields) in iterentries(monster):
-        if 'glottolog_ref_id' not in fields:
-            no_id += 1
-            continue
-        author = fields.get('author', '')
-        if author:
-            author = slug(author.split()[0])
-        writer.add_document(
-            id=fields['glottolog_ref_id'],
-            title=fields.get('title', fields.get('booktitle', '')),
-            author=fields.get('author', fields.get('editor', '')),
-            year=fields.get('year', ''),
-            doctype=fields.get('hhtype', ''),
-            body='%s' % fields,
-            authoryear='{0}{1}'.format(author, fields.get('year', '')).lower())
+def build_index(api, log):
+    writer = get_index(api, recreate=True).writer()
+    for bibfile in api.bibfiles:
+        log.info('indexing {0}'.format(bibfile))
+        for id_, (type_, fields) in bibfile.iterentries():
+            author = fields.get('author', '')
+            if author:
+                author = slug(author.split()[0])
+            writer.add_document(
+                id='{0}:{1}'.format(bibfile.fname.stem, id_),
+                provider='%s' % bibfile.fname.stem,
+                title=fields.get('title', fields.get('booktitle', '')),
+                author=fields.get('author', fields.get('editor', '')),
+                year=fields.get('year', ''),
+                doctype=fields.get('hhtype', ''),
+                lgcode=fields.get('lgcode', ''),
+                body='%s' % fields,
+                authoryear='{0}{1}'.format(author, fields.get('year', '')).lower())
     writer.commit()
-    if no_id:
-        print('{0} entries without ref ID'.format(no_id))

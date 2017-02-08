@@ -5,49 +5,40 @@ from six import PY2
 from nose.tools import assert_almost_equal, assert_equal
 from clldutils.testing import capture
 
-from pyglottolog.tests.util import WithRepos
-from pyglottolog.languoids import load_triggers
-from pyglottolog.references import HHTypes
+from pyglottolog.tests.util import WithApi
 
 
-class Tests(WithRepos):
+class Tests(WithApi):
+    def test_roman(self):
+        from pyglottolog.monsterlib.roman import introman, romanint
+
+        for i in range(1, 2000):
+            self.assertEqual(i, romanint(introman(i)))
+
     def test_Collection(self):
-        from pyglottolog.monsterlib._bibfiles import Collection
         from pyglottolog.monsterlib._bibfiles_db import Database
 
         if not PY2:  # pragma: no cover
             return
 
-        c = Collection(self.references.joinpath('bibtex'))
-        with capture(c.check_all) as out:
-            self.assertNotIn('invalid', out)
-        with capture(c.roundtrip_all) as out:
-            self.assertIn('a.bib', out)
-        with capture(c['b.bib'].show_characters) as out:
-            self.assertIn('CJK UNIFIED IDEOGRAPH', out)
-        abib = c[0]
-        self.assertEqual(len(list(abib.iterentries())), 2)
-        assert abib.size
-        assert abib.mtime
-
-        db = self.tmp_path('test.sqlite').as_posix()
-        with capture(c.to_sqlite, db) as out:
-            self.assertIn('entries total', out)
-        with capture(c.to_sqlite, db) as out:
+        db = self.tmp_path('test.sqlite')
+        with capture(self.api.bibfiles.to_sqlite, db) as out:
+            self.assertIn('ENTRYTYPE', out)
+        with capture(self.api.bibfiles.to_sqlite, db) as out:
             pass
-        with capture(c.to_sqlite, db, rebuild=True) as out:
+        with capture(self.api.bibfiles.to_sqlite, db, rebuild=True) as out:
             pass
 
-        db = Database(db)
-        with capture(db.recompute, reload_priorities=c) as out:
+        db = Database(db, self.api.bibfiles)
+        with capture(db.recompute, reload_priorities=self.api.bibfiles) as out:
             self.assertEqual(len(out.splitlines()), 32)
-        with capture(db.is_uptodate, c[1:], verbose=True) as out:
+        with capture(db.is_uptodate, self.api.bibfiles[1:], verbose=True) as out:
             self.assertEqual(len(out.splitlines()), 3)
         db.to_bibfile(self.tmp_path('out.bib'))
         db.to_csvfile(self.tmp_path('out.csv'))
         db.to_replacements(self.tmp_path('out.json'))
         self.assertEqual(db.to_hhmapping(), {'s:Karang:Tati-Harzani': 41999})
-        with capture(db.trickle, c) as out:
+        with capture(db.trickle) as out:
             self.assertIn('2 changed 0 added in a.bib', out)
         key, (entrytype, fields) = db[('b.bib', 'arakawa97')]
         self.assertEqual(entrytype, 'article')
@@ -62,12 +53,11 @@ class Tests(WithRepos):
     def test_markconcservative(self):
         from pyglottolog.monsterlib._libmonster import markconservative
 
-        hht = HHTypes(repos=self.repos)
         res = markconservative(
             {1: ('article', {'title': 'Grammar'})},
-            hht.triggers,
+            self.api.hhtypes.triggers,
             {1: ('article', {'title': 'Grammar'})},
-            hht,
+            self.api.hhtypes,
             self.tmp_path('marks.txt'),
             verbose=False)
         self.assertEqual(res[1][1]['hhtype'].split()[0], 'grammar')
@@ -75,9 +65,9 @@ class Tests(WithRepos):
         # If a higher hhtype is computed, this cancels out previous computations.
         res = markconservative(
             {1: ('article', {'title': 'grammar', 'lgcode': 'abc'})},
-            hht.triggers,
+            self.api.hhtypes.triggers,
             {1: ('article', {'title': 'other', 'hhtype': 'other', 'lgcode': 'abc'})},
-            hht,
+            self.api.hhtypes,
             self.tmp_path('marks.txt'),
             verbose=False)
         self.assertNotIn('hhtype', res[1][1])
@@ -91,12 +81,12 @@ class Tests(WithRepos):
             3: ('article', {'title': "other"}),
             4: ('article', {'title': "grammar and phonologie and morphologie"})
         }
-        hht = HHTypes(repos=self.repos)
+        hht = self.api.hhtypes
         markall(bib, hht.triggers, verbose=False, rank=lambda l: hht[l].rank)
         self.assertIn('grammar', bib[1][1]['hhtype'])
         self.assertIn('morphologie and phonologie;grammar', bib[4][1]['hhtype'])
 
-        markall(bib, load_triggers(tree=self.tree)['lgcode'], verbose=False)
+        markall(bib, self.api.triggers['lgcode'], verbose=False)
         self.assertIn('language', bib[1][1]['lgcode'])
 
     def test_add_inlg_e(self):
@@ -104,7 +94,7 @@ class Tests(WithRepos):
 
         res = add_inlg_e(
             {1: ('article', {'title': 'Grammar of language'})},
-            load_triggers(tree=self.tree)[INLG],
+            self.api.triggers[INLG],
             verbose=False)
         assert_equal(res[1][1][INLG], 'language [abc]')
 
@@ -121,7 +111,7 @@ def test_undiacritic():
     from pyglottolog.monsterlib._bibtex_undiacritic import undiacritic
 
     if not PY2:
-        return
+        return  # pragma: no cover
 
     for i, o in [
         ("\\cmd{äöüß}", "aouss"),
@@ -133,7 +123,7 @@ def test_ulatex_decode():
     from pyglottolog.monsterlib._bibtex_escaping import ulatex_decode
 
     if not PY2:
-        return
+        return  # pragma: no cover
 
     for i, o, r in [
         ("", "", ""),
