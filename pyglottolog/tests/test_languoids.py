@@ -6,12 +6,13 @@ from clldutils.testing import WithTempDir
 from clldutils import jsonlib
 
 from pyglottolog.tests.util import WithApi
+from pyglottolog.languoids import (
+    Languoid, Level, ISORetirement, EndangermentStatus, Glottocodes, Glottocode,
+)
 
 
 class TestGlottocodes(WithTempDir):
     def test_Glottocodes(self):
-        from pyglottolog.languoids import Glottocodes
-
         gcjson = self.tmp_path('glottocodes.json')
         jsonlib.dump({}, gcjson)
 
@@ -27,15 +28,11 @@ class TestGlottocodes(WithTempDir):
 
 class Tests(TestCase):
     def test_es(self):
-        from pyglottolog.languoids import EndangermentStatus
-
         self.assertEqual(
             EndangermentStatus.critical,
             EndangermentStatus.from_name('Critically endangered'))
 
     def test_pattern(self):
-        from pyglottolog.languoids import Glottocode
-
         pattern = Glottocode.pattern
         for valid in [
             'abcd1234',
@@ -53,16 +50,12 @@ class Tests(TestCase):
             self.assertIsNone(pattern.match(invalid))
 
     def test_init(self):
-        from pyglottolog.languoids import Glottocode
-
         with self.assertRaises(ValueError):
             Glottocode('a2')
 
 
 class TestLanguoid(WithApi):
     def test_factory(self):
-        from pyglottolog.languoids import Languoid, Level
-
         f = Languoid.from_dir(self.api.tree.joinpath('abcd1234'))
         self.assertEqual(f.category, 'Family')
         l = Languoid.from_dir(self.api.tree.joinpath(f.id, 'abcd1235'))
@@ -88,25 +81,32 @@ class TestLanguoid(WithApi):
         self.assertEqual(l.parent, f)
         self.assertEqual(f.children[0], l)
         self.assertEqual(l.children[0].family, f)
-        l.write_info(self.tmp_path('new').as_posix())
+        l.write_info(self.tmp_path().as_posix())
+        self.assertTrue(self.tmp_path('abcd1235').exists())
+        self.assertIsInstance(self.api.languoid('abcd1235').iso_retirement, ISORetirement)
+        self.assertIsNone(l.classification_comment.sub)
+        l.endangerment = 'Critically endangered'
+        self.assertEqual(l.endangerment, EndangermentStatus.critical)
+        self.assertEqual(l.names, {})
+        l.cfg['altnames'] = {'glottolog': 'xyz'}
+        self.assertIn('glottolog', l.names)
+        self.assertEqual(l.identifier, {})
+        l.cfg['identifier'] = {'multitree': 'xyz'}
+        self.assertIn('multitree', l.identifier)
 
     def test_isolate(self):
-        from pyglottolog.languoids import Languoid
-
         l = Languoid.from_dir(self.api.tree.joinpath('isol1234'))
         self.assertTrue(l.isolate)
         self.assertIsNone(l.parent)
         self.assertIsNone(l.family)
 
     def test_attrs(self):
-        from pyglottolog.languoids import Languoid, Level
-
         l = Languoid.from_name_id_level('name', 'abcd1235', Level.language, hid='NOCODE')
         l.name = 'other'
         self.assertEqual(l.name, 'other')
-        with self.assertRaises(ValueError):
+        with self.assertRaises(AttributeError):
             l.glottocode = 'x'
-        with self.assertRaises(ValueError):
+        with self.assertRaises(AttributeError):
             l.id = 'x'
         self.assertEqual(l.id, l.glottocode)
         self.assertEqual(l.hid, 'NOCODE')

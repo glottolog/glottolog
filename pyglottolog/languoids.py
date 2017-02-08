@@ -15,7 +15,7 @@ import attr
 
 from pyglottolog.util import languoids_path
 
-
+INFO_FILENAME = 'md.ini'
 TREE = languoids_path('tree')
 
 
@@ -120,38 +120,36 @@ class Glottocode(text_type):
 class Languoid(UnicodeMixin):
     section_core = 'core'
 
-    def __init__(self, cfg, lineage=None, directory=None):
+    def __init__(self, cfg, lineage=None, id_=None, directory=None):
         """
 
         :param cfg:
         :param lineage: list of ancestors, given as (id, name) pairs.
         """
+        assert id_ or directory
+        if id_ is None:
+            id_ = Glottocode(directory.name)
         lineage = lineage or []
         assert all([
             Glottocode.pattern.match(id) and Level(level) for name, id, level in lineage])
         self.lineage = [(name, id, Level(level)) for name, id, level in lineage]
         self.cfg = cfg
         self.dir = directory or TREE.joinpath(*[id for name, id, _ in self.lineage])
+        self._id = id_
 
-    def __eq__(self, other):
-        return self.id == other.id
+    @property
+    def glottocode(self):
+        return self._id
 
-    def __repr__(self):
-        return '<%s %s>' % (self.level.name.capitalize(), self.id)
-
-    def __unicode__(self):
-        return '%s [%s]' % (self.name, self.id)
+    @property
+    def id(self):
+        return self._id
 
     @classmethod
     def from_dir(cls, directory, nodes=None, **kw):
-        assert Glottocode.pattern.match(directory.name)
-        ini = directory.joinpath(directory.name + '.ini')
         if nodes is None:
             nodes = {}
-        ini = Path(ini)
-        directory = ini.parent
-        cfg = INI(interpolation=None)
-        cfg.read(ini.as_posix(), encoding='utf8')
+        cfg = INI.from_file(directory.joinpath(INFO_FILENAME), interpolation=None)
 
         lineage = []
         for parent in directory.parents:
@@ -173,12 +171,21 @@ class Languoid(UnicodeMixin):
     @classmethod
     def from_name_id_level(cls, name, id, level, **kw):
         cfg = INI(interpolation=None)
-        cfg.read_dict(dict(core=dict(name=name, glottocode=id)))
-        res = cls(cfg, kw.pop('lineage', []))
+        cfg.read_dict(dict(core=dict(name=name)))
+        res = cls(cfg, kw.pop('lineage', []), id_=Glottocode(id))
         res.level = Level(level)
         for k, v in kw.items():
             setattr(res, k, v)
         return res
+
+    def __eq__(self, other):
+        return self.id == other.id
+
+    def __repr__(self):
+        return '<%s %s>' % (self.level.name.capitalize(), self.id)
+
+    def __unicode__(self):
+        return '%s [%s]' % (self.name, self.id)
 
     @property
     def category(self):
@@ -289,22 +296,6 @@ class Languoid(UnicodeMixin):
         self._set('name', value)
 
     @property
-    def id(self):
-        return self._get('glottocode', Glottocode)
-
-    @id.setter
-    def id(self, value):
-        self._set('glottocode', Glottocode(value))
-
-    @property
-    def glottocode(self):
-        return self._get('glottocode', Glottocode)
-
-    @glottocode.setter
-    def glottocode(self, value):
-        self._set('glottocode', Glottocode(value))
-
-    @property
     def latitude(self):
         return self._get('latitude', float)
 
@@ -355,22 +346,21 @@ class Languoid(UnicodeMixin):
     @property
     def iso_retirement(self):
         if 'iso_retirement' in self.cfg:
-            try:
-                return ISORetirement(**self.cfg['iso_retirement'])
-            except:
-                print(self.cfg['iso_retirement'].keys())
-                raise
+            return ISORetirement(**self.cfg['iso_retirement'])
 
-    def fname(self, suffix=''):
-        return '%s%s' % (self.id, suffix)
+    @property
+    def fname(self):
+        return self.dir.joinpath(INFO_FILENAME)
 
     def write_info(self, outdir=None):
         outdir = outdir or self.id
         if not isinstance(outdir, Path):
             outdir = Path(outdir)
+        if outdir.name != self.id:
+            outdir = outdir.joinpath(self.id)
         if not outdir.exists():
             outdir.mkdir()
-        fname = outdir.joinpath(self.fname('.ini'))
+        fname = outdir.joinpath(INFO_FILENAME)
         self.cfg.write(fname)
         if os.linesep == '\n':
             with fname.open(encoding='utf8') as fp:

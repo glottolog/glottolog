@@ -3,6 +3,7 @@ from __future__ import unicode_literals, print_function, division
 from collections import defaultdict, Counter
 from itertools import chain
 
+from termcolor import cprint
 from clldutils.clilib import command, ParserError
 from clldutils.misc import slug
 from clldutils.iso_639_3 import ISO
@@ -12,6 +13,22 @@ from pyglottolog.languoids import Level, Glottocode, Languoid
 from pyglottolog import fts
 from pyglottolog import lff
 from pyglottolog.monster import compile
+
+
+@command()
+def show(args):
+    lang = args.repos.languoid(args.args[0])
+    print()
+    cprint('Glottolog languoid {0}'.format(lang.id), None, attrs=['bold', 'underline'])
+    print()
+    cprint('Classification:', None, attrs=['bold', 'underline'])
+    args.repos.ascii_tree(lang, maxlevel=1)
+    print()
+    cprint('Info:', None, attrs=['bold', 'underline'])
+    cprint('Path: {0}'.format(lang.fname), 'green', attrs=['bold'])
+    for line in lang.cfg.write_string().split('\n'):
+        if not line.startswith('#'):
+            cprint(line, None, attrs=['bold'] if line.startswith('[') else [])
 
 
 @command()
@@ -29,7 +46,7 @@ def create(args):
         **dict(prop.split('=') for prop in args.args[3:]))
 
     outdir = parent.dir if parent else args.repos.languoids_path('tree')
-    print("Info written to %s" % lang.write_info(outdir=outdir.joinpath(lang.id)))
+    print("Info written to %s" % lang.write_info(outdir=outdir))
 
 
 @command()
@@ -47,6 +64,8 @@ def tree(args):
 
     glottolog tree GLOTTOCODE
     """
+    if not args.args:
+        raise ParserError('No root glottocode specified')
     start = args.repos.languoid(args.args[0])
     if not start:
         raise ParserError('Start glottocode does not exist')
@@ -79,8 +98,7 @@ def index(args):
             if lang.iso:
                 label += '[%s]' % lang.iso
             links[slug(lang.name)[0]][label] = \
-                lang.dir.joinpath(lang.fname('.ini')) \
-                    .relative_to(repos.languoids_path())
+                lang.fname.relative_to(repos.languoids_path())
 
         with repos.languoids_path(fname + '.md').open('w', encoding='utf8') as fp:
             fp.write('## %s\n\n' % fname.capitalize())

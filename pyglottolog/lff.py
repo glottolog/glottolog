@@ -112,7 +112,7 @@ def lang2tree(lang, lineage, out, old_tree):
                 group = Languoid.from_name_id_level(name, id_, level)
             group.write_info(groupdir)
 
-    langdir = groupdir.joinpath(lang.fname())
+    langdir = groupdir.joinpath(lang.id)
     langdir.mkdir()
 
     if lang.id in old_tree:

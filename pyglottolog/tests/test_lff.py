@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from clldutils.testing import capture
+from clldutils.path import walk
 
 from pyglottolog.lff import read_lff, rmtree, lff2tree, tree2lff
 from pyglottolog.languoids import Level
@@ -57,6 +58,8 @@ Abkhazian [abkh1244]
 
         self._set_lff(lfftext.replace('Abkhaz-Abaza', 'Abkhaz-Abazzza'), 'lff.txt')
         lff2tree(self.api)
+        glottocodes = [d.name for d in walk(self.api.tree, mode='dirs')]
+        self.assertEqual(len(glottocodes), len(set(glottocodes)))
         self.assertEqual(self.api.languoid('abkh1243').name, 'Abkhaz-Abazzza')
 
         lfftext = self._set_lff("""# -*- coding: utf-8 -*-

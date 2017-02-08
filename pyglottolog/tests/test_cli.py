@@ -6,12 +6,25 @@ from mock import Mock
 from clldutils.testing import capture
 
 from pyglottolog.tests.util import WithApi
-from pyglottolog.languoids import Level
 
 
 class Tests(WithApi):
     def _args(self, *args):
         return Mock(repos=self.api, args=list(args))
+
+    def test_show(self):
+        from pyglottolog.commands import show
+
+        #with capture(show, self._args('abcd1234')) as out:
+        #    self.assertIn('Classification', out)
+
+    def test_create(self):
+        from pyglottolog.commands import create
+
+        with capture(create, self._args('abcd1234', 'new name', 'language')) as out:
+            self.assertIn('Info written', out)
+            self.assertIn(
+                'new name', [c.name for c in self.api.languoid('abcd1234').children])
 
     def test_fts(self):
         from pyglottolog.commands import ftsindex, ftssearch
@@ -49,9 +62,15 @@ class Tests(WithApi):
             len(list(self.repos.joinpath('languoids').glob('*.md'))), 7)
 
     def test_tree(self):
-        from pyglottolog.commands import tree
+        from pyglottolog.commands import tree, ParserError
 
-        with capture(tree, self._args('abcd1235', 'language')) as out:
+        with self.assertRaises(ParserError):
+            tree(self._args())
+
+        with self.assertRaises(ParserError):
+            tree(self._args('xyz'))
+
+        with capture(tree, self._args('abc', 'language')) as out:
             if not isinstance(out, text_type):
                 out = out.decode('utf8')
             self.assertIn('language', out)
