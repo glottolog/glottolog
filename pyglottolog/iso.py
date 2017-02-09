@@ -51,7 +51,7 @@ def change_request_as_source(id_, rows, ref_ids):
             for r in rows),
         'src': "iso6393",
     }
-    if id_ in ref_ids:
+    if id_ in ref_ids and ref_ids[id_]:
         fields['glottolog_ref_id'] = ref_ids[id_]
     return Source('misc', id_, **fields)
 
@@ -71,19 +71,11 @@ def iter_change_requests():
             yield dict(zip(cols, parse_row(tr, 'td')))
 
 
-def bibtex():
-    bib = references_path('bibtex', 'iso6393.bib')
+def bibtex(api):
+    bib = api.bibfiles['iso6393.bib']
+    glottolog_ref_ids = bib.glottolog_ref_id_map
 
-    glottolog_ref_ids = {}
-    if bib.exists():
-        with bib.open(encoding='utf8') as fp:
-            for rec in fp.read().split('@misc'):
-                if rec.strip():
-                    rec = Source.from_bibtex('@misc' + rec)
-                    if 'glottolog_ref_id' in rec:
-                        glottolog_ref_ids[rec.id] = rec['glottolog_ref_id']
-
-    with bib.open('w', encoding='utf8') as fp:
+    with bib.fname.open('w', encoding='utf8') as fp:
         for id_, rows in groupby(iter_change_requests(), lambda c: c['CR Number']):
             fp.write(
                 change_request_as_source(id_, list(rows), glottolog_ref_ids).bibtex())

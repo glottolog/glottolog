@@ -83,7 +83,8 @@ class TestLanguoid(WithApi):
         self.assertEqual(l.children[0].family, f)
         l.write_info(self.tmp_path().as_posix())
         self.assertTrue(self.tmp_path('abcd1235').exists())
-        self.assertIsInstance(self.api.languoid('abcd1235').iso_retirement, ISORetirement)
+        self.assertIsInstance(
+            self.api.languoid('abcd1235').iso_retirement.asdict(), dict)
         self.assertIsNone(l.classification_comment.sub)
         l.endangerment = 'Critically endangered'
         self.assertEqual(l.endangerment, EndangermentStatus.critical)

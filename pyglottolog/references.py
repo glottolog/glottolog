@@ -3,7 +3,7 @@ from __future__ import unicode_literals, print_function, division
 import re
 import functools
 from itertools import chain
-from collections import Counter
+from collections import Counter, OrderedDict
 import unicodedata
 import datetime
 
@@ -23,7 +23,7 @@ class BibFiles(list):
         for sec in ini.sections():
             if sec.endswith('.bib'):
                 fname = api.references_path('bibtex', sec)
-                if not fname.exists():
+                if not fname.exists():  # pragma: no cover
                     raise ValueError('invalid bibtex file referenced in BIBFILES.ini')
                 res.append(BibFile(fname=fname, **ini[sec]))
 
@@ -80,25 +80,32 @@ class BibFile(UnicodeMixin):
 
     def iterentries(self):
         """Yield entries as (bibkey, (entrytype, fields)) tuples."""
-        return _bibtex.iterentries(
-            filename=self.filepath.as_posix(),
-            encoding=self.encoding)
+        return _bibtex.iterentries(filename=self.fname, encoding=self.encoding)
+
+    @property
+    def glottolog_ref_id_map(self):
+        return {
+            k: fields['glottolog_ref_id'] for k, (_, fields) in self.iterentries()
+            if 'glottolog_ref_id' in fields}
+
+    def update(self, fname):
+        entries = OrderedDict()
+        ref_id_map = self.glottolog_ref_id_map
+        for key, (type_, fields) in _bibtex.iterentries(fname, self.encoding):
+            if key in ref_id_map and 'glottolog_ref_id' not in fields:
+                fields['glottolog_ref_id'] = ref_id_map[key]
+            entries[key] = (type_, fields)
+        self.save(entries)
 
     def load(self):
         """Return entries as bibkey -> (entrytype, fields) dict."""
         return _bibtex.load(
-            filename=self.filepath.as_posix(),
-            preserve_order=self.sortkey is None,
-            encoding=self.encoding)
+            self.fname, preserve_order=self.sortkey is None, encoding=self.encoding)
 
-    def save(self, entries, verbose=True):
+    def save(self, entries):
         """Write bibkey -> (entrytype, fields) map to file."""
         _bibtex.save(
-            entries,
-            filename=self.filepath.as_posix(),
-            sortkey=self.sortkey,
-            encoding=self.encoding,
-            verbose=verbose)
+            entries, filename=self.fname, sortkey=self.sortkey, encoding=self.encoding)
 
     def __unicode__(self):
         return '<%s %s>' % (self.__class__.__name__, self.fname.name)

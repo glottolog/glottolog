@@ -8,27 +8,49 @@ from __future__ import unicode_literals, print_function
 import re
 from heapq import nsmallest
 from collections import defaultdict
+from itertools import groupby
+from operator import itemgetter
 
 from clldutils.dsv import UnicodeWriter
 
 from pyglottolog.util import unique, Trigger
 from pyglottolog.monsterlib._bibtex_undiacritic import undiacritic
-from pyglottolog.monsterlib.roman import roman, romanint, introman
+from pyglottolog.monsterlib.roman import roman, romanint
 
 
 def opv(d, func, *args):
+    """
+    Apply func to all values of a dictionary.
+
+    :param d: A dictionary.
+    :param func: Callable accepting a value of `d` as first parameter.
+    :param args: Additional positional arguments to be passed to `func`.
+    :return: `dict` mapping the keys of `d` to the return value of the function call.
+    """
     return {i: func(v, *args) for i, v in d.items()}
 
 
-def grp2fd(l):
-    r = defaultdict(dict)
-    for (a, b) in l:
-        r[a][b] = 1
-    return r
-
-
 def grp2(l):
-    return opv(grp2fd(l), lambda x: list(x.keys()))
+    """
+    Turn a list of pairs into a dictionary, mapping first elements to lists of
+    co-occurring second elements in pairs.
+
+    :param l:
+    :return:
+    """
+    return {a: [pair[1] for pair in pairs] for a, pairs in
+            groupby(sorted(l, key=itemgetter(0)), itemgetter(0))}
+
+
+def grp2fd(l):
+    """
+    Turn a list of pairs into a nested dictionary, thus grouping by the first element in
+    the pair.
+
+    :param l:
+    :return:
+    """
+    return {k: {vv: 1 for vv in v} for k, v in grp2(l).items()}
 
 
 reauthor = [re.compile(pattern) for pattern in [
@@ -53,8 +75,7 @@ def psingleauthor(n):
         o = pattern.match(n)
         if o:
             return o.groupdict()
-    else:
-        print("Couldn't parse name:", n)
+    print("Couldn't parse name:", n)  # pragma: no cover
 
 
 def pauthor(s):
@@ -86,13 +107,18 @@ def lowerupper(s):
 
 def lastnamekey(s):
     _, upper = lowerupper(s)
-    if not upper:
-        return ''
-    return max(upper)
+    return max(upper) if upper else ''
 
 
 def rangecomplete(incomplete, complete):
+    """
+    >>> rangecomplete('2', '10')
+    '12'
+    """
     if len(complete) > len(incomplete):
+        # if the second number in a range of pages has less digits than the the first,
+        # we assume it's meant as only the last digits of the bigger number,
+        # i.e. 10-2 is interpreted as 10-12.
         return complete[:len(complete) - len(incomplete)] + incomplete
     return incomplete
 
@@ -205,8 +231,8 @@ repgs = re.compile("([\d]+)\-?([\d]*)")
 def pagecount(pgstr):
     rpgs = rerpgs.findall(pgstr)
     pgs = repgs.findall(pgstr)
-    rsump = sum([romanint(b) - romanint(a) + 1 for (a, b) in rpgs if b] + [romanint(a) for (a, b) in rpgs if not b])
-    sump = sum([int(rangecomplete(b, a)) - int(a) + 1 for (a, b) in pgs if b] + [int(a) for (a, b) in pgs if not b])
+    rsump = sum(romanint(b) - romanint(a) + 1 if b else romanint(a) for (a, b) in rpgs)
+    sump = sum(int(rangecomplete(b, a)) - int(a) + 1 if b else int(a) for (a, b) in pgs)
     if rsump != 0 and sump != 0:
         return "%s+%s" % (rsump, sump)
     if rsump == 0 and sump == 0:

@@ -74,6 +74,7 @@ Abkhaz-Adyge [abkh1242], Circassian [circ1239]
     Kabardian [kaba1278][kbd]
 Abkhaz-Adyge [abkh1242], Circassian [circ1239], New Group []
     New name [][NOCODE_New-name]
+    Another one [][aaa]
 """, 'lff.txt')
 
         dfftext = self._set_lff("""# -*- coding: utf-8 -*-
@@ -90,6 +91,7 @@ None [xyzz1234]
 
         with capture(lff2tree, self.api) as out:
             self.assertIn('missing language referenced', out)
+        self.assertEqual(self.api.languoid('aaa').name, 'Another one')
         langs = list(self.api.languoids())
         self.assertIn('newg1234', self.api.glottocodes)
         self.assertEqual(len([l for l in langs if l.name == 'New Group']), 1)

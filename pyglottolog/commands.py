@@ -16,6 +16,15 @@ from pyglottolog.languoids import Level, Glottocode, Languoid
 from pyglottolog import fts
 from pyglottolog import lff
 from pyglottolog.monster import compile
+import pyglottolog.iso
+
+
+@command()
+def isobib(args):
+    """
+    Update iso6393.bib - the file of references for ISO 639-3 change requests.
+    """
+    pyglottolog.iso.bibtex(args.repos)
 
 
 def existing_lang(args):

@@ -135,6 +135,6 @@ def compile(api, log=None, rebuild=False):
 
     # Save
     log.info('%s save as utf8' % time.ctime())
-    monster.save(m, verbose=False)
+    monster.save(m)
 
     log.info('%s done.' % time.ctime())

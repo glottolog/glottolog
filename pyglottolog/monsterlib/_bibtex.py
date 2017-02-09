@@ -46,7 +46,7 @@ def load(filename, preserve_order=False, encoding=None):
 
 def iterentries(filename, encoding=None):
     encoding = encoding or 'utf8'
-    with memorymapped(filename) as source:
+    with memorymapped(as_posix(filename)) as source:
         try:
             for entrytype, (bibkey, fields) in BibTeXEntryIterator(source):
                 fields = {
@@ -87,12 +87,12 @@ class Name(collections.namedtuple('Name', 'prelast last given lineage')):
         return cls(prelast, last, given, lineage)
 
 
-def save(entries, filename, sortkey, encoding=None, verbose=True):
-    with io.open(filename, 'w', encoding=encoding or 'utf8', errors='strict') as fd:
-        dump(entries, fd, sortkey, encoding, None, verbose)
+def save(entries, filename, sortkey, encoding='utf8'):
+    with io.open(as_posix(filename), 'w', encoding=encoding, errors='strict') as fd:
+        dump(entries, fd, sortkey, encoding, None)
 
 
-def dump(entries, fd, sortkey=None, encoding=None, errors='strict', verbose=True):
+def dump(entries, fd, sortkey=None, encoding=None, errors='strict'):
     assert sortkey in [None, 'bibkey']
     if sortkey is None:
         if isinstance(entries, collections.OrderedDict):  # pragma: no cover

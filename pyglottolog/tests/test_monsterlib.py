@@ -12,6 +12,8 @@ class Tests(WithApi):
     def test_roman(self):
         from pyglottolog.monsterlib.roman import introman, romanint
 
+        self.assertEqual(introman(5), 'v')
+        self.assertEqual(introman(8), 'viii')
         for i in range(1, 2000):
             self.assertEqual(i, romanint(introman(i)))
 
@@ -161,15 +163,6 @@ def test_distance():
         assert_almost_equal(distance(d1, d2), dist, places=3)
 
 
-def test_roman():
-    from pyglottolog.monsterlib._libmonster import romanint, introman
-
-    assert_equal(introman(5), 'v')
-    assert_equal(introman(8), 'viii')
-    for i in range(2000):
-        assert_equal(romanint(introman(i)), i)
-
-
 def test_keyid():
     from pyglottolog.monsterlib._libmonster import keyid
 
@@ -188,6 +181,17 @@ def test_keyid():
         assert 'Unparsed' in out
 
 
+def test_pyear():
+    from pyglottolog.monsterlib._libmonster import pyear
+
+    for year, res in [
+        ('', '[nd]'),
+        ('1931', '1931'),
+        ('1931-32', '1931-1932'),
+    ]:
+        assert_equal(pyear(year), res)
+
+
 def test_pagecount():
     from pyglottolog.monsterlib._libmonster import pagecount
 
@@ -196,6 +200,8 @@ def test_pagecount():
         ('1', '1'),
         ('10-20', '11'),
         ('10-20,v-viii', '4+11'),
+        ('20,viii', '8+20'),
+        ('10-2', '3'),  # interpreted as 10-12
     ]:
         assert_equal(pagecount(pages), res)
 
@@ -209,3 +215,10 @@ def test_lgcode():
         ('abc,NOCODE_Abc', ['abc', 'NOCODE_Abc']),
     ]:
         assert_equal(lgcode((None, dict(lgcode=lgcode_))), codes)
+
+
+def test_grp2fd():
+    from pyglottolog.monsterlib._libmonster import grp2fd
+
+    l = [(1, 2), (1, 3), (2, 4), (1, 5)]
+    assert_equal(grp2fd(l), {1: {2: 1, 3: 1, 5: 1}, 2: {4: 1}})
