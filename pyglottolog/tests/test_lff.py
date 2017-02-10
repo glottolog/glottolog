@@ -76,20 +76,19 @@ Abkhaz-Adyge [abkh1242], Circassian [circ1239], New Group []
     Another one [][aaa]
 """, 'lff.txt')
 
-        dfftext = self._set_lff("""# -*- coding: utf-8 -*-
-Abaza [abaz1241]
+        self._set_lff("""# -*- coding: utf-8 -*-
+Ashkaraua [ashk1247]
     Bezshagh [bezs1238][]
     Tapanta [tapa1256][]
 Abkhazian [abkh1244]
     Abzhui [abzh1238][]
     Bzyb [bzyb1238][]
     Samurzakan [samu1242][]
-None [xyzz1234]
+Kabardian [kaba1278]
     Dia [][]
 """, 'dff.txt')
 
-        with capture(lff2tree, self.api) as out:
-            self.assertIn('missing language referenced', out)
+        lff2tree(self.api)
         self.assertEqual(self.api.languoid('abaz1241').level, Level.family)
         self.assertEqual(self.api.languoid('aaa').name, 'Another one')
         langs = list(self.api.languoids())
@@ -97,6 +96,36 @@ None [xyzz1234]
         self.assertEqual(len([l for l in langs if l.name == 'New Group']), 1)
         self.assertEqual(len([l for l in langs if l.hid == 'NOCODE_New-name']), 1)
         tree2lff(self.api)
+
+        #
+        # Nodes must have consistent names!
+        #
+        self._set_lff("""# -*- coding: utf-8 -*-
+Ashkxxxaraua [ashk1247]
+    Bezshagh [bezs1238][]
+""", 'dff.txt')
+        with self.assertRaises(ValueError):
+            lff2tree(self.api)
+
+        #
+        # Top-level nodes in dff must be languages:
+        #
+        self._set_lff("""# -*- coding: utf-8 -*-
+Abaza [abaz1241]
+    Bezshagh [bezs1238][]
+""", 'dff.txt')
+        with self.assertRaises(ValueError):
+            lff2tree(self.api)
+
+        #
+        # Top-level nodes in dff must be languages in lff:
+        #
+        self._set_lff("""# -*- coding: utf-8 -*-
+None [xyzz1234]
+    Dia [][]
+""", 'dff.txt')
+        with self.assertRaises(ValueError):
+            lff2tree(self.api)
 
     def test_read_lff_error(self):
         _lff = """

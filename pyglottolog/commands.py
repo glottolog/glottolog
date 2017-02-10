@@ -335,7 +335,16 @@ def lff2tree(args):
 
     glottolog lff2tree [test]
     """
-    lff.lff2tree(args.repos)
+    try:
+        lff.lff2tree(args.repos)
+    except ValueError:
+        print("""
+Something went wrong! Roll back inconsistent state running
+
+    rm -rf languoids
+    git checkout languoids
+""")
+
     if args.args and args.args[0] == 'test':  # pragma: no cover
         print("""
 You can run

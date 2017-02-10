@@ -65,6 +65,7 @@ def read_lff(api, new, level, fname=None):
     lang_line = re.compile('\s+' + NAME_AND_ID_REGEX + '(\[([a-z]{3}|NOCODE\_[^\]]+)?\])$')
     class_line = re.compile(NAME_AND_ID_REGEX + '(,\s*' + NAME_AND_ID_REGEX + ')*$')
     isolate_line = re.compile('([^\[]+)(\[-isolate-\])$')
+    languoids = {}
 
     path = None
     for line in fname if isinstance(fname, list) \
@@ -162,22 +163,32 @@ def lff2tree(api):
 
     new = {}
     languages = {}
+    languoids = {}
+
+    def checked(l):
+        assert l.id not in languoids
+        for n, gc, _level in l.lineage:
+            if gc in languoids:
+                if languoids[gc] != (n, _level):
+                    log.error('{0}: {1} vs {2}'.format(gc, languoids[gc], (n, _level)))
+                    raise ValueError('inconsistent languoid data')
+            else:
+                languoids[gc] = (n, _level)
+        languoids[l.id] = (l.name, l.level)
+        return l
+
     for lang in read_lff(api, new, Level.language, api.build_path('lff.txt')):
-        languages[lang.id] = lang
+        languages[lang.id] = checked(lang)
         lang2tree(lang, lang.lineage, out, old_tree)
 
-    missing = set()
     for lang in read_lff(api, new, Level.dialect, api.build_path('dff.txt')):
+        lang = checked(lang)
         if not lang.lineage or lang.lineage[0][1] not in languages:
-            #raise ValueError('unattached dialect')  # pragma: no cover
-            missing.add(lang.lineage[0])
-            continue
+            log.error('missing language in dff: {0[0]} [{0[1]}]'.format(lang.lineage[0]))
+            raise ValueError('invalid language referenced')
 
         lang2tree(
             lang, languages[lang.lineage[0][1]].lineage + lang.lineage, out, old_tree)
-
-    for m in missing:
-        print('--- missing language referenced from dff.txt: {0[0]} [{0[1]}]'.format(m))
 
 
 def tree2lff(api):
