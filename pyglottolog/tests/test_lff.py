@@ -65,8 +65,7 @@ Abkhazian [abkh1244]
         lfftext = self._set_lff("""# -*- coding: utf-8 -*-
 Abkhaz-Adyge [abkh1242]
     Ubykh [ubyk1235][uby]
-Abkhaz-Adyge [abkh1242], Abkhaz-Abaza [abkh1243]
-    Abaza [abaz1241][abq]
+Abkhaz-Adyge [abkh1242], Abkhaz-Abaza [abkh1243], Abaza [abaz1241]
     Ashkaraua [ashk1247][xyz]
     Abkhazian [abkh1244][abk]
 Abkhaz-Adyge [abkh1242], Circassian [circ1239]
@@ -91,6 +90,7 @@ None [xyzz1234]
 
         with capture(lff2tree, self.api) as out:
             self.assertIn('missing language referenced', out)
+        self.assertEqual(self.api.languoid('abaz1241').level, Level.family)
         self.assertEqual(self.api.languoid('aaa').name, 'Another one')
         langs = list(self.api.languoids())
         self.assertIn('newg1234', self.api.glottocodes)

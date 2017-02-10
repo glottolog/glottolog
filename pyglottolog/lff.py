@@ -2,12 +2,14 @@ from __future__ import unicode_literals, print_function, division
 from collections import defaultdict
 import re
 import os
+import logging
 
 from clldutils.path import as_posix, move, readlines
 
 from pyglottolog.languoids import Languoid, Level, Glottocode
 
 NAME_AND_ID_REGEX = '([^\[]+)(\[(' + Glottocode.regex + ')?\])'
+log = logging.getLogger('pyglottolog')
 
 
 def rmtree(d, **kw):
@@ -100,7 +102,9 @@ def lang2tree(lang, lineage, out, old_tree):
             groupdir.mkdir()
             if id_ in old_tree:
                 group = old_tree[id_]
-                assert group.level == level
+                if group.level != level:
+                    log.info('{0} from {1} to {2}'.format(group, group.level, level))
+                    group.level = level
                 if name != group.name:
                     # rename a subgroup!
                     group.name = name
@@ -114,6 +118,7 @@ def lang2tree(lang, lineage, out, old_tree):
     if lang.id in old_tree:
         old_lang = old_tree[lang.id]
         if old_lang.level != lang.level:
+            log.info('{0} from {1} to {2}'.format(old_lang, old_lang.level, lang.level))
             old_lang.level = lang.level
         if old_lang.name != lang.name:
             old_lang.name = lang.name
