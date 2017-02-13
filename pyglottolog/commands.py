@@ -344,6 +344,7 @@ Something went wrong! Roll back inconsistent state running
     rm -rf languoids
     git checkout languoids
 """)
+        raise
 
     if args.args and args.args[0] == 'test':  # pragma: no cover
         print("""
