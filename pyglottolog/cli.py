@@ -14,13 +14,9 @@ The basic invocation looks like
 """
 from __future__ import unicode_literals, print_function
 import sys
-import argparse
-import logging
-import logging.config
 
-from clldutils.clilib import ArgumentParser, ParserError
+from clldutils.clilib import ArgumentParserWithLogging, ParserError
 from clldutils.path import copytree, rmtree, remove
-import colorlog
 
 from pyglottolog.languoids import Glottocode
 from pyglottolog.api import Glottolog
@@ -54,23 +50,10 @@ def classification(args):
 
 
 def main():  # pragma: no cover
-    logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
-    handler = colorlog.StreamHandler()
-    handler.setFormatter(colorlog.ColoredFormatter(
-        '%(log_color)s%(levelname)s:%(name)s:%(message)s'))
-    log = logging.getLogger('pyglottolog')
-    log.propagate = False
-    log.addHandler(handler)
-
-    parser = ArgumentParser('pyglottolog')
+    parser = ArgumentParserWithLogging('pyglottolog')
     parser.add_argument(
         '--repos',
         help="path to glottolog data repository",
         type=Glottolog,
         default=Glottolog())
-    parser.add_argument(
-        '--log',
-        default=log,
-        help=argparse.SUPPRESS,
-    )
     sys.exit(parser.main())

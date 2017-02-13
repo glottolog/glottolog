@@ -33,7 +33,7 @@ class Tests(WithApi):
 
         db = Database(db, self.api.bibfiles)
         with capture(db.recompute, reload_priorities=self.api.bibfiles) as out:
-            self.assertEqual(len(out.splitlines()), 32)
+            self.assertEqual(len(out.splitlines()), 34)
         with capture(db.is_uptodate, self.api.bibfiles[1:], verbose=True) as out:
             self.assertEqual(len(out.splitlines()), 3)
         db.to_bibfile(self.tmp_path('out.bib'))

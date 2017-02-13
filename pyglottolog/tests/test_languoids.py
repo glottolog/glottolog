@@ -7,7 +7,7 @@ from clldutils import jsonlib
 
 from pyglottolog.tests.util import WithApi
 from pyglottolog.languoids import (
-    Languoid, Level, ISORetirement, EndangermentStatus, Glottocodes, Glottocode,
+    Languoid, Level, Country, EndangermentStatus, Glottocodes, Glottocode,
 )
 
 
@@ -49,12 +49,23 @@ class Tests(TestCase):
         ]:
             self.assertIsNone(pattern.match(invalid))
 
+    def test_Country(self):
+        self.assertEqual(Country.from_text('Germany').id, 'DE')
+        self.assertIsNone(Country.from_name('abcdefg'))
+        self.assertIsNone(Country.from_id('abcdefg'))
+
     def test_init(self):
         with self.assertRaises(ValueError):
             Glottocode('a2')
 
 
 class TestLanguoid(WithApi):
+    def test_Level(self):
+        self.assertGreater(Level.dialect, Level.language)
+        self.assertEqual(Level.language, self.api.languoid('abcd1235').level)
+        with self.assertRaises(ValueError):
+            Level.get('abcde')
+
     def test_factory(self):
         f = Languoid.from_dir(self.api.tree.joinpath('abcd1234'))
         self.assertEqual(f.category, 'Family')
@@ -75,9 +86,14 @@ class TestLanguoid(WithApi):
         l.hid = 'abo'
         self.assertEqual(l.hid, 'abo')
         self.assertEqual(l.id, 'abcd1235')
-        self.assertEqual(l.macroareas, ['a', 'b'])
-        l.macroareas = ['a']
-        self.assertEqual(l.macroareas, ['a'])
+
+        self.assertEqual(len(l.macroareas), 2)
+        l.macroareas = [self.api.macroareas[0]]
+        self.assertEqual(l.macroareas, [self.api.macroareas[0]])
+
+        l.countries = self.api.countries[:2]
+        self.assertEqual(len(l.countries), 2)
+
         self.assertEqual(l.parent, f)
         self.assertEqual(f.children[0], l)
         self.assertEqual(l.children[0].family, f)

@@ -20,7 +20,7 @@ class Tests(WithApi):
         self.assertEqual(len(self.api.triggers), 2)
 
     def test_macroarea_map(self):
-        self.assertEqual(self.api.macroarea_map['abc'], 'a')
+        self.assertEqual(self.api.macroarea_map['abc'], 'Eurasia')
 
     def test_bibfiles(self):
         c = self.api.bibfiles

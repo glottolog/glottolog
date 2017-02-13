@@ -17,6 +17,7 @@ from pyglottolog import fts
 from pyglottolog import lff
 from pyglottolog.monster import compile
 import pyglottolog.iso
+from pyglottolog.util import message
 
 
 @command()
@@ -24,7 +25,7 @@ def isobib(args):
     """
     Update iso6393.bib - the file of references for ISO 639-3 change requests.
     """
-    pyglottolog.iso.bibtex(args.repos)
+    pyglottolog.iso.bibtex(args.repos, args.log)
 
 
 def existing_lang(args):
@@ -150,13 +151,22 @@ def index(args):
                     fp.write('- [%s](%s)\n' % (label, langs[label]))
 
     langs = list(args.repos.languoids())
-    for level in Level:
+    for level in Level():
         if not args.args or args.args[0] == level.name:
             make_index(level, [l for l in langs if l.level == level], args.repos)
 
 
 @command()
 def check(args):
+    def error(obj, msg):
+        args.log.error(message(obj, msg))
+
+    def warn(obj, msg):
+        args.log.warn(message(obj, msg))
+
+    def info(obj, msg):
+        args.log.info(message(obj, msg))
+
     what = args.args[0] if args.args else 'all'
 
     if what in ['all', 'refs']:
@@ -167,59 +177,69 @@ def check(args):
         return
 
     iso = args.repos.iso
-    args.log.info('Checking ISO codes against %s' % iso)
-
+    args.log.info('checking ISO codes against %s' % iso)
     args.log.info('checking tree at %s' % args.repos)
     by_level = Counter()
     by_category = Counter()
-    iso_in_gl, languoids = {}, {}
+    iso_in_gl, languoids, iso_splits = {}, {}, []
+    names = defaultdict(set)
+
     for lang in args.repos.languoids():
+        # duplicate glottocodes:
         if lang.id in languoids:
-            args.log.error('duplicate glottocode {0}:\n{1}\n{2}'.format(
-                lang.id, languoids[lang.id].dir, lang.dir))
+            error(
+                lang.id,
+                'duplicate glottocode\n{0}\n{1}'.format(languoids[lang.id].dir, lang.dir))
         languoids[lang.id] = lang
+
+    for lang in languoids.values():
+        ancestors = lang.ancestors_from_nodemap(languoids)
+        children = lang.children_from_nodemap(languoids)
+
+        names[lang.name].add(lang)
         by_level.update([lang.level.name])
         if lang.level == Level.language:
             by_category.update([lang.category])
 
         if iso and lang.iso:
             if lang.iso not in iso:
-                args.log.warn('invalid ISO-639-3 code: %s [%s]' % (lang.id, lang.iso))
+                warn(lang, 'invalid ISO-639-3 code [%s]' % lang.iso)
             else:
                 isocode = iso[lang.iso]
                 if lang.iso in iso_in_gl:
-                    args.log.error('duplicate ISO code {0}: {1}, {2}'.format(
-                        isocode, iso_in_gl[lang.iso].id, lang.id))
+                    error(isocode,
+                          'duplicate: {0}, {1}'.format(iso_in_gl[lang.iso].id, lang.id))
                 iso_in_gl[lang.iso] = lang
                 if isocode.is_retired and lang.category != 'Bookkeeping':
-                    msg = '%s %s' % (lang.id, repr(isocode))
-                    level = args.log.info
-                    if len(isocode.change_to) == 1:
-                        level = args.log.warn
-                        msg += ' changed to %s' % repr(isocode.change_to[0])
-                    level(msg)
+                    if isocode.type == 'Retirement/split':
+                        iso_splits.append(lang)
+                    else:
+                        msg = repr(isocode)
+                        level = info
+                        if len(isocode.change_to) == 1:
+                            level = warn
+                            msg += ' changed to [%s]' % isocode.change_to[0].code
+                        level(lang, msg)
 
         if not lang.id.startswith('unun9') and lang.id not in args.repos.glottocodes:
-            args.log.error('unregistered glottocode %s' % lang.id)
-        for attr in ['level', 'name', 'glottocode']:
+            error(lang, 'unregistered glottocode')
+        for attr in ['level', 'name']:
             if not getattr(lang, attr):
-                args.log.error('missing %s: %s' % (attr, lang.id))
-        if not Glottocode.pattern.match(lang.dir.name):
-            args.log.error('invalid directory name: %s' % lang.dir.name)
+                error(lang, 'missing %s' % attr)
         if lang.level == Level.language:
-            if lang.parent and lang.parent.level != Level.family:
-                args.log.error('invalid nesting of language under {0}: {1}'.format(
-                    lang.parent.level, lang.id))
-            for child in lang.children:
+            parent = ancestors[-1] if ancestors else None
+            if parent and parent.level != Level.family:
+                error(lang, 'invalid nesting of language under {0}'.format(parent.level))
+            for child in children:
                 if child.level != Level.dialect:
-                    args.log.error('invalid nesting of {0} under language: {1}'.format(
-                        child.level, child.id))
+                    error(child,
+                          'invalid nesting of {0} under language'.format(child.level))
         elif lang.level == Level.family:
             for d in lang.dir.iterdir():
                 if d.is_dir():
                     break
             else:
-                args.log.error('family without children: {0}'.format(lang.id))
+                error(lang, 'family without children')
 
     if iso:
         changed_to = set(chain(*[code.change_to for code in iso.retirements]))
@@ -227,7 +247,27 @@ def check(args):
             if code.type == 'Individual/Living':
                 if code not in changed_to:
                     if code.code not in iso_in_gl:
-                        args.log.info('missing ISO code {0}'.format(code))
+                        info(repr(code), 'missing')
+        for lang in iso_splits:
+            isocode = iso[lang.iso]
+            missing = [s.code for s in isocode.change_to if s.code not in iso_in_gl]
+            if missing:
+                warn(lang, '{0} missing new codes: {1}'.format(
+                    repr(isocode), ', '.join(missing)))
+
+    for name, gcs in sorted(names.items()):
+        if len(gcs) > 1:
+            # duplicate names:
+            method = error
+            if len([1 for n in gcs if n.level != Level.dialect]) <= 1:
+                # at most one of the languoids is not a dialect, just warn
+                method = warn
+            if len([1 for n in gcs
+                    if (not n.lineage) or (n.lineage[0][1] != 'book1242')]) <= 1:
+                # at most one of the languoids is not in bookkeping, just warn
+                method = warn
+            method(name, 'duplicate name: {0}'.format(', '.join(sorted(
+                ['{0} <{1}>'.format(n.id, n.level.name[0]) for n in gcs]))))
 
     def log_counter(counter, name):
         msg = [name + ':']
@@ -326,7 +366,7 @@ def tree2lff(args):
 
     glottolog tree2lff
     """
-    lff.tree2lff(args.repos)
+    lff.tree2lff(args.repos, args.log)
 
 
 @command()
@@ -336,7 +376,7 @@ def lff2tree(args):
     glottolog lff2tree [test]
     """
     try:
-        lff.lff2tree(args.repos)
+        lff.lff2tree(args.repos, args.log)
     except ValueError:
         print("""
 Something went wrong! Roll back inconsistent state running

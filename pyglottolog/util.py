@@ -6,6 +6,8 @@ import operator
 import functools
 from copy import copy
 
+import attr
+from termcolor import colored
 from clldutils.path import Path
 from clldutils.iso_639_3 import ISO, download_tables
 from clldutils.misc import UnicodeMixin
@@ -14,6 +16,20 @@ import pyglottolog
 
 
 DATA_DIR = Path(pyglottolog.__file__).parent.parent
+
+
+@attr.s
+class IdNameDescription(UnicodeMixin):
+    id = attr.ib()
+    name = attr.ib()
+    description = attr.ib()
+
+    def __unicode__(self):
+        return self.name
+
+
+def message(obj, msg):
+    return '{0}: {1}'.format(colored('{0}'.format(obj), 'blue', attrs=['bold']), msg)
 
 
 class DatedISO(ISO, UnicodeMixin):

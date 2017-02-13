@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 import re
 
-import attr
 from clldutils.path import walk, Path
 from clldutils.misc import UnicodeMixin, cached_property
 from clldutils.inifile import INI
@@ -17,41 +16,9 @@ from pyglottolog import references
 ISO_CODE_PATTERN = re.compile('[a-z]{3}$')
 
 
-@attr.s
-class Country(object):
-    id = attr.ib()
-    name = attr.ib()
-
-
-@attr.s
-class Macroarea(object):
-    id = attr.ib()
-    name = attr.ib()
-    description = attr.ib()
-
-
 class Glottolog(UnicodeMixin):
-    countries = [Country(c.alpha_2, c.name) for c in pycountry.countries]
-    macroareas = [Macroarea(*args) for args in [
-        ('northamerica', 
-         'North America', 
-         'North and Middle America up to Panama. Includes Greenland.'),
-        ('southamerica', 
-         'South America', 
-         'Everything South of Darién'),
-        ('africa', 
-         'Africa', 
-         'The continent'),
-        ('australia', 
-         'Australia', 
-         'The continent'),
-        ('eurasia', 
-         'Eurasia', 
-         'The Eurasian landmass North of Sinai. Includes Japan and islands to the North of it. Does not include Insular South East Asia.'),
-        ('pacific', 
-         'Papunesia', 
-         'All islands between Sumatra and the Americas, excluding islands off Australia and excluding Japan and islands to the North of it.'),
-    ]]
+    countries = [languoids.Country(c.alpha_2, c.name) for c in pycountry.countries]
+    macroareas = languoids.MACROAREAS
 
     def __init__(self, repos=None):
         self.repos = Path(repos) if repos else util.DATA_DIR
@@ -132,7 +99,7 @@ class Glottolog(UnicodeMixin):
     def macroarea_map(self):
         res = {}
         for lang in self.languoids():
-            ma = lang.macroareas[0] if lang.macroareas else ''
+            ma = lang.macroareas[0].name if lang.macroareas else ''
             res[lang.id] = ma
             if lang.iso:
                 res[lang.iso] = ma
@@ -150,8 +117,8 @@ def _newick_node(l):
 
 def _ascii_node(n, level, last, maxlevel, prefix):
     if maxlevel:
-        if (isinstance(maxlevel, languoids.Level) and n.level > maxlevel) or \
-                (not isinstance(maxlevel, languoids.Level) and level > maxlevel):
+        if (isinstance(maxlevel, languoids.LevelItem) and n.level > maxlevel) or \
+                (not isinstance(maxlevel, languoids.LevelItem) and level > maxlevel):
             return
     s = '\u2514' if last else '\u251c'
     s += '\u2500 '

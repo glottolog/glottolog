@@ -14,6 +14,6 @@ class Tests(WithApi):
             return
 
         with capture(compile, self.api) as out:
-            self.assertEqual(len(out.splitlines()), 42)
+            self.assertEqual(len(out.splitlines()), 44)
             self.assertIn('2 splitted', out)
             self.assertIn('2 merged', out)

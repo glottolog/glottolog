@@ -2,27 +2,132 @@
 from __future__ import unicode_literals
 import os
 import re
-from itertools import takewhile
 from collections import defaultdict, OrderedDict
 
-from enum import IntEnum
 from six import text_type
 from clldutils.misc import slug, UnicodeMixin
 from clldutils import jsonlib
 from clldutils.path import Path
 from clldutils.inifile import INI
 import attr
+import pycountry
 
-from pyglottolog.util import languoids_path
+from pyglottolog.util import languoids_path, IdNameDescription
 
 INFO_FILENAME = 'md.ini'
 TREE = languoids_path('tree')
 
 
-class Level(IntEnum):
-    family = 1
-    language = 2
-    dialect = 3
+@attr.s
+class LevelItem(IdNameDescription):
+    pass
+
+
+class Level(object):
+    """
+    Glottolog distinguishes three levels of languoids:
+    - family: any sub-grouping of languoids above the language level
+    - language: defined as per\
+    http://glottolog.org/glottolog/glottologinformation#inclusionexclusionoflanguages
+    - dialect: any variety which is not a language
+
+    The Glottolog classification imposes the following rules on the nesting of languoids:
+    1. Dialects must not be top-level nodes of the classification.
+    2. Dialects must not have a family as parent.
+    3. Languages must either be isolates (i.e. top-level nodes) or have a family as
+       parent.
+    4. The levels of the languoids in a tree branch must be monotonically descending.
+    """
+    family = LevelItem(1, 'family', 'sub-grouping of languoids above the language level')
+    language = LevelItem(2, 'language', 'defined by mutual non-intellegibility')
+    dialect = LevelItem(3, 'dialect', 'any variety which is not a language')
+
+    @classmethod
+    def get(cls, item):
+        if isinstance(item, LevelItem):
+            return item
+        for li in cls():
+            if li.id == item or li.name == item:
+                return li
+        raise ValueError(item)
+
+    def __iter__(self):
+        return iter([self.family, self.language, self.dialect])
+
+
+@attr.s
+class Country(UnicodeMixin):
+    """
+    Glottolog languoids can be related to the countries they are spoken in. These
+    countries are identified by ISO 3166 Alpha-2 codes.
+
+    .. see also:: https://en.wikipedia.org/wiki/ISO_3166-1
+    """
+    id = attr.ib()
+    name = attr.ib()
+
+    def __unicode__(self):
+        return '{0.name} ({0.id})'.format(self)
+
+    @classmethod
+    def from_name(cls, name):
+        try:
+            res = pycountry.countries.get(name=name)
+            return cls(id=res.alpha_2, name=res.name)
+        except KeyError:
+            pass
+
+    @classmethod
+    def from_id(cls, id_):
+        try:
+            res = pycountry.countries.get(alpha_2=id_)
+            return cls(id=res.alpha_2, name=res.name)
+        except KeyError:
+            pass
+
+    @classmethod
+    def from_text(cls, text):
+        match = re.search('\(?(?P<code>[A-Z]{2})\)?', text)
+        if match:
+            return cls.from_id(match.group('code'))
+        return cls.from_name(text)
+
+
+@attr.s
+class Macroarea(IdNameDescription):
+    """
+    Glottolog languoids can be related to a macroarea.
+    """
+    @classmethod
+    def from_name(cls, name):
+        for ma in MACROAREAS:
+            if ma.name == name:
+                return ma
+
+
+MACROAREAS = [
+    Macroarea(*args) for args in [
+        ('northamerica',
+         'North America',
+         'North and Middle America up to Panama. Includes Greenland.'),
+        ('southamerica',
+         'South America',
+         'Everything South of Darién'),
+        ('africa',
+         'Africa',
+         'The continent'),
+        ('australia',
+         'Australia',
+         'The continent'),
+        ('eurasia',
+         'Eurasia',
+         'The Eurasian landmass North of Sinai. Includes Japan and islands to the North'
+         'of it. Does not include Insular South East Asia.'),
+        ('pacific',
+         'Papunesia',
+         'All islands between Sumatra and the Americas, excluding islands off Australia'
+         'and excluding Japan and islands to the North of it.'),
+    ]]
 
 
 @attr.s
@@ -45,41 +150,66 @@ class ISORetirement(object):
         return attr.asdict(self)
 
 
-class EndangermentStatus(IntEnum):
+@attr.s
+class StatusItem(IdNameDescription):
+    pass
+
+
+class EndangermentStatus(object):
     """
     http://www.unesco.org/new/en/culture/themes/endangered-languages/atlas-of-languages-in-danger/
     """
-    # language is spoken by all generations;
-    # intergenerational transmission is uninterrupted:
-    safe = 0
-
-    # most children speak the language, but it may be restricted to certain domains
-    # (e.g., home):
-    vulnerable = 1
-
-    # children no longer learn the language as mother tongue in the home:
-    definite = 2
-
-    # language is spoken by grandparents and older generations; while the parent
-    # generation may understand it, they do not speak it to children or among themselves:
-    severe = 3
-
-    # the youngest speakers are grandparents and older, and they speak the language
-    # partially and infrequently:
-    critical = 4
-
-    # there are no speakers left since the 1950s:
-    extinct = 5
+    safe = StatusItem(
+        1,
+        'safe',
+        'language is spoken by all generations; '
+        'intergenerational transmission is uninterrupted.')
+    vulnerable = StatusItem(
+        2,
+        'vulnerable',
+        'most children speak the language, but it may be restricted to certain domains'
+        '(e.g., home).')
+    definite = StatusItem(
+        3,
+        'definitely endangered',
+        'children no longer learn the language as mother tongue in the home.')
+    severe = StatusItem(
+        4,
+        'severely endangered',
+        'language is spoken by grandparents and older generations; while the parent '
+        'generation may understand it, they do not speak it to children or among '
+        'themselves')
+    critical = StatusItem(
+        5,
+        'critically endangered',
+        'the youngest speakers are grandparents and older, and they speak the language '
+        'partially and infrequently')
+    extinct = StatusItem(
+        6,
+        'extinct',
+        'there are no speakers left since the 1950s')
 
     @classmethod
     def from_name(cls, value):
-        value = value.lower().split()[0]
-        if value.endswith('ly'):
-            value = value[:-2]
-        return getattr(cls, value)
+        value = value if isinstance(value, int) else value.lower().split()[0]
+        for status in cls():
+            if status.id == value or status.name.startswith(value):
+                return status
+
+    def __iter__(self):
+        return iter([
+            self.safe,
+            self.vulnerable,
+            self.definite,
+            self.severe,
+            self.critical,
+            self.extinct])
 
 
 class Glottocodes(object):
+    """
+    Registry keeping track of glottocodes that have been dealt out.
+    """
     def __init__(self, fname):
         self._fname = fname
         self._store = jsonlib.load(self._fname)
@@ -118,6 +248,10 @@ class Glottocode(text_type):
 
 
 class Languoid(UnicodeMixin):
+    """
+    Info on languoids is encoded in the ini files and in the directory hierarchy.
+    This class provides access to all of it.
+    """
     section_core = 'core'
 
     def __init__(self, cfg, lineage=None, id_=None, directory=None):
@@ -131,19 +265,12 @@ class Languoid(UnicodeMixin):
             id_ = Glottocode(directory.name)
         lineage = lineage or []
         assert all([
-            Glottocode.pattern.match(id) and Level(level) for name, id, level in lineage])
-        self.lineage = [(name, id, Level(level)) for name, id, level in lineage]
+            Glottocode.pattern.match(id)
+            and Level.get(level) for name, id, level in lineage])
+        self.lineage = [(name, id, Level.get(level)) for name, id, level in lineage]
         self.cfg = cfg
         self.dir = directory or TREE.joinpath(*[id for name, id, _ in self.lineage])
         self._id = id_
-
-    @property
-    def glottocode(self):
-        return self._id
-
-    @property
-    def id(self):
-        return self._id
 
     @classmethod
     def from_dir(cls, directory, nodes=None, **kw):
@@ -173,7 +300,7 @@ class Languoid(UnicodeMixin):
         cfg = INI(interpolation=None)
         cfg.read_dict(dict(core=dict(name=name)))
         res = cls(cfg, kw.pop('lineage', []), id_=Glottocode(id))
-        res.level = Level(level)
+        res.level = Level.get(level)
         for k, v in kw.items():
             setattr(res, k, v)
         return res
@@ -186,6 +313,46 @@ class Languoid(UnicodeMixin):
 
     def __unicode__(self):
         return '%s [%s]' % (self.name, self.id)
+
+    def _set(self, key, value):
+        if value is None and key in self.cfg[self.section_core]:
+            del self.cfg[self.section_core][key]
+        else:
+            self.cfg.set(self.section_core, key, value)
+
+    def _get(self, key, type_=None):
+        res = self.cfg.get(self.section_core, key, fallback=None)
+        if type_ and res:
+            return type_(res)
+        return res
+
+    def write_info(self, outdir=None):
+        outdir = outdir or self.id
+        if not isinstance(outdir, Path):
+            outdir = Path(outdir)
+        if outdir.name != self.id:
+            outdir = outdir.joinpath(self.id)
+        if not outdir.exists():
+            outdir.mkdir()
+        fname = outdir.joinpath(INFO_FILENAME)
+        self.cfg.write(fname)
+        if os.linesep == '\n':
+            with fname.open(encoding='utf8') as fp:
+                text = fp.read()
+            with fname.open('w', encoding='utf8') as fp:
+                fp.write(text.replace('\n', '\r\n'))
+        return fname
+
+    # -------------------------------------------------------------------------
+    # Accessing info of a languoid
+    # -------------------------------------------------------------------------
+    @property
+    def glottocode(self):
+        return self._id
+
+    @property
+    def id(self):
+        return self._id
 
     @property
     def category(self):
@@ -215,9 +382,19 @@ class Languoid(UnicodeMixin):
     def isolate(self):
         return self.level == Level.language and not self.lineage
 
+    def children_from_nodemap(self, nodes):
+        # A faster alternative to `children` when the relevant languoids have already been
+        # read from disc.
+        return [nodes[d.name] for d in self.dir.iterdir() if d.is_dir()]
+
     @property
     def children(self):
         return [Languoid.from_dir(d) for d in self.dir.iterdir() if d.is_dir()]
+
+    def ancestors_from_nodemap(self, nodes):
+        # A faster alternative to `ancestors` when the relevant languoids have already
+        # been read from disc.
+        return [nodes[l[1]] for l in self.lineage]
 
     @property
     def ancestors(self):
@@ -240,15 +417,6 @@ class Languoid(UnicodeMixin):
     def family(self):
         ancestors = self.ancestors
         return ancestors[0] if ancestors else None
-
-    def _set(self, key, value):
-        self.cfg.set(self.section_core, key, value)
-
-    def _get(self, key, type_=None):
-        res = self.cfg.get(self.section_core, key, fallback=None)
-        if type_ and res:
-            return type_(res)
-        return res
 
     @property
     def names(self):
@@ -280,12 +448,25 @@ class Languoid(UnicodeMixin):
 
     @property
     def macroareas(self):
-        return self.cfg.getlist(self.section_core, 'macroareas')
+        return [Macroarea.from_name(n)
+                for n in self.cfg.getlist(self.section_core, 'macroareas')]
 
     @macroareas.setter
     def macroareas(self, value):
-        assert isinstance(value, (list, tuple))
-        self._set('macroareas', value)
+        assert isinstance(value, (list, tuple)) \
+            and all(isinstance(o, Macroarea) for o in value)
+        self._set('macroareas', ['{0}'.format(ma) for ma in value])
+
+    @property
+    def countries(self):
+        return [Country.from_text(n)
+                for n in self.cfg.getlist(self.section_core, 'countries')]
+
+    @countries.setter
+    def countries(self, value):
+        assert isinstance(value, (list, tuple)) \
+               and all(isinstance(o, Country) for o in value)
+        self._set('countries', ['{0}'.format(c) for c in value])
 
     @property
     def name(self):
@@ -321,11 +502,11 @@ class Languoid(UnicodeMixin):
 
     @property
     def level(self):
-        return self._get('level', lambda v: getattr(Level, v))
+        return self._get('level', Level.get)
 
     @level.setter
     def level(self, value):
-        self._set('level', value.name)
+        self._set('level', Level.get(value).name)
 
     @property
     def iso(self):
@@ -351,34 +532,3 @@ class Languoid(UnicodeMixin):
     @property
     def fname(self):
         return self.dir.joinpath(INFO_FILENAME)
-
-    def write_info(self, outdir=None):
-        outdir = outdir or self.id
-        if not isinstance(outdir, Path):
-            outdir = Path(outdir)
-        if outdir.name != self.id:
-            outdir = outdir.joinpath(self.id)
-        if not outdir.exists():
-            outdir.mkdir()
-        fname = outdir.joinpath(INFO_FILENAME)
-        self.cfg.write(fname)
-        if os.linesep == '\n':
-            with fname.open(encoding='utf8') as fp:
-                text = fp.read()
-            with fname.open('w', encoding='utf8') as fp:
-                fp.write(text.replace('\n', '\r\n'))
-        return fname
-
-    def lff_group(self):
-        if self.level == Level.dialect:
-            lineage = reversed(
-                list(takewhile(lambda x: x[2] != Level.family, reversed(self.lineage))))
-        else:
-            lineage = self.lineage
-        if not self.lineage:
-            return '%s [-isolate-]' % self.name
-        res = ', '.join('%s [%s]' % (name, id) for name, id, level in lineage)
-        return res or 'ERROR [-unclassified-]'
-
-    def lff_language(self):
-        return '    %s [%s][%s]' % (self.name, self.id, self.iso or self.hid or '')

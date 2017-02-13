@@ -10,7 +10,7 @@ from pyglottolog.tests.util import WithApi
 
 class Tests(WithApi):
     def _args(self, *args):
-        return Mock(repos=self.api, args=list(args))
+        return Mock(repos=self.api, args=list(args), log=Mock())
 
     def test_show(self):
         from pyglottolog.commands import show

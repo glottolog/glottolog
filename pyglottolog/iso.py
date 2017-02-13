@@ -12,8 +12,6 @@ from bs4 import BeautifulSoup as bs
 
 from clldutils.source import Source
 
-from pyglottolog.util import references_path
-
 
 BASE_URL = "http://www-01.sil.org/iso639-3"
 
@@ -56,12 +54,14 @@ def change_request_as_source(id_, rows, ref_ids):
     return Source('misc', id_, **fields)
 
 
-def iter_change_requests():
+def iter_change_requests(log):
     def parse_row(tr, coltag):
         return [td.get_text() for td in tr.find_all(coltag)]
 
-    res = requests.get(
-        BASE_URL + "/chg_requests.asp", params=dict(order='CR_Number', chg_status='past'))
+    url = BASE_URL + "/chg_requests.asp"
+    log.info('downloading {0} ...'.format(url))
+    res = requests.get(url, params=dict(order='CR_Number', chg_status='past'))
+    log.info('HTTP {0}'.format(res.status_code))
     table = bs(res.content, "html5lib").find('table')
     cols = None
     for i, tr in enumerate(table.find_all('tr')):
@@ -71,12 +71,16 @@ def iter_change_requests():
             yield dict(zip(cols, parse_row(tr, 'td')))
 
 
-def bibtex(api):
+def bibtex(api, log):
     bib = api.bibfiles['iso6393.bib']
     glottolog_ref_ids = bib.glottolog_ref_id_map
+    i = -1
 
     with bib.fname.open('w', encoding='utf8') as fp:
-        for id_, rows in groupby(iter_change_requests(), lambda c: c['CR Number']):
+        for i, (id_, rows) in enumerate(groupby(
+                iter_change_requests(log), lambda c: c['CR Number'])):
             fp.write(
                 change_request_as_source(id_, list(rows), glottolog_ref_ids).bibtex())
             fp.write('\n\n')
+    log.info('bibtex written to {0}'.format(bib.fname))
+    return i + 1
