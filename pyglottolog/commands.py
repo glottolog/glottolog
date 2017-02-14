@@ -435,8 +435,8 @@ to inspect the changes in detail.
 
 @command()
 def classification(args):
-    #keys = args.repos.bibfiles['hh.bib'].keys()
+    map = {v: k for k, v in args.repos.bibfiles['hh.bib'].glottolog_ref_id_map.items()}
     for lang in args.repos.languoids(maxlevel=Level.language):
         clf = lang.classification_comment
-        if clf.check(lang, []):
+        if clf.check(lang, map):
             lang.write_info(outdir=lang.dir)

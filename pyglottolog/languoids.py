@@ -182,11 +182,34 @@ class ClassificationComment(object):
     family = attr.ib(default=None)
     familyrefs = attr.ib(default=attr.Factory(list), convert=Reference.from_list)
 
-    def check(self, lang, keys):
+    def check(self, lang, map_):
+        from textwrap import wrap
+
+        map_.update({
+            '475740': 'hh:hv:Ramirez:Koropo',
+            '475714': 'hh:hv:Foley:Sepik:2013',
+            '478195': 'hh:hvw:Stokhof:Alor',
+        })
+
+        def repl(m):
+            return '**hh:{0}**'.format(m.group('key'))
+
+        def repl2(m):
+            return '**{0}**'.format(map_[m.group('id')])
+
         changed = False
-        for attr in ['sub', 'subrefs', 'familyrefs']:
-            if not getattr(self, attr) and 'classification' in lang.cfg and attr in lang.cfg['classification']:
-                del lang.cfg['classification'][attr]
+        if self.family:
+            clean = self.family.replace('"a', 'ä').replace('\\%', '%')
+            clean = clean.replace('.~', '. ').replace('"u', 'ü').replace('~n', 'ñ')
+            clean = re.sub('\\\\emph\{(?P<m>[^\}]+)\}', lambda m: m.group('m'), clean)
+            clean = re.sub('\\\\Xicte\{(?P<key>[^\}]+)\}', repl, clean)
+            clean = re.sub('\*\*(?P<id>[0-9]+)\*\*', repl2, clean)
+            text = []
+            for line in clean.split('\n'):
+                text.extend(wrap(line, width=80, break_on_hyphens=False, break_long_words=False))
+            text = '\n'.join(text)
+            if text != self.family:
+                lang.cfg['classification']['family'] = text
                 changed = True
         return changed
 
