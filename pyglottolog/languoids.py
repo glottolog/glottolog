@@ -183,10 +183,12 @@ class ClassificationComment(object):
     familyrefs = attr.ib(default=attr.Factory(list), convert=Reference.from_list)
 
     def check(self, lang, keys):
-        if not self.family and 'classification' in lang.cfg and 'family' in lang.cfg['classification']:
-            del lang.cfg['classification']['family']
-            return True
-        return False
+        changed = False
+        for attr in ['sub', 'subrefs', 'familyrefs']:
+            if not getattr(self, attr) and 'classification' in lang.cfg and attr in lang.cfg['classification']:
+                del lang.cfg['classification'][attr]
+                changed = True
+        return changed
 
 
 @attr.s
