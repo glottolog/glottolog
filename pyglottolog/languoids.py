@@ -186,30 +186,37 @@ class ClassificationComment(object):
         from textwrap import wrap
 
         map_.update({
-            '475740': 'hh:hv:Ramirez:Koropo',
-            '475714': 'hh:hv:Foley:Sepik:2013',
-            '478195': 'hh:hvw:Stokhof:Alor',
+            '475740': 'hv:Ramirez:Koropo',
+            '475714': 'hv:Foley:Sepik:2013',
+            '478195': 'hvw:Stokhof:Alor',
+            '474389': 'hvw:NortonAlaki:Talodi',
+            '473551': 'hv:Hsiu:Angkuic',
         })
 
         def repl(m):
             return '**hh:{0}**'.format(m.group('key'))
 
         def repl2(m):
-            return '**{0}**'.format(map_[m.group('id')])
+            refid = m.group('id')
+            if refid in map_:
+                refid = map_[refid]
+            else:
+                raise ValueError(refid)
+            return '**hh:{0}**'.format(refid)
 
         changed = False
-        if self.family:
-            clean = self.family.replace('"a', 'ä').replace('\\%', '%')
+        if self.sub:
+            clean = self.sub.replace('"a', 'ä').replace('\\%', '%')
             clean = clean.replace('.~', '. ').replace('"u', 'ü').replace('~n', 'ñ')
             clean = re.sub('\\\\emph\{(?P<m>[^\}]+)\}', lambda m: m.group('m'), clean)
             clean = re.sub('\\\\Xicte\{(?P<key>[^\}]+)\}', repl, clean)
             clean = re.sub('\*\*(?P<id>[0-9]+)\*\*', repl2, clean)
             text = []
             for line in clean.split('\n'):
-                text.extend(wrap(line, width=80, break_on_hyphens=False, break_long_words=False))
+                text.extend(wrap(line, width=120, break_on_hyphens=False, break_long_words=False))
             text = '\n'.join(text)
-            if text != self.family:
-                lang.cfg['classification']['family'] = text
+            if text != self.sub:
+                lang.cfg['classification']['sub'] = text
                 changed = True
         return changed
 
