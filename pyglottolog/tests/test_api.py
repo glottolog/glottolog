@@ -14,7 +14,11 @@ class Tests(WithApi):
         self.assertEqual(self.api.languoid('abc').name, 'language')
 
     def test_languoids(self):
+        from pyglottolog.languoids import Level
+
         self.assertEqual(len(list(self.api.languoids())), 4)
+        self.assertEqual(len(list(self.api.languoids(maxlevel=Level.family))), 1)
+        self.assertEqual(len(list(self.api.languoids(maxlevel=Level.language))), 3)
 
     def test_load_triggers(self):
         self.assertEqual(len(self.api.triggers), 2)

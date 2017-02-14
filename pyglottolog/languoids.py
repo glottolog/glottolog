@@ -17,6 +17,21 @@ from pyglottolog.util import languoids_path, IdNameDescription
 INFO_FILENAME = 'md.ini'
 TREE = languoids_path('tree')
 
+"""
+Ok so 800 hh-comments (phew) are in.
+
+    There's the comment field which is freetext with markdown (emph, |-| tables and http:// urls). It may have cr:s that fuck up reading the .ini structure -- I am unsure about all that but at least I see no signs of parsing errors when readin the ini:s via pyglottolog.api
+
+    There's the comment_type field which is either
+    -"spurious" meaning the comment is to explain why the languoid in question is spurious and in which Ethnologue (as below) that is/was
+    -"missing" meaning the comment is to explain why the languoid in question is missing (as a language entry) and in which Ethnologue (as below) that is/was
+
+    There's the "ethnologue_versions" field which says which Ethnologue version(s) from E16-E19 the comment pertains to, joined by /:s. E.g. E16/E17. In the case of comment_type=spurious, E16/E17 in the version field means that the code was spurious in E16/E17 but no longer spurious in E18/E19. In the case of comment_type=missing, E16/E17 would mean that the code was missing from E16/E17, but present in E18/E19. If the comment concerns a language where versions would be the empty string, instead the string ISO 639-3 appears.
+
+    There's the isohid field which says which iso/hid the comment concerns.
+"""
+
+
 
 @attr.s
 class LevelItem(IdNameDescription):
@@ -130,10 +145,44 @@ MACROAREAS = [
     ]]
 
 
+old_ref_pattern = re.compile('[^\[]+\[(?P<pages>[^\]]*)\]\s*\([0-9]+\s+(?P<key>[^\)]+)\)')
+new_ref_pattern = re.compile('\*\*(?P<key>hh:[a-zA-Z\-_0-9:]+)\*\*(:(?P<pages>[0-9\-]+))?')
+
+
 @attr.s
 class ClassificationComment(object):
     sub = attr.ib(default=None)
+    subrefs = attr.ib(default=attr.Factory(list))
     family = attr.ib(default=None)
+    familyrefs = attr.ib(default=attr.Factory(list))
+
+    def check(self, lang, keys):
+        familyrefs = []
+        for ref in self.familyrefs:
+            match = new_ref_pattern.match(ref)
+            assert match
+            if match.group('key') not in keys:
+                print(lang, ref)
+            continue
+            #parts = ref.split()
+            #if len(parts) > 1:
+            #    match = old_ref_pattern.match(ref)
+            #    if match:
+            #        new = '**{0}**'.format(match.group('key'))
+            #        if match.group('pages'):
+            #            new += ':{0}'.format(match.group('pages'))
+            #        familyrefs.append(new)
+            #    else:
+            #        for part in parts:
+            #            assert new_ref_pattern.match(part)
+            #            familyrefs.append(part)
+            #else:
+            #    assert new_ref_pattern.match(ref)
+            #    familyrefs.append(ref)
+        #if familyrefs:
+        #    lang.cfg.set('classification', 'familyrefs', familyrefs)
+        #    return True
+        return False
 
 
 @attr.s
@@ -444,7 +493,11 @@ class Languoid(UnicodeMixin):
     @property
     def classification_comment(self):
         cfg = self.cfg['classification'] if 'classification' in self.cfg else {}
-        return ClassificationComment(**cfg)
+        return ClassificationComment(
+            family=cfg.get('family'),
+            familyrefs=self.cfg.getlist('classification', 'familyrefs'),
+            sub=cfg.get('sub'),
+            subrefs=self.cfg.getlist('classification', 'subrefs'))
 
     @property
     def macroareas(self):

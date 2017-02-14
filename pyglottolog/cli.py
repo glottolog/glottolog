@@ -41,14 +41,6 @@ def recode(args):
     print("%s -> %s" % (args.args[0], lang.id))
 
 
-def classification(args):
-    for l in args.repos.languoids():
-        if l.classification_comment.family:
-            print('{0} family classification: {1}'.format(l.id, l.classification_comment.family))
-        if l.classification_comment.sub:
-            print('{0} subclassification: {1}'.format(l.id, l.classification_comment.sub))
-
-
 def main():  # pragma: no cover
     parser = ArgumentParserWithLogging('pyglottolog')
     parser.add_argument(

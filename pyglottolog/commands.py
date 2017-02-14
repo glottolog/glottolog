@@ -5,6 +5,7 @@ from itertools import chain
 import os
 import sys
 import subprocess
+import re
 
 from termcolor import colored
 from clldutils.clilib import command, ParserError
@@ -195,6 +196,9 @@ def check(args):
     for lang in languoids.values():
         ancestors = lang.ancestors_from_nodemap(languoids)
         children = lang.children_from_nodemap(languoids)
+
+        assert isinstance(lang.countries, list)
+        assert isinstance(lang.macroareas, list)
 
         names[lang.name].add(lang)
         by_level.update([lang.level.name])
@@ -427,3 +431,12 @@ to inspect the changes in detail.
     git commit -a -m"reason for change of classification"
     git push origin
 """)
+
+
+@command()
+def classification(args):
+    keys = args.repos.bibfiles['hh.bib'].keys()
+    for lang in args.repos.languoids(maxlevel=Level.language):
+        clf = lang.classification_comment
+        if clf.check(lang, keys):
+            lang.write_info(outdir=lang.dir)

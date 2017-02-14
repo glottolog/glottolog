@@ -1,8 +1,9 @@
 # coding=utf8
 from __future__ import unicode_literals
 import re
+import os
 
-from clldutils.path import walk, Path
+from clldutils.path import Path, as_posix, walk
 from clldutils.misc import UnicodeMixin, cached_property
 from clldutils.inifile import INI
 import pycountry
@@ -62,11 +63,19 @@ class Glottolog(UnicodeMixin):
                 if d.name == id_:
                     return languoids.Languoid.from_dir(d)
 
-    def languoids(self, ids=None):
+    def languoids(self, ids=None, maxlevel=languoids.Level.dialect):
         nodes = {}
-        for d in walk(self.tree, mode='dirs'):
-            if ids is None or d.name in ids:
-                yield languoids.Languoid.from_dir(d, nodes=nodes)
+
+        for dirpath, dirnames, filenames in os.walk(as_posix(self.tree)):
+            dp = Path(dirpath)
+            if dp.name in nodes and nodes[dp.name][2] > maxlevel:
+                del dirnames[:]
+
+            for dirname in dirnames:
+                if ids is None or dirname in ids:
+                    lang = languoids.Languoid.from_dir(dp.joinpath(dirname), nodes=nodes)
+                    if lang.level <= maxlevel:
+                        yield lang
 
     def ascii_tree(self, start, maxlevel=None):
         _ascii_node(self.languoid(start), 0, True, maxlevel, '')

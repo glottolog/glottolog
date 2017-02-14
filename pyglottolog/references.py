@@ -63,6 +63,10 @@ class BibFile(UnicodeMixin):
     url = attr.ib(default=None)
 
     @property
+    def id(self):
+        return self.fname.stem
+
+    @property
     def filepath(self):
         return self.fname
 
@@ -81,6 +85,9 @@ class BibFile(UnicodeMixin):
     def iterentries(self):
         """Yield entries as (bibkey, (entrytype, fields)) tuples."""
         return _bibtex.iterentries(filename=self.fname, encoding=self.encoding)
+
+    def keys(self):
+        return ['{0}:{1}'.format(self.id, key) for key, _ in self.iterentries()]
 
     @property
     def glottolog_ref_id_map(self):
