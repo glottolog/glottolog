@@ -146,7 +146,7 @@ MACROAREAS = [
 
 
 old_ref_pattern = re.compile('[^\[]+\[(?P<pages>[^\]]*)\]\s*\([0-9]+\s+(?P<key>[^\)]+)\)')
-new_ref_pattern = re.compile('\*\*(?P<key>hh:[a-zA-Z\-_0-9:]+)\*\*(:(?P<pages>[0-9\-]+))?')
+new_ref_pattern = re.compile('(\*\*)?(?P<key>hh:[a-zA-Z\-_0-9:]+)(\*\*(:(?P<pages>[0-9\-]+))?)?')
 
 
 @attr.s
@@ -157,8 +157,15 @@ class ClassificationComment(object):
     familyrefs = attr.ib(default=attr.Factory(list))
 
     def check(self, lang, keys):
-        familyrefs = []
-        for ref in self.familyrefs:
+        def from_match(m):
+            assert m
+            r = '**{0}**'.format(m.group('key'))
+            if m.group('pages'):
+                r += ':{0}'.format(m.group('pages'))
+            return r
+
+        refs = []
+        for ref in self.subrefs:
             match = new_ref_pattern.match(ref)
             assert match
             if match.group('key') not in keys:
@@ -168,19 +175,14 @@ class ClassificationComment(object):
             #if len(parts) > 1:
             #    match = old_ref_pattern.match(ref)
             #    if match:
-            #        new = '**{0}**'.format(match.group('key'))
-            #        if match.group('pages'):
-            #            new += ':{0}'.format(match.group('pages'))
-            #        familyrefs.append(new)
+            #        refs.append(from_match(match))
             #    else:
             #        for part in parts:
-            #            assert new_ref_pattern.match(part)
-            #            familyrefs.append(part)
+            #            refs.append(from_match(new_ref_pattern.match(part)))
             #else:
-            #    assert new_ref_pattern.match(ref)
-            #    familyrefs.append(ref)
-        #if familyrefs:
-        #    lang.cfg.set('classification', 'familyrefs', familyrefs)
+            #    refs.append(from_match(new_ref_pattern.match(ref)))
+        #if refs:
+        #    lang.cfg.set('classification', 'subrefs', refs)
         #    return True
         return False
 
