@@ -435,8 +435,8 @@ to inspect the changes in detail.
 
 @command()
 def classification(args):
-    keys = args.repos.bibfiles['hh.bib'].keys()
+    #keys = args.repos.bibfiles['hh.bib'].keys()
     for lang in args.repos.languoids(maxlevel=Level.language):
         clf = lang.classification_comment
-        if clf.check(lang, keys):
+        if clf.check(lang, []):
             lang.write_info(outdir=lang.dir)

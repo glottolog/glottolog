@@ -145,45 +145,47 @@ MACROAREAS = [
     ]]
 
 
-old_ref_pattern = re.compile('[^\[]+\[(?P<pages>[^\]]*)\]\s*\([0-9]+\s+(?P<key>[^\)]+)\)')
-new_ref_pattern = re.compile('(\*\*)?(?P<key>hh:[a-zA-Z\-_0-9:]+)(\*\*(:(?P<pages>[0-9\-]+))?)?')
+#old_ref_pattern = re.compile('[^\[]+\[(?P<pages>[^\]]*)\]\s*\([0-9]+\s+(?P<key>[^\)]+)\)')
+
+
+@attr.s
+class Reference(UnicodeMixin):
+    key = attr.ib()
+    pages = attr.ib(default=None)
+    pattern = re.compile(
+        '\*\*(?P<key>[a-z0-9\-_]+:[a-zA-Z\-_0-9:]+)\*\*(:(?P<pages>[0-9\-]+))?')
+
+    def __unicode__(self):
+        res = '**{0.key}**'.format(self)
+        if self.pages:
+            res += ':{0.pages}'.format(self)
+        return res
+
+    @property
+    def provider(self):
+        return self.key.split(':')[0]
+
+    @classmethod
+    def from_match(cls, match):
+        assert match
+        return cls(**match.groupdict())
+
+    @classmethod
+    def from_list(cls, l):
+        return [cls.from_match(cls.pattern.match(s)) for s in l]
 
 
 @attr.s
 class ClassificationComment(object):
     sub = attr.ib(default=None)
-    subrefs = attr.ib(default=attr.Factory(list))
+    subrefs = attr.ib(default=attr.Factory(list), convert=Reference.from_list)
     family = attr.ib(default=None)
-    familyrefs = attr.ib(default=attr.Factory(list))
+    familyrefs = attr.ib(default=attr.Factory(list), convert=Reference.from_list)
 
     def check(self, lang, keys):
-        def from_match(m):
-            assert m
-            r = '**{0}**'.format(m.group('key'))
-            if m.group('pages'):
-                r += ':{0}'.format(m.group('pages'))
-            return r
-
-        refs = []
-        for ref in self.subrefs:
-            match = new_ref_pattern.match(ref)
-            assert match
-            if match.group('key') not in keys:
-                print(lang, ref)
-            continue
-            #parts = ref.split()
-            #if len(parts) > 1:
-            #    match = old_ref_pattern.match(ref)
-            #    if match:
-            #        refs.append(from_match(match))
-            #    else:
-            #        for part in parts:
-            #            refs.append(from_match(new_ref_pattern.match(part)))
-            #else:
-            #    refs.append(from_match(new_ref_pattern.match(ref)))
-        #if refs:
-        #    lang.cfg.set('classification', 'subrefs', refs)
-        #    return True
+        if not self.family and 'classification' in lang.cfg and 'family' in lang.cfg['classification']:
+            del lang.cfg['classification']['family']
+            return True
         return False
 
 
