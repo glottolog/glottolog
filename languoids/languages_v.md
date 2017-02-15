@@ -58,7 +58,7 @@
 - [Vlaams [vlaa1240][vls]](tree/indo1319/germ1287/nort3152/west2793/fran1268/wese1235/macr1270/midd1347/mode1257/vlaa1240/md.ini)
 - [Vlaamse Gebarentaal [vlaa1235][vgt]](tree/sign1238/deaf1237/lsfi1234/dutc1259/belg1242/vlaa1235/md.ini)
 - [Vlax Romani [vlax1238][rmy]](tree/indo1319/indo1320/indo1321/indo1322/roma1329/vlax1238/md.ini)
-- [Vono [vono1238][kch]](tree/atla1278/volt1241/benu1247/kain1275/cent2242/basa1288/east2404/josa1234/kaur1268/vono1238/md.ini)
+- [Vono [vono1238][kch]](tree/unat1236/atla1280/vono1238/md.ini)
 - [Vori [suru1258][sde]](tree/atla1278/volt1241/benu1247/kain1275/cent2242/basa1288/east2404/josa1234/kaur1268/suru1258/md.ini)
 - [Voro [voro1240][vor]](tree/atla1278/volt1241/nort3149/gura1261/cent2243/waja1258/bena1258/bena1259/yung1254/voro1240/md.ini)
 - [Votic [voti1245][vot]](tree/ural1272/finn1317/ingr1249/voti1245/md.ini)

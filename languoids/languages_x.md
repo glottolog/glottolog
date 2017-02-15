@@ -10,7 +10,6 @@
 - [Xerénte [xere1240][xer]](tree/nucl1710/jeee1236/jece1235/xere1240/md.ini)
 - [Xetá [xeta1241][xet]](tree/tupi1275/mawe1252/awet1245/tupi1276/tupi1277/xeta1241/md.ini)
 - [Xhosa [xhos1239][xho]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/sout3180/ngun1275/ngun1276/ngun1267/zulu1251/xhos1239/md.ini)
-- [Xiandao [xian1249][xia]](tree/book1242/xian1249/md.ini)
 - [Xiang Chinese [xian1251][hsn]](tree/sino1245/sini1245/clas1255/midd1354/xian1251/md.ini)
 - [Xibe [xibe1242][sjo]](tree/tung1282/manc1250/manc1251/xibe1242/md.ini)
 - [Xicotepec De Juárez Totonac [xico1235][too]](tree/toto1251/toto1252/cent1397/nort3265/xico1235/md.ini)

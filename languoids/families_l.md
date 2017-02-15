@@ -71,7 +71,7 @@
 - [Likpe-Santrokofi [likp1239]](tree/atla1278/volt1241/kwav1236/nato1234/lele1262/likp1239/md.ini)
 - [Likwala-Likuba [likw1240]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/koyo1244/likw1240/md.ini)
 - [Limba [limb1267]](tree/atla1278/limb1267/md.ini)
-- [Limilngan [limi1242]](tree/limi1242/md.ini)
+- [Limilngan-Wulna [limi1242]](tree/limi1242/md.ini)
 - [Lingala-Bangala [ling1269]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/grea1286/ngir1248/ngir1249/ngir1252/ngir1254/boba1248/boba1249/boba1250/ling1269/md.ini)
 - [Lipo-Lolopo [lipo1243]](tree/sino1245/burm1265/lolo1265/lolo1267/nili1235/liso1234/lipo1243/md.ini)
 - [Lipo-Micha [lipo1244]](tree/sino1245/burm1265/lolo1265/lolo1267/nili1235/liso1234/lipo1243/lipo1244/md.ini)

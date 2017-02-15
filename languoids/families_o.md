@@ -34,7 +34,7 @@
 - [Omo-Tana [omot1245]](tree/afro1255/cush1243/east2699/lowl1267/sout3055/main1283/omot1245/md.ini)
 - [Omosan [omos1240]](tree/nucl1709/mada1298/croi1234/tibo1242/omos1240/md.ini)
 - [One [onee1245]](tree/nucl1708/west2580/onee1245/md.ini)
-- [Ong-Ta'oih [ongt1234]](tree/aust1305/katu1271/taoi1247/nucl1296/ongt1234/md.ini)
+- [Ong-Ta'oih [ongt1234]](tree/aust1305/katu1271/taoi1247/ongt1234/md.ini)
 - [Ongamo-Maa [onga1238]](tree/nilo1247/east2418/teso1247/lotu1248/onga1238/md.ini)
 - [Onin based pidgin [onin1246]](tree/pidg1258/onin1246/md.ini)
 - [Oninic [onin1244]](tree/aust1307/nucl1752/mala1545/cent2237/cent2245/keit1238/yamd1241/onin1244/md.ini)

@@ -5,7 +5,6 @@ from itertools import chain
 import os
 import sys
 import subprocess
-import re
 
 from termcolor import colored
 from clldutils.clilib import command, ParserError
@@ -13,7 +12,8 @@ from clldutils.misc import slug
 from clldutils.markup import Table
 from clldutils.path import Path
 
-from pyglottolog.languoids import Level, Glottocode, Languoid, Reference
+from pyglottolog.languoids import Languoid
+from pyglottolog.objects import Level, Reference
 from pyglottolog import fts
 from pyglottolog import lff
 from pyglottolog.monster import compile
@@ -23,8 +23,7 @@ from pyglottolog.util import message, wrap
 
 @command()
 def isobib(args):
-    """
-    Update iso6393.bib - the file of references for ISO 639-3 change requests.
+    """Update iso6393.bib - the file of references for ISO 639-3 change requests.
     """
     pyglottolog.iso.bibtex(args.repos, args.log)
 
@@ -44,6 +43,10 @@ def cprint(text, color=None, attrs=None):
 
 @command()
 def show(args):
+    """Display details of a Glottolog object.
+
+    glottolog show <GLOTTOCODE>|<ISO-CODE>|<BIBTEXKEY>
+    """
     if args.args and ':' in args.args[0]:
         if args.args[0].startswith('**'):
             ref = Reference.from_string(args.args[0])
@@ -80,6 +83,10 @@ def show(args):
 
 @command()
 def edit(args):
+    """Open a languoid's INI file in a text editor.
+
+    glottolog edit <GLOTTOCODE>|<ISO-CODE>
+    """
     lang = existing_lang(args)
     if sys.platform.startswith('os2'):  # pragma: no cover
         cmd = ['open']
@@ -117,16 +124,18 @@ def create(args):
 def bib(args):
     """Compile the monster bibfile from the BibTeX files listed in references/BIBFILES.ini
 
-    glottolog monster
+    glottolog bib
     """
     compile(args.repos, args.log, rebuild=bool(args.args))
 
 
 @command()
 def tree(args):
-    """Print the classification tree starting at a specific Glottocode
+    """Print the classification tree starting at a specific languoid.
 
-    glottolog tree GLOTTOCODE
+    glottolog tree <GLOTTOCODE>|<ISO-CODE> [MAXLEVEL]
+
+    MAXLEVEL [family|language|dialect] will limit the displayed children.
     """
     start = existing_lang(args)
     maxlevel = None
@@ -140,6 +149,10 @@ def tree(args):
 
 @command()
 def newick(args):
+    """Print the classification tree starting at a specific languoid in Newick format.
+
+    glottolog newick <GLOTTOCODE>|<ISO-CODE> [MAXLEVEL]
+    """
     print(args.repos.newick_tree(args.args[0]))
 
 

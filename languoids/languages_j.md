@@ -49,7 +49,6 @@
 - [Jejueo [jeju1234][jje]](tree/kore1284/jeju1234/md.ini)
 - [Jeli [jeri1242][jek]](tree/mand1469/west2780/mand1431/cent2047/mand1432/jogo1241/jeri1241/jeri1242/md.ini)
 - [Jenaama Bozo [jena1242][bze]](tree/mand1469/west2780/samo1308/soni1257/bozo1252/nucl1444/jena1242/md.ini)
-- [Jeng [jeng1241][jeg]](tree/aust1305/bahn1264/west2399/nucl1299/jeng1241/md.ini)
 - [Jenipapo-Kanindé [jeni1237]](tree/uncl1493/jeni1237/md.ini)
 - [Jennu Kurumba [jenn1240][xuj]](tree/drav1251/sout3133/sout3138/tami1291/bada1263/kann1259/jenn1240/md.ini)
 - [Jere [jere1244][jer]](tree/atla1278/volt1241/benu1247/kain1275/cent2242/basa1288/east2404/josa1234/nort3210/nort3215/boze1240/jere1244/md.ini)

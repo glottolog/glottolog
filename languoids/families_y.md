@@ -37,7 +37,7 @@
 - [Yau-Yis [yauy1236]](tree/nucl1708/yauy1236/md.ini)
 - [Yaunde-Fang (A.70) [yaun1239]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/bant1295/yaun1239/md.ini)
 - [Yaur-Yerisiam [yaur1240]](tree/aust1307/nucl1752/mala1545/cent2237/east2712/sout2850/sout3229/cend1238/sout3230/yaur1240/md.ini)
-- [Yawa [yawa1259]](tree/yawa1259/md.ini)
+- [Yawa-Saweru [yawa1259]](tree/yawa1259/md.ini)
 - [Yawaperi [yawa1262]](tree/cari1283/yawa1262/md.ini)
 - [Yawuric [yawu1243]](tree/nyul1248/east2381/yawu1243/md.ini)
 - [Yazdi-Kermani-Nayini [yazd1241]](tree/indo1319/indo1320/iran1269/cent2317/cent2318/nort3177/cent2264/yazd1241/md.ini)

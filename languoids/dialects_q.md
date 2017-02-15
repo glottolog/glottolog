@@ -4,7 +4,7 @@
 - [Qaladze [qala1238]](tree/afro1255/semi1276/west2786/cent2236/nort3165/aram1259/east2680/cent2217/nort3241/tran1290/sout3213/lish1245/east2682/sout3076/qala1238/md.ini)
 - [Qaragozlu [qara1243]](tree/turk1311/comm1245/oghu1246/oghu1243/sout2696/sout2697/qara1243/md.ini)
 - [Qarashahr [qara1242]](tree/turk1311/comm1245/oghu1246/uygh1240/uigh1240/qara1242/md.ini)
-- [Qau [qauu1238]](tree/book1242/gela1261/qauu1238/md.ini)
+- [Qau [qauu1238]](tree/taik1256/kada1291/sout3143/west2798/gela1265/qaua1234/qauu1238/md.ini)
 - [Qazakh [qaza1238]](tree/turk1311/comm1245/oghu1246/oghu1243/west2406/azer1255/nort2697/qaza1238/md.ini)
 - [Qazvini [qazv1239]](tree/indo1319/indo1320/iran1269/sout3157/midd1352/mode1259/fars1254/fars1255/west2369/qazv1239/md.ini)
 - [Qebena [qebe1239]](tree/afro1255/cush1243/east2699/high1285/sida1247/hadi1241/kamb1318/kamb1316/qebe1239/md.ini)
