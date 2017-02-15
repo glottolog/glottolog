@@ -13,29 +13,30 @@ from newick import Node
 from pyglottolog import util
 from pyglottolog import languoids
 from pyglottolog import references
+from pyglottolog import objects
 
 ISO_CODE_PATTERN = re.compile('[a-z]{3}$')
 
 
 class Glottolog(UnicodeMixin):
-    countries = [languoids.Country(c.alpha_2, c.name) for c in pycountry.countries]
-    macroareas = languoids.MACROAREAS
+    countries = [objects.Country(c.alpha_2, c.name) for c in pycountry.countries]
+    macroareas = objects.MACROAREAS
 
     def __init__(self, repos=None):
         self.repos = Path(repos) if repos else util.DATA_DIR
-        self.tree = util.languoids_path('tree', data_dir=self.repos)
+        self.tree = self.repos.joinpath('languoids', 'tree')
 
     def __unicode__(self):
         return '<Glottolog repos at %s>' % self.repos
 
     def build_path(self, *comps):
-        return util.build_path(*comps, **{'repos': self.repos})
+        return self.repos.joinpath('build', *comps)
 
     def references_path(self, *comps):
-        return util.references_path(*comps, **{'repos': self.repos})
+        return self.repos.joinpath('references', *comps)
 
     def languoids_path(self, *comps):
-        return util.languoids_path(*comps, **{'repos': self.repos})
+        return self.repos.joinpath('languoids', *comps)
 
     @cached_property()
     def iso(self):
@@ -43,7 +44,7 @@ class Glottolog(UnicodeMixin):
 
     @property
     def glottocodes(self):
-        return languoids.Glottocodes(self.languoids_path('glottocodes.json'))
+        return objects.Glottocodes(self.languoids_path('glottocodes.json'))
 
     @property
     def ftsindex(self):
@@ -63,7 +64,7 @@ class Glottolog(UnicodeMixin):
                 if d.name == id_:
                     return languoids.Languoid.from_dir(d)
 
-    def languoids(self, ids=None, maxlevel=languoids.Level.dialect):
+    def languoids(self, ids=None, maxlevel=objects.Level.dialect):
         nodes = {}
 
         for dirpath, dirnames, filenames in os.walk(as_posix(self.tree)):
@@ -126,8 +127,8 @@ def _newick_node(l):
 
 def _ascii_node(n, level, last, maxlevel, prefix):
     if maxlevel:
-        if (isinstance(maxlevel, languoids.LevelItem) and n.level > maxlevel) or \
-                (not isinstance(maxlevel, languoids.LevelItem) and level > maxlevel):
+        if (isinstance(maxlevel, objects.LevelItem) and n.level > maxlevel) or \
+                (not isinstance(maxlevel, objects.LevelItem) and level > maxlevel):
             return
     s = '\u2514' if last else '\u251c'
     s += '\u2500 '
@@ -141,8 +142,8 @@ def _ascii_node(n, level, last, maxlevel, prefix):
     nprefix = prefix + ('   ' if last else '\u2502  ')
 
     color = 'red' if not level else (
-        'green' if n.level == languoids.Level.language else (
-            'blue' if n.level == languoids.Level.dialect else None))
+        'green' if n.level == objects.Level.language else (
+            'blue' if n.level == objects.Level.dialect else None))
 
     print('{0}{1}{2} [{3}]'.format(
         prefix,

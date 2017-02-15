@@ -13,12 +13,12 @@ from clldutils.misc import slug
 from clldutils.markup import Table
 from clldutils.path import Path
 
-from pyglottolog.languoids import Level, Glottocode, Languoid
+from pyglottolog.languoids import Level, Glottocode, Languoid, Reference
 from pyglottolog import fts
 from pyglottolog import lff
 from pyglottolog.monster import compile
 import pyglottolog.iso
-from pyglottolog.util import message
+from pyglottolog.util import message, wrap
 
 
 @command()
@@ -44,6 +44,18 @@ def cprint(text, color=None, attrs=None):
 
 @command()
 def show(args):
+    if args.args and ':' in args.args[0]:
+        if args.args[0].startswith('**'):
+            ref = Reference.from_string(args.args[0])
+        else:
+            ref = Reference(key=args.args[0])
+        cprint('Glottolog reference {0}'.format(ref), attrs=['bold', 'underline'])
+        print()
+        src = ref.get_source(args.repos)
+        cprint(src.text())
+        print()
+        cprint(src.bibtex())
+        return
     lang = existing_lang(args)
     print()
     cprint('Glottolog languoid {0}'.format(lang.id), attrs=['bold', 'underline'])
@@ -53,9 +65,17 @@ def show(args):
     print()
     cprint('Info:', attrs=['bold', 'underline'])
     cprint('Path: {0}'.format(lang.fname), 'green', attrs=['bold'])
+    sources = lang.sources
+    if sources:
+        del lang.cfg['sources']['glottolog']
+        del lang.cfg['sources']
     for line in lang.cfg.write_string().split('\n'):
         if not line.startswith('#'):
             cprint(line, None, attrs=['bold'] if line.startswith('[') else [])
+    cprint('Sources:', attrs=['bold', 'underline'])
+    for src in sources:
+        cprint(wrap(src.get_source(args.repos).text(), width=90))
+        print()
 
 
 @command()
@@ -82,13 +102,14 @@ def create(args):
     """
     assert args.args[2] in ['family', 'language', 'dialect']
     parent = args.repos.languoid(args.args[0]) or None
+    outdir = parent.dir if parent else args.repos.tree
     lang = Languoid.from_name_id_level(
+        outdir,
         args.args[1],
         args.repos.glottocodes.new(args.args[1]),
         getattr(Level, args.args[2]),
         **dict(prop.split('=') for prop in args.args[3:]))
 
-    outdir = parent.dir if parent else args.repos.languoids_path('tree')
     print("Info written to %s" % lang.write_info(outdir=outdir))
 
 
@@ -177,6 +198,7 @@ def check(args):
     if what not in ['all', 'tree']:
         return
 
+    hhkeys = args.repos.bibfiles['hh.bib'].keys()
     iso = args.repos.iso
     args.log.info('checking ISO codes against %s' % iso)
     args.log.info('checking tree at %s' % args.repos)
@@ -199,6 +221,16 @@ def check(args):
 
         assert isinstance(lang.countries, list)
         assert isinstance(lang.macroareas, list)
+
+        if 'sources' in lang.cfg:
+            for ref in Reference.from_list(lang.cfg.getlist('sources', 'glottolog')):
+                if ref.provider == 'hh' and ref.key not in hhkeys:
+                    error(lang, 'missing source: {0}'.format(ref))
+
+        for attr in ['classification_comment', 'ethnologue_comment']:
+            obj = getattr(lang, attr)
+            if obj:
+                obj.check(lang, hhkeys, args.log)
 
         names[lang.name].add(lang)
         by_level.update([lang.level.name])
@@ -431,12 +463,3 @@ to inspect the changes in detail.
     git commit -a -m"reason for change of classification"
     git push origin
 """)
-
-
-@command()
-def classification(args):
-    map = {v: k for k, v in args.repos.bibfiles['hh.bib'].glottolog_ref_id_map.items()}
-    for lang in args.repos.languoids(maxlevel=Level.language):
-        clf = lang.classification_comment
-        if clf.check(lang, map):
-            lang.write_info(outdir=lang.dir)

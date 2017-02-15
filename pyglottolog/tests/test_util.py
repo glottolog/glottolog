@@ -11,6 +11,18 @@ class Tests(TestCase):
         l = [1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6]
         self.assertEqual(len(set(l)), len(list(unique(l))))
 
+    def test_wrap(self):
+        from pyglottolog.util import wrap
+
+        text = """\
+This is going to be a long line which must be split.
+The next line is going to be interpreted as second paragraph upon first pass.
+"""
+        wrapped = wrap(text, width=20, line_as_paragraph=True)
+
+        # Now a second pass should be idempotent:
+        self.assertEqual(wrapped, wrap(wrapped, width=20))
+
     def test_group_first(self):
         from pyglottolog.util import group_first
 

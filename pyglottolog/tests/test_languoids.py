@@ -6,9 +6,8 @@ from clldutils.testing import WithTempDir
 from clldutils import jsonlib
 
 from pyglottolog.tests.util import WithApi
-from pyglottolog.languoids import (
-    Languoid, Level, Country, EndangermentStatus, Glottocodes, Glottocode,
-)
+from pyglottolog.languoids import Languoid, EndangermentStatus
+from pyglottolog.objects import Glottocodes, Glottocode, Level, Country
 
 
 class TestGlottocodes(WithTempDir):
@@ -101,7 +100,7 @@ class TestLanguoid(WithApi):
         self.assertTrue(self.tmp_path('abcd1235').exists())
         self.assertIsInstance(
             self.api.languoid('abcd1235').iso_retirement.asdict(), dict)
-        self.assertIsNone(l.classification_comment.sub)
+        self.assertIsNone(l.classification_comment)
         l.endangerment = 'Critically endangered'
         self.assertEqual(l.endangerment, EndangermentStatus.critical)
         self.assertEqual(l.names, {})
@@ -118,7 +117,8 @@ class TestLanguoid(WithApi):
         self.assertIsNone(l.family)
 
     def test_attrs(self):
-        l = Languoid.from_name_id_level('name', 'abcd1235', Level.language, hid='NOCODE')
+        l = Languoid.from_name_id_level(
+            self.api.tree, 'name', 'abcd1235', Level.language, hid='NOCODE')
         l.name = 'other'
         self.assertEqual(l.name, 'other')
         with self.assertRaises(AttributeError):

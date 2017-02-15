@@ -33,6 +33,6 @@ class Tests(WithApi):
         with capture(c['b.bib'].show_characters) as out:
             self.assertIn('CJK UNIFIED IDEOGRAPH', out)
         abib = c[0]
-        self.assertEqual(len(list(abib.iterentries())), 2)
+        self.assertEqual(len(list(abib.iterentries())), 3)
         assert abib.size
         assert abib.mtime

@@ -9,18 +9,16 @@ from bs4 import BeautifulSoup as bs
 from clldutils.misc import nfilter
 from clldutils import jsonlib
 
-from pyglottolog.util import subdir_path
-
 BASE_URL = "http://www.endangeredlanguages.com"
-STORE = subdir_path('links', 'endangeredlanguages.json')
+STORE = 'endangeredlanguages.json'
 
 
-def read_store():
-    return jsonlib.load(STORE) if STORE.exists() else {}
+def read_store(fname):
+    return jsonlib.load(fname) if fname.exists() else {}
 
 
-def store(details_):
-    db = read_store()
+def store(details_, fname):
+    db = read_store(fname)
     if not details_:
         return db
     db[details_['id']] = details_
@@ -31,7 +29,7 @@ def store(details_):
             if key != 'id':
                 v[key] = db[k][key]
         ordered[k] = v
-    jsonlib.dump(ordered, STORE, indent=4)
+    jsonlib.dump(ordered, fname, indent=4)
     return db
 
 
@@ -58,8 +56,9 @@ def details(path):
     return res
 
 
-def scrape(update=False):
-    db = read_store()
+def scrape(api, update=False):
+    store_path = api.repos.joinpath('links', STORE)
+    db = read_store(store_path)
     lang_url = re.compile('/lang/(?P<id>[0-9]+)$')
     done = set()
     for a in get_soup('/lang/region').find_all('a', href=True):
@@ -69,5 +68,5 @@ def scrape(update=False):
                 if match:
                     lid = match.group('id')
                     if lid not in db or update:
-                        db = store(details(a['href']))
+                        db = store(details(a['href']), store_path)
             done.add(a['href'])

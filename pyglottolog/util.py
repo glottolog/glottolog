@@ -1,10 +1,10 @@
 # coding: utf8
 from __future__ import unicode_literals
-from functools import partial
 import itertools
 import operator
 import functools
 from copy import copy
+import textwrap
 
 import attr
 from termcolor import colored
@@ -16,6 +16,25 @@ import pyglottolog
 
 
 DATA_DIR = Path(pyglottolog.__file__).parent.parent
+
+
+def wrap(text,
+         line_as_paragraph=False,
+         width=80,
+         break_long_words=False,
+         break_on_hyphens=False,
+         **kw):
+    kw.update(
+        width=width, break_long_words=break_long_words, break_on_hyphens=break_on_hyphens)
+    lines = []
+    for line in text.split('\n'):
+        if not line:
+            lines.append('')
+        else:
+            lines.extend(textwrap.wrap(line, **kw))
+            if line_as_paragraph:
+                lines.append('')
+    return '\n'.join(lines).strip()
 
 
 @attr.s
@@ -95,20 +114,6 @@ class Trigger(object):
     def group(triggers):
         return [(clauses, list(triggers)) for clauses, triggers
                 in itertools.groupby(sorted(triggers), lambda t: t.clauses)]
-
-
-def subdir_path(subdir, *comps, **kw):
-    data_dir = None
-    for key in ['data_dir', 'repos']:
-        data_dir = kw.pop(key, None)
-        if data_dir:
-            break
-    return Path(data_dir or DATA_DIR).joinpath(subdir, *comps)
-
-
-languoids_path = partial(subdir_path, 'languoids')
-references_path = partial(subdir_path, 'references')
-build_path = partial(subdir_path, 'build')
 
 
 def group_first(iterable, groupkey=operator.itemgetter(0)):

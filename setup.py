@@ -5,7 +5,7 @@ requires = [
     # list required third-party packages here
     'six',
     'enum34',
-    'clldutils>=1.7.6',
+    'clldutils>=1.8.0',
     'pybtex>=0.20',
     'latexcodec',
     'unidecode',
@@ -14,6 +14,7 @@ requires = [
     'pycountry',
     'termcolor',
     'newick',
+    'markdown',
 ]
 
 setup(

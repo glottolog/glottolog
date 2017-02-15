@@ -23,13 +23,19 @@ class Tests(WithApi):
 
     def test_BibFile(self):
         bibfile = self.api.bibfiles['a.bib']
-        self.assertEqual(len(list(bibfile.iterentries())), 2)
+        self.assertTrue(bibfile['a:key'].startswith('@misc'))
+        self.assertTrue(bibfile['s:Andalusi:Turk'].startswith('@'))
+
+        with self.assertRaises(KeyError):
+            _ = bibfile['xyz']
+
+        self.assertEqual(len(list(bibfile.iterentries())), 3)
 
         lines = [line for line in read_text(bibfile.fname).split('\n')
                  if not line.strip().startswith('glottolog_ref_id')]
         write_text(self.tmp_path('a.bib'), '\n'.join(lines))
         bibfile.update(self.tmp_path('a.bib'))
-        self.assertEqual(len(list(bibfile.iterentries())), 2)
+        self.assertEqual(len(list(bibfile.iterentries())), 3)
 
         bibfile.update(self.api.bibfiles['b.bib'].fname)
         self.assertEqual(len(list(bibfile.iterentries())), 1)

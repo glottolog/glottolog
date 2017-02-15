@@ -7,7 +7,8 @@ import logging
 
 from clldutils.path import as_posix, move, readlines
 
-from pyglottolog.languoids import Languoid, Level, Glottocode, LevelItem
+from pyglottolog.languoids import Languoid
+from pyglottolog.objects import Level, Glottocode, LevelItem
 
 ISOLATE_ID = '-isolate-'
 LINEAGE_SEP = ';'
@@ -64,7 +65,7 @@ def languoid(api, log, new, path, lname, glottocode, isocode, level):
             lineage.append((name, id_, _level, hid))
 
     lang = Languoid.from_name_id_level(
-        lname, glottocode, level, lineage=[(r[0], r[1], r[2]) for r in lineage])
+        api.tree, lname, glottocode, level, lineage=[(r[0], r[1], r[2]) for r in lineage])
     if (isocode in api.iso) or (isocode is None):
         lang.iso = isocode
     lang.hid = isocode
@@ -114,7 +115,7 @@ def lang2tree(api, log, lang, lineage, out, old_tree):
                     # rename a subgroup!
                     group.name = name
             else:
-                group = Languoid.from_name_id_level(name, id_, level)
+                group = Languoid.from_name_id_level(api.tree, name, id_, level)
 
             if hid != -1:
                 if (hid in api.iso or hid is None) and group.iso != hid:

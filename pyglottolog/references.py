@@ -10,6 +10,7 @@ import datetime
 from six import string_types
 import attr
 from clldutils.misc import cached_property, UnicodeMixin
+from clldutils.path import memorymapped
 
 from pyglottolog.util import Trigger
 from pyglottolog.monsterlib import _bibtex
@@ -65,6 +66,19 @@ class BibFile(UnicodeMixin):
     @property
     def id(self):
         return self.fname.stem
+
+    def __getitem__(self, item):
+        if item.startswith(self.id + ':'):
+            item = item.split(':', 1)[1]
+        with memorymapped(self.fname) as string:
+            m = re.search('@[A-Za-z]+\{' + re.escape(item), string)
+            if m:
+                next = string.find('\n@', m.end())
+                if next > 0:
+                    return string[m.start():next - 1].decode('utf8')
+                else:
+                    return string[m.start():].decode('utf8')
+        raise KeyError(item)
 
     @property
     def filepath(self):

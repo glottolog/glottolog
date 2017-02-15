@@ -3,8 +3,6 @@
 # TODO: make check fail on non-whitespace between entries (bibtex 'comments')
 
 import io
-import mmap
-import contextlib
 import collections
 
 from pybtex.database.input.bibtex import BibTeXEntryIterator, Parser, UndefinedMacro
@@ -14,7 +12,7 @@ from pybtex.textutils import whitespace_re
 from pybtex.bibtex.utils import split_name_list
 from pybtex.database import Person
 
-from clldutils.path import as_posix
+from clldutils.path import as_posix, memorymapped
 
 
 FIELDORDER = [
@@ -22,21 +20,6 @@ FIELDORDER = [
     'school', 'publisher', 'address',
     'series', 'volume', 'number', 'pages', 'year', 'issn', 'url',
 ]
-
-
-@contextlib.contextmanager
-def memorymapped(filename, access=mmap.ACCESS_READ):
-    fd = open(as_posix(filename))
-    try:
-        m = mmap.mmap(fd.fileno(), 0, access=access)
-    except:  # pragma: no cover
-        fd.close()
-        raise
-    try:
-        yield m
-    finally:
-        m.close()
-        fd.close()
 
 
 def load(filename, preserve_order=False, encoding=None):
