@@ -22,7 +22,7 @@ from pyglottolog.util import message, wrap
 
 
 @command()
-def isobib(args):
+def isobib(args):  # pragma: no cover
     """Update iso6393.bib - the file of references for ISO 639-3 change requests.
     """
     pyglottolog.iso.bibtex(args.repos, args.log)
@@ -124,7 +124,7 @@ def create(args):
 def bib(args):
     """Compile the monster bibfile from the BibTeX files listed in references/BIBFILES.ini
 
-    glottolog bib
+    glottolog bib [rebuild]
     """
     compile(args.repos, args.log, rebuild=bool(args.args))
 
@@ -193,6 +193,10 @@ def index(args):
 
 @command()
 def check(args):
+    """Check the glottolog data for consistency.
+
+    glottolog check [tree|refs]
+    """
     def error(obj, msg):
         args.log.error(message(obj, msg))
 
@@ -333,6 +337,10 @@ def check(args):
 
 @command()
 def metadata(args):
+    """List all metadata fields used in languoid INI files and their frequency.
+
+    glottolog metadata
+    """
     ops = defaultdict(Counter)
 
     for l in args.repos.languoids():
@@ -351,14 +359,13 @@ def metadata(args):
 
 @command()
 def refsearch(args):
-    """
-    Search Glottolog references
+    """Search Glottolog references
 
-    glottolog ftssearch QUERY
+    glottolog refsearch "QUERY"
 
     E.g.:
-    - glottolog ftssearch "Izi provider:hh"
-    - glottolog ftssearch "author:Haspelmath provider:wals"
+    - glottolog refsearch "Izi provider:hh"
+    - glottolog refsearch "author:Haspelmath provider:wals"
     """
     count, results = fts.search(args.repos, args.args[0])
     table = Table('ID', 'Author', 'Year', 'Title')
@@ -370,17 +377,20 @@ def refsearch(args):
 
 @command()
 def refindex(args):
-    """
-    Index all bib files for use with the whoosh search engine.
+    """Index all bib files for use with `glottolog refsearch`.
+
+    glottolog refindex
+
+    This will take about 15 minutes and create an index of about 450 MB.
     """
     return fts.build_index(args.repos, args.log)
 
 
 @command()
 def langsearch(args):
-    """
-    Search Glottolog languoids
+    """Search Glottolog languoids
 
+    glottolog langsearch "QUERY"
     """
     def highlight(text):
         pre, rem = text.split('[[', 1)
@@ -403,8 +413,11 @@ def langsearch(args):
 
 @command()
 def langindex(args):
-    """
-    Index all bib files for use with the whoosh search engine.
+    """Index all bib files for use with `glottolog langsearch`.
+
+    glottolog langindex
+
+    This will take a couple of minutes and create an index of about 60 MB.
     """
     return fts.build_langs_index(args.repos, args.log)
 
@@ -426,7 +439,7 @@ def lff2tree(args):
     """
     try:
         lff.lff2tree(args.repos, args.log)
-    except ValueError:
+    except ValueError:  # pragma: no cover
         print("""
 Something went wrong! Roll back inconsistent state running
 

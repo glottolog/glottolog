@@ -4,16 +4,24 @@ from __future__ import unicode_literals, print_function, division
 from six import text_type, PY2
 from mock import Mock, patch
 from clldutils.testing import capture
+from clldutils.path import copytree
 
 from pyglottolog.tests.util import WithApi
 
 
 class Tests(WithApi):
     def _args(self, *args):
-        return Mock(repos=self.api, args=list(args), log=Mock())
+        self.log = Mock()
+        return Mock(repos=self.api, args=list(args), log=self.log)
 
     def test_show(self):
         from pyglottolog.commands import show
+
+        with capture(show, self._args('**a:key**')) as out:
+            self.assertIn('@misc'.encode('utf8'), out)
+
+        with capture(show, self._args('a:key')) as out:
+            self.assertIn('@misc'.encode('utf8'), out)
 
         with capture(show, self._args('abcd1236')) as out:
             self.assertIn('Classification'.encode('utf8'), out)
@@ -98,8 +106,24 @@ class Tests(WithApi):
     def test_check(self):
         from pyglottolog.commands import check
 
+        with capture(check, self._args('refs')) as _:
+            pass
+
         with capture(check, self._args()) as out:
             self.assertIn('family', out)
+        for call in self.log.error.call_args_list:
+            self.assertIn('unregistered glottocode', call[0][0])
+        self.assertEqual(self.log.error.call_count, 4)
+
+        copytree(
+            self.api.tree.joinpath('abcd1234', 'abcd1235'),
+            self.api.tree.joinpath('abcd1235'))
+
+        with capture(check, self._args()) as _:
+            self.assertIn(
+                'duplicate glottocode',
+                ''.join(c[0][0] for c in self.log.error.call_args_list))
+            self.assertEqual(self.log.error.call_count, 6)
 
     def test_monster(self):
         from pyglottolog.commands import bib
