@@ -209,11 +209,12 @@ class Languoid(UnicodeMixin):
         if 'status' in self.cfg[self.section_core]:
             res = self.cfg.get(self.section_core, 'status')
             if res:
-                return EndangermentStatus.from_name(res)
+                return EndangermentStatus.get(res.lower())
 
     @endangerment.setter
     def endangerment(self, value):
-        self._set('status', EndangermentStatus.from_name(value).name)
+        value = value.lower() if hasattr(value, 'lower') else value
+        self._set('status', EndangermentStatus.get(value).name)
 
     @property
     def classification_comment(self):
@@ -233,13 +234,13 @@ class Languoid(UnicodeMixin):
 
     @property
     def macroareas(self):
-        return [Macroarea.from_name(n)
+        return [Macroarea.get(n)
                 for n in self.cfg.getlist(self.section_core, 'macroareas')]
 
     @macroareas.setter
     def macroareas(self, value):
         assert isinstance(value, (list, tuple)) \
-            and all(isinstance(o, Macroarea) for o in value)
+            and all(o in list(Macroarea) for o in value)
         self._set('macroareas', ['{0}'.format(ma) for ma in value])
 
     @property

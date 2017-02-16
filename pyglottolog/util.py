@@ -6,11 +6,9 @@ import functools
 from copy import copy
 import textwrap
 
-import attr
 from termcolor import colored
 from clldutils.path import Path
 from clldutils.iso_639_3 import ISO, download_tables
-from clldutils.misc import UnicodeMixin
 
 import pyglottolog
 
@@ -37,27 +35,8 @@ def wrap(text,
     return '\n'.join(lines).strip()
 
 
-@attr.s
-class IdNameDescription(UnicodeMixin):
-    id = attr.ib()
-    name = attr.ib()
-    description = attr.ib()
-
-    def __unicode__(self):
-        return self.name
-
-
 def message(obj, msg):
     return '{0}: {1}'.format(colored('{0}'.format(obj), 'blue', attrs=['bold']), msg)
-
-
-class DatedISO(ISO, UnicodeMixin):
-    def __init__(self, zip):
-        self.name = zip.stem
-        ISO.__init__(self, zip)
-
-    def __unicode__(self):
-        return self.name
 
 
 def get_iso(d):
@@ -65,9 +44,9 @@ def get_iso(d):
         list(Path(d).glob('iso-639-3_Code_Tables_*.zip')),
         key=lambda p: p.name)
     if zips:
-        return DatedISO(zips[-1])
+        return ISO(zips[-1])
 
-    return DatedISO(download_tables(d))  # pragma: no cover
+    return ISO(download_tables(d))  # pragma: no cover
 
 
 @functools.total_ordering

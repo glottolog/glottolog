@@ -186,7 +186,7 @@ def index(args):
                     fp.write('- [%s](%s)\n' % (label, langs[label]))
 
     langs = list(args.repos.languoids())
-    for level in Level():
+    for level in Level:
         if not args.args or args.args[0] == level.name:
             make_index(level, [l for l in langs if l.level == level], args.repos)
 

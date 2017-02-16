@@ -8,7 +8,7 @@ import logging
 from clldutils.path import as_posix, move, readlines
 
 from pyglottolog.languoids import Languoid
-from pyglottolog.objects import Level, Glottocode, LevelItem
+from pyglottolog.objects import Level, Glottocode
 
 ISOLATE_ID = '-isolate-'
 LINEAGE_SEP = ';'
@@ -73,7 +73,7 @@ def languoid(api, log, new, path, lname, glottocode, isocode, level):
 
 
 def read_lff(api, log, new, level, fname=None):
-    assert isinstance(level, LevelItem)
+    assert level in [Level.language, Level.dialect]
     log.info('reading {0}s from {1}'.format(level.name, fname))
 
     path = None

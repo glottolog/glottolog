@@ -10,8 +10,9 @@ import pycountry
 from clldutils.misc import slug, UnicodeMixin
 from clldutils.source import Source
 from clldutils import jsonlib
+from clldutils.declenum import DeclEnum
 
-from pyglottolog.util import message, IdNameDescription
+from pyglottolog.util import message
 
 
 class Glottocodes(object):
@@ -107,12 +108,7 @@ class Reference(UnicodeMixin):
         return res
 
 
-@attr.s
-class LevelItem(IdNameDescription):
-    pass
-
-
-class Level(object):
+class Level(DeclEnum):
     """
     Glottolog distinguishes three levels of languoids:
     - family: any sub-grouping of languoids above the language level
@@ -127,21 +123,9 @@ class Level(object):
        parent.
     4. The levels of the languoids in a tree branch must be monotonically descending.
     """
-    family = LevelItem(1, 'family', 'sub-grouping of languoids above the language level')
-    language = LevelItem(2, 'language', 'defined by mutual non-intellegibility')
-    dialect = LevelItem(3, 'dialect', 'any variety which is not a language')
-
-    @classmethod
-    def get(cls, item):
-        if isinstance(item, LevelItem):
-            return item
-        for li in cls():
-            if li.id == item or li.name == item:
-                return li
-        raise ValueError(item)
-
-    def __iter__(self):
-        return iter([self.family, self.language, self.dialect])
+    family = 1, 'sub-grouping of languoids above the language level'
+    language = 2, 'defined by mutual non-intellegibility'
+    dialect = 3, 'any variety which is not a language'
 
 
 @attr.s
@@ -182,41 +166,30 @@ class Country(UnicodeMixin):
         return cls.from_name(text)
 
 
-@attr.s
-class Macroarea(IdNameDescription):
+class Macroarea(DeclEnum):
     """
     Glottolog languoids can be related to a macroarea.
     """
-    @classmethod
-    def from_name(cls, name):
-        for ma in MACROAREAS:
-            if ma.name == name:
-                return ma
-
-
-MACROAREAS = [
-    Macroarea(*args) for args in [
-        ('northamerica',
-         'North America',
-         'North and Middle America up to Panama. Includes Greenland.'),
-        ('southamerica',
-         'South America',
-         'Everything South of Darién'),
-        ('africa',
-         'Africa',
-         'The continent'),
-        ('australia',
-         'Australia',
-         'The continent'),
-        ('eurasia',
-         'Eurasia',
-         'The Eurasian landmass North of Sinai. Includes Japan and islands to the North'
-         'of it. Does not include Insular South East Asia.'),
-        ('pacific',
-         'Papunesia',
-         'All islands between Sumatra and the Americas, excluding islands off Australia'
-         'and excluding Japan and islands to the North of it.'),
-    ]]
+    northamerica =\
+        'North America',\
+        'North and Middle America up to Panama. Includes Greenland.'
+    southamerica =\
+        'South America',\
+        'Everything South of Darién'
+    africa =\
+        'Africa',\
+        'The continent'
+    australia =\
+        'Australia',\
+        'The continent'
+    eurasia =\
+        'Eurasia',\
+        'The Eurasian landmass North of Sinai. Includes Japan and islands to the North' \
+        'of it. Does not include Insular South East Asia.'
+    pacific =\
+        'Papunesia',\
+        'All islands between Sumatra and the Americas, excluding islands off Australia' \
+        'and excluding Japan and islands to the North of it.'
 
 
 @attr.s
@@ -253,60 +226,49 @@ class ISORetirement(object):
         return attr.asdict(self)
 
 
-@attr.s
-class StatusItem(IdNameDescription):
-    pass
-
-
-class EndangermentStatus(object):
+class EndangermentStatus(DeclEnum):
     """
     http://www.unesco.org/new/en/culture/themes/endangered-languages/atlas-of-languages-in-danger/
     """
-    safe = StatusItem(
-        1,
-        'safe',
-        'language is spoken by all generations; '
-        'intergenerational transmission is uninterrupted.')
-    vulnerable = StatusItem(
-        2,
-        'vulnerable',
-        'most children speak the language, but it may be restricted to certain domains'
-        '(e.g., home).')
-    definite = StatusItem(
-        3,
-        'definitely endangered',
-        'children no longer learn the language as mother tongue in the home.')
-    severe = StatusItem(
-        4,
-        'severely endangered',
-        'language is spoken by grandparents and older generations; while the parent '
-        'generation may understand it, they do not speak it to children or among '
-        'themselves')
-    critical = StatusItem(
-        5,
-        'critically endangered',
-        'the youngest speakers are grandparents and older, and they speak the language '
-        'partially and infrequently')
-    extinct = StatusItem(
-        6,
-        'extinct',
-        'there are no speakers left since the 1950s')
+    safe = \
+        1, \
+        'safe', \
+        'language is spoken by all generations; ' \
+        'intergenerational transmission is uninterrupted.'
+    vulnerable = \
+        2, \
+        'vulnerable',\
+        'most children speak the language, but it may be restricted to certain '\
+        'domains (e.g., home).'
+    definite = \
+        3, \
+        'definitely endangered',\
+        'children no longer learn the language as mother tongue in the home.'
+    severe = \
+        4, \
+        'severely endangered',\
+        'language is spoken by grandparents and older generations; while the parent ' \
+        'generation may understand it, they do not speak it to children or among ' \
+        'themselves'
+    critical = \
+        5, \
+        'critically endangered',\
+        'the youngest speakers are grandparents and older, and they speak the language ' \
+        'partially and infrequently'
+    extinct = \
+        6, \
+        'extinct',\
+        'there are no speakers left since the 1950s'
 
     @classmethod
-    def from_name(cls, value):
-        value = value if isinstance(value, int) else value.lower().split()[0]
-        for status in cls():
-            if status.id == value or status.name.startswith(value):
-                return status
-
-    def __iter__(self):
-        return iter([
-            self.safe,
-            self.vulnerable,
-            self.definite,
-            self.severe,
-            self.critical,
-            self.extinct])
+    def get(cls, item):
+        if item in list(cls):
+            return item
+        item = item if isinstance(item, int) else item.lower()
+        for li in cls:
+            if li.name == item or li.value == item or li.description == item:
+                return li
+        raise ValueError(item)
 
 
 def valid_ethnologue_versions(inst, attr, value):

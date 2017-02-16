@@ -6,6 +6,7 @@ import os
 from clldutils.path import Path, as_posix, walk
 from clldutils.misc import UnicodeMixin, cached_property
 from clldutils.inifile import INI
+from clldutils.declenum import EnumSymbol
 import pycountry
 from termcolor import colored
 from newick import Node
@@ -20,7 +21,6 @@ ISO_CODE_PATTERN = re.compile('[a-z]{3}$')
 
 class Glottolog(UnicodeMixin):
     countries = [objects.Country(c.alpha_2, c.name) for c in pycountry.countries]
-    macroareas = objects.MACROAREAS
 
     def __init__(self, repos=None):
         self.repos = Path(repos) if repos else util.DATA_DIR
@@ -109,7 +109,7 @@ class Glottolog(UnicodeMixin):
     def macroarea_map(self):
         res = {}
         for lang in self.languoids():
-            ma = lang.macroareas[0].name if lang.macroareas else ''
+            ma = lang.macroareas[0].value if lang.macroareas else ''
             res[lang.id] = ma
             if lang.iso:
                 res[lang.iso] = ma
@@ -127,8 +127,8 @@ def _newick_node(l):
 
 def _ascii_node(n, level, last, maxlevel, prefix):
     if maxlevel:
-        if (isinstance(maxlevel, objects.LevelItem) and n.level > maxlevel) or \
-                (not isinstance(maxlevel, objects.LevelItem) and level > maxlevel):
+        if (isinstance(maxlevel, EnumSymbol) and n.level > maxlevel) or \
+                (not isinstance(maxlevel, EnumSymbol) and level > maxlevel):
             return
     s = '\u2514' if last else '\u251c'
     s += '\u2500 '

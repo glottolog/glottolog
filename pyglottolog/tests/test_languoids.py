@@ -7,7 +7,7 @@ from clldutils import jsonlib
 
 from pyglottolog.tests.util import WithApi
 from pyglottolog.languoids import Languoid, EndangermentStatus
-from pyglottolog.objects import Glottocodes, Glottocode, Level, Country
+from pyglottolog.objects import Glottocodes, Glottocode, Level, Country, Macroarea
 
 
 class TestGlottocodes(WithTempDir):
@@ -29,7 +29,7 @@ class Tests(TestCase):
     def test_es(self):
         self.assertEqual(
             EndangermentStatus.critical,
-            EndangermentStatus.from_name('Critically endangered'))
+            EndangermentStatus.get('Critically endangered'))
 
     def test_pattern(self):
         pattern = Glottocode.pattern
@@ -87,8 +87,8 @@ class TestLanguoid(WithApi):
         self.assertEqual(l.id, 'abcd1235')
 
         self.assertEqual(len(l.macroareas), 2)
-        l.macroareas = [self.api.macroareas[0]]
-        self.assertEqual(l.macroareas, [self.api.macroareas[0]])
+        l.macroareas = [Macroarea.africa]
+        self.assertEqual(l.macroareas, [Macroarea.africa])
 
         l.countries = self.api.countries[:2]
         self.assertEqual(len(l.countries), 2)
