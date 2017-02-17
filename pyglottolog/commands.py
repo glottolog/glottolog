@@ -5,20 +5,77 @@ from itertools import chain
 import os
 import sys
 import subprocess
+from functools import partial
 
 from termcolor import colored
 from clldutils.clilib import command, ParserError
 from clldutils.misc import slug
 from clldutils.markup import Table
-from clldutils.path import Path
+from clldutils.path import Path, readlines
 
 from pyglottolog.languoids import Languoid
-from pyglottolog.objects import Level, Reference
+from pyglottolog.objects import Level, Reference, Glottocode
 from pyglottolog import fts
 from pyglottolog import lff
 from pyglottolog.monster import compile
 import pyglottolog.iso
 from pyglottolog.util import message, wrap
+
+
+@command()
+def reflang(args):
+    triggers = {}
+    for line in readlines('autoreflang.txt', strip=True):
+        _, keys, trigger = line.split('|', 2)
+        assert trigger
+        assert '"' not in trigger
+        if keys.startswith('"'):
+            keys = keys[1:-1]
+        for key in keys.split(', '):
+            triggers[key.replace('#', ':', 1)] = trigger
+    all, auto = 0, Counter()
+    for lang in args.repos.languoids():
+        for src in lang.sources:
+            all += 1
+            if src.key in triggers:
+                auto.update([src.provider])
+                src.trigger = triggers[src.key]
+                print(src)
+    for k, v in auto.most_common():
+        print(k, v)
+
+
+@command()
+def link(args):
+    def update_bib(langs, inkey, key, type_, fields):
+        if inkey == key:
+            langs = ', '.join(l.id for l in langs)
+            lgcode = fields.get('lgcode')
+            if lgcode:
+                fields['lgcode'] = '{0}, {1}'.format(lgcode, langs)
+            else:
+                fields['lgcode'] = langs
+        return type_, fields
+
+    langs, refs = set(), set()
+    for arg in args.args:
+        if Glottocode.pattern.match(arg):
+            langs.add(arg)
+        else:
+            refs.add(Reference(key=arg))
+    assert langs and refs
+    langs = list(args.repos.languoids(ids=langs))
+
+    for ref in refs:
+        args.repos.bibfiles[ref.bibname].visit(partial(update_bib, langs, ref.bibkey))
+
+    for lang in langs:
+        sources = lang.sources
+        for ref in refs:
+            if ref not in sources:
+                sources.append(ref)
+        lang.sources = sources
+        lang.write_info()
 
 
 @command()

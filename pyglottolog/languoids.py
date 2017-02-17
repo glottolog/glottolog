@@ -204,6 +204,11 @@ class Languoid(UnicodeMixin):
             return Reference.from_list(self.cfg.getlist('sources', 'glottolog'))
         return []
 
+    @sources.setter
+    def sources(self, refs):
+        assert all(isinstance(r, Reference) for r in refs)
+        self.cfg.set('sources', 'glottolog', ['{0}'.format(ref) for ref in refs])
+
     @property
     def endangerment(self):
         if 'status' in self.cfg[self.section_core]:

@@ -60,15 +60,19 @@ class Glottocode(text_type):
 class Reference(UnicodeMixin):
     key = attr.ib()
     pages = attr.ib(default=None)
+    trigger = attr.ib(default=None)
     pattern = re.compile(
         "\*\*(?P<key>[a-z0-9\-_]+:[a-zA-Z.?\-;*'/()\[\]!_:0-9\u2014]+?)\*\*"
-        "(:(?P<pages>[0-9\-f]+))?")
+        "(:(?P<pages>[0-9\-f]+))?"
+        '(<trigger "(?P<trigger>[^\"]+)">)?')
     old_pattern = re.compile('[^\[]+\[(?P<pages>[^\]]*)\]\s*\([0-9]+\s+(?P<key>[^\)]+)\)')
 
     def __unicode__(self):
         res = '**{0.key}**'.format(self)
         if self.pages:
             res += ':{0.pages}'.format(self)
+        if self.trigger:
+            res += '<trigger "{0.trigger}">'.format(self)
         return res
 
     def get_source(self, api):

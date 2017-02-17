@@ -10,7 +10,7 @@ import datetime
 from six import string_types
 import attr
 from clldutils.misc import cached_property, UnicodeMixin
-from clldutils.path import memorymapped
+from clldutils.path import memorymapped, readlines, write_text
 
 from pyglottolog.util import Trigger
 from pyglottolog.monsterlib import _bibtex
@@ -79,6 +79,17 @@ class BibFile(UnicodeMixin):
                 else:
                     return string[m.start():].decode('utf8')
         raise KeyError(item)
+
+    def visit(self, visitor=None):
+        entries = OrderedDict()
+        for key, (type_, fields) in _bibtex.iterentries(self.fname, self.encoding):
+            if visitor:
+                res = visitor(key, type_, fields)
+                if not res:
+                    continue
+                type_, fields = res
+            entries[key] = (type_, fields)
+        self.save(entries)
 
     @property
     def filepath(self):

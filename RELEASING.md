@@ -12,4 +12,11 @@ Merging the BibTeX files
 1. Update automatically created files:
    - `iso6393.bib`: Run `glottolog isobib`
    - `benjamins.bib`: TODO
-2. Run `glottolog monster`
+2. Run `glottolog bib`
+3. Merge list of replacements for refs
+
+4. Create list of new refs/languoids, querying the old db.
+5. Drop db
+6. recreate db
+7. mark new refs/languoids reading in the lists created in 4.
+
