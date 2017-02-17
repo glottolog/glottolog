@@ -33,16 +33,16 @@ def reflang(args):
             keys = keys[1:-1]
         for key in keys.split(', '):
             triggers[key.replace('#', ':', 1)] = trigger
-    all, auto = 0, Counter()
     for lang in args.repos.languoids():
+        new, changed = [], False
         for src in lang.sources:
-            all += 1
             if src.key in triggers:
-                auto.update([src.provider])
+                changed = True
                 src.trigger = triggers[src.key]
-                print(src)
-    for k, v in auto.most_common():
-        print(k, v)
+            new.append(src)
+        if changed:
+            lang.sources = new
+            lang.write_info()
 
 
 @command()
