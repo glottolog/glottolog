@@ -22,27 +22,34 @@ import pyglottolog.iso
 from pyglottolog.util import message, wrap
 
 
+#478687
 @command()
 def reflang(args):
-    triggers = {}
-    for line in readlines('autoreflang.txt', strip=True):
-        _, keys, trigger = line.split('|', 2)
-        assert trigger
-        assert '"' not in trigger
+    gidmap = defaultdict(dict)
+    for line in readlines('srctrickle.txt', strip=True):
+        gid, keys = line.split('|', 1)
         if keys.startswith('"'):
             keys = keys[1:-1]
         for key in keys.split(', '):
-            triggers[key.replace('#', ':', 1)] = trigger
-    for lang in args.repos.languoids():
-        new, changed = [], False
-        for src in lang.sources:
-            if src.key in triggers:
-                changed = True
-                src.trigger = triggers[src.key]
-            new.append(src)
-        if changed:
-            lang.sources = new
-            lang.write_info()
+            if key:
+                p, k = key.split('#', 1)
+                gidmap[p][k] = gid
+
+    res = Counter()
+    for bib in args.repos.bibfiles:
+        if bib.id in gidmap and bib.id != 'bibliolux':
+            for k, (t, fields) in bib.iterentries():
+                if k in gidmap[bib.id]:
+                    del gidmap[bib.id][k]
+                if int(fields.get('glottolog_ref_id', 0)) > 478687:
+                    res.update([bib.id])
+        #    bib.visit(partial(fix, gidmap[bib.id]))
+    for k, v in res.most_common():
+        print(k, v)
+
+    for k, v in gidmap.items():
+        if v:
+            print(k, len(v))
 
 
 @command()

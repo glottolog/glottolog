@@ -296,10 +296,12 @@ def lgcode(arg):
 
 
 def lgcodestr(lgcstr):
+    # find stuff in square brackets ...
     lgs = reisobrack.findall(lgcstr)
     if lgs:
         return lgs
 
+    # ... or as comma separated list of identifiers.
     parts = [p.strip() for p in recomma.split(lgcstr)]
     codes = [p for p in parts if reiso.match(p)]
     if len(codes) == len(parts):
