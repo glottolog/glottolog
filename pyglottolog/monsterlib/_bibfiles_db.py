@@ -343,7 +343,8 @@ def import_bibfiles(conn, bibfiles):
     for b in bibfiles:
         conn.execute('INSERT INTO file (name, size, mtime, priority)'
             'VALUES (?, ?, ?, ?)', (b.filename, b.size, b.mtime, b.priority))
-        for bibkey, (entrytype, fields) in b.iterentries():
+        for e in b.iterentries():
+            bibkey, entrytype, fields = e.key, e.type, e.fields
             conn.execute('INSERT INTO entry (filename, bibkey, refid) VALUES (?, ?, ?)',
                 (b.filename, bibkey, fields.get('glottolog_ref_id')))
             fields = itertools.chain([('ENTRYTYPE', entrytype)], fields.items())

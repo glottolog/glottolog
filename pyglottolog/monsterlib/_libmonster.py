@@ -14,8 +14,12 @@ from operator import itemgetter
 from clldutils.dsv import UnicodeWriter
 
 from pyglottolog.util import unique, Trigger
+from pyglottolog.references import Entry
 from pyglottolog.monsterlib._bibtex_undiacritic import undiacritic
 from pyglottolog.monsterlib.roman import roman, romanint
+
+
+lgcodestr = Entry.lgcodes
 
 
 def opv(d, func, *args):
@@ -284,29 +288,9 @@ def keyid(fields, fd, ti=2, infinity=float('inf')):
     return reokkey.sub("", key.lower())
 
 
-isoregex = '[a-z]{3}|NOCODE_[A-Z][^\s\]]+'
-reisobrack = re.compile("\[(" + isoregex + ")\]")
-recomma = re.compile("[,/]\s?")
-reiso = re.compile(isoregex + "$")
-
-
 def lgcode(arg):
     fields = arg[1]
     return lgcodestr(fields['lgcode']) if 'lgcode' in fields else []
-
-
-def lgcodestr(lgcstr):
-    # find stuff in square brackets ...
-    lgs = reisobrack.findall(lgcstr)
-    if lgs:
-        return lgs
-
-    # ... or as comma separated list of identifiers.
-    parts = [p.strip() for p in recomma.split(lgcstr)]
-    codes = [p for p in parts if reiso.match(p)]
-    if len(codes) == len(parts):
-        return codes
-    return []
 
 
 def sd(es, hht):

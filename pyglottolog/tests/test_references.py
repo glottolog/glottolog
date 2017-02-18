@@ -26,6 +26,10 @@ class Tests(WithApi):
         self.assertTrue(bibfile['a:key'].startswith('@misc'))
         self.assertTrue(bibfile['s:Andalusi:Turk'].startswith('@'))
 
+        for entry in bibfile.iterentries():
+            if entry.key == 'key':
+                self.assertEqual(len(list(entry.iterlanguoids({}, {'abc': 1}, {}))), 1)
+
         with self.assertRaises(KeyError):
             _ = bibfile['xyz']
 
@@ -39,3 +43,14 @@ class Tests(WithApi):
 
         bibfile.update(self.api.bibfiles['b.bib'].fname)
         self.assertEqual(len(list(bibfile.iterentries())), 1)
+
+        def visitor(k, t, fields):
+            fields['new_field'] = 'a'
+            return t, fields
+
+        bibfile.visit(visitor=visitor)
+        for entry in bibfile.iterentries():
+            self.assertIn('new_field', entry.fields)
+
+        bibfile.visit(visitor=lambda *args: None)
+        self.assertEqual(len(bibfile.keys()), 0)

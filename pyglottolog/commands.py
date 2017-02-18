@@ -22,69 +22,6 @@ import pyglottolog.iso
 from pyglottolog.util import message, wrap
 
 
-#478687
-@command()
-def reflang(args):
-    gidmap = defaultdict(dict)
-    for line in readlines('srctrickle.txt', strip=True):
-        gid, keys = line.split('|', 1)
-        if keys.startswith('"'):
-            keys = keys[1:-1]
-        for key in keys.split(', '):
-            if key:
-                p, k = key.split('#', 1)
-                gidmap[p][k] = gid
-
-    res = Counter()
-    for bib in args.repos.bibfiles:
-        if bib.id in gidmap and bib.id != 'bibliolux':
-            for k, (t, fields) in bib.iterentries():
-                if k in gidmap[bib.id]:
-                    del gidmap[bib.id][k]
-                if int(fields.get('glottolog_ref_id', 0)) > 478687:
-                    res.update([bib.id])
-        #    bib.visit(partial(fix, gidmap[bib.id]))
-    for k, v in res.most_common():
-        print(k, v)
-
-    for k, v in gidmap.items():
-        if v:
-            print(k, len(v))
-
-
-@command()
-def link(args):
-    def update_bib(langs, inkey, key, type_, fields):
-        if inkey == key:
-            langs = ', '.join(l.id for l in langs)
-            lgcode = fields.get('lgcode')
-            if lgcode:
-                fields['lgcode'] = '{0}, {1}'.format(lgcode, langs)
-            else:
-                fields['lgcode'] = langs
-        return type_, fields
-
-    langs, refs = set(), set()
-    for arg in args.args:
-        if Glottocode.pattern.match(arg):
-            langs.add(arg)
-        else:
-            refs.add(Reference(key=arg))
-    assert langs and refs
-    langs = list(args.repos.languoids(ids=langs))
-
-    for ref in refs:
-        args.repos.bibfiles[ref.bibname].visit(partial(update_bib, langs, ref.bibkey))
-
-    for lang in langs:
-        sources = lang.sources
-        for ref in refs:
-            if ref not in sources:
-                sources.append(ref)
-        lang.sources = sources
-        lang.write_info()
-
-
 @command()
 def isobib(args):  # pragma: no cover
     """Update iso6393.bib - the file of references for ISO 639-3 change requests.

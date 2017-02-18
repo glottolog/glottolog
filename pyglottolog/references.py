@@ -10,7 +10,7 @@ import datetime
 from six import string_types
 import attr
 from clldutils.misc import cached_property, UnicodeMixin
-from clldutils.path import memorymapped, readlines, write_text
+from clldutils.path import memorymapped
 
 from pyglottolog.util import Trigger
 from pyglottolog.monsterlib import _bibtex
@@ -49,6 +49,41 @@ class BibFiles(list):
 def file_if_exists(i, a, value):
     if value.exists() and not value.is_file():
         raise ValueError('invalid path')  # pragma: no cover
+
+
+@attr.s
+class Entry(object):
+    key = attr.ib()
+    type = attr.ib()
+    fields = attr.ib()
+
+    # FIXME: add method to apply triggers!
+
+    lgcode_regex = '[a-z0-9]{4}[0-9]{4}|[a-z]{3}|NOCODE_[A-Z][^\s\]]+'
+    lgcode_in_brackets_pattern = re.compile("\[(" + lgcode_regex + ")\]")
+    recomma = re.compile("[,/]\s?")
+    lgcode_pattern = re.compile(lgcode_regex + "$")
+
+    @classmethod
+    def lgcodes(cls, string):
+        codes = cls.lgcode_in_brackets_pattern.findall(string)
+        if not codes:
+            # ... or as comma separated list of identifiers.
+            parts = [p.strip() for p in cls.recomma.split(string)]
+            codes = [p for p in parts if cls.lgcode_pattern.match(p)]
+            if len(codes) != len(parts):
+                codes = []
+        return codes
+
+    def iterlanguoids(self, gc, iso, hid):
+        if 'lgcode' in self.fields:
+            for code in self.lgcodes(self.fields['lgcode']):
+                if code in gc:
+                    yield gc[code]
+                elif code in iso:
+                    yield iso[code]
+                elif code in hid:
+                    yield hid[code]
 
 
 @attr.s
@@ -108,17 +143,17 @@ class BibFile(UnicodeMixin):
         return datetime.datetime.fromtimestamp(self.filepath.stat().st_mtime)
 
     def iterentries(self):
-        """Yield entries as (bibkey, (entrytype, fields)) tuples."""
-        return _bibtex.iterentries(filename=self.fname, encoding=self.encoding)
+        for k, (t, f) in _bibtex.iterentries(filename=self.fname, encoding=self.encoding):
+            yield Entry(k, t, f)
 
     def keys(self):
-        return ['{0}:{1}'.format(self.id, key) for key, _ in self.iterentries()]
+        return ['{0}:{1}'.format(self.id, e.key) for e in self.iterentries()]
 
     @property
     def glottolog_ref_id_map(self):
         return {
-            k: fields['glottolog_ref_id'] for k, (_, fields) in self.iterentries()
-            if 'glottolog_ref_id' in fields}
+            e.key: e.fields['glottolog_ref_id'] for e in self.iterentries()
+            if 'glottolog_ref_id' in e.fields}
 
     def update(self, fname):
         entries = OrderedDict()

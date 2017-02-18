@@ -142,18 +142,18 @@ def build_index(api, log):
     writer = get_index(api, recreate=True).writer()
     for bibfile in api.bibfiles:
         log.info('indexing {0}'.format(bibfile))
-        for id_, (type_, fields) in bibfile.iterentries():
-            author = fields.get('author', '')
+        for e in bibfile.iterentries():
+            author = e.fields.get('author', '')
             if author:
                 author = slug(author.split()[0])
             writer.add_document(
-                id='{0}:{1}'.format(bibfile.fname.stem, id_),
+                id='{0}:{1}'.format(bibfile.fname.stem, e.key),
                 provider='%s' % bibfile.fname.stem,
-                title=fields.get('title', fields.get('booktitle', '')),
-                author=fields.get('author', fields.get('editor', '')),
-                year=fields.get('year', ''),
-                doctype=fields.get('hhtype', ''),
-                lgcode=fields.get('lgcode', ''),
-                body='%s' % fields,
-                authoryear='{0}{1}'.format(author, fields.get('year', '')).lower())
+                title=e.fields.get('title', e.fields.get('booktitle', '')),
+                author=e.fields.get('author', e.fields.get('editor', '')),
+                year=e.fields.get('year', ''),
+                doctype=e.fields.get('hhtype', ''),
+                lgcode=e.fields.get('lgcode', ''),
+                body='%s' % e.fields,
+                authoryear='{0}{1}'.format(author, e.fields.get('year', '')).lower())
     writer.commit()

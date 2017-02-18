@@ -5,6 +5,7 @@ import operator
 import functools
 from copy import copy
 import textwrap
+import re
 
 from termcolor import colored
 from clldutils.path import Path
