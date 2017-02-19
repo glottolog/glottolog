@@ -15,6 +15,7 @@ requires = [
     'termcolor',
     'newick',
     'markdown',
+    'bs4',
 ]
 
 setup(
