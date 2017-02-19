@@ -5,6 +5,7 @@
 import io
 import collections
 
+from six import PY2
 from pybtex.database.input.bibtex import BibTeXEntryIterator, Parser, UndefinedMacro
 from pybtex.scanner import PybtexSyntaxError
 from pybtex.exceptions import PybtexError
@@ -27,16 +28,23 @@ def load(filename, preserve_order=False, encoding=None):
     return cls(iterentries(filename, encoding))
 
 
+def py2_decode(text, encoding):
+    return text.decode(encoding) if PY2 else text
+
+
 def iterentries(filename, encoding=None):
     encoding = encoding or 'utf8'
     with memorymapped(as_posix(filename)) as source:
         try:
-            for entrytype, (bibkey, fields) in BibTeXEntryIterator(source):
+            text = source if PY2 else source.read().decode(encoding)
+            for entrytype, (bibkey, fields) in BibTeXEntryIterator(text):
                 fields = {
-                    name.decode(encoding).lower():
-                    whitespace_re.sub(' ', ''.join(values).decode(encoding).strip())
+                    py2_decode(name, encoding).lower():
+                    whitespace_re.sub(' ', py2_decode(''.join(values), encoding).strip())
                     for name, values in fields}
-                yield bibkey.decode(encoding), (entrytype.decode(encoding), fields)
+                yield \
+                    py2_decode(bibkey, encoding), \
+                    (py2_decode(entrytype, encoding), fields)
         except PybtexSyntaxError as e:  # pragma: no cover
             debug_pybtex(source, e)
 

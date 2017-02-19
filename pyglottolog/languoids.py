@@ -73,6 +73,9 @@ class Languoid(UnicodeMixin):
             setattr(res, k, v)
         return res
 
+    def __hash__(self):
+        return id(self)
+
     def __eq__(self, other):
         return self.id == other.id
 

@@ -135,8 +135,7 @@ def _ascii_node(n, level, last, maxlevel, prefix):
 
     if not level:
         for i, node in enumerate(n.ancestors):
-            print('{0}{1}{2} [{3}]'.format(
-                prefix, s if i else '', node.name, node.id).encode('utf8'))
+            util.sprint('{0}{1}{2} [{3}]', prefix, s if i else '', node.name, node.id)
             prefix = '   ' + prefix
 
     nprefix = prefix + ('   ' if last else '\u2502  ')
@@ -145,11 +144,11 @@ def _ascii_node(n, level, last, maxlevel, prefix):
         'green' if n.level == objects.Level.language else (
             'blue' if n.level == objects.Level.dialect else None))
 
-    print('{0}{1}{2} [{3}]'.format(
+    util.sprint(
+        '{0}{1}{2} [{3}]',
         prefix,
         s if level else (s if n.ancestors else ''),
         colored(n.name, color) if color else n.name,
-        colored(n.id, color) if color else n.id,
-    ).encode('utf8'))
+        colored(n.id, color) if color else n.id)
     for i, c in enumerate(sorted(n.children, key=lambda nn: nn.name)):
         _ascii_node(c, level + 1, i == len(n.children) - 1, maxlevel, nprefix)

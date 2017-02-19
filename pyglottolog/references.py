@@ -106,9 +106,9 @@ class BibFile(UnicodeMixin):
         if item.startswith(self.id + ':'):
             item = item.split(':', 1)[1]
         with memorymapped(self.fname) as string:
-            m = re.search('@[A-Za-z]+\{' + re.escape(item), string)
+            m = re.search(b'@[A-Za-z]+\{' + re.escape(item.encode('utf8')), string)
             if m:
-                next = string.find('\n@', m.end())
+                next = string.find(b'\n@', m.end())
                 if next > 0:
                     return string[m.start():next - 1].decode('utf8')
                 else:

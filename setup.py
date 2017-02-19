@@ -11,11 +11,12 @@ requires = [
     'unidecode',
     'whoosh',
     'attrs',
-    'pycountry',
+    'pycountry>=17.01.08',
     'termcolor',
     'newick',
     'markdown',
     'bs4',
+    'requests',
 ]
 
 setup(

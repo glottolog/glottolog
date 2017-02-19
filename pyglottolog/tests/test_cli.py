@@ -18,13 +18,13 @@ class Tests(WithApi):
         from pyglottolog.commands import show
 
         with capture(show, self._args('**a:key**')) as out:
-            self.assertIn('@misc'.encode('utf8'), out)
+            self.assertIn('@misc'.encode('utf8') if PY2 else '@misc', out)
 
         with capture(show, self._args('a:key')) as out:
-            self.assertIn('@misc'.encode('utf8'), out)
+            self.assertIn('@misc'.encode('utf8') if PY2 else '@misc', out)
 
         with capture(show, self._args('abcd1236')) as out:
-            self.assertIn('Classification'.encode('utf8'), out)
+            self.assertIn('Classification'.encode('utf8') if PY2 else 'Classificat', out)
 
     def test_edit(self):
         from pyglottolog.commands import edit

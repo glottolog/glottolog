@@ -1,6 +1,7 @@
 # coding: utf8
 from __future__ import unicode_literals, print_function, division
 
+from six import PY2
 import attr
 from whoosh import index
 from whoosh.fields import Schema, TEXT, KEYWORD, ID, NUMERIC
@@ -97,7 +98,7 @@ def build_langs_index(api, log):
             name=lang.name,
             fname=as_unicode(lang.fname),
             iso=lang.iso,
-            level=lang.level.name.decode(),
+            level=lang.level.name.decode() if PY2 else lang.level.name,
             macroarea=' '.join('{0}'.format(ma) for ma in lang.macroareas),
             country=' '.join('{0}'.format(c) for c in lang.countries),
             latitude=lang.latitude,

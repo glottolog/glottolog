@@ -5,21 +5,20 @@ from itertools import chain
 import os
 import sys
 import subprocess
-from functools import partial
 
 from termcolor import colored
 from clldutils.clilib import command, ParserError
 from clldutils.misc import slug
 from clldutils.markup import Table
-from clldutils.path import Path, readlines
+from clldutils.path import Path
 
 from pyglottolog.languoids import Languoid
-from pyglottolog.objects import Level, Reference, Glottocode
+from pyglottolog.objects import Level, Reference
 from pyglottolog import fts
 from pyglottolog import lff
 from pyglottolog.monster import compile
 import pyglottolog.iso
-from pyglottolog.util import message, wrap
+from pyglottolog.util import message, wrap, sprint
 
 
 @command()
@@ -38,10 +37,6 @@ def existing_lang(args):
     return lang
 
 
-def cprint(text, color=None, attrs=None):
-    print(colored(text, color, attrs=attrs or []).encode('utf8'))
-
-
 @command()
 def show(args):
     """Display details of a Glottolog object.
@@ -53,32 +48,32 @@ def show(args):
             ref = Reference.from_string(args.args[0])
         else:
             ref = Reference(key=args.args[0])
-        cprint('Glottolog reference {0}'.format(ref), attrs=['bold', 'underline'])
+        sprint('Glottolog reference {0}'.format(ref), attrs=['bold', 'underline'])
         print()
         src = ref.get_source(args.repos)
-        cprint(src.text())
+        sprint(src.text())
         print()
-        cprint(src.bibtex())
+        sprint(src.bibtex())
         return
     lang = existing_lang(args)
     print()
-    cprint('Glottolog languoid {0}'.format(lang.id), attrs=['bold', 'underline'])
+    sprint('Glottolog languoid {0}'.format(lang.id), attrs=['bold', 'underline'])
     print()
-    cprint('Classification:', attrs=['bold', 'underline'])
+    sprint('Classification:', attrs=['bold', 'underline'])
     args.repos.ascii_tree(lang, maxlevel=1)
     print()
-    cprint('Info:', attrs=['bold', 'underline'])
-    cprint('Path: {0}'.format(lang.fname), 'green', attrs=['bold'])
+    sprint('Info:', attrs=['bold', 'underline'])
+    sprint('Path: {0}'.format(lang.fname), 'green', attrs=['bold'])
     sources = lang.sources
     if sources:
         del lang.cfg['sources']['glottolog']
         del lang.cfg['sources']
     for line in lang.cfg.write_string().split('\n'):
         if not line.startswith('#'):
-            cprint(line, None, attrs=['bold'] if line.startswith('[') else [])
-    cprint('Sources:', attrs=['bold', 'underline'])
+            sprint(line, None, attrs=['bold'] if line.startswith('[') else [])
+    sprint('Sources:', attrs=['bold', 'underline'])
     for src in sources:
-        cprint(wrap(src.get_source(args.repos).text(), width=90))
+        sprint(wrap(src.get_source(args.repos).text(), width=90))
         print()
 
 
@@ -154,7 +149,7 @@ def newick(args):
 
     glottolog newick <GLOTTOCODE>|<ISO-CODE> [MAXLEVEL]
     """
-    print(args.repos.newick_tree(args.args[0]))
+    sprint(args.repos.newick_tree(args.args[0]))
 
 
 @command()
@@ -372,7 +367,7 @@ def refsearch(args):
     table = Table('ID', 'Author', 'Year', 'Title')
     for res in results:
         table.append([res.id, res.author, res.year, res.title])
-    print(table.render(tablefmt='simple'))
+    sprint(table.render(tablefmt='simple'))
     print('({} matches)'.format(count))
 
 
@@ -406,9 +401,9 @@ def langsearch(args):
             p = Path(res.fname).relative_to(Path(cwd))
         except ValueError:
             p = res.fname
-        cprint('{0.name} [{0.id}] {0.level}'.format(res), None, attrs=['bold'])
-        cprint(p, 'green')
-        print(highlight(res.highlights) if res.highlights else '')
+        sprint('{0.name} [{0.id}] {0.level}'.format(res), None, attrs=['bold'])
+        sprint(p, 'green')
+        sprint(highlight(res.highlights) if res.highlights else '')
     print('{} matches'.format(count))
 
 

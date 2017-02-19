@@ -62,7 +62,7 @@ def iter_change_requests(log):
     log.info('downloading {0} ...'.format(url))
     res = requests.get(url, params=dict(order='CR_Number', chg_status='past'))
     log.info('HTTP {0}'.format(res.status_code))
-    table = bs(res.content, "html5lib").find('table')
+    table = bs(res.content, 'html.parser').find('table')
     cols = None
     for i, tr in enumerate(table.find_all('tr')):
         if i == 0:

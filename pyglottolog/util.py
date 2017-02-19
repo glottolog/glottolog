@@ -5,8 +5,8 @@ import operator
 import functools
 from copy import copy
 import textwrap
-import re
 
+from six import PY2
 from termcolor import colored
 from clldutils.path import Path
 from clldutils.iso_639_3 import ISO, download_tables
@@ -15,6 +15,18 @@ import pyglottolog
 
 
 DATA_DIR = Path(pyglottolog.__file__).parent.parent
+
+
+def sprint(text, *args, **kw):
+    if args:
+        text = text.format(*args)
+    color = kw.pop('color', None)
+    attrs = kw.pop('attrs', None)
+    if color or attrs:
+        text = colored(text, color=color, attrs=attrs)
+    if PY2:
+        text = text.encode('utf8')
+    print(text)
 
 
 def wrap(text,
