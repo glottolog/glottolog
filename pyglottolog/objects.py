@@ -8,7 +8,6 @@ import attr
 import markdown
 import pycountry
 from clldutils.misc import slug, UnicodeMixin
-from clldutils.source import Source
 from clldutils import jsonlib
 from clldutils.declenum import DeclEnum
 
@@ -76,8 +75,7 @@ class Reference(UnicodeMixin):
         return res
 
     def get_source(self, api):
-        return Source.from_bibtex(
-            api.bibfiles[self.bibname][self.bibkey], _check_id=False)
+        return api.bibfiles[self.bibname][self.bibkey]
 
     @property
     def provider(self):

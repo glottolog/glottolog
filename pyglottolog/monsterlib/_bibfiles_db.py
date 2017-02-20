@@ -16,8 +16,6 @@ from clldutils.path import remove
 from pyglottolog.util import unique, group_first
 from pyglottolog.monsterlib import _bibtex
 
-__all__ = ['Database']
-
 log = logging.getLogger('pyglottolog')
 UNION_FIELDS = {'fn', 'asjp_name', 'isbn'}
 IGNORE_FIELDS = {'crossref', 'numnote', 'glotto_id'}
@@ -84,12 +82,13 @@ class Database(object):
     def to_csvfile(self, filename):
         """Write a CSV file with one row for each entry in each bibfile."""
         with self.connect() as conn:
-            cursor = conn.execute('SELECT filename, bibkey, hash, cast(id AS text) AS id '
+            cursor = conn.execute(
+                'SELECT filename, bibkey, hash, cast(id AS text) AS id '
                 'FROM entry ORDER BY lower(filename), lower(bibkey), hash, id')
             with UnicodeWriter(filename) as writer:
                 writer.writerow([col[0] for col in cursor.description])
                 for row in cursor:
-                     writer.writerow(row)
+                    writer.writerow(row)
 
     def to_replacements(self, filename):
         """Write a JSON file with 301s from merged glottolog_ref_ids."""
@@ -132,7 +131,7 @@ class Database(object):
                     else:
                         changed += 1
                     fields['glottolog_ref_id'] = new
-                print('%d changed %d added in %s' % (changed, added, b.filename))
+                print('%d changed %d added in %s' % (changed, added, b.id))
                 b.save(entries)
 
     def merged(self):
@@ -342,30 +341,32 @@ def import_bibfiles(conn, bibfiles):
     log.info('importing bibfiles into a new db')
     for b in bibfiles:
         conn.execute('INSERT INTO file (name, size, mtime, priority)'
-            'VALUES (?, ?, ?, ?)', (b.filename, b.size, b.mtime, b.priority))
+            'VALUES (?, ?, ?, ?)', (b.fname.name, b.size, b.mtime, b.priority))
         for e in b.iterentries():
             bibkey, entrytype, fields = e.key, e.type, e.fields
-            conn.execute('INSERT INTO entry (filename, bibkey, refid) VALUES (?, ?, ?)',
-                (b.filename, bibkey, fields.get('glottolog_ref_id')))
+            conn.execute(
+                'INSERT INTO entry (filename, bibkey, refid) VALUES (?, ?, ?)',
+                (b.fname.name, bibkey, fields.get('glottolog_ref_id')))
             fields = itertools.chain([('ENTRYTYPE', entrytype)], fields.items())
-            conn.executemany('INSERT INTO value '
-                '(filename, bibkey, field, value) VALUES (?, ?, ?, ?)',
-                ((b.filename, bibkey, field, value) for field, value in fields))
+            conn.executemany(
+                'INSERT INTO value (filename, bibkey, field, value) VALUES (?, ?, ?, ?)',
+                ((b.fname.name, bibkey, field, value) for field, value in fields))
 
 
 def update_priorities(conn, bibfiles):
-    inini = {b.filename for b in bibfiles}
+    inini = {b.fname.name for b in bibfiles}
     indb = {filename for filename, in conn.execute('SELECT name FROM file')}
     assert inini == indb
     for b in bibfiles:
-        conn.execute('UPDATE file SET priority = ? WHERE NAME = ?',
-            (b.priority, b.filename))
+        conn.execute(
+            'UPDATE file SET priority = ? WHERE NAME = ?',
+            (b.priority, b.fname.name))
     print('\n'.join('%d\t%s' % pn for pn in conn.execute(
         'SELECT priority, name FROM file ORDER BY priority DESC, name')))
 
 
 def compare_bibfiles(conn, bibfiles, verbose=False):
-    ondisk = collections.OrderedDict((b.filename, (b.size, str(b.mtime)))
+    ondisk = collections.OrderedDict((b.fname.name, (b.size, str(b.mtime)))
         for b in bibfiles)
     indb = collections.OrderedDict((name, (size, mtime))
         for name, size, mtime in

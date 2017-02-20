@@ -7,6 +7,11 @@ from pyglottolog.tests.util import WithApi
 
 
 class Tests(WithApi):
+    def test_Entry(self):
+        from pyglottolog.references import Entry
+
+        self.assertEqual(Entry.lgcodes(None), [])
+
     def test_HHTypes(self):
         hht = self.api.hhtypes
         self.assertEqual(hht['grammar'].rank, 17)
@@ -23,12 +28,12 @@ class Tests(WithApi):
 
     def test_BibFile(self):
         bibfile = self.api.bibfiles['a.bib']
-        self.assertTrue(bibfile['a:key'].startswith('@misc'))
-        self.assertTrue(bibfile['s:Andalusi:Turk'].startswith('@'))
+        self.assertEqual(bibfile['a:key'].type, 'misc')
+        self.assertEqual(bibfile['s:Andalusi:Turk'].key, 's:Andalusi:Turk')
 
         for entry in bibfile.iterentries():
             if entry.key == 'key':
-                self.assertEqual(len(list(entry.iterlanguoids({}, {'abc': 1}, {}))), 1)
+                self.assertEqual(len(list(entry.iterlanguoids({'abc': 1}))), 1)
 
         with self.assertRaises(KeyError):
             _ = bibfile['xyz']
@@ -44,13 +49,12 @@ class Tests(WithApi):
         bibfile.update(self.api.bibfiles['b.bib'].fname)
         self.assertEqual(len(list(bibfile.iterentries())), 1)
 
-        def visitor(k, t, fields):
-            fields['new_field'] = 'a'
-            return t, fields
+        def visitor(entry):
+            entry.fields['new_field'] = 'a'
 
         bibfile.visit(visitor=visitor)
         for entry in bibfile.iterentries():
             self.assertIn('new_field', entry.fields)
 
-        bibfile.visit(visitor=lambda *args: None)
+        bibfile.visit(visitor=lambda e: True)
         self.assertEqual(len(bibfile.keys()), 0)

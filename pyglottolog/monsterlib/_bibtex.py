@@ -5,7 +5,7 @@
 import io
 import collections
 
-from six import PY2
+from six import PY2, text_type
 from pybtex.database.input.bibtex import BibTeXEntryIterator, Parser, UndefinedMacro
 from pybtex.scanner import PybtexSyntaxError
 from pybtex.exceptions import PybtexError
@@ -32,19 +32,26 @@ def py2_decode(text, encoding):
     return text.decode(encoding) if PY2 else text
 
 
+def iterentries_from_text(text, encoding='utf8'):
+    if not PY2:  # pragma: no cover
+        if hasattr(text, 'read'):
+            text = text.read()
+        if not isinstance(text, text_type):
+            text = text.decode(encoding)
+    for entrytype, (bibkey, fields) in BibTeXEntryIterator(text):
+        fields = {
+            py2_decode(name, encoding).lower():
+                whitespace_re.sub(' ', py2_decode(''.join(values), encoding).strip())
+            for name, values in fields}
+        yield py2_decode(bibkey, encoding), (py2_decode(entrytype, encoding), fields)
+
+
 def iterentries(filename, encoding=None):
     encoding = encoding or 'utf8'
     with memorymapped(as_posix(filename)) as source:
         try:
-            text = source if PY2 else source.read().decode(encoding)
-            for entrytype, (bibkey, fields) in BibTeXEntryIterator(text):
-                fields = {
-                    py2_decode(name, encoding).lower():
-                    whitespace_re.sub(' ', py2_decode(''.join(values), encoding).strip())
-                    for name, values in fields}
-                yield \
-                    py2_decode(bibkey, encoding), \
-                    (py2_decode(entrytype, encoding), fields)
+            for entrytype, (bibkey, fields) in iterentries_from_text(source, encoding):
+                yield entrytype, (bibkey, fields)
         except PybtexSyntaxError as e:  # pragma: no cover
             debug_pybtex(source, e)
 
@@ -147,7 +154,7 @@ fieldorder = Ordering.fromlist(FIELDORDER)
 
 def check(filename, encoding=None):
     parser = CheckParser(encoding=encoding)
-    parser.parse_file(filename)
+    parser.parse_file(as_posix(filename))
     return parser.error_count
     
 

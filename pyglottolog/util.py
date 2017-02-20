@@ -6,7 +6,7 @@ import functools
 from copy import copy
 import textwrap
 
-from six import PY2
+from six import PY2, text_type
 from termcolor import colored
 from clldutils.path import Path
 from clldutils.iso_639_3 import ISO, download_tables
@@ -18,6 +18,8 @@ DATA_DIR = Path(pyglottolog.__file__).parent.parent
 
 
 def sprint(text, *args, **kw):
+    if not isinstance(text, text_type):
+        text = '{0}'.format(text)
     if args:
         text = text.format(*args)
     color = kw.pop('color', None)

@@ -4,6 +4,7 @@ from collections import defaultdict, Counter
 from itertools import chain
 import os
 import sys
+import re
 import subprocess
 
 from termcolor import colored
@@ -19,6 +20,34 @@ from pyglottolog import lff
 from pyglottolog.monster import compile
 import pyglottolog.iso
 from pyglottolog.util import message, wrap, sprint
+
+
+@command()
+def checklgcode(args):
+    class Check(object):
+        def __init__(self, langs):
+            self.unknown_lgcodes = Counter()
+            self.langs = langs
+
+        def __call__(self, entry):
+            for lgcode in entry.lgcodes(entry.fields.get('lgcode')):
+                if lgcode not in self.langs:
+                    self.unknown_lgcodes.update(['{0} {1}'.format(entry.bib.id, lgcode)])
+
+    langs = set()
+    for lang in args.repos.languoids():
+        langs.add(lang.id)
+        if lang.iso:
+            langs.add(lang.iso)
+        if lang.hid:
+            langs.add(lang.hid)
+
+    visitor = Check(langs)
+    for bib in args.repos.bibfiles:
+        if bib.id not in ['hh', 'iso6393']:
+            bib.visit(visitor=visitor)
+    for k, v in visitor.unknown_lgcodes.most_common():
+        print(k, v)
 
 
 @command()
@@ -53,7 +82,7 @@ def show(args):
         src = ref.get_source(args.repos)
         sprint(src.text())
         print()
-        sprint(src.bibtex())
+        sprint(src)
         return
     lang = existing_lang(args)
     print()
@@ -73,7 +102,9 @@ def show(args):
             sprint(line, None, attrs=['bold'] if line.startswith('[') else [])
     sprint('Sources:', attrs=['bold', 'underline'])
     for src in sources:
-        sprint(wrap(src.get_source(args.repos).text(), width=90))
+        src = src.get_source(args.repos)
+        sprint(src.id, color='green')
+        sprint(src.text())
         print()
 
 
@@ -389,9 +420,13 @@ def langsearch(args):
     glottolog langsearch "QUERY"
     """
     def highlight(text):
-        pre, rem = text.split('[[', 1)
-        hl, post = rem.split(']]', 1)
-        return pre + colored(hl, 'red', attrs=['bold']) + post + '\n'
+        res, i = '', 0
+        for m in re.finditer('\[\[(?P<m>[^\]]+)\]\]', text):
+            res += text[i:m.start()]
+            res += colored(m.group('m'), 'red', attrs=['bold'])
+            i = m.end()
+        res += text[i:]
+        return res + '\n'
 
     count, results = fts.search_langs(args.repos, args.args[0])
     cwd = os.getcwd()
@@ -401,8 +436,8 @@ def langsearch(args):
             p = Path(res.fname).relative_to(Path(cwd))
         except ValueError:
             p = res.fname
-        sprint('{0.name} [{0.id}] {0.level}'.format(res), None, attrs=['bold'])
-        sprint(p, 'green')
+        sprint('{0.name} [{0.id}] {0.level}'.format(res), color=None, attrs=['bold'])
+        sprint(p, color='green')
         sprint(highlight(res.highlights) if res.highlights else '')
     print('{} matches'.format(count))
 

@@ -11,6 +11,7 @@ from six import string_types
 import attr
 from clldutils.misc import cached_property, UnicodeMixin
 from clldutils.path import memorymapped
+from clldutils.source import Source
 
 from pyglottolog.util import Trigger
 from pyglottolog.monsterlib import _bibtex
@@ -46,16 +47,12 @@ class BibFiles(list):
         return [b.roundtrip() for b in self]
 
 
-def file_if_exists(i, a, value):
-    if value.exists() and not value.is_file():
-        raise ValueError('invalid path')  # pragma: no cover
-
-
 @attr.s
-class Entry(object):
+class Entry(UnicodeMixin):
     key = attr.ib()
     type = attr.ib()
     fields = attr.ib()
+    bib = attr.ib()
 
     # FIXME: add method to apply triggers!
 
@@ -64,8 +61,24 @@ class Entry(object):
     recomma = re.compile("[,/]\s?")
     lgcode_pattern = re.compile(lgcode_regex + "$")
 
+    def __unicode__(self):
+        res = "@%s{%s" % (self.type, self.key)
+        for k, v in _bibtex.fieldorder.itersorted(self.fields):
+            res += ',\n    %s = {%s}' % (k, v.strip() if hasattr(v, 'strip') else v)
+        res += '\n}\n' if self.fields else ',\n}\n'
+        return res
+
+    def text(self):
+        return Source(self.type, self.key, _check_id=False, **self.fields).text()
+
+    @property
+    def id(self):
+        return '{0}:{1}'.format(self.bib.id, self.key)
+
     @classmethod
     def lgcodes(cls, string):
+        if string is None:
+            return []
         codes = cls.lgcode_in_brackets_pattern.findall(string)
         if not codes:
             # ... or as comma separated list of identifiers.
@@ -75,15 +88,16 @@ class Entry(object):
                 codes = []
         return codes
 
-    def iterlanguoids(self, gc, iso, hid):
+    def iterlanguoids(self, langs_by_codes):
         if 'lgcode' in self.fields:
             for code in self.lgcodes(self.fields['lgcode']):
-                if code in gc:
-                    yield gc[code]
-                elif code in iso:
-                    yield iso[code]
-                elif code in hid:
-                    yield hid[code]
+                if code in langs_by_codes:
+                    yield langs_by_codes[code]
+
+
+def file_if_exists(i, a, value):
+    if value.exists() and not value.is_file():
+        raise ValueError('invalid path')  # pragma: no cover
 
 
 @attr.s
@@ -105,46 +119,38 @@ class BibFile(UnicodeMixin):
     def __getitem__(self, item):
         if item.startswith(self.id + ':'):
             item = item.split(':', 1)[1]
+        text = None
         with memorymapped(self.fname) as string:
             m = re.search(b'@[A-Za-z]+\{' + re.escape(item.encode('utf8')), string)
             if m:
                 next = string.find(b'\n@', m.end())
-                if next > 0:
-                    return string[m.start():next - 1].decode('utf8')
+                if next >= 0:
+                    text = string[m.start():next]
                 else:
-                    return string[m.start():].decode('utf8')
+                    text = string[m.start():]
+        if text:
+            for k, (t, f) in _bibtex.iterentries_from_text(text, encoding=self.encoding):
+                return Entry(k, t, f, self)
         raise KeyError(item)
 
     def visit(self, visitor=None):
         entries = OrderedDict()
-        for key, (type_, fields) in _bibtex.iterentries(self.fname, self.encoding):
-            if visitor:
-                res = visitor(key, type_, fields)
-                if not res:
-                    continue
-                type_, fields = res
-            entries[key] = (type_, fields)
+        for entry in self.iterentries():
+            if visitor is None or visitor(entry) is not True:
+                entries[entry.key] = (entry.type, entry.fields)
         self.save(entries)
 
     @property
-    def filepath(self):
-        return self.fname
-
-    @property
-    def filename(self):
-        return self.fname.name
-
-    @property
     def size(self):
-        return self.filepath.stat().st_size
+        return self.fname.stat().st_size
 
     @property
     def mtime(self):
-        return datetime.datetime.fromtimestamp(self.filepath.stat().st_mtime)
+        return datetime.datetime.fromtimestamp(self.fname.stat().st_mtime)
 
     def iterentries(self):
         for k, (t, f) in _bibtex.iterentries(filename=self.fname, encoding=self.encoding):
-            yield Entry(k, t, f)
+            yield Entry(k, t, f, self)
 
     def keys(self):
         return ['{0}:{1}'.format(self.id, e.key) for e in self.iterentries()]
@@ -179,7 +185,7 @@ class BibFile(UnicodeMixin):
 
     def check(self, log):
         entries = self.load()  # bare BibTeX syntax
-        invalid = _bibtex.check(filename=self.filepath.as_posix())  # names/macros etc.
+        invalid = _bibtex.check(filename=self.fname)  # names/macros etc.
         verdict = ('(%d invalid)' % invalid) if invalid else 'OK'
         method = log.warn if invalid else log.info
         method('%s %d %s' % (self, len(entries), verdict))
@@ -191,7 +197,7 @@ class BibFile(UnicodeMixin):
 
     def show_characters(self, include_plain=False):
         """Display character-frequencies (excluding printable ASCII)."""
-        with self.filepath.open(encoding=self.encoding) as fd:
+        with self.fname.open(encoding=self.encoding) as fd:
             hist = Counter(fd.read())
         table = '\n'.join(
             '%d\t%-9r\t%s\t%s' % (n, c, c, unicodedata.name(c, ''))

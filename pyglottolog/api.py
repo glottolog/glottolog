@@ -30,7 +30,10 @@ class Glottolog(UnicodeMixin):
         return '<Glottolog repos at %s>' % self.repos
 
     def build_path(self, *comps):
-        return self.repos.joinpath('build', *comps)
+        build_dir = self.repos.joinpath('build')
+        if not build_dir.exists():
+            build_dir.mkdir()
+        return build_dir.joinpath(*comps)
 
     def references_path(self, *comps):
         return self.repos.joinpath('references', *comps)

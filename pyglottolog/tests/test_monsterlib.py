@@ -41,7 +41,7 @@ class Tests(WithApi):
         db.to_replacements(self.tmp_path('out.json'))
         self.assertEqual(db.to_hhmapping(), {'s:Karang:Tati-Harzani': 41999})
         with capture(db.trickle) as out:
-            self.assertIn('2 changed 1 added in a.bib', out)
+            self.assertIn('2 changed 1 added in a', out)
         key, (entrytype, fields) = db[('b.bib', 'arakawa97')]
         self.assertEqual(entrytype, 'article')
         self.assertEqual(fields['volume'], '16')
