@@ -81,6 +81,20 @@ class Glottolog(UnicodeMixin):
                     if lang.level <= maxlevel:
                         yield lang
 
+    def languoids_by_code(self):
+        """
+        Returns a `dict` mapping the three major language code schemes 
+        (Glottocode, ISO code, and Harald's NOCODE_s) to Languoid objects.
+        """
+        res = {}
+        for lang in self.languoids():
+            res[lang.id] = lang
+            if lang.hid:
+                res[lang.hid] = lang
+            if lang.iso:
+                res[lang.iso] = lang
+        return res
+
     def ascii_tree(self, start, maxlevel=None):
         _ascii_node(self.languoid(start), 0, True, maxlevel, '')
 

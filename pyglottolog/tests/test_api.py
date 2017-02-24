@@ -19,6 +19,8 @@ class Tests(WithApi):
         self.assertEqual(len(list(self.api.languoids())), 4)
         self.assertEqual(len(list(self.api.languoids(maxlevel=Level.family))), 1)
         self.assertEqual(len(list(self.api.languoids(maxlevel=Level.language))), 3)
+        self.assertEqual(len(self.api.languoids_by_code()), 7)
+        self.assertIn('NOCODE_Family-name', self.api.languoids_by_code())
 
     def test_load_triggers(self):
         self.assertEqual(len(self.api.triggers), 2)
