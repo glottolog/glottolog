@@ -108,7 +108,8 @@ class BibFile(UnicodeMixin):
     description = attr.ib(default=None)
     abbr = attr.ib(default=None)
     encoding = attr.ib(default='utf-8-sig')
-    sortkey = attr.ib(default=None, convert=lambda s: None if s.lower() == 'none' else s)
+    sortkey = attr.ib(
+        default=None, convert=lambda s: None if s is None or s.lower() == 'none' else s)
     priority = attr.ib(default=0, convert=int)
     url = attr.ib(default=None)
 

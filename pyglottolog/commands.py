@@ -23,34 +23,6 @@ from pyglottolog.util import message, wrap, sprint
 
 
 @command()
-def checklgcode(args):
-    class Check(object):
-        def __init__(self, langs):
-            self.unknown_lgcodes = Counter()
-            self.langs = langs
-
-        def __call__(self, entry):
-            for lgcode in entry.lgcodes(entry.fields.get('lgcode')):
-                if lgcode not in self.langs:
-                    self.unknown_lgcodes.update(['{0} {1}'.format(entry.bib.id, lgcode)])
-
-    langs = set()
-    for lang in args.repos.languoids():
-        langs.add(lang.id)
-        if lang.iso:
-            langs.add(lang.iso)
-        if lang.hid:
-            langs.add(lang.hid)
-
-    visitor = Check(langs)
-    for bib in args.repos.bibfiles:
-        if bib.id not in ['hh', 'iso6393']:
-            bib.visit(visitor=visitor)
-    for k, v in visitor.unknown_lgcodes.most_common():
-        print(k, v)
-
-
-@command()
 def isobib(args):  # pragma: no cover
     """Update iso6393.bib - the file of references for ISO 639-3 change requests.
     """
@@ -262,6 +234,11 @@ def check(args):
     for lang in languoids.values():
         ancestors = lang.ancestors_from_nodemap(languoids)
         children = lang.children_from_nodemap(languoids)
+
+        if lang.latitude and not (-90 <= lang.latitude <= 90):
+            error(lang, 'invalid latitude: {0}'.format(lang.latitude))
+        if lang.longitude and not (-180 <= lang.longitude <= 180):
+            error(lang, 'invalid longitude: {0}'.format(lang.longitude))
 
         assert isinstance(lang.countries, list)
         assert isinstance(lang.macroareas, list)
