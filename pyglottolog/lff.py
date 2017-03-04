@@ -177,6 +177,8 @@ def lff2tree(api, log=logging.getLogger(__name__)):
     languoids = {}
 
     def checked(l, lin):
+        if l.id in languoids:
+            print(l.id, lin, l)
         assert l.id not in languoids
         for n, gc, _level, hid in lin:
             if gc in languoids:
