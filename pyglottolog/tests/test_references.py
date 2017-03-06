@@ -11,6 +11,9 @@ class Tests(WithApi):
         from pyglottolog.references import Entry
 
         self.assertEqual(Entry.lgcodes(None), [])
+        e = Entry(
+            'x', 'misc', {'hhtype': 'grammar (computerized assignment from "xyz")'}, None)
+        self.assertEqual(e.doctypes({'grammar': 1}), ([1], 'xyz'))
 
     def test_HHTypes(self):
         hht = self.api.hhtypes
@@ -33,7 +36,7 @@ class Tests(WithApi):
 
         for entry in bibfile.iterentries():
             if entry.key == 'key':
-                self.assertEqual(len(list(entry.iterlanguoids({'abc': 1}))), 1)
+                self.assertEqual(len(list(entry.languoids({'abc': 1})[0])), 1)
 
         with self.assertRaises(KeyError):
             _ = bibfile['xyz']

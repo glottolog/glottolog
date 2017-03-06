@@ -12,6 +12,7 @@ import attr
 from clldutils.misc import cached_property, UnicodeMixin
 from clldutils.path import memorymapped
 from clldutils.source import Source
+from clldutils.text import split_text
 
 from pyglottolog.util import Trigger
 from pyglottolog.monsterlib import _bibtex
@@ -88,11 +89,29 @@ class Entry(UnicodeMixin):
                 codes = []
         return codes
 
-    def iterlanguoids(self, langs_by_codes):
+    @staticmethod
+    def parse_ca(s):
+        if s:
+            match = re.search('computerized assignment from "(?P<trigger>[^\"]+)"', s)
+            if match:
+                return match.group('trigger')
+
+    def languoids(self, langs_by_codes):
+        res = []
         if 'lgcode' in self.fields:
             for code in self.lgcodes(self.fields['lgcode']):
                 if code in langs_by_codes:
-                    yield langs_by_codes[code]
+                    res.append(langs_by_codes[code])
+        return res, self.parse_ca(self.fields.get('lgcode'))
+
+    def doctypes(self, hhtypes):
+        res = []
+        if 'hhtype' in self.fields:
+            for ss in split_text(self.fields['hhtype']):
+                ss = ss.split('(')[0].strip()
+                if ss in hhtypes:
+                    res.append(hhtypes[ss])
+        return res, self.parse_ca(self.fields.get('hhtype'))
 
 
 def file_if_exists(i, a, value):
@@ -246,9 +265,12 @@ class HHTypes(object):
     def __len__(self):
         return len(self._types)
 
+    def __contains__(self, item):
+        return item in self._type_by_id
+
     def __getitem__(self, item):
         if isinstance(item, int):
-            return self._types[0]
+            return self._types[item]
         return self._type_by_id.get(item, self._type_by_id.get('unknown'))
 
     @cached_property()
