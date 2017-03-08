@@ -70,7 +70,7 @@ def macro_area_from_lgcode(m, lgd):
 def compile(api, log=None, rebuild=False):
     log = log or logging.getLogger('pyglottolog')
     previous = api.references_path('monster.csv')
-    replacements = api.build_path('monster-replacements.json')
+    replacements = api.references_path('replacements.json')
     monster = BibFile(
         fname=api.build_path('monster-utf8.bib'), encoding='utf-8', sortkey='bibkey')
 

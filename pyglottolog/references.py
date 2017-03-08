@@ -107,7 +107,7 @@ class Entry(UnicodeMixin):
     def doctypes(self, hhtypes):
         res = []
         if 'hhtype' in self.fields:
-            for ss in split_text(self.fields['hhtype']):
+            for ss in split_text(self.fields['hhtype'], separators=',;'):
                 ss = ss.split('(')[0].strip()
                 if ss in hhtypes:
                     res.append(hhtypes[ss])

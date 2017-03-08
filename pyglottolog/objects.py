@@ -26,6 +26,11 @@ class Glottocodes(object):
         alpha, num = Glottocode(item).split()
         return alpha in self._store and num <= self._store[alpha]
 
+    def __iter__(self):
+        for alpha, num in self._store.items():
+            for n in range(1234, num + 1):
+                yield '{0}{1}'.format(alpha, n)
+
     def new(self, name, dry_run=False):
         alpha = slug(text_type(name))[:4]
         assert alpha
