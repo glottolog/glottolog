@@ -6,6 +6,7 @@ from collections import defaultdict
 from clldutils.misc import UnicodeMixin
 from clldutils.path import Path
 from clldutils.inifile import INI
+from newick import Node
 
 from pyglottolog.objects import (
     Glottocode, EthnologueComment, Reference, Level, Country, Macroarea,
@@ -97,6 +98,19 @@ class Languoid(UnicodeMixin):
             return type_(res)
         return res
 
+    def newick_node(self, nodes=None):
+        label = '{0} [{1}]'.format(
+            self.name.replace(',', '/').replace('(', '{').replace(')', '}'), self.id)
+        if self.iso:
+            label += '[%s]' % self.iso
+        if self.level == Level.language:
+            label += '-l-'
+        n = Node(name="'{0}'".format(label))
+        children = self.children if nodes is None else self.children_from_nodemap(nodes)
+        for nn in sorted(children, key=lambda nn: nn.name):
+            n.add_descendant(nn.newick_node(nodes=nodes))
+        return n
+
     def write_info(self, outdir=None):
         outdir = outdir or self.dir
         if not isinstance(outdir, Path):
@@ -105,6 +119,13 @@ class Languoid(UnicodeMixin):
             outdir = outdir.joinpath(self.id)
         if not outdir.exists():
             outdir.mkdir()
+        #for section in self.cfg:
+        #    for option in self.cfg[section]:
+        #        value = self.cfg[section][option]
+        #        if isinstance(value, set):
+        #            value = sorted(value)
+        #        if isinstance(value, (list, tuple)):
+        #            self.cfg.set(section, option, value)
         fname = outdir.joinpath(INFO_FILENAME)
         self.cfg.write(fname)
         if os.linesep == '\n':
