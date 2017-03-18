@@ -11,7 +11,7 @@ from termcolor import colored
 from clldutils.clilib import command, ParserError
 from clldutils.misc import slug
 from clldutils.markup import Table
-from clldutils.path import Path
+from clldutils.path import Path, readlines
 
 from pyglottolog.languoids import Languoid
 from pyglottolog.objects import Level, Reference
@@ -20,6 +20,61 @@ from pyglottolog import lff
 from pyglottolog.monster import compile
 import pyglottolog.iso
 from pyglottolog.util import message, wrap, sprint
+
+
+@command()
+def llid(args):
+    from clldutils.jsonlib import load
+
+    gc2ll = {gc: ll for ll, gc in load('languagelandscape.json').items()}
+
+    for lang in args.repos.languoids():
+        if lang.id in gc2ll:
+            lang.cfg.set('identifier', 'languagelandscape', gc2ll[lang.id])
+            lang.write_info()
+
+
+@command()
+def iaid(args):
+    class AddGbid(object):
+        def __init__(self):
+            self.map = {}
+            for line in readlines('iaid.txt', strip=True):
+                id_, srctrickle = line.split('|', 1)
+                if id_ and srctrickle:
+                    for key in srctrickle[1:-1].split(', '):
+                        if '#' in key:
+                            self.map[key.replace('#', ':', 1)] = id_[1:-1]
+
+        def __call__(self, entry):
+            if entry.id in self.map and 'iaid' not in entry.fields:
+                entry.fields['iaid'] = self.map[entry.id]
+
+    for bib in args.repos.bibfiles:
+        if bib.id == 'hh':
+            bib.visit(AddGbid())
+
+
+@command()
+def bowern(args):
+    # alternatively match booktitle!
+    years = {
+        (e.fields.get('author'), e.fields.get('title')): e.fields.get('year')
+        for e in args.repos.bibfiles['benjamins.bib'].iterentries()}
+    for e in args.repos.bibfiles['ozbib.bib'].iterentries():
+        years[(e.fields.get('author'), e.fields.get('title'))] = e.fields.get('year')
+
+    class AddYear(object):
+        def __init__(self, years):
+            self.years = years
+
+        def __call__(self, entry):
+            if 'year' not in entry.fields:
+                if entry.fields.get('author') and entry.fields.get('title'):
+                    if (entry.fields.get('author'), entry.fields.get('title')) in self.years:
+                        entry.fields['year'] = self.years[(entry.fields['author'], entry.fields['title'])]
+
+    args.repos.bibfiles['bowern.bib'].visit(AddYear(years))
 
 
 @command()
@@ -337,6 +392,15 @@ def check(args):
     log_counter(by_level, 'Languoids by level')
     log_counter(by_category, 'Languages by category')
     return by_level
+
+
+@command()
+def md(args):
+    crs = [k.split(':')[1] for k in args.repos.bibfiles['iso6393.bib'].keys()]
+    for l in args.repos.languoids():
+        if l.iso_retirement:
+            if l.iso_retirement.change_request not in crs:
+                print(l.iso_retirement)
 
 
 @command()

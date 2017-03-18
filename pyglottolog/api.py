@@ -99,7 +99,7 @@ class Glottolog(UnicodeMixin):
         _ascii_node(self.languoid(start), 0, True, maxlevel, '')
 
     def newick_tree(self, start):
-        return _newick_node(self.languoid(start)).newick
+        return self.languoid(start).newick_node().newick
 
     @cached_property()
     def bibfiles(self):
@@ -133,13 +133,6 @@ class Glottolog(UnicodeMixin):
             if lang.hid:
                 res[lang.hid] = ma
         return res
-
-
-def _newick_node(l):
-    n = Node(name="'{0} [{1}]'".format(l.name, l.id))
-    for nn in sorted(l.children, key=lambda nn: nn.name):
-        n.add_descendant(_newick_node(nn))
-    return n
 
 
 def _ascii_node(n, level, last, maxlevel, prefix):
