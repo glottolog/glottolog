@@ -3,7 +3,7 @@ Releasing clld/glottolog
 ========================
 
 1. Check out `master` and pull the latest changes.
-2. Check the tree running `glottolog check_tree`
+2. Check the tree and references running `glottolog check`
 
 
 Merging the BibTeX files
@@ -17,6 +17,9 @@ Merging the BibTeX files
 
 4. Create list of new refs/languoids, querying the old db.
 5. Drop db
+
+- update version info and editors
+
 6. recreate db
 7. mark new refs/languoids reading in the lists created in 4.
 
