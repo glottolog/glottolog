@@ -10,7 +10,7 @@ from itertools import groupby
 import requests
 from bs4 import BeautifulSoup as bs
 
-from clldutils.source import Source
+from pyglottolog.monsterlib._bibtex import save
 
 
 BASE_URL = "http://www-01.sil.org/iso639-3"
@@ -51,7 +51,7 @@ def change_request_as_source(id_, rows, ref_ids):
     }
     if id_ in ref_ids and ref_ids[id_]:
         fields['glottolog_ref_id'] = ref_ids[id_]
-    return Source('misc', id_, **fields)
+    return id_, ('misc', fields)
 
 
 def iter_change_requests(log):
@@ -74,13 +74,10 @@ def iter_change_requests(log):
 def bibtex(api, log):
     bib = api.bibfiles['iso6393.bib']
     glottolog_ref_ids = bib.glottolog_ref_id_map
-    i = -1
 
-    with bib.fname.open('w', encoding='utf8') as fp:
-        for i, (id_, rows) in enumerate(groupby(
-                iter_change_requests(log), lambda c: c['CR Number'])):
-            fp.write(
-                change_request_as_source(id_, list(rows), glottolog_ref_ids).bibtex())
-            fp.write('\n\n')
+    entries = []
+    for id_, rows in groupby(iter_change_requests(log), lambda c: c['CR Number']):
+        entries.append(change_request_as_source(id_, list(rows), glottolog_ref_ids))
+    save(entries, bib.fname, None)
     log.info('bibtex written to {0}'.format(bib.fname))
-    return i + 1
+    return len(entries)
