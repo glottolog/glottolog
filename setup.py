@@ -20,7 +20,7 @@ requires = [
 
 setup(
     name='pyglottolog',
-    version='0.3.2',
+    version='1.0.0',
     description='python package for glottolog data curation',
     long_description='',
     classifiers=[
@@ -32,7 +32,7 @@ setup(
     ],
     author='Robert Forkel',
     author_email='forkel@shh.mpg.de',
-    url='',
+    url='https://github.com/clld/glottolog',
     keywords='data linguistics',
     packages=find_packages(),
     include_package_data=True,
