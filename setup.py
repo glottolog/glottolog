@@ -4,7 +4,6 @@ from setuptools import setup, find_packages
 requires = [
     # list required third-party packages here
     'six',
-    'enum34',
     'clldutils>=1.9.1',
     'pybtex>=0.20',
     'latexcodec',

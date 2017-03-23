@@ -43,6 +43,9 @@ class Tests(WithApi):
     def test_fts(self):
         from pyglottolog.commands import refindex, refsearch, langindex, langsearch
 
+        with self.assertRaises(ValueError):
+            refsearch(self._args('Harzani year:1334'))
+
         refindex(self._args())
         with capture(refsearch, self._args('Harzani year:1334')) as out:
             self.assertIn("'Abd-al-'Ali Karang", out)
@@ -106,7 +109,7 @@ class Tests(WithApi):
     def test_check(self):
         from pyglottolog.commands import check
 
-        with capture(check, self._args('refs')) as _:
+        with capture(check, self._args('refs')):
             pass
 
         with capture(check, self._args()) as out:
@@ -119,7 +122,7 @@ class Tests(WithApi):
             self.api.tree.joinpath('abcd1234', 'abcd1235'),
             self.api.tree.joinpath('abcd1235'))
 
-        with capture(check, self._args()) as _:
+        with capture(check, self._args()):
             self.assertIn(
                 'duplicate glottocode',
                 ''.join(c[0][0] for c in self.log.error.call_args_list))

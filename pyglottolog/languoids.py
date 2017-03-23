@@ -34,8 +34,8 @@ class Languoid(UnicodeMixin):
             id_ = Glottocode(directory.name)
         lineage = lineage or []
         assert all([
-            Glottocode.pattern.match(id)
-            and Level.get(level) for name, id, level in lineage])
+            Glottocode.pattern.match(id) and
+            Level.get(level) for name, id, level in lineage])
         self.lineage = [(name, id, Level.get(level)) for name, id, level in lineage]
         self.cfg = cfg
         self.dir = directory or tree.joinpath(*[id for name, id, _ in self.lineage])
@@ -119,13 +119,6 @@ class Languoid(UnicodeMixin):
             outdir = outdir.joinpath(self.id)
         if not outdir.exists():
             outdir.mkdir()
-        #for section in self.cfg:
-        #    for option in self.cfg[section]:
-        #        value = self.cfg[section][option]
-        #        if isinstance(value, set):
-        #            value = sorted(value)
-        #        if isinstance(value, (list, tuple)):
-        #            self.cfg.set(section, option, value)
         fname = outdir.joinpath(INFO_FILENAME)
         self.cfg.write(fname)
         if os.linesep == '\n':
@@ -280,7 +273,7 @@ class Languoid(UnicodeMixin):
     @countries.setter
     def countries(self, value):
         assert isinstance(value, (list, tuple)) \
-               and all(isinstance(o, Country) for o in value)
+            and all(isinstance(o, Country) for o in value)
         self._set('countries', ['{0}'.format(c) for c in value])
 
     @property

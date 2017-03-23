@@ -40,7 +40,7 @@ Abkhaz-Adyge [abkh1242] aaa; Circassian [circ1239]
     Kabardian [kaba1278]kbd
 """, 'lff.txt')
 
-        dfftext = self._set_lff("""# -*- coding: utf-8 -*-
+        self._set_lff("""# -*- coding: utf-8 -*-
 Abaza [abaz1241] abq
     Ashkaraua [ashk1247]
     Bezshagh [bezs1238]

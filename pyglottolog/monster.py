@@ -63,7 +63,7 @@ def macro_area_from_lgcode(m, lgd):
         if mas:
             fields['macro_area'] = ', '.join(sorted(mas))
         return typ, fields
-    
+
     return {k: inject_macro_area(tf) for k, tf in m.items()}
 
 

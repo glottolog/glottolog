@@ -13,6 +13,7 @@ from clldutils.misc import cached_property, UnicodeMixin
 from clldutils.path import memorymapped
 from clldutils.source import Source
 from clldutils.text import split_text
+from clldutils.inifile import INI
 
 from pyglottolog.util import Trigger
 from pyglottolog.monsterlib import _bibtex
@@ -20,8 +21,12 @@ from pyglottolog.monsterlib._bibfiles_db import Database
 
 
 class BibFiles(list):
-    """Directory with an INI-file with settings for BibTeX files inside."""
-    def __init__(self, api, ini):
+    """
+    Represents BibTeX files within the `bibtex` sub-directory of `references` as
+    `BibFile` objects, if they are listed in `BIBFILES.ini`.
+    """
+    def __init__(self, api):
+        ini = INI.from_file(api.references_path('BIBFILES.ini'), interpolation=None)
         res = []
         for sec in ini.sections():
             if sec.endswith('.bib'):
@@ -63,6 +68,9 @@ class Entry(UnicodeMixin):
     lgcode_pattern = re.compile(lgcode_regex + "$")
 
     def __unicode__(self):
+        """
+        :return: BibTeX representation of the entry.
+        """
         res = "@%s{%s" % (self.type, self.key)
         for k, v in _bibtex.fieldorder.itersorted(self.fields):
             res += ',\n    %s = {%s}' % (k, v.strip() if hasattr(v, 'strip') else v)
@@ -70,6 +78,9 @@ class Entry(UnicodeMixin):
         return res
 
     def text(self):
+        """
+        :return: Text linearization of the entry.
+        """
         return Source(self.type, self.key, _check_id=False, **self.fields).text()
 
     @property
@@ -251,7 +262,8 @@ class HHTypes(object):
     _rekillparen = re.compile(" \([^\)]*\)")
     _respcomsemic = re.compile("[;,]\s?")
 
-    def __init__(self, ini):
+    def __init__(self, api):
+        ini = INI.from_file(api.references_path('hhtype.ini'), interpolation=None)
         self._types = sorted([HHType(s, ini) for s in ini.sections()], reverse=True)
         self._type_by_id = {t.id: t for t in self._types}
 

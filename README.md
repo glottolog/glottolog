@@ -19,7 +19,7 @@ The Glottolog bibliography is curated as a set of [BibTeX](https://en.wikipedia.
 into a single reference database for each release/edition.
 
 
-## pyglottolog
+## The python client library `pyglottolog`
 
 The data in this repository can be conveniently accessed via a command line interface
 and a python API, both implemented in the python package `pyglottolog`, which is distributed
@@ -70,8 +70,32 @@ All functionality is mediated through an instance of `pyglottolog.api.Glottolog`
 ```python
 >>> from pyglottolog.api import Glottolog
 >>> api = Glottolog('.')
+>>> print(api)
+<Glottolog repos v0.2-259-g27ac0ef at /.../glottolog>
+```
+
+#### Accessing languoid data
+```python
 >>> api.languoid('stan1295')
 <Language stan1295>
 >>> print(api.languoid('stan1295'))
 German [stan1295]
+```
+
+#### Accessing reference data
+```python
+>>> print(api.bibfiles['hh.bib']['s:Karang:Tati-Harzani'])
+@book{s:Karang:Tati-Harzani,
+    author = {'Abd-al-'Ali Kārang},
+    title = {Tāti va Harzani},
+    publisher = {Tabriz: Tabriz University Press},
+    address = {Tabriz},
+    pages = {6+160},
+    year = {1334 [1953]},
+    glottolog_ref_id = {41999},
+    hhtype = {grammar_sketch},
+    inlg = {Farsi [pes]},
+    lgcode = {Harzani [hrz]},
+    macro_area = {Eurasia}
+}
 ```

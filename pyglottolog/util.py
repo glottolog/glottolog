@@ -11,11 +11,6 @@ from termcolor import colored
 from clldutils.path import Path
 from clldutils.iso_639_3 import ISO, download_tables
 
-import pyglottolog
-
-
-DATA_DIR = Path(pyglottolog.__file__).parent.parent
-
 
 def sprint(text, *args, **kw):
     if not isinstance(text, text_type):
@@ -106,7 +101,7 @@ class Trigger(object):
 
     @staticmethod
     def group(triggers):
-        return [(clauses, list(triggers)) for clauses, triggers
+        return [(clauses, list(trigs)) for clauses, trigs
                 in itertools.groupby(sorted(triggers), lambda t: t.clauses)]
 
 

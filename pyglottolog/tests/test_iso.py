@@ -30,45 +30,45 @@ HTML = """\
    <th ALIGN="LEFT">Affected Identifier</th>
    <th ALIGN="LEFT">Language Name</th>
    <th ALIGN="LEFT">Change Type</th>
-		<th ALIGN="LEFT">Outcome/<br>Effective date</th>
+        <th ALIGN="LEFT">Outcome/<br>Effective date</th>
    <th ALIGN="LEFT" WIDTH="10%"></th>
 </tr>
-	<tr VALIGN="TOP">
-		<td>2006-001</td>
-		<td>Europe, Western</td>
-		<td>Deaf sign language</td>
-		<td>bvs</td>
-		<td>
-			Belgian Sign Language
-		</td>
-		<td>Split</td>
-		<td>Adopted<br>2007-07-18 </td>
-		<td><a HREF="chg_detail.asp?id=2006-001&lang=bvs">more ...</a></td>
-	</tr>
-	<tr VALIGN="TOP">
-		<td>2006-001</td>
-		<td>Europe, Western</td>
-		<td>Deaf sign language</td>
-		<td>sfb</td>
-		<td>
-			Langue des signes de Belgique Francophone
-		</td>
-		<td>Create</td>
-		<td>Adopted<br>2007-07-18 </td>
-		<td><a HREF="chg_detail.asp?id=2006-001&lang=sfb">more ...</a></td>
-	</tr>
-	<tr VALIGN="TOP">
-		<td>2006-023</td>
-		<td>Asia, South</td>
-		<td>Kuki-Chin-Naga</td>
-		<td>flm</td>
-		<td>
-			Falam Chin
-		</td>
-		<td>Split</td>
-		<td>Adopted<br>2007-07-18 </td>
-		<td><a HREF="chg_detail.asp?id=2006-023&lang=flm">more ...</a></td>
-	</tr>
+    <tr VALIGN="TOP">
+        <td>2006-001</td>
+        <td>Europe, Western</td>
+        <td>Deaf sign language</td>
+        <td>bvs</td>
+        <td>
+            Belgian Sign Language
+        </td>
+        <td>Split</td>
+        <td>Adopted<br>2007-07-18 </td>
+        <td><a HREF="chg_detail.asp?id=2006-001&lang=bvs">more ...</a></td>
+    </tr>
+    <tr VALIGN="TOP">
+        <td>2006-001</td>
+        <td>Europe, Western</td>
+        <td>Deaf sign language</td>
+        <td>sfb</td>
+        <td>
+            Langue des signes de Belgique Francophone
+        </td>
+        <td>Create</td>
+        <td>Adopted<br>2007-07-18 </td>
+        <td><a HREF="chg_detail.asp?id=2006-001&lang=sfb">more ...</a></td>
+    </tr>
+    <tr VALIGN="TOP">
+        <td>2006-023</td>
+        <td>Asia, South</td>
+        <td>Kuki-Chin-Naga</td>
+        <td>flm</td>
+        <td>
+            Falam Chin
+        </td>
+        <td>Split</td>
+        <td>Adopted<br>2007-07-18 </td>
+        <td><a HREF="chg_detail.asp?id=2006-023&lang=flm">more ...</a></td>
+    </tr>
 </table>
 </div>
 </body>

@@ -18,6 +18,7 @@ class Tests(WithApi):
     def test_HHTypes(self):
         hht = self.api.hhtypes
         self.assertEqual(hht['grammar'].rank, 17)
+        self.assertIn('grammar', hht)
 
         prev = None
         for t in hht:
@@ -39,7 +40,7 @@ class Tests(WithApi):
                 self.assertEqual(len(list(entry.languoids({'abc': 1})[0])), 1)
 
         with self.assertRaises(KeyError):
-            _ = bibfile['xyz']
+            bibfile['xyz']
 
         self.assertEqual(len(list(bibfile.iterentries())), 3)
 

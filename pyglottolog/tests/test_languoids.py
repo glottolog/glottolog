@@ -23,6 +23,7 @@ class TestGlottocodes(WithTempDir):
         self.assertIn(gc, glottocodes)
         # make sure it's also written to file:
         self.assertIn(gc, Glottocodes(gcjson))
+        self.assertEqual(len(list(Glottocodes(gcjson))), 1)
 
 
 class Tests(TestCase):

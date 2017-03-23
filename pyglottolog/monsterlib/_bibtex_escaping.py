@@ -29,8 +29,7 @@ import unicodedata
 from six import text_type, unichr, PY2
 import latexcodec
 
-__all__ = [
-    'u_escape', 'u_unescape', 'latex_to_utf8', 'ulatex_postprocess', 'ulatex_preprocess']
+__all__ = ['ulatex_postprocess', 'ulatex_preprocess']
 
 LATEX_TABLE = {
     u'COMBINING DOT BELOW': br'\textsubdot',
@@ -56,7 +55,7 @@ LATEX_TABLE = {
     u'COMBINING HORN': br'\;',
     u'COMBINING DOT ABOVE': [br'\.', br'\textdot', br'\:'],
     # FIXME: that's what textipa provides: but not how it is used in sala.bib!
-    #u'LATIN SMALL LETTER N WITH RETROFLEX HOOK': [br'\:{n}', br'\:n'],
+    # u'LATIN SMALL LETTER N WITH RETROFLEX HOOK': [br'\:{n}', br'\:n'],
 
     u'MASCULINE ORDINAL INDICATOR': br'\textordmasculine',
     u'LEFT SINGLE QUOTATION MARK': [br'\textquoteleft', br'\grq'],

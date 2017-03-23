@@ -3,13 +3,11 @@ from __future__ import unicode_literals
 import re
 import os
 
-from clldutils.path import Path, as_posix, walk
+from clldutils.path import Path, as_posix, walk, git_describe
 from clldutils.misc import UnicodeMixin, cached_property
-from clldutils.inifile import INI
 from clldutils.declenum import EnumSymbol
 import pycountry
 from termcolor import colored
-from newick import Node
 
 from pyglottolog import util
 from pyglottolog import languoids
@@ -20,19 +18,22 @@ ISO_CODE_PATTERN = re.compile('[a-z]{3}$')
 
 
 class Glottolog(UnicodeMixin):
+    """
+    API to access Glottolog data
+    """
     countries = [objects.Country(c.alpha_2, c.name) for c in pycountry.countries]
 
     def __init__(self, repos=None):
-        self.repos = Path(repos) if repos else util.DATA_DIR
+        self.repos = (Path(repos) if repos else Path(__file__).parent.parent).resolve()
         self.tree = self.repos.joinpath('languoids', 'tree')
 
     def __unicode__(self):
-        return '<Glottolog repos at %s>' % self.repos
+        return '<Glottolog repos {0} at {1}>'.format(git_describe(self.repos), self.repos)
 
     def build_path(self, *comps):
         build_dir = self.repos.joinpath('build')
         if not build_dir.exists():
-            build_dir.mkdir()
+            build_dir.mkdir()  # pragma: no cover
         return build_dir.joinpath(*comps)
 
     def references_path(self, *comps):
@@ -83,7 +84,7 @@ class Glottolog(UnicodeMixin):
 
     def languoids_by_code(self):
         """
-        Returns a `dict` mapping the three major language code schemes 
+        Returns a `dict` mapping the three major language code schemes
         (Glottocode, ISO code, and Harald's NOCODE_s) to Languoid objects.
         """
         res = {}
@@ -103,13 +104,11 @@ class Glottolog(UnicodeMixin):
 
     @cached_property()
     def bibfiles(self):
-        return references.BibFiles(
-            self, INI.from_file(self.references_path('BIBFILES.ini'), interpolation=None))
+        return references.BibFiles(self)
 
     @cached_property()
     def hhtypes(self):
-        return references.HHTypes(
-            INI.from_file(self.references_path('hhtype.ini'), interpolation=None))
+        return references.HHTypes(self)
 
     @cached_property()
     def triggers(self):

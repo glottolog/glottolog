@@ -108,10 +108,14 @@ def build_langs_index(api, log):
     writer.commit()
 
 
-def get_index(api, recreate=False):
+def get_index(api, recreate=False, must_exist=False):
     index_dir = api.ftsindex
-    if index_dir.exists() and recreate:
-        rmtree(index_dir)  # pragma: no cover
+    if index_dir.exists():
+        if recreate:
+            rmtree(index_dir)  # pragma: no cover
+    elif must_exist:
+        raise ValueError('No whoosh index found at {0}.'.format(index_dir))
+
     if not index_dir.exists():
         index_dir.mkdir()
         schema = Schema(
@@ -130,7 +134,7 @@ def get_index(api, recreate=False):
 
 
 def search(repos, q, limit=1000, **kw):
-    index_ = get_index(repos)
+    index_ = get_index(repos, must_exist=True)
     qp = QueryParser("body", schema=index_.schema)
     q = '{0} {1}'.format(q, ' '.join('{0}:"{1}"'.format(k, v) for k, v in kw.items()))
 

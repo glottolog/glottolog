@@ -59,8 +59,10 @@ def grp2fd(l):
 
 reauthor = [re.compile(pattern) for pattern in [
     "(?P<lastname>[^,]+),\s((?P<jr>[JS]r\.|[I]+),\s)?(?P<firstname>[^,]+)$",
-    "(?P<firstname>[^{][\S]+(\s[A-Z][\S]+)*)\s(?P<lastname>([a-z]+\s)*[A-Z\\\\][\S]+)(?P<jr>,\s[JS]r\.|[I]+)?$",
-    "(?P<firstname>\\{[\S]+\\}[\S]+(\s[A-Z][\S]+)*)\s(?P<lastname>([a-z]+\s)*[A-Z\\\\][\S]+)(?P<jr>,\s[JS]r\.|[I]+)?$",
+    "(?P<firstname>[^{][\S]+(\s[A-Z][\S]+)*)\s"
+    "(?P<lastname>([a-z]+\s)*[A-Z\\\\][\S]+)(?P<jr>,\s[JS]r\.|[I]+)?$",
+    "(?P<firstname>\\{[\S]+\\}[\S]+(\s[A-Z][\S]+)*)\s"
+    "(?P<lastname>([a-z]+\s)*[A-Z\\\\][\S]+)(?P<jr>,\s[JS]r\.|[I]+)?$",
     "(?P<firstname>[\s\S]+?)\s\{(?P<lastname>[\s\S]+)\}(?P<jr>,\s[JS]r\.|[I]+)?$",
     "\{(?P<firstname>[\s\S]+)\}\s(?P<lastname>[\s\S]+?)(?P<jr>,\s[JS]r\.|[I]+)?$",
     "(?P<lastname>[A-Z][\S]+)$",
@@ -88,10 +90,6 @@ def pauthor(s):
         if s:
             print(s)
     return [a for a in pas if a]
-
-
-#"Adam, A., W.B. Wood, C.P. Symons, I.G. Ord & J. Smith"
-#"Karen Adams, Linda Lauck, J. Miedema, F.I. Welling, W.A.L. Stokhof, Don A.L. Flassy, Hiroko Oguri, Kenneth Collier, Kenneth Gregerson, Thomas R. Phinnemore, David Scorza, John Davies, Bernard Comrie & Stan Abbott"
 
 
 relu = re.compile("\s+|(d\')(?=[A-Z])")
@@ -140,10 +138,6 @@ def pyear(s):
     if len(my) != 1:
         return my[0] + "-" + rangecomplete(my[-1], my[0])
     return my[-1]
-
-
-#	Author = ac # { and Howard Coate},
-#	Author = ad,
 
 
 bibord = {k: i for i, k in enumerate([
@@ -196,7 +190,7 @@ def add_inlg_e(e, trigs, verbose=True, return_newtrain=False):
 
     # map record keys to lists of words in titles:
     ts = [(k, wrds(fields['title']) + wrds(fields.get('booktitle', '')))
-          for (k, (typ, fields)) in e.items() 
+          for (k, (typ, fields)) in e.items()
           if 'title' in fields and INLG not in fields]
 
     if verbose:
@@ -242,7 +236,6 @@ def pagecount(pgstr):
     if rsump == 0 and sump == 0:
         return ''
     return '%s' % (rsump + sump)
-
 
 
 rewrdtok = re.compile("[a-zA-Z].+")
@@ -308,7 +301,7 @@ def sd(es, hht):
 def pcy(pagecountstr):
     if not pagecountstr:
         return 0
-    return eval(pagecountstr) #int(takeafter(pagecountstr, "+"))
+    return eval(pagecountstr)  # int(takeafter(pagecountstr, "+"))
 
 
 def accd(mi):

@@ -156,7 +156,7 @@ def check(filename, encoding=None):
     parser = CheckParser(encoding=encoding)
     parser.parse_file(as_posix(filename))
     return parser.error_count
-    
+
 
 class CheckParser(Parser):
     """Unline BibTeXEntryIterator also parses names, macros, etc."""

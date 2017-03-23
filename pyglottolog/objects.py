@@ -207,15 +207,15 @@ class ClassificationComment(object):
     familyrefs = attr.ib(default=attr.Factory(list), convert=Reference.from_list)
 
     def check(self, lang, keys, log):
-        for attr in ['sub', 'family']:
-            comment = getattr(self, attr)
+        for attrib in ['sub', 'family']:
+            comment = getattr(self, attrib)
             if comment:
-                for m in Reference.pattern.finditer(getattr(self, attr)):
+                for m in Reference.pattern.finditer(comment):
                     if m.group('key') not in keys:
                         log.error(message(
                             lang,
                             'classification {0}: invalid bibkey: {1}'.format(
-                                attr, m.group('key'))))
+                                attrib, m.group('key'))))
         return False
 
 
@@ -288,6 +288,11 @@ def valid_comment_type(inst, attr, value):
         raise ValueError('invalid comment type: {0}'.format(value))
 
 
+def valid_comment(inst, attr, value):
+    if not value or not isinstance(value, text_type):
+        raise ValueError(value)
+
+
 @attr.s
 class EthnologueComment(UnicodeMixin):
     # There's the isohid field which says which iso/hid the comment concerns.
@@ -308,15 +313,15 @@ class EthnologueComment(UnicodeMixin):
     # If the comment concerns a language where versions would be the empty string,
     # instead the string ISO 639-3 appears.
     ethnologue_versions = attr.ib(
-        default=attr.Factory(list),
+        default='',
         validator=valid_ethnologue_versions,
         convert=lambda s: s.replace('693', '639').split('/'))
-    comment = attr.ib(default=None)
+    comment = attr.ib(default=None, validator=valid_comment)
 
     def check(self, lang, keys, log):
         try:
             markdown.markdown(self.comment)
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             log.error(message(lang, 'ethnologue comment: invalid markup: {0}'.format(e)))
         for m in Reference.pattern.finditer(self.comment):
             if m.group('key') not in keys:
