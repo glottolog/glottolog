@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 import re
 import os
+from collections import OrderedDict
 
 from clldutils.path import Path, as_posix, walk, git_describe
 from clldutils.misc import UnicodeMixin, cached_property
@@ -99,8 +100,19 @@ class Glottolog(UnicodeMixin):
     def ascii_tree(self, start, maxlevel=None):
         _ascii_node(self.languoid(start), 0, True, maxlevel, '')
 
-    def newick_tree(self, start):
-        return self.languoid(start).newick_node().newick
+    def newick_tree(self, start=None):
+        if start:
+            return self.languoid(start).newick_node().newick
+        nodes = OrderedDict([(l.id, l) for l in self.languoids()])
+        trees = []
+        for lang in nodes.values():
+            if not lang.lineage and not lang.category.startswith('Pseudo '):
+                ns = lang.newick_node(nodes=nodes).newick
+                if lang.level == objects.Level.language:
+                    # an isolate: we wrap it in a pseudo-family with the same name and ID.
+                    ns = '({0}){0}'.format(ns)
+                trees.append('{0};'.format(ns))
+        return '\n'.join(trees)
 
     @cached_property()
     def bibfiles(self):

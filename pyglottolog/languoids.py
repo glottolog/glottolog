@@ -105,7 +105,7 @@ class Languoid(UnicodeMixin):
             label += '[%s]' % self.iso
         if self.level == Level.language:
             label += '-l-'
-        n = Node(name="'{0}'".format(label))
+        n = Node(name="'{0}'".format(label), length='1')
         children = self.children if nodes is None else self.children_from_nodemap(nodes)
         for nn in sorted(children, key=lambda nn: nn.name):
             n.add_descendant(nn.newick_node(nodes=nodes))

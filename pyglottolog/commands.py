@@ -152,7 +152,7 @@ def newick(args):
 
     glottolog newick <GLOTTOCODE>|<ISO-CODE> [MAXLEVEL]
     """
-    sprint(args.repos.newick_tree(args.args[0]))
+    sprint(args.repos.newick_tree(args.args[0] if args.args else None))
 
 
 @command()
