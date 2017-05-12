@@ -6,13 +6,16 @@ import os
 import sys
 import re
 import subprocess
+from json import dumps
+from string import Template
 
 from termcolor import colored
 from clldutils.clilib import command, ParserError
 from clldutils.misc import slug
 from clldutils.markup import Table
-from clldutils.path import Path
+from clldutils.path import Path, write_text, read_text, git_describe
 
+import pyglottolog
 from pyglottolog.languoids import Languoid
 from pyglottolog.objects import Level, Reference
 from pyglottolog import fts
@@ -20,6 +23,118 @@ from pyglottolog import lff
 from pyglottolog.monster import compile
 import pyglottolog.iso
 from pyglottolog.util import message, sprint
+
+
+@command()
+def htmlmap(args):
+    """
+    glottolog htmlmap [OUTDIR]
+    """
+    nodes = {n.id: n for n in args.repos.languoids()}
+    legend = Counter()
+
+    langs = []
+    for n in nodes.values():
+        if n.level == Level.language and n.latitude != None:
+            fid = n.lineage[0][1] if n.lineage else n.id
+            langs.append((n, fid))
+            legend.update([fid])
+
+    color_map = {fid: "{0:0{1}X}".format((i + 1) * 10, 3)
+                 for i, fid in enumerate(sorted(legend.keys()))}
+
+    def l2f(t):
+        n, fid = t
+        lon, lat = n.longitude, n.latitude
+        if lon <= -26:
+            lon += 360
+
+        return {
+            "geometry": {"coordinates": [lon, lat], "type": "Point"},
+            "id": n.id,
+            "properties": {
+                "name": n.name,
+                "color": color_map[fid],
+                "family": nodes[fid].name,
+                "family_id": fid,
+            },
+            "type": "Feature"
+        }
+
+    def legend_item(fid, c):
+        return \
+            '<span style="background-color: #{0}; border: 1px solid black;">'\
+            '&nbsp;&nbsp;&nbsp;</span> '\
+            '<a href="http://glottolog.org/resource/languoid/id/{1}">{2}</a> ({3})'.format(
+                color_map[fid], fid, nodes[fid].name, c)
+
+    geojson = {
+        "features": map(l2f, langs),
+        "properties": {
+            "legend": {fid: legend_item(fid, c) for fid, c in legend.most_common() if c > 10},
+        },
+        "type": "FeatureCollection"
+    }
+
+    def rendered_template(name, **kw):
+        return Template(read_text(
+            Path(pyglottolog.__file__).parent.joinpath('templates', 'htmlmap', name))
+        ).substitute(**kw)
+
+    jsname = 'glottolog_map.json'
+    outdir = Path('.') if not args.args else Path(args.args[0])
+    write_text(
+        outdir.joinpath(jsname),
+        rendered_template('htmlmap.js', geojson=dumps(geojson, indent=4)))
+    html = outdir.joinpath('glottolog_map.html')
+    write_text(
+        html,
+        rendered_template(
+            'htmlmap.html', version=git_describe(args.repos.repos), jsname=jsname))
+    print(html.resolve().as_uri())
+
+
+@command()
+def iso2codes(args):
+    from clldutils.dsv import UnicodeWriter
+
+    nodes = list(args.repos.languoids())
+
+    res = {}
+    for node in nodes:
+        if node.iso:
+            res[node.id] = (node.iso, set())
+
+    for node in nodes:
+        if node.level == Level.family or node.id in res:
+            continue
+        for nid in res:
+            matched = False
+            for l in node.lineage:
+                if l[1] == nid:
+                    res[nid][1].add(node.id)
+                    matched = True
+                    break
+            if matched:
+                break
+
+    with UnicodeWriter('iso2glottocodes.csv') as writer:
+        writer.writerow(['iso', 'glottocodes'])
+        for gc, (iso, gcs) in res.items():
+            writer.writerow([iso, ';'.join([gc] + list(gcs))])
+
+
+@command()
+def evobib(args):
+    # - remove timestamp
+    # - remove owner
+    # - usera -> title_english
+    # - userb -> title_chinese???
+    # - remove {} in title
+    # - remove texisms: \emph \hana \'{o} \url  ``''
+    # - replace http://wold.livingsources.org by http://wold.clld.org
+    # - expand crossref: pull in all fields from referenced item
+    args.repos.bibfiles['evobib.bib'].visit(lambda e: e)
 
 
 @command()
