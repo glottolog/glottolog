@@ -55,7 +55,7 @@
 - [Eastern Oromo [east2652][hae]](tree/afro1255/cush1243/east2699/lowl1267/sout3055/main1283/nucl1701/nucl1736/cent2302/sout3218/east2652/md.ini)
 - [Eastern Panjabi [panj1256][pan]](tree/indo1319/indo1320/indo1321/indo1324/sind1278/east2727/panj1256/md.ini)
 - [Eastern Parbate Kham [east2354][kif]](tree/sino1245/hima1249/maha1306/kham1285/kham1286/parb1234/east2354/md.ini)
-- [Eastern Penan [east2485][pez]](tree/aust1307/nucl1752/mala1545/nort3253/nort3171/keny1280/pena1271/east2485/md.ini)
+- [Eastern Penan [east2485][pez]](tree/aust1307/nucl1752/mala1545/nort3253/nort3171/keny1280/lowl1270/west2875/pena1271/east2485/md.ini)
 - [Eastern Pomo [east2545][peb]](tree/pomo1273/russ1265/east2545/md.ini)
 - [Eastern Puroik [sulu1241][suv]](tree/sino1245/khob1235/puro1234/sulu1241/md.ini)
 - [Eastern Qiandong Miao [east2370][hmq]](tree/hmon1336/hmon1337/nucl1714/nucl1720/east2369/east2370/md.ini)
