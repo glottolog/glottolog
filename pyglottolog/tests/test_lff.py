@@ -110,11 +110,19 @@ Kabardian [kaba1278]
 
         tree2lff(self.api)
 
+        # Test hid adding
+        self._set_lff("""# -*- coding: utf-8 -*-
+Ashkaraua [ashk1247]xyz
+    Ashkarauax [bezs1238]NOCODE_abc
+""", 'dff.txt')
+        lff2tree(self.api)
+        self.assertEqual(self.api.languoid('bezs1238').hid, 'NOCODE_abc')
+
         #
         # Nodes must have unique names!
         #
         self._set_lff("""# -*- coding: utf-8 -*-
-Ashkaraua [ashk1247]
+Ashkaraua [ashk1247]xyz
     Ashkaraua [bezs1238]
 """, 'dff.txt')
         with self.assertRaisesRegexp(ValueError, 'duplicate'):
@@ -124,7 +132,7 @@ Ashkaraua [ashk1247]
         # Nodes must have consistent names!
         #
         self._set_lff("""# -*- coding: utf-8 -*-
-Ashkxxxaraua [ashk1247]
+Ashkxxxaraua [ashk1247]xyz
     Bezshagh [bezs1238]
 """, 'dff.txt')
         with self.assertRaisesRegexp(ValueError, 'inconsistent'):
