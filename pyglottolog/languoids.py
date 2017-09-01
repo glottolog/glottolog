@@ -100,7 +100,7 @@ class Languoid(UnicodeMixin):
 
     def newick_node(self, nodes=None):
         label = '{0} [{1}]'.format(
-            self.name.replace(',', '/').replace('(', '{').replace(')', '}'), self.id)
+            self.name.replace(',', '/').replace('(', '{').replace(')', '}').replace("'", "''"), self.id)
         if self.iso:
             label += '[%s]' % self.iso
         if self.level == Level.language:
