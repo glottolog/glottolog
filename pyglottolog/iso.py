@@ -81,3 +81,71 @@ def bibtex(api, log):
     save(entries, bib.fname, None)
     log.info('bibtex written to {0}'.format(bib.fname))
     return len(entries)
+
+
+def retirements(api, log):
+    retired = []
+    for id_, rows in groupby(iter_change_requests(log), lambda c: c['CR Number']):
+        #
+        # Merge -> Update
+        # Split -> Create
+        #
+        crs = list(rows)
+        if crs[0]['Outcome/Effective date'].startswith('Adopted'):
+            ret = [t for t in crs if t['Change Type'] == 'Split' and t['Outcome/Effective date'].startswith('Adopted')]
+            if ret:
+                assert len(ret) == 1
+                instead = [t for t in crs if t['Change Type'] == 'Create' and t['Outcome/Effective date'].startswith('Adopted')]
+            else:
+                ret = [t for t in crs if t['Change Type'] == 'Merge' and t['Outcome/Effective date'].startswith('Adopted')]
+                if ret:
+                    instead = [t for t in crs if t['Change Type'] == 'Update' and t['Outcome/Effective date'].startswith('Adopted')]
+                else:
+                    ret, instead = [t for t in crs if t['Change Type'] == 'Retire' and t['Outcome/Effective date'].startswith('Adopted')], []
+                    if ret:
+                        assert len(ret) == 1
+            if ret:
+                retired.append((ret, instead))
+
+    iso2lang = {l.iso: l for l in api.languoids() if l.iso}
+    for ret, instead in retired:
+        for cr in ret:
+            if cr['Affected Identifier'] not in iso2lang:
+                print('--- Missing retired ISO code: {0}'.format(cr['Affected Identifier']))
+                print(cr)
+                continue
+            lang = iso2lang[cr['Affected Identifier']]
+            if lang.iso_retirement:
+                assert lang.iso_retirement.code == cr['Affected Identifier']
+            else:
+                lang.cfg['iso_retirement'] = {
+                    'code': cr['Affected Identifier'],
+                    'name': cr['Language Name'].strip(),
+                    'effective': cr['Outcome/Effective date'].replace('Adopted', ''),
+                    'remedy': cr['Change Type'],
+                    'change_request': cr['CR Number'],
+                }
+                lang.write_info()
+        for cr in instead:
+            if cr['Affected Identifier'] not in iso2lang:
+                print('+++ Missing active ISO code: {0}'.format(cr['Affected Identifier']))
+                print(cr)
+                continue
+            lang = iso2lang[cr['Affected Identifier']]
+            lang.cfg.set('iso_retirement', 'change_request', cr['CR Number'])
+            lang.cfg.set('iso_retirement', 'effective', cr['Outcome/Effective date'].replace('Adopted', ''))
+            lang.cfg.set('iso_retirement', 'supersedes', [c['Affected Identifier'] for c in ret])
+            lang.write_info()
+
+    """
+    [iso_retirement]
+    comment = Interlingue is the later name (currently in use) for this language, created by
+        Edgar de Wahl. The [ile] identifier is in ISO 639-2 (as well as ISO 639-3).
+        Occidental should be added as another name associated with [ile].
+    code = occ
+    name = Occidental
+    effective = 2007-07-18
+    reason = duplicate
+    remedy = Merge into Interlingue [ile] as Duplicate
+    change_request = 2006-090
+    """

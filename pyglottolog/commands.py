@@ -37,8 +37,9 @@ def htmlmap(args):
     for n in nodes.values():
         if n.level == Level.language and n.latitude != None:
             fid = n.lineage[0][1] if n.lineage else n.id
-            langs.append((n, fid))
-            legend.update([fid])
+            if not nodes[fid].category.startswith('Pseudo'):
+                langs.append((n, fid))
+                legend.update([fid])
 
     color_map = {fid: "{0:0{1}X}".format((i + 1) * 10, 3)
                  for i, fid in enumerate(sorted(legend.keys()))}
@@ -90,7 +91,7 @@ def htmlmap(args):
     write_text(
         html,
         rendered_template(
-            'htmlmap.html', version=git_describe(args.repos.repos), jsname=jsname))
+            'htmlmap.html', version=git_describe(args.repos.repos), jsname=jsname, nlangs=len(langs)))
     print(html.resolve().as_uri())
 
 
@@ -142,6 +143,13 @@ def isobib(args):  # pragma: no cover
     """Update iso6393.bib - the file of references for ISO 639-3 change requests.
     """
     pyglottolog.iso.bibtex(args.repos, args.log)
+
+
+@command()
+def isoretirements(args):  # pragma: no cover
+    """Update iso6393.bib - the file of references for ISO 639-3 change requests.
+    """
+    pyglottolog.iso.retirements(args.repos, args.log)
 
 
 def existing_lang(args):
