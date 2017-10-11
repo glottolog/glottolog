@@ -1,5 +1,7 @@
 # coding: utf8
+
 from __future__ import unicode_literals, print_function, division
+
 import re
 import functools
 from itertools import chain
@@ -8,7 +10,10 @@ import unicodedata
 import datetime
 
 from six import string_types
+from six.moves import map
+
 import attr
+
 from clldutils.misc import cached_property, UnicodeMixin
 from clldutils.path import memorymapped
 from clldutils.source import Source
@@ -18,6 +23,8 @@ from clldutils.inifile import INI
 from pyglottolog.util import Trigger
 from pyglottolog.monsterlib import _bibtex
 from pyglottolog.monsterlib._bibfiles_db import Database
+
+__all__ = ['Bibfiles', 'Isbns', 'HHTypes']
 
 
 class BibFiles(list):
@@ -51,78 +58,6 @@ class BibFiles(list):
     def roundtrip_all(self):
         """Load and save all bibfiles with the current settings."""
         return [b.roundtrip() for b in self]
-
-
-@attr.s
-class Entry(UnicodeMixin):
-    key = attr.ib()
-    type = attr.ib()
-    fields = attr.ib()
-    bib = attr.ib()
-
-    # FIXME: add method to apply triggers!
-
-    lgcode_regex = '[a-z0-9]{4}[0-9]{4}|[a-z]{3}|NOCODE_[A-Z][^\s\]]+'
-    lgcode_in_brackets_pattern = re.compile("\[(" + lgcode_regex + ")\]")
-    recomma = re.compile("[,/]\s?")
-    lgcode_pattern = re.compile(lgcode_regex + "$")
-
-    def __unicode__(self):
-        """
-        :return: BibTeX representation of the entry.
-        """
-        res = "@%s{%s" % (self.type, self.key)
-        for k, v in _bibtex.fieldorder.itersorted(self.fields):
-            res += ',\n    %s = {%s}' % (k, v.strip() if hasattr(v, 'strip') else v)
-        res += '\n}\n' if self.fields else ',\n}\n'
-        return res
-
-    def text(self):
-        """
-        :return: Text linearization of the entry.
-        """
-        return Source(self.type, self.key, _check_id=False, **self.fields).text()
-
-    @property
-    def id(self):
-        return '{0}:{1}'.format(self.bib.id, self.key)
-
-    @classmethod
-    def lgcodes(cls, string):
-        if string is None:
-            return []
-        codes = cls.lgcode_in_brackets_pattern.findall(string)
-        if not codes:
-            # ... or as comma separated list of identifiers.
-            parts = [p.strip() for p in cls.recomma.split(string)]
-            codes = [p for p in parts if cls.lgcode_pattern.match(p)]
-            if len(codes) != len(parts):
-                codes = []
-        return codes
-
-    @staticmethod
-    def parse_ca(s):
-        if s:
-            match = re.search('computerized assignment from "(?P<trigger>[^\"]+)"', s)
-            if match:
-                return match.group('trigger')
-
-    def languoids(self, langs_by_codes):
-        res = []
-        if 'lgcode' in self.fields:
-            for code in self.lgcodes(self.fields['lgcode']):
-                if code in langs_by_codes:
-                    res.append(langs_by_codes[code])
-        return res, self.parse_ca(self.fields.get('lgcode'))
-
-    def doctypes(self, hhtypes):
-        res = []
-        if 'hhtype' in self.fields:
-            for ss in split_text(self.fields['hhtype'], separators=',;'):
-                ss = ss.split('(')[0].strip()
-                if ss in hhtypes:
-                    res.append(hhtypes[ss])
-        return res, self.parse_ca(self.fields.get('hhtype'))
 
 
 def file_if_exists(i, a, value):
@@ -235,6 +170,188 @@ class BibFile(UnicodeMixin):
             for c, n in hist.most_common()
             if include_plain or not 20 <= ord(c) <= 126)
         print(table)
+
+
+@attr.s
+class Entry(UnicodeMixin):
+    key = attr.ib()
+    type = attr.ib()
+    fields = attr.ib()
+    bib = attr.ib()
+
+    # FIXME: add method to apply triggers!
+
+    lgcode_regex = '[a-z0-9]{4}[0-9]{4}|[a-z]{3}|NOCODE_[A-Z][^\s\]]+'
+    lgcode_in_brackets_pattern = re.compile("\[(" + lgcode_regex + ")\]")
+    recomma = re.compile("[,/]\s?")
+    lgcode_pattern = re.compile(lgcode_regex + "$")
+
+    def __unicode__(self):
+        """
+        :return: BibTeX representation of the entry.
+        """
+        res = "@%s{%s" % (self.type, self.key)
+        for k, v in _bibtex.fieldorder.itersorted(self.fields):
+            res += ',\n    %s = {%s}' % (k, v.strip() if hasattr(v, 'strip') else v)
+        res += '\n}\n' if self.fields else ',\n}\n'
+        return res
+
+    def text(self):
+        """
+        :return: Text linearization of the entry.
+        """
+        return Source(self.type, self.key, _check_id=False, **self.fields).text()
+
+    @property
+    def id(self):
+        return '{0}:{1}'.format(self.bib.id, self.key)
+
+    @classmethod
+    def lgcodes(cls, string):
+        if string is None:
+            return []
+        codes = cls.lgcode_in_brackets_pattern.findall(string)
+        if not codes:
+            # ... or as comma separated list of identifiers.
+            parts = [p.strip() for p in cls.recomma.split(string)]
+            codes = [p for p in parts if cls.lgcode_pattern.match(p)]
+            if len(codes) != len(parts):
+                codes = []
+        return codes
+
+    @staticmethod
+    def parse_ca(s):
+        if s:
+            match = re.search('computerized assignment from "(?P<trigger>[^\"]+)"', s)
+            if match:
+                return match.group('trigger')
+
+    def languoids(self, langs_by_codes):
+        res = []
+        if 'lgcode' in self.fields:
+            for code in self.lgcodes(self.fields['lgcode']):
+                if code in langs_by_codes:
+                    res.append(langs_by_codes[code])
+        return res, self.parse_ca(self.fields.get('lgcode'))
+
+    def doctypes(self, hhtypes):
+        res = []
+        if 'hhtype' in self.fields:
+            for ss in split_text(self.fields['hhtype'], separators=',;'):
+                ss = ss.split('(')[0].strip()
+                if ss in hhtypes:
+                    res.append(hhtypes[ss])
+        return res, self.parse_ca(self.fields.get('hhtype'))
+
+
+class Isbns(list):
+
+    class Parser(object):
+        @staticmethod
+        def parse(ma):
+            return ''.join(g for g in ma.groups() if g is not None)
+
+    class Numeric(Parser):
+        pattern = re.compile(r'(97[89])?(\d{9})([\dXx])(?![\dXx])')
+
+    
+    class Hyphened(Parser):
+        pattern = re.compile(r'''
+            (?:
+              (?:ISBN[- ])? (97[89])-
+              |
+              ISBN-10[ ]
+            )?
+            (\d{1,5})- (\d+)- (\d+)- ([\dXx])(?![\dXx])''', flags=re.VERBOSE)
+
+        
+    class Ten99(Parser):
+        pattern = re.compile(r'(99)-(\d{7})-([\dXx])(?![\dXx])')
+
+    @classmethod
+    def _iterparse(cls, s, pos=0, parsers=(Numeric, Hyphened, Ten99), delimiters=(', ', ' ')):
+        while True:
+            for p in parsers:
+                ma = p.pattern.match(s, pos)
+                if ma is not None:
+                    yield p.parse(ma)
+                    pos += len(ma.group())
+                    break
+            else:
+                raise ValueError('no matching ISBN pattern at index %s: %r' % (pos, s))
+            if pos == len(s):
+                return
+            for delim in delimiters:
+                if s.startswith(delim, pos):
+                    pos += len(delim)
+                    break
+            else:
+                raise ValueError('no matching delimiter at index %s: %r' % (pos, s))
+
+    @classmethod
+    def from_field(cls, field):
+        isbns = map(Isbn, cls._iterparse(field))
+        seen = set()
+        return cls(i for i in isbns if i not in seen and not seen.add(i))
+
+    def to_string(self):
+        return ', '.join(i.digits for i in self)
+
+
+class Isbn(object):
+    """A 13 digit ISBN from a string of 13 or 10 digits. 
+
+    see also https://en.wikipedia.org/wiki/International_Standard_Book_Number
+    """
+
+    _isbn10_prefix = '978'
+
+    @staticmethod
+    def _isbn13_check_digit(digits):
+        assert len(digits) in (12, 13)
+        halfes = (digits[i:12:2] for i in (0, 1))
+        odd, even = (sum(map(int, h)) for h in halfes)
+        return str(-(odd + 3 * even) % 10)
+
+    @staticmethod
+    def _isbn10_check_digit(digits):
+        assert len(digits) in (9, 10)
+        result = sum(i * int(d) for i, d in enumerate(digits[:9], 1)) % 11
+        return 'X' if result == 10 else str(result) 
+
+    def __init__(self, digits):
+        if len(digits) == 13:
+            check = self._isbn13_check_digit(digits)
+        elif len(digits) == 10:
+            digits = digits.upper()
+            check = self._isbn10_check_digit(digits)
+        else:
+            raise ValueError('invalid ISBN digits length (%s): %r' % (len(digits), digits))
+
+        if digits[-1] != check:
+            raise ValueError('invalid ISBN check digit (%s instead of %s): %r'
+                             % (digits[-1], check, digits))
+
+        if len(digits) == 10:  # convert
+            digits = self._isbn10_prefix + digits[:9]
+            digits += self._isbn13_check_digit(digits)
+        self.digits = digits
+
+    def __hash__(self):
+        return hash(self.digits)
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.digits == other.digits
+        return NotImplemented  # pragma: no cover
+
+    def __ne__(self, other):
+        if isinstance(other, self.__class__):
+            return self.digits != other.digits
+        return NotImplemented  # pragma: no cover
+    
+    def __repr__(self):
+        return '%s(%r)' % (self.__class__.__name__, self.digits)
 
 
 @functools.total_ordering

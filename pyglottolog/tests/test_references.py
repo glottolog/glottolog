@@ -62,3 +62,47 @@ class Tests(WithApi):
 
         bibfile.visit(visitor=lambda e: True)
         self.assertEqual(len(bibfile.keys()), 0)
+
+    def test_Isbns(self):
+        from pyglottolog.references import Isbns, Isbn
+
+        self.assertEqual(Isbns.from_field('9783866801929, 3866801920'),
+                         [Isbn('9783866801929')])
+
+        self.assertEqual(Isbns.from_field('978-3-86680-192-9 3-86680-192-0'),
+                         [Isbn('9783866801929')])
+
+        with self.assertRaisesRegexp(ValueError, 'pattern'):
+            Isbns.from_field('9783866801929 spam, 3866801920')
+
+        with self.assertRaisesRegexp(ValueError, 'delimiter'):
+            Isbns.from_field('9783866801929: 3866801920')
+
+        self.assertEqual(Isbns.from_field('9780199593569, 9780191739385').to_string(),
+                         '9780199593569, 9780191739385')
+        
+    def test_Isbn(self):
+        from pyglottolog.references import Isbn
+
+        with self.assertRaisesRegexp(ValueError, 'length'):
+            Isbn('978-3-86680-192-9')
+
+        with self.assertRaisesRegexp(ValueError, 'length'):
+            Isbn('03-86680-192-0')
+
+        with self.assertRaisesRegexp(ValueError, '0 instead of 9'):
+            Isbn('9783866801920')
+
+        with self.assertRaisesRegexp(ValueError, '9 instead of 0'):
+            Isbn('3866801929')
+
+        self.assertEqual(Isbn('9783866801929').digits, '9783866801929')
+        self.assertEqual(Isbn('3866801920').digits, '9783866801929')
+
+        twins = Isbn('9783866801929'), Isbn('9783866801929')
+        self.assertEqual(*twins)
+        self.assertEqual(len(set(twins)), 1)
+        self.assertFalse(twins[0] != twins[1])
+
+        self.assertIn(repr(Isbn('9783866801929')),
+                      ["Isbn(u'9783866801929')", "Isbn('9783866801929')"])
