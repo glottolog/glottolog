@@ -86,11 +86,12 @@ class Languoid(UnicodeMixin):
     def __unicode__(self):
         return '%s [%s]' % (self.name, self.id)
 
-    def _set(self, key, value):
-        if value is None and key in self.cfg[self.section_core]:
-            del self.cfg[self.section_core][key]
+    def _set(self, key, value, section=None):
+        section = section or self.section_core
+        if value is None and key in self.cfg[section]:
+            del self.cfg[section][key]
         else:
-            self.cfg.set(self.section_core, key, value)
+            self.cfg.set(section, key, value)
 
     def _get(self, key, type_=None):
         res = self.cfg.get(self.section_core, key, fallback=None)
@@ -228,14 +229,13 @@ class Languoid(UnicodeMixin):
 
     @property
     def endangerment(self):
-        if 'status' in self.cfg[self.section_core]:
-            res = self.cfg.get(self.section_core, 'status')
+        if 'endangerment' in self.cfg:
+            res = self.cfg.get('endangerment', 'status')
             if res:
-                return EndangermentStatus.get(res.lower())
+                return EndangermentStatus.get(res)
 
     @endangerment.setter
     def endangerment(self, value):
-        value = value.lower() if hasattr(value, 'lower') else value
         self._set('status', EndangermentStatus.get(value).name)
 
     @property

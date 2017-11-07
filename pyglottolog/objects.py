@@ -235,44 +235,17 @@ class ISORetirement(object):
 
 
 class EndangermentStatus(DeclEnum):
-    """
-    http://www.unesco.org/new/en/culture/themes/endangered-languages/atlas-of-languages-in-danger/
-    """
-    safe = \
-        1, \
-        'safe', \
-        'language is spoken by all generations; ' \
-        'intergenerational transmission is uninterrupted.'
-    vulnerable = \
-        2, \
-        'vulnerable',\
-        'most children speak the language, but it may be restricted to certain '\
-        'domains (e.g., home).'
-    definite = \
-        3, \
-        'definitely endangered',\
-        'children no longer learn the language as mother tongue in the home.'
-    severe = \
-        4, \
-        'severely endangered',\
-        'language is spoken by grandparents and older generations; while the parent ' \
-        'generation may understand it, they do not speak it to children or among ' \
-        'themselves'
-    critical = \
-        5, \
-        'critically endangered',\
-        'the youngest speakers are grandparents and older, and they speak the language ' \
-        'partially and infrequently'
-    extinct = \
-        6, \
-        'extinct',\
-        'there are no speakers left since the 1950s'
+    safe = 1, 'not endangered', '<= 6a (Vigorous)'
+    vulnerable = 2, 'threatened', '6b'
+    definite = 3, 'shifting', '7'
+    severe = 4, 'moribund', '8a'
+    critical = 5, 'nearly extinct', '8b'
+    extinct = 6, 'extinct', '10'
 
     @classmethod
     def get(cls, item):
         if item in list(cls):
             return item
-        item = item if isinstance(item, int) else item.lower()
         for li in cls:
             if li.name == item or li.value == item or li.description == item:
                 return li
