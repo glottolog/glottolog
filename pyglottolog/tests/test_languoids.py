@@ -30,7 +30,7 @@ class Tests(TestCase):
     def test_es(self):
         self.assertEqual(
             EndangermentStatus.critical,
-            EndangermentStatus.get('Critically endangered'))
+            EndangermentStatus.get('nearly extinct'))
 
     def test_pattern(self):
         pattern = Glottocode.pattern
@@ -102,7 +102,7 @@ class TestLanguoid(WithApi):
         self.assertIsInstance(
             self.api.languoid('abcd1235').iso_retirement.asdict(), dict)
         self.assertIsNone(l.classification_comment)
-        l.endangerment = 'Critically endangered'
+        l.endangerment = 'nearly extinct'
         self.assertEqual(l.endangerment, EndangermentStatus.critical)
         self.assertEqual(l.names, {})
         l.cfg['altnames'] = {'glottolog': 'xyz'}

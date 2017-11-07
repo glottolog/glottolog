@@ -236,7 +236,7 @@ class Languoid(UnicodeMixin):
 
     @endangerment.setter
     def endangerment(self, value):
-        self._set('status', EndangermentStatus.get(value).name)
+        self._set('status', EndangermentStatus.get(value).name, section='endangerment')
 
     @property
     def classification_comment(self):
