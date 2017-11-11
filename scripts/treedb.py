@@ -1,81 +1,21 @@
-# languoids_db.py - load languoids/tree/**/md.ini into sqlite3
+# treedb.py - load languoids/tree/**/md.ini into sqlite3
 
-import io
 import re
 import time
-import pathlib
-import datetime
-import contextlib
-import configparser
-
-try:
-    from os import scandir
-except ImportError:
-    from scandir import scandir
 
 import sqlalchemy as sa
 import sqlalchemy.orm
-import sqlalchemy.ext.declarative
 
-ROOT = pathlib.Path('../languoids/tree')
-DBFILE = pathlib.Path('languoids.sqlite3')
+import treedb_backend as _backend
 
-
-def iterfiles(top=ROOT, verbose=False):
-    """Yield DirEntry objects for all files under top."""
-    if isinstance(top, pathlib.Path):
-        top = str(top)
-    stack = [top]
-    while stack:
-        root = stack.pop()
-        if verbose:
-            print(root)
-        direntries = scandir(root)
-        dirs = []
-        for d in direntries:
-            if d.is_dir():
-                dirs.append(d.path)
-            else:
-                yield d
-        stack.extend(dirs[::-1])
+REBUILD = False
 
 
-class ConfigParser(configparser.ConfigParser):
-
-    @classmethod
-    def from_file(cls, filename, encoding='utf-8', **kwargs):
-        inst = cls(**kwargs)
-        with io.open(filename, encoding=encoding) as f:
-            inst.read_file(f)
-        return inst
-
-    def __init__(self, defaults=None, **kwargs):
-        super(ConfigParser, self).__init__(defaults=defaults, interpolation=None, **kwargs)
-
-    def getlist(self, section, option):
-        if not self.has_option(section, option):
-            return []
-        return self.get(section, option).strip().splitlines()
-
-    def getdatetime(self, section, option, format_='%Y-%m-%dT%H:%M:%S'):
-        return datetime.datetime.strptime(self.get(section, option), format_)
-
-
-def iterconfig(root=ROOT, assert_name='md.ini', load=ConfigParser.from_file):
-    if not isinstance(root, pathlib.Path):
-        root = pathlib.Path(root)
-    root_len = len(root.parts)
-    for d in iterfiles(root):
-        assert d.name == assert_name
-        path_tuple = pathlib.Path(d.path).parts[root_len:-1]
-        yield path_tuple, load(d.path)
-
-
-def iterlanguoids(root=ROOT):
+def iterlanguoids(root=_backend.ROOT):
     def splitcountry(name, _match=re.compile(r'(.+) \(([^)]+)\)$').match):
         return _match(name).groups()
 
-    for path, cfg in iterconfig(root):
+    for path, cfg in _backend.iterconfig(root):
         item = {
             'id': path[-1],
             'parent_id': path[-2] if len(path) > 1 else None,
@@ -98,19 +38,7 @@ def iterlanguoids(root=ROOT):
         yield item
 
 
-engine = sa.create_engine('sqlite:///%s' % DBFILE)
-
-
-@sa.event.listens_for(sa.engine.Engine, 'connect')
-def set_sqlite_pragma(dbapi_connection, connection_record):
-    with contextlib.closing(dbapi_connection.cursor()) as cursor:
-        cursor.execute('PRAGMA foreign_keys = ON')
-
-
-Model = sa.ext.declarative.declarative_base()
-
-
-class Languoid(Model):
+class Languoid(_backend.Model):
 
     __tablename__ = 'languoid'
 
@@ -124,7 +52,7 @@ class Languoid(Model):
     longitude = sa.Column(sa.Float, sa.CheckConstraint('longitude BETWEEN -180 AND 180'))
 
 
-class Endangerment(Model):
+class Endangerment(_backend.Model):
 
     __tablename__ = 'endangerment'
 
@@ -136,7 +64,7 @@ class Endangerment(Model):
     comment = sa.Column(sa.Text, nullable=False)
 
 
-class Macroarea(Model):
+class Macroarea(_backend.Model):
 
     __tablename__ = 'macroarea'
 
@@ -150,12 +78,12 @@ class Macroarea(Model):
     )
 
 
-languoid_macroarea = sa.Table('languoid_macroarea', Model.metadata,
+languoid_macroarea = sa.Table('languoid_macroarea', _backend.Model.metadata,
     sa.Column('languoid_id', sa.ForeignKey('languoid.id'), primary_key=True),
     sa.Column('macroarea_name', sa.ForeignKey('macroarea.name'), primary_key=True))
 
 
-class Country(Model):
+class Country(_backend.Model):
 
     __tablename__ = 'country'
 
@@ -163,23 +91,31 @@ class Country(Model):
     name = sa.Column(sa.Text, unique=True)
 
 
-languoid_country = sa.Table('languoid_country', Model.metadata,
+languoid_country = sa.Table('languoid_country', _backend.Model.metadata,
     sa.Column('languoid_id', sa.ForeignKey('languoid.id'), primary_key=True),
     sa.Column('country_id', sa.ForeignKey('country.id'), primary_key=True))
 
 
-if DBFILE.exists():
-    DBFILE.unlink()
+def load(root=_backend.ROOT, rebuild=False):
+    if not _backend.DBFILE.exists():
+        _backend.create_tables(_backend.engine)
+    elif rebuild:
+        _backend.DBFILE.unlink()
+        _backend.create_tables(_backend.engine)
+    else:
+        return
 
-Model.metadata.create_all(engine)
+    start = time.time()
+    with _backend.engine.begin() as conn:
+        conn.execute('PRAGMA synchronous = OFF')
+        conn.execute('PRAGMA journal_mode = MEMORY')
+        conn = conn.execution_options(compiled_cache={})
+        _backend._load(conn, root)
+        _load(conn, root)
+    print(time.time() - start)
 
-start = time.time()
 
-with engine.begin() as conn:
-    conn.execute('PRAGMA synchronous = OFF')
-    conn.execute('PRAGMA journal_mode = MEMORY')
-    conn = conn.execution_options(compiled_cache={})
-
+def _load(conn, root):
     insert_lang = sa.insert(Languoid, bind=conn).execute
     insert_enda = sa.insert(Endangerment, bind=conn).execute
 
@@ -207,10 +143,12 @@ with engine.begin() as conn:
             if not has_co(cc=cc):
                 insert_co(id=cc, name=name)
             lang_co(lang=lid, cc=cc)
-        
-print(time.time() - start)
 
-print(sa.select([Languoid], bind=engine).limit(5).execute().fetchall())
+
+load(rebuild=REBUILD)
+
+
+print(sa.select([Languoid], bind=_backend.engine).limit(5).execute().fetchall())
 
 
 def get_tree(with_terminal=False):
@@ -242,8 +180,7 @@ def get_tree(with_terminal=False):
 
 
 tree = get_tree(with_terminal=True)
-query = sa.select([tree], bind=engine).where(tree.c.child_id == 'ostr1239')
-
+query = sa.select([tree], bind=_backend.engine).where(tree.c.child_id == 'ostr1239')
 print(query.execute().fetchall())
 
 tree = get_tree()  # FIXME: order_by
@@ -252,8 +189,7 @@ query = sa.select([
         Languoid.parent_id,
         sa.select([sa.func.group_concat(tree.c.parent_id, '/')])
             .where(tree.c.child_id == Languoid.id).label('path'),
-    ], bind=engine)
-
+    ], bind=_backend.engine)
 print(query)
 print(query.limit(10).execute().fetchall())
 
@@ -276,5 +212,5 @@ query = sa.select(
     ).select_from(sa.outerjoin(Languoid, Endangerment))\
     .order_by(Languoid.id)
 
-df = pd.read_sql_query(query, engine, index_col='id')
+df = pd.read_sql_query(query, _backend.engine, index_col='id')
 df.info()
