@@ -471,14 +471,14 @@ def metadata(args):
     ops = defaultdict(Counter)
 
     for l in args.repos.languoids():
-        for sec in l.cfg:
-            for opt in l.cfg[sec]:
-                if l.cfg.get(sec, opt):
-                    ops[sec].update([opt])
+        for secname, sec in l.cfg.items():
+            ops[secname].update(opt for opt, val in sec.items() if val)
+
+    ops.pop('DEFAULT', None)
 
     t = Table('section', 'option', 'count')
     for section, options in ops.items():
-        t.append([section, '', 0.0])
+        t.append([section, '', float(sum(options.values()))])
         for k, n in options.most_common():
             t.append(['', k, float(n)])
     print(t.render(condensed=False, floatfmt=',.0f'))
