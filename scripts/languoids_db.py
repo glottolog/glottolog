@@ -21,20 +21,22 @@ ROOT = pathlib.Path('../languoids/tree')
 DBFILE = pathlib.Path('languoids.sqlite3')
 
 
-def iterfiles(top=str(ROOT), assert_name='md.ini', verbose=False):
+def iterfiles(top=ROOT, verbose=False):
+    """Yield DirEntry objects for all files under top."""
+    if isinstance(top, pathlib.Path):
+        top = str(top)
     stack = [top]
     while stack:
         root = stack.pop()
         if verbose:
             print(root)
-        dentries = scandir(root)
+        direntries = scandir(root)
         dirs = []
-        for d in dentries:
+        for d in direntries:
             if d.is_dir():
                 dirs.append(d.path)
             else:
-                assert d.name == assert_name
-                yield d.path
+                yield d
         stack.extend(dirs[::-1])
 
 
@@ -59,18 +61,26 @@ class ConfigParser(configparser.ConfigParser):
         return datetime.datetime.strptime(self.get(section, option), format_)
 
 
+def iterconfig(root=ROOT, assert_name='md.ini', load=ConfigParser.from_file):
+    if not isinstance(root, pathlib.Path):
+        root = pathlib.Path(root)
+    root_len = len(root.parts)
+    for d in iterfiles(root):
+        assert d.name == assert_name
+        path_tuple = pathlib.Path(d.path).parts[root_len:-1]
+        yield path_tuple, load(d.path)
+
+
 def iterlanguoids(root=ROOT):
     def splitcountry(name, _match=re.compile(r'(.+) \(([^)]+)\)$').match):
         return _match(name).groups()
 
-    prefix_len = len(root.parts)
-    for p in iterfiles(str(root)):
-        parts = list(pathlib.Path(p).parts[prefix_len:-1])
-        id = parts.pop()
-        cfg = ConfigParser.from_file(p)
+    for path, cfg in iterconfig(root):
         item = {
-            'id': id, 'parent_id': parts.pop() if parts else None,
-            'level': cfg.get('core', 'level'), 'name': cfg.get('core', 'name'),
+            'id': path[-1],
+            'parent_id': path[-2] if len(path) > 1 else None,
+            'level': cfg.get('core', 'level'),
+            'name': cfg.get('core', 'name'),
             'hid': cfg.get('core', 'hid', fallback=None),
             'iso639_3': cfg.get('core', 'iso639-3', fallback=None),
             'latitude': cfg.getfloat('core', 'latitude', fallback=None),
