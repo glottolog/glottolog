@@ -38,4 +38,5 @@ nosetests.xml
 iso639-3
 
 /scripts/*.sqlite3
+/scripts/*.csv
 /.venv/

@@ -1,6 +1,9 @@
 # treedb_backend.py
 
+import os
 import io
+import csv
+import json
 import time
 import pathlib
 import datetime
@@ -159,6 +162,7 @@ class Statement(Model):
     section = sa.Column(sa.Text, primary_key=True)
     option = sa.Column(sa.Text, primary_key=True)
     line = sa.Column(sa.Integer, primary_key=True)
+    # TODO: consider adding version for selective updates 
     value = sa.Column(sa.Text, nullable=False)
 
 
@@ -235,6 +239,16 @@ def iterlanguoids(bind=engine, _groupby=itertools.groupby, _is_lines=is_lines):
                for o, lines in _groupby(sections, lambda r: r.option)}
             for s, sections in _groupby(statements, lambda r: r.section)}
         yield p, languoid
+
+
+def to_csv(filename=None, bind=engine, encoding='utf-8'):
+    if filename is None:
+        filename = '%s-json.csv' % os.path.splitext(bind.url.database)[0]
+    with io.open(filename, 'w', newline='', encoding=encoding) as f:
+        csvwriter = csv.writer(f)
+        csvwriter.writerow(['path', 'json'])
+        for path, data in iterlanguoids(bind=bind):
+            csvwriter.writerow([path, json.dumps(data)])
 
 
 def print_fields(bind=engine):
