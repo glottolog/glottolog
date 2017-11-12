@@ -125,7 +125,7 @@ class ConfigParser(configparser.ConfigParser):
     }
 
     @classmethod
-    def from_file(cls, filename, encoding=_encoding, newline=_newline, **kwargs):
+    def from_file(cls, filename, encoding=_encoding, **kwargs):
         inst = cls(**kwargs)
         with io.open(filename, encoding=encoding) as f:
             inst.read_file(f)
