@@ -1,5 +1,7 @@
 # treedb.py - load languoids/tree/**/md.ini into sqlite3
 
+from __future__ import unicode_literals
+
 import re
 import time
 
@@ -15,18 +17,18 @@ def iterlanguoids(root=_backend.ROOT):
     def splitcountry(name, _match=re.compile(r'(.+) \(([^)]+)\)$').match):
         return _match(name).groups()
 
-    for path, cfg in _backend.iterconfig(root):
+    for path_tuple, cfg in _backend.iterconfig(root):
         item = {
-            'id': path[-1],
-            'parent_id': path[-2] if len(path) > 1 else None,
+            'id': path_tuple[-1],
+            'parent_id': path_tuple[-2] if len(path_tuple) > 1 else None,
             'level': cfg.get('core', 'level'),
             'name': cfg.get('core', 'name'),
             'hid': cfg.get('core', 'hid', fallback=None),
             'iso639_3': cfg.get('core', 'iso639-3', fallback=None),
             'latitude': cfg.getfloat('core', 'latitude', fallback=None),
             'longitude': cfg.getfloat('core', 'longitude', fallback=None),
-            'macroareas': cfg.getlist('core', 'macroareas'),
-            'countries': [splitcountry(c) for c in cfg.getlist('core', 'countries')],
+            'macroareas': cfg.getlines('core', 'macroareas'),
+            'countries': [splitcountry(c) for c in cfg.getlines('core', 'countries')],
         }
         if cfg.has_section('endangerment'):
             item['endangerment'] = {
@@ -116,6 +118,8 @@ def load(root=_backend.ROOT, rebuild=False):
 
 
 def _load(conn, root):
+    sa.insert(Macroarea, bind=conn).execute([{'name': n} for n in Macroarea._names])
+
     insert_lang = sa.insert(Languoid, bind=conn).execute
     insert_enda = sa.insert(Endangerment, bind=conn).execute
 
@@ -128,7 +132,6 @@ def _load(conn, root):
     lang_co = languoid_country.insert(bind=conn)\
         .values(languoid_id=sa.bindparam('lang'), country_id=sa.bindparam('cc')).execute
 
-    sa.insert(Macroarea, bind=conn).execute([{'name': n} for n in Macroarea._names])
     for l in iterlanguoids():
         lid = l['id']
         macroareas = l.pop('macroareas')
