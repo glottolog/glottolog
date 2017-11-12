@@ -37,6 +37,8 @@ nosetests.xml
 .idea
 iso639-3
 
+/.venv/
+
 /scripts/*.sqlite3
 /scripts/*.csv
-/.venv/
+/scripts/*.zip

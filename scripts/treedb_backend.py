@@ -9,6 +9,7 @@ import sys
 import json
 import time
 import pathlib
+import zipfile
 import functools
 import itertools
 import contextlib
@@ -317,6 +318,26 @@ def to_files(root=ROOT, basename=BASENAME, bind=engine, load=ConfigParser.from_f
         cfg.to_file(path)
 
 
+def export_csv(metadata=Model.metadata, engine=engine, encoding='utf-8'):
+    filename = '%s.zip' % os.path.splitext(engine.url.database)[0]
+    with engine.connect() as conn,\
+         zipfile.ZipFile(filename, 'w', zipfile.ZIP_DEFLATED) as z:
+        get_fd = io.BytesIO if sys.version_info < (3,) else io.StringIO
+        for table in metadata.sorted_tables:
+            with contextlib.closing(get_fd()) as f:
+                writer = csv.writer(f)
+                result = conn.execute(table.select())
+                writer.writerow(result.keys())
+                if sys.version_info < (3,):
+                    for row in result:
+                        writer.writerow([unicode(col).encode(encoding) if col else col for col in row])
+                    data = f.getvalue()
+                else:
+                    writer.writerows(result)
+                    data = f.getvalue().encode(encoding)
+                z.writestr('%s.csv' % table.name, data)
+
+
 def print_fields(bind=engine):
     has_scalar = (sa.func.min(Data.line) == 0).label('scalar')
     has_lines = (sa.func.max(Data.line) != 0).label('lines')
@@ -337,3 +358,4 @@ if __name__ == '__main__':
     print_fields()
     #to_csv()
     #to_files()
+    #export_csv()
