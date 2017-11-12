@@ -332,3 +332,13 @@ query = sa.select([
     .group_by(Source.bibfile, Source.bibkey)\
     .order_by(Source.bibfile, Source.bibkey)
 _backend.print_rows(query, '{bibfile:8} {bibkey:24} {pages!s:8} {trigger!s:12} {languoid_id}')
+
+
+self, other = (sa.alias(languoid_trigger) for _ in range(2))
+query = self.select(bind=_backend.engine)\
+    .where(sa.exists()
+        .where(other.c.languoid_id == self.c.languoid_id)
+        .where(other.c.field == self.c.field)
+        .where(other.c.trigger == self.c.trigger)
+        .where(other.c.ord != self.c.ord))
+_backend.print_rows(query, '{languoid_id} {field} {ord} {trigger}')
