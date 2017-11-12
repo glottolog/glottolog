@@ -276,7 +276,7 @@ def stats(bind=engine):
         .order_by(Option.section, sa.desc('n'))
 
 
-def iterlanguoids(bind=engine, _groupby=itertools.groupby):
+def iterrecords(bind=engine, _groupby=itertools.groupby):
     select_paths = sa.select([Path.path], bind=bind).order_by(Path.path)
     select_data = sa.select([
             Option.section, Option.option, Option.lines, Data.line,
@@ -287,11 +287,11 @@ def iterlanguoids(bind=engine, _groupby=itertools.groupby):
         .order_by(Option.section, Option.option, Data.line)
     for p, in select_paths.execute():
         data = select_data.execute(path=p)
-        languoid = {
+        record = {
             s: {o: [l.value for l in lines] if islines else next(lines).value
                for (o, islines), lines in _groupby(sections, lambda r: (r.option, r.lines))}
             for s, sections in _groupby(data, lambda r: r.section)}
-        yield p, languoid
+        yield p, record
 
 
 def to_csv(filename=None, bind=engine, encoding='utf-8'):
@@ -301,15 +301,15 @@ def to_csv(filename=None, bind=engine, encoding='utf-8'):
         # FIXME: PY3 only, use backport
         csvwriter = csv.writer(f)
         csvwriter.writerow(['path', 'json'])
-        for path, data in iterlanguoids(bind=bind):
+        for path, data in iterrecords(bind=bind):
             csvwriter.writerow([path, json.dumps(data)])
 
 
 def to_files(root=ROOT, basename=BASENAME, bind=engine, load=ConfigParser.from_file):
-    for p, l in iterlanguoids(bind=bind):
+    for p, r in iterrecords(bind=bind):
         path = str(root / p / basename)
         cfg = load(path)
-        for section, s in iteritems(l):
+        for section, s in iteritems(r):
             for option, value in iteritems(s):
                 if is_lines(section, option):
                     value = '\n'.join([''] + value)
