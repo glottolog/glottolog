@@ -9,7 +9,6 @@ import sys
 import json
 import time
 import pathlib
-import datetime
 import functools
 import itertools
 import contextlib
@@ -27,9 +26,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm
 import sqlalchemy.ext.declarative
 
-REBUILD = False
-
-ECHO = False
+REBUILD, ECHO = False, False
 
 ROOT, BASENAME = pathlib.Path('../languoids/tree'), 'md.ini'
 
@@ -62,10 +59,10 @@ FIELDS = {
 
     ('identifier', None): False,
 
-    ('classification', 'family'): False,
-    ('classification', 'familyrefs'): True,
     ('classification', 'sub'): False,
     ('classification', 'subrefs'): True,
+    ('classification', 'family'): False,
+    ('classification', 'familyrefs'): True,
 
     ('endangerment', 'status'): False,
     ('endangerment', 'source'): False,
@@ -144,14 +141,6 @@ class ConfigParser(configparser.ConfigParser):
             f.write(self._header % encoding)
             self.write(f)
 
-    def getlines(self, section, option):
-        if not self.has_option(section, option):
-            return []
-        return self.get(section, option).strip().splitlines()
-
-    def getdatetime(self, section, option, format_='%Y-%m-%dT%H:%M:%S'):
-        return datetime.datetime.strptime(self.get(section, option), format_)
-
 
 def iterconfig(root=ROOT, assert_name=BASENAME, load=ConfigParser.from_file):
     if not isinstance(root, pathlib.Path):
@@ -195,7 +184,7 @@ class Dataset(Model):
 
 class Path(Model):
 
-    __tablename__ = 'path'
+    __tablename__ = '_path'
 
     id = sa.Column(sa.Integer, primary_key=True)
     path = sa.Column(sa.Text, nullable=False, unique=True)
@@ -203,7 +192,7 @@ class Path(Model):
 
 class Option(Model):
 
-    __tablename__ = 'option'
+    __tablename__ = '_option'
 
     id = sa.Column(sa.Integer, primary_key=True)
     section = sa.Column(sa.Text, nullable=False)
@@ -215,12 +204,12 @@ class Option(Model):
     )
 
 
-class Statement(Model):
+class Data(Model):
 
-    __tablename__ = 'statement'
+    __tablename__ = '_data'
 
-    path_id = sa.Column(sa.ForeignKey('path.id'), primary_key=True)
-    option_id = sa.Column(sa.ForeignKey('option.id'), primary_key=True)
+    path_id = sa.Column(sa.ForeignKey('_path.id'), primary_key=True)
+    option_id = sa.Column(sa.ForeignKey('_option.id'), primary_key=True)
     line = sa.Column(sa.Integer, primary_key=True)
     # TODO: consider adding version for selective updates 
     value = sa.Column(sa.Text, nullable=False)
@@ -251,8 +240,8 @@ def _load(conn, root):
     insert_path = sa.insert(Path, bind=conn)\
         .values(path=sa.bindparam('path'))\
         .execute
-    insert_statement = sa.insert(Statement, bind=conn)\
-        .values({c.name: sa.bindparam(c.name) for c in Statement.__table__.columns})\
+    insert_data = sa.insert(Data, bind=conn)\
+        .values({c.name: sa.bindparam(c.name) for c in Data.__table__.columns})\
         .execute
 
     class Options(dict):
@@ -277,37 +266,37 @@ def _load(conn, root):
                 option_id, lines = options[(section, option)]
                 if lines:
                     for i, v in enumerate(value.strip().splitlines(), 1):
-                        insert_statement(path_id=path_id, option_id=option_id,
-                                         line=i, value=v)
+                        insert_data(path_id=path_id, option_id=option_id,
+                                    line=i, value=v)
                 else:
-                    insert_statement(path_id=path_id, option_id=option_id,
-                                     line=0, value=value)
+                    insert_data(path_id=path_id, option_id=option_id,
+                                line=0, value=value)
 
 
 def stats(bind=engine):
     return sa.select([
             Option.section, Option.option, sa.func.count().label('n'),
         ], bind=bind)\
-        .select_from(sa.join(Option, Statement))\
+        .select_from(sa.join(Option, Data))\
         .group_by(Option.section, Option.option)\
         .order_by(Option.section, sa.desc('n'))
 
 
 def iterlanguoids(bind=engine, _groupby=itertools.groupby):
     select_paths = sa.select([Path.path], bind=bind).order_by(Path.path)
-    select_statements = sa.select([
-            Option.section, Option.option, Option.lines, Statement.line,
-            Statement.value,
+    select_data = sa.select([
+            Option.section, Option.option, Option.lines, Data.line,
+            Data.value,
         ], bind=bind)\
-        .select_from(sa.join(Path, Statement).join(Option))\
+        .select_from(sa.join(Path, Data).join(Option))\
         .where(Path.path == sa.bindparam('path'))\
-        .order_by(Option.section, Option.option, Statement.line)
+        .order_by(Option.section, Option.option, Data.line)
     for p, in select_paths.execute():
-        statements = select_statements.execute(path=p)
+        data = select_data.execute(path=p)
         languoid = {
             s: {o: [l.value for l in lines] if islines else next(lines).value
                for (o, islines), lines in _groupby(sections, lambda r: (r.option, r.lines))}
-            for s, sections in _groupby(statements, lambda r: r.section)}
+            for s, sections in _groupby(data, lambda r: r.section)}
         yield p, languoid
 
 
@@ -335,12 +324,12 @@ def to_files(root=ROOT, basename=BASENAME, bind=engine, load=ConfigParser.from_f
 
 
 def print_fields(bind=engine):
-    has_scalar = sa.func.min(Statement.line) == 0
-    has_lines = sa.func.max(Statement.line) != 0
+    has_scalar = sa.func.min(Data.line) == 0
+    has_lines = sa.func.max(Data.line) != 0
     query = sa.select([
             Option.section, Option.option, has_scalar.label('scalar'), has_lines.label('lines'),
         ], bind=bind)\
-        .select_from(sa.join(Option, Statement))\
+        .select_from(sa.join(Option, Data))\
         .group_by(Option.section, Option.option)\
         .order_by(Option.section, Option.option)
     print('FIELDS_LIST = {')
