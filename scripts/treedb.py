@@ -302,35 +302,35 @@ query = sa.select(
         [c for c in Languoid.__table__.columns] +
         [c.label('endangerment_%s' % c.name) for c in Endangerment.__table__.columns if c.name != 'languoid_id'] +
         [sa.select([sa.func.group_concat(languoid_macroarea.c.macroarea, ', ')])
-            .where(languoid_macroarea.c.languoid_id == Languoid.id)
-            .order_by(languoid_macroarea)
-            .label('macroareas'),
-        sa.select([sa.func.group_concat(Country.id, ' ')])
-            .select_from(languoid_country.join(Country))
-            .where(languoid_country.c.languoid_id == Languoid.id)
-            .order_by(Country.id)
-            .label('countries')]
-    ).select_from(sa.outerjoin(Languoid, Endangerment))\
+             .where(languoid_macroarea.c.languoid_id == Languoid.id)
+             .order_by(languoid_macroarea)
+             .label('macroareas'),
+         sa.select([sa.func.group_concat(Country.id, ' ')])
+             .select_from(languoid_country.join(Country))
+             .where(languoid_country.c.languoid_id == Languoid.id)
+             .order_by(Country.id)
+             .label('countries')
+    ]).select_from(sa.outerjoin(Languoid, Endangerment))\
     .order_by(Languoid.id)
 
 df = pd.read_sql_query(query, _backend.engine, index_col='id')
 df.info()
 
 
-other = sa.orm.aliased(Source)
+self, other = (sa.orm.aliased(Source) for _ in range(2))
 query = sa.select([
-    Source.bibfile, Source.bibkey,
-    sa.func.group_concat(Source.pages).label('pages'),
-    sa.func.group_concat(Source.trigger).label('trigger'),
-    sa.func.group_concat(Source.languoid_id).label('languoid_id'),
+        self.bibfile, self.bibkey,
+        sa.func.group_concat(self.pages).label('pages'),
+        sa.func.group_concat(self.trigger).label('trigger'),
+        sa.func.group_concat(self.languoid_id).label('languoid_id'),
     ], bind=_backend.engine)\
     .where(sa.exists()
-        .where(other.languoid_id == Source.languoid_id)
-        .where(other.bibfile == Source.bibfile)
-        .where(other.bibkey == Source.bibkey)
-        .where(other.ord != Source.ord))\
-    .group_by(Source.bibfile, Source.bibkey)\
-    .order_by(Source.bibfile, Source.bibkey)
+        .where(other.languoid_id == self.languoid_id)
+        .where(other.bibfile == self.bibfile)
+        .where(other.bibkey == self.bibkey)
+        .where(other.ord != self.ord))\
+    .group_by(self.bibfile, self.bibkey)\
+    .order_by(self.bibfile, self.bibkey)
 _backend.print_rows(query, '{bibfile:8} {bibkey:24} {pages!s:8} {trigger!s:12} {languoid_id}')
 
 

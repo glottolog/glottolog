@@ -318,10 +318,10 @@ def to_files(root=ROOT, basename=BASENAME, bind=engine, load=ConfigParser.from_f
 
 
 def print_fields(bind=engine):
-    has_scalar = sa.func.min(Data.line) == 0
-    has_lines = sa.func.max(Data.line) != 0
+    has_scalar = (sa.func.min(Data.line) == 0).label('scalar')
+    has_lines = (sa.func.max(Data.line) != 0).label('lines')
     query = sa.select([
-            Option.section, Option.option, has_scalar.label('scalar'), has_lines.label('lines'),
+            Option.section, Option.option, has_scalar, has_lines,
         ], bind=bind)\
         .select_from(sa.join(Option, Data))\
         .group_by(Option.section, Option.option)\
