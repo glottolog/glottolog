@@ -150,8 +150,9 @@ class Altname(_backend.Model):
 languoid_trigger = sa.Table('languoid_trigger', _backend.Model.metadata,
     sa.Column('languoid_id', sa.ForeignKey('languoid.id'), primary_key=True),
     sa.Column('field', sa.Enum(*sorted(TRIGGER_FIELD)), primary_key=True),
+    # FIXME: this should be set-like, right?
     sa.Column('ord', sa.Integer, primary_key=True),
-    sa.Column('trigger', sa.Text, nullable=False))
+    sa.Column('trigger', sa.Text, primary_key=True))
 
 
 languoid_identifier = sa.Table('languoid_identifier', _backend.Model.metadata,
