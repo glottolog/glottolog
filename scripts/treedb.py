@@ -193,14 +193,12 @@ def load(root=_backend.ROOT, rebuild=False):
 def _load(conn, root):
     insert_lang = sa.insert(Languoid, bind=conn).execute
 
-    insert_ma = languoid_macroarea.insert(bind=conn)\
-        .values(languoid_id=sa.bindparam('lang'), macroarea=sa.bindparam('ma')).execute
+    insert_ma = languoid_macroarea.insert(bind=conn).execute
 
     has_country = sa.select([sa.exists()
-        .where(Country.id == sa.bindparam('cc'))], bind=conn).scalar
+        .where(Country.id == sa.bindparam('id'))], bind=conn).scalar
     insert_country = sa.insert(Country, bind=conn).execute
-    lang_country = languoid_country.insert(bind=conn)\
-        .values(languoid_id=sa.bindparam('lang'), country_id=sa.bindparam('cc')).execute
+    lang_country = languoid_country.insert(bind=conn).execute
 
     insert_source = sa.insert(Source, bind=conn).execute
     insert_altname = sa.insert(Altname, bind=conn).execute
@@ -224,11 +222,11 @@ def _load(conn, root):
 
         insert_lang(l)
         for ma in macroareas:
-            insert_ma(lang=lid, ma=ma)
+            insert_ma(languoid_id=lid, macroarea=ma)
         for name, cc in countries:
-            if not has_country(cc=cc):
+            if not has_country(id=cc):
                 insert_country(id=cc, name=name)
-            lang_country(lang=lid, cc=cc)
+            lang_country(languoid_id=lid, country_id=cc)
         if sources is not None:
             for provider, data in iteritems(sources):
                 for s in data:

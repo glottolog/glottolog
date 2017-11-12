@@ -237,18 +237,12 @@ def _load(conn, root):
     git_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip()
     sa.insert(Dataset, bind=conn).execute(git_commit=git_commit)
     
-    insert_path = sa.insert(Path, bind=conn)\
-        .values(path=sa.bindparam('path'))\
-        .execute
-    insert_data = sa.insert(Data, bind=conn)\
-        .values({c.name: sa.bindparam(c.name) for c in Data.__table__.columns})\
-        .execute
+    insert_path = sa.insert(Path, bind=conn).execute
+    insert_data = sa.insert(Data, bind=conn).execute
 
     class Options(dict):
 
-        _insert = sa.insert(Option, bind=conn)\
-            .values({c: sa.bindparam(c) for c in ['section', 'option', 'lines']})\
-            .execute
+        _insert = sa.insert(Option, bind=conn).execute
 
         def __missing__(self, key):
             section, option = key
