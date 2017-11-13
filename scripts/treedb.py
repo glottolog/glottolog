@@ -4,8 +4,8 @@ from __future__ import unicode_literals
 
 import re
 import time
-import itertools
 import datetime
+import itertools
 
 import sqlalchemy as sa
 import sqlalchemy.orm
@@ -36,7 +36,18 @@ ENDANGERMENT_STATUS = (
     'extinct',
 )
 
+CLASSIFICATION = {
+    'sub': (False, 'sub'), 'subrefs': (True, 'sub'),
+    'family': (False, 'family'), 'familyrefs': (True, 'family')
+}
+
+CLASSIFICATION_KIND = {c for _, c in CLASSIFICATION.values()}
+
+EL_COMMENT_TYPE = {'Missing', 'Spurious'}
+
 ENDANGERMENT_SOURCE = {'E20', 'ElCat', 'UNESCO', 'Glottolog'}
+
+ISORETIREMENT_REASON = {'split', 'merge', 'duplicate', 'non-existent', 'change'}
 
 
 def iterlanguoids(root=_backend.ROOT):
@@ -44,6 +55,12 @@ def iterlanguoids(root=_backend.ROOT):
         if not cfg.has_option(section, option):
             return []
         return cfg.get(section, option).strip().splitlines()
+
+    def getdate(cfg, section, option, format_='%Y-%m-%d', **kwargs):
+        value = cfg.get(section, option, **kwargs)
+        if value is None:
+            return None
+        return datetime.datetime.strptime(value, format_).date()
 
     def getdatetime(cfg, section, option, format_='%Y-%m-%dT%H:%M:%S'):
         return datetime.datetime.strptime(cfg.get(section, option), format_)
@@ -82,12 +99,37 @@ def iterlanguoids(root=_backend.ROOT):
         if cfg.has_section('identifier'):
             # FIXME: semicolon-separated (wals)?
             item['identifier'] = dict(cfg.items('identifier'))
+        if cfg.has_section('classification'):
+            item['classification'] = {
+                c: list(map(splitsource, getlines(cfg, 'classification', c)))
+                   if CLASSIFICATION[c][0] else
+                   cfg.get('classification', c)
+                for c in cfg.options('classification')}
+            assert item['classification']
         if cfg.has_section('endangerment'):
             item['endangerment'] = {
                 'status': cfg.get('endangerment', 'status'),
                 'source': cfg.get('endangerment', 'source'),
                 'date': getdatetime(cfg, 'endangerment', 'date'),
                 'comment': cfg.get('endangerment', 'comment'),
+            }
+        if cfg.has_section('hh_ethnologue_comment'):
+            item['hh_ethnologue_comment'] = {
+                'isohid': cfg.get('hh_ethnologue_comment', 'isohid'),
+                'comment_type': cfg.get('hh_ethnologue_comment', 'comment_type'),
+                'ethnologue_versions': cfg.get('hh_ethnologue_comment', 'ethnologue_versions'),
+                'comment': cfg.get('hh_ethnologue_comment', 'comment'),
+            }
+        if cfg.has_section('iso_retirement'):
+            item['iso_retirement'] = {
+                'change_request': cfg.get('iso_retirement', 'change_request', fallback=None),
+                'effective': getdate(cfg, 'iso_retirement', 'effective', fallback=None),
+                'supersedes': getlines(cfg, 'iso_retirement', 'supersedes'),
+                'code': cfg.get('iso_retirement', 'code', fallback=None),
+                'name': cfg.get('iso_retirement', 'name', fallback=None),
+                'remedy': cfg.get('iso_retirement', 'remedy', fallback=None),
+                'comment': cfg.get('iso_retirement', 'comment', fallback=None),
+                'reason': cfg.get('iso_retirement', 'reason', fallback=None),
             }
         yield item
 
@@ -161,6 +203,27 @@ languoid_identifier = sa.Table('languoid_identifier', _backend.Model.metadata,
     sa.Column('identifier', sa.Text, nullable=False))
 
 
+class ClassificationComment(_backend.Model):
+
+    __tablename__ = 'classificationcomment'
+
+    languoid_id = sa.Column(sa.ForeignKey('languoid.id'), primary_key=True)
+    kind = sa.Column(sa.Enum(*sorted(CLASSIFICATION_KIND)), primary_key=True)
+    comment = sa.Column(sa.Text, nullable=False)
+
+
+class ClassificationRef(_backend.Model):
+
+    __tablename__ = 'classificationref'
+    languoid_id = sa.Column(sa.ForeignKey('languoid.id'), primary_key=True)
+    kind = sa.Column(sa.Enum(*sorted(CLASSIFICATION_KIND)), primary_key=True)
+    bibfile = sa.Column(sa.Text, primary_key=True)
+    bibkey = sa.Column(sa.Text, primary_key=True)
+    # FIXME: check for duplicates
+    ord = sa.Column(sa.Integer, primary_key=True)
+    pages = sa.Column(sa.Text)
+
+
 class Endangerment(_backend.Model):
 
     __tablename__ = 'endangerment'
@@ -170,6 +233,37 @@ class Endangerment(_backend.Model):
     source = sa.Column(sa.Enum(*sorted(ENDANGERMENT_SOURCE)), nullable=False)
     date = sa.Column(sa.DateTime, nullable=False)
     comment = sa.Column(sa.Text, nullable=False)
+
+
+class EthnologueComment(_backend.Model):
+
+    __tablename__ = 'ethnologuecomment'
+
+    languoid_id = sa.Column(sa.ForeignKey('languoid.id'), primary_key=True)
+    isohid = sa.Column(sa.Text, nullable=False)
+    comment_type = sa.Column(sa.Enum(*sorted(EL_COMMENT_TYPE)), nullable=False)
+    ethnologue_versions = sa.Column(sa.Text, nullable=False)
+    comment = sa.Column(sa.Text, nullable=False)
+
+
+class IsoRetirement(_backend.Model):
+
+    __tablename__ = 'isoretirement'
+
+    languoid_id = sa.Column(sa.ForeignKey('languoid.id'), primary_key=True)
+    # FIXME: all nullable?, m:n?
+    change_request = sa.Column(sa.String(8))
+    effective = sa.Column(sa.Date)
+    code = sa.Column(sa.String(3))
+    name = sa.Column(sa.Text)
+    remedy = sa.Column(sa.Text)
+    comment = sa.Column(sa.Text)
+    reason = sa.Column(sa.Enum(*sorted(ISORETIREMENT_REASON)))
+
+
+isoretirement_supersedes = sa.Table('isoretirement_supersedes', _backend.Model.metadata,
+    sa.Column('isoretirement_languoid_id', sa.ForeignKey('isoretirement.languoid_id'), primary_key=True),
+    sa.Column('supersedes', sa.String(3), primary_key=True))
 
 
 def load(root=_backend.ROOT, rebuild=False):
@@ -205,7 +299,12 @@ def _load(conn, root):
     insert_altname = sa.insert(Altname, bind=conn).execute
     insert_trigger = languoid_trigger.insert(bind=conn).execute
     insert_ident = languoid_identifier.insert(bind=conn).execute
+    insert_comment = sa.insert(ClassificationComment, bind=conn).execute
+    insert_ref = sa.insert(ClassificationRef, bind=conn).execute
     insert_enda = sa.insert(Endangerment, bind=conn).execute
+    insert_el = sa.insert(EthnologueComment, bind=conn).execute
+    insert_ir = sa.insert(IsoRetirement, bind=conn).execute
+    insert_irsu = isoretirement_supersedes.insert(bind=conn).execute
 
     insert_ord = itertools.count()
 
@@ -219,7 +318,10 @@ def _load(conn, root):
         altnames = l.pop('altnames', None)
         triggers = l.pop('triggers', None)
         identifier = l.pop('identifier', None)
+        classification = l.pop('classification', None)
         endangerment = l.pop('endangerment', None)
+        hh_ethnologue_comment = l.pop('hh_ethnologue_comment', None)
+        iso_retirement = l.pop('iso_retirement', None)
 
         insert_lang(l)
         for ma in macroareas:
@@ -243,8 +345,23 @@ def _load(conn, root):
         if identifier is not None:
             for site, i in iteritems(identifier):
                 insert_ident(languoid_id=lid, site=site, identifier=i)
+        if classification is not None:
+            for c, value in iteritems(classification):
+                isref, kind = CLASSIFICATION[c]
+                if isref:
+                    for i, r in enumerate(value, 1):
+                        insert_ref(languoid_id=lid, kind=kind, ord=i, **r)
+                else:
+                    insert_comment(languoid_id=lid, kind=kind, comment=value)
         if endangerment is not None:
             insert_enda(languoid_id=lid, **endangerment)
+        if hh_ethnologue_comment is not None:
+            insert_el(languoid_id=lid, **hh_ethnologue_comment)
+        if iso_retirement is not None:
+            supersedes = iso_retirement.pop('supersedes')
+            insert_ir(languoid_id=lid, **iso_retirement)
+            for s in supersedes:
+                insert_irsu(isoretirement_languoid_id=lid, supersedes=s)
 
 
 load(rebuild=REBUILD)

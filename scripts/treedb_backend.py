@@ -72,8 +72,8 @@ FIELDS = {
 
     ('hh_ethnologue_comment', 'isohid'): False,
     ('hh_ethnologue_comment', 'comment_type'): False,
-    ('hh_ethnologue_comment', 'comment'): False,
     ('hh_ethnologue_comment', 'ethnologue_versions'): False,
+    ('hh_ethnologue_comment', 'comment'): False,
 
     ('iso_retirement', 'change_request'): False,
     ('iso_retirement', 'effective'): False,
