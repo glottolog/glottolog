@@ -1,4 +1,4 @@
-# treedb_backend.py
+# treedb_backend.py - ini content as (path, section, option, line, value) rows
 
 from __future__ import unicode_literals
 
@@ -13,22 +13,16 @@ import zipfile
 import itertools
 import contextlib
 import subprocess
-import configparser
 
-if sys.version_info < (3,):
-    from scandir import scandir
-    iteritems = lambda x: x.iteritems()
-else:
-    from os import scandir
-    iteritems = lambda x: iter(x.items())
+from treedb_files import iteritems
 
 import sqlalchemy as sa
 import sqlalchemy.orm
 import sqlalchemy.ext.declarative
 
-REBUILD, ECHO = False, False
+import treedb_files as _files
 
-ROOT, BASENAME = pathlib.Path('../languoids/tree'), 'md.ini'
+REBUILD, ECHO = False, False
 
 DBFILE = pathlib.Path('treedb.sqlite3')
 
@@ -94,64 +88,6 @@ def is_lines(section, option, _fields=FIELDS):
     return result
 
 
-def iterfiles(top=ROOT, verbose=False):
-    """Yield DirEntry objects for all files under top."""
-    if isinstance(top, pathlib.Path):
-        top = str(top)
-    stack = [top]
-    while stack:
-        root = stack.pop()
-        if verbose:
-            print(root)
-        direntries = scandir(root)
-        dirs = []
-        for d in direntries:
-            if d.is_dir():
-                dirs.append(d.path)
-            else:
-                yield d
-        stack.extend(dirs[::-1])
-
-
-class ConfigParser(configparser.ConfigParser):
-
-    _header = '# -*- coding: %s -*-\n'
-    _encoding = 'utf-8'
-    _newline = '\r\n'
-    _init_defaults = {
-        'delimiters': ('=',),
-        'comment_prefixes': ('#',),
-        'interpolation': None,
-    }
-
-    @classmethod
-    def from_file(cls, filename, encoding=_encoding, **kwargs):
-        inst = cls(**kwargs)
-        with io.open(filename, encoding=encoding) as f:
-            inst.read_file(f)
-        return inst
-
-    def __init__(self, defaults=None, **kwargs):
-        for k, v in iteritems(self._init_defaults):
-            kwargs.setdefault(k, v)
-        super(ConfigParser, self).__init__(defaults=defaults, **kwargs)
-
-    def to_file(self, filename, encoding=_encoding, newline=_newline):
-        with io.open(filename, 'w', encoding=encoding, newline=newline) as f:
-            f.write(self._header % encoding)
-            self.write(f)
-
-
-def iterconfig(root=ROOT, assert_name=BASENAME, load=ConfigParser.from_file):
-    if not isinstance(root, pathlib.Path):
-        root = pathlib.Path(root)
-    root_len = len(root.parts)
-    for d in iterfiles(root):
-        assert d.name == assert_name
-        path_tuple = pathlib.Path(d.path).parts[root_len:-1]
-        yield path_tuple, load(d.path)
-
-
 engine = sa.create_engine('sqlite:///%s' % DBFILE, echo=ECHO)
 
 
@@ -215,7 +151,7 @@ class Data(Model):
     value = sa.Column(sa.Text, nullable=False)
 
 
-def load(root=ROOT, rebuild=False):
+def load(rebuild=False, root=_files.ROOT):
     if DBFILE.exists():
         if rebuild:
             DBFILE.unlink()
@@ -253,7 +189,7 @@ def _load(conn, root):
 
     options = Options()
 
-    for path_tuple, cfg in iterconfig():
+    for path_tuple, cfg in _files.iterconfig(root):
         path_id, = insert_path(path='/'.join(path_tuple)).inserted_primary_key
         for section, sec in cfg.items():
             for option, value in sec.items():
@@ -305,16 +241,17 @@ def to_csv(filename=None, bind=engine, encoding='utf-8'):
             csvwriter.writerow([path, json.dumps(data)])
 
 
-def to_files(root=ROOT, basename=BASENAME, bind=engine, load=ConfigParser.from_file):
-    for p, r in iterrecords(bind=bind):
-        path = str(root / p / basename)
-        cfg = load(path)
-        for section, s in iteritems(r):
-            for option, value in iteritems(s):
-                if is_lines(section, option):
-                    value = '\n'.join([''] + value)
-                cfg.set(section, option, value)
-        cfg.to_file(path)
+def to_files(bind=engine, is_lines=is_lines):
+    def iterpairs(records=iterrecords(bind=bind)):
+        for p, r in records:
+            path_tuple = pathlib.Path(p).parts
+            for section, s in iteritems(r):
+                for option in s:
+                    if is_lines(section, option):
+                        s[option] = '\n'.join([''] + s[option])
+            yield path_tuple, r
+
+    _files.to_files(iterpairs())
 
 
 def export_csv(metadata=Model.metadata, engine=engine, encoding='utf-8'):
