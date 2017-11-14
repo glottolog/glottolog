@@ -11,7 +11,12 @@ Merging the BibTeX files
 
 1. Update automatically created files:
    - `iso6393.bib`: Run `glottolog isobib`
-   - `benjamins.bib`: TODO
+   - `benjamins.bib`:
+     - Switch to the clone of `clld/benjamins`
+     - Pull the latest changes via FTP 
+     - Recreate `benjamins.bib`, running `python to_bib.py`
+     - Switch back to `clld/glottolog`
+     - Run `glottolog copy_benjamins PATH/TO/clld/benjamins/benjamins.bib`
 2. Run `glottolog bib`
 3. Merge list of replacements for refs
 

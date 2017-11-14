@@ -1,6 +1,6 @@
 # coding: utf8
 from __future__ import unicode_literals, print_function, division
-from collections import defaultdict, Counter
+from collections import defaultdict, Counter, OrderedDict
 from itertools import chain
 import os
 import sys
@@ -21,6 +21,7 @@ from pyglottolog.objects import Level, Reference
 from pyglottolog import fts
 from pyglottolog import lff
 from pyglottolog.monster import compile
+from pyglottolog.references import BibFile
 import pyglottolog.iso
 from pyglottolog.util import message, sprint
 
@@ -143,6 +144,21 @@ def isobib(args):  # pragma: no cover
     """Update iso6393.bib - the file of references for ISO 639-3 change requests.
     """
     pyglottolog.iso.bibtex(args.repos, args.log)
+
+
+@command()
+def copy_benjamins(args):
+    # read new bib from benjamins repos
+    # read current bib in clld/glottolog, extracting glottolog_ref_id by bibtex key map
+    # merge glottolog_ref_id into new bib
+    # write to clld/glottolog
+    key2id = args.repos.bibfiles['benjamins.bib'].glottolog_ref_id_map
+    newbib = OrderedDict()
+    for entry in BibFile(Path(args.args[0])).iterentries():
+        if entry.key in key2id:
+            entry.fields['glottolog_ref_id'] = key2id[entry.key]
+        newbib[entry.key] = (entry.type, entry.fields)
+    args.repos.bibfiles['benjamins.bib'].save(newbib)
 
 
 @command()
