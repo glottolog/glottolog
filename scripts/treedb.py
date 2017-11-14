@@ -258,9 +258,9 @@ class IsoRetirement(_backend.Model):
     effective = sa.Column(sa.Date)
     code = sa.Column(sa.String(3))
     name = sa.Column(sa.Text)
+    reason = sa.Column(sa.Enum(*sorted(ISORETIREMENT_REASON)))
     remedy = sa.Column(sa.Text)
     comment = sa.Column(sa.Text)
-    reason = sa.Column(sa.Enum(*sorted(ISORETIREMENT_REASON)))
 
 
 isoretirement_supersedes = sa.Table('isoretirement_supersedes', _backend.Model.metadata,
@@ -461,3 +461,8 @@ query = self.select(bind=_backend.engine)\
         .where(other.c.trigger == self.c.trigger)
         .where(other.c.ord != self.c.ord))
 _backend.print_rows(query, '{languoid_id} {field} {ord} {trigger}')
+
+
+query = sa.select([IsoRetirement], bind=_backend.engine)\
+    .order_by(IsoRetirement.change_request, IsoRetirement.code == None, IsoRetirement.code, IsoRetirement.name)
+_backend.print_rows(query, '{languoid_id} {change_request} {effective} {code:4} {name}')
