@@ -17,7 +17,6 @@ import subprocess
 from treedb_files import iteritems
 
 import sqlalchemy as sa
-import sqlalchemy.orm
 import sqlalchemy.ext.declarative
 
 import treedb_files as _files
@@ -30,6 +29,7 @@ PY2 = sys.version_info < (3,)
 
 
 class Fields(object):
+    """Define known (section, option) pairs and if they are lists of lines."""
 
     _fields = {
         ('core', 'name'): False,
@@ -102,6 +102,7 @@ engine = sa.create_engine('sqlite:///%s' % DBFILE, echo=ECHO)
 
 @sa.event.listens_for(sa.engine.Engine, 'connect')
 def set_sqlite_pragma(dbapi_connection, connection_record):
+    """Activate sqlite3 forein key checks."""
     with contextlib.closing(dbapi_connection.cursor()) as cursor:
         cursor.execute('PRAGMA foreign_keys = ON')
 
@@ -114,6 +115,7 @@ def create_tables(bind=engine):
 
 
 def export(metadata=Model.metadata, engine=engine, encoding='utf-8'):
+    """Write all tables to <tablename>.csv in <databasename>.zip."""
     filename = '%s.zip' % os.path.splitext(engine.url.database)[0]
     with engine.connect() as conn, zipfile.ZipFile(filename, 'w', zipfile.ZIP_DEFLATED) as z:
         for table in metadata.sorted_tables:
@@ -138,7 +140,7 @@ def _csv_open(filename, mode, encoding):
             mode = mode + 'b'
         return io.open(filename, mode)
     return io.open(filename, mode, newline='', encoding=encoding)
-    
+
 
 def _csv_write(f, encoding, header, rows):
     writer = csv.writer(f)
@@ -157,6 +159,7 @@ def print_rows(query, format_):
 
 
 class Dataset(Model):
+    """Git commit loaded into the database."""
 
     __tablename__ = 'dataset'
 
@@ -166,6 +169,7 @@ class Dataset(Model):
 
 
 class Path(Model):
+    """Forward-slash-joined ids from the root to each item."""
 
     __tablename__ = '_path'
 
@@ -174,6 +178,7 @@ class Path(Model):
 
 
 class Option(Model):
+    """Unique (section, option) key of the values with lines config."""
 
     __tablename__ = '_option'
 
@@ -188,6 +193,7 @@ class Option(Model):
 
 
 class Data(Model):
+    """Item value as (path, section, option, line, value) combination."""
 
     __tablename__ = '_data'
 
@@ -224,6 +230,7 @@ def _load(conn, root, is_lines=Fields.is_lines):
     insert_data = sa.insert(Data, bind=conn).execute
 
     class Options(dict):
+        """Insert optons on demand and cache id and lines config."""
 
         _insert = sa.insert(Option, bind=conn).execute
 
@@ -251,6 +258,7 @@ def _load(conn, root, is_lines=Fields.is_lines):
 
 
 def to_csv(filename='data.csv', bind=engine, encoding='utf-8'):
+    """Write (path, section, option, line, value) rows to <filename>.csv."""
     query = sa.select([
             Path.path, Option.section, Option.option, Data.line, Data.value,
         ], bind=engine).select_from(sa.join(Path, Data).join(Option))\
@@ -261,6 +269,7 @@ def to_csv(filename='data.csv', bind=engine, encoding='utf-8'):
 
 
 def iterrecords(bind=engine, _groupby=itertools.groupby):
+    """Yield (path, <dict of <dicts of strings/string_lists>>) pairs."""
     select_paths = sa.select([Path.path], bind=bind).order_by(Path.path)
     select_data = sa.select([
             Option.section, Option.option, Option.lines, Data.line, Data.value,
@@ -278,6 +287,7 @@ def iterrecords(bind=engine, _groupby=itertools.groupby):
 
 
 def to_json(filename=None, bind=engine, encoding='utf-8'):
+    """Write (path, json) rows to <databasename>-json.csv."""
     if filename is None:
         filename = '%s-json.csv' % os.path.splitext(bind.url.database)[0]
     rows = ((path, json.dumps(data)) for path, data in iterrecords(bind=bind))
@@ -286,6 +296,7 @@ def to_json(filename=None, bind=engine, encoding='utf-8'):
 
 
 def to_files(bind=engine, is_lines=Fields.is_lines):
+    """Write (path, section, option, line, value) rows back into config files."""
     def iterpairs(records):
         for p, r in records:
             path_tuple = pathlib.Path(p).parts

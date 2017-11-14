@@ -1,4 +1,4 @@
-# treedb_files.py - load/write languoids/tree/**/md.ini 
+# treedb_files.py - load/write languoids/tree/**/md.ini
 
 from __future__ import unicode_literals
 
@@ -39,6 +39,7 @@ def iterfiles(top=ROOT, verbose=False):
 
 
 class ConfigParser(configparser.ConfigParser):
+    """Conservative ConfigParser with encoding header."""
 
     _header = '# -*- coding: %s -*-\n'
     _encoding = 'utf-8'
@@ -68,6 +69,7 @@ class ConfigParser(configparser.ConfigParser):
 
 
 def iterconfig(root=ROOT, assert_name=BASENAME, load=ConfigParser.from_file):
+    """Yield ((<path_parts>, ...), <ConfigParser object>) pairs.""" 
     if not isinstance(root, pathlib.Path):
         root = pathlib.Path(root)
     root_len = len(root.parts)
@@ -78,6 +80,7 @@ def iterconfig(root=ROOT, assert_name=BASENAME, load=ConfigParser.from_file):
 
 
 def to_files(pairs, root=ROOT, basename=BASENAME, load=ConfigParser.from_file):
+    """Write ((<path_parts>, ...), <dict of dicts>) pairs to root."""
     for path_tuple, d in pairs:
         path = str(root.joinpath(*path_tuple) / basename)
         cfg = load(path)
@@ -88,6 +91,7 @@ def to_files(pairs, root=ROOT, basename=BASENAME, load=ConfigParser.from_file):
 
 
 def roundtrip():
+    """Do a load/save cycle with all config files."""
     to_files((path_tuple, {s: dict(cfg.items(s)) for s in cfg.sections()})
              for path_tuple, cfg in iterconfig())
 

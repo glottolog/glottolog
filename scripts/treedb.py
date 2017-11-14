@@ -310,7 +310,7 @@ def _load(conn, root):
 
     insert_ord = itertools.count()
 
-    for l in iterlanguoids():
+    for l in iterlanguoids(root):
         lid = l['id']
 
         macroareas = l.pop('macroareas')
@@ -372,7 +372,7 @@ load(rebuild=REBUILD)
 print(sa.select([Languoid], bind=_backend.engine).limit(5).execute().fetchall())
 
 
-def get_tree(with_terminal=False):
+def tree_cte(with_terminal=False):
     child = sa.orm.aliased(Languoid, name='child')
     cols = [child.id.label('child_id'),
             sa.literal(1).label('steps'),
@@ -400,11 +400,11 @@ def get_tree(with_terminal=False):
     return tree_1.union_all(tree_2)
 
 
-tree = get_tree(with_terminal=True)
+tree = tree_cte(with_terminal=True)
 query = sa.select([tree], bind=_backend.engine).where(tree.c.child_id == 'ostr1239')
 print(query.execute().fetchall())
 
-tree = get_tree()  # FIXME: order_by
+tree = tree_cte()  # FIXME: order_by
 query = sa.select([
         Languoid.id,
         Languoid.parent_id,
