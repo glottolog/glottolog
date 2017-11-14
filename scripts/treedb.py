@@ -88,7 +88,7 @@ def iterlanguoids(root=_backend.ROOT):
             'countries': [splitcountry(c) for c in getlines(cfg, 'core', 'countries')],
         }
         if cfg.has_section('sources'):
-            item['sources'] = {provider: list(map(splitsource, getlines(cfg, 'sources', provider)))
+            item['sources'] = {provider: [splitsource(p) for p in getlines(cfg, 'sources', provider)]
                                for provider in cfg.options('sources')}
         if cfg.has_section('altnames'):
             item['altnames'] = {provider: getlines(cfg, 'altnames', provider)
@@ -267,13 +267,13 @@ isoretirement_supersedes = sa.Table('isoretirement_supersedes', _backend.Model.m
 
 
 def load(root=_backend.ROOT, rebuild=False):
-    if not _backend.DBFILE.exists():
-        _backend.create_tables(_backend.engine)
-    elif rebuild:
-        _backend.DBFILE.unlink()
-        _backend.create_tables(_backend.engine)
-    else:
-        return
+    if _backend.DBFILE.exists():
+        if rebuild:
+            _backend.DBFILE.unlink()
+        else:
+            return
+
+    _backend.create_tables(_backend.engine)
 
     start = time.time()
     with _backend.engine.begin() as conn:

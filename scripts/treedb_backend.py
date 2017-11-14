@@ -10,7 +10,6 @@ import json
 import time
 import pathlib
 import zipfile
-import functools
 import itertools
 import contextlib
 import subprocess
@@ -116,7 +115,7 @@ def iterfiles(top=ROOT, verbose=False):
 
 class ConfigParser(configparser.ConfigParser):
 
-    _header =  '# -*- coding: %s -*-\n'
+    _header = '# -*- coding: %s -*-\n'
     _encoding = 'utf-8'
     _newline = '\r\n'
     _init_defaults = {
@@ -212,18 +211,18 @@ class Data(Model):
     path_id = sa.Column(sa.ForeignKey('_path.id'), primary_key=True)
     option_id = sa.Column(sa.ForeignKey('_option.id'), primary_key=True)
     line = sa.Column(sa.Integer, primary_key=True)
-    # TODO: consider adding version for selective updates 
+    # TODO: consider adding version for selective updates
     value = sa.Column(sa.Text, nullable=False)
 
 
 def load(root=ROOT, rebuild=False):
-    if not DBFILE.exists():
-        create_tables(engine)
-    elif rebuild:
-        DBFILE.unlink()
-        create_tables(engine)
-    else:
-        return
+    if DBFILE.exists():
+        if rebuild:
+            DBFILE.unlink()
+        else:
+            return
+
+    create_tables(engine)
 
     start = time.time()
     with engine.begin() as conn:
@@ -237,7 +236,7 @@ def load(root=ROOT, rebuild=False):
 def _load(conn, root):
     git_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip()
     sa.insert(Dataset, bind=conn).execute(git_commit=git_commit)
-    
+
     insert_path = sa.insert(Path, bind=conn).execute
     insert_data = sa.insert(Data, bind=conn).execute
 
@@ -354,9 +353,9 @@ def print_fields(bind=engine):
 
 def dump_data(filename='data.csv', bind=engine, encoding='utf-8'):
     query = sa.select([
-        Path.path, Option.section, Option.option, Data.line, Data.value,
-    ], bind=engine).select_from(sa.join(Path, Data).join(Option))\
-    .order_by(Path.path, Option.section, Option.option, Data.line)
+            Path.path, Option.section, Option.option, Data.line, Data.value,
+        ], bind=engine).select_from(sa.join(Path, Data).join(Option))\
+        .order_by(Path.path, Option.section, Option.option, Data.line)
     with io.open(filename, 'w', newline='', encoding=encoding) as f:
         csvwriter = csv.writer(f)
         csvwriter.writerows(iter(query.execute()))
