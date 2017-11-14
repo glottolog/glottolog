@@ -7,11 +7,13 @@ import time
 import datetime
 import itertools
 
+from treedb_files import iteritems
+
 import sqlalchemy as sa
 import sqlalchemy.orm
 
+import treedb_files as _files
 import treedb_backend as _backend
-from treedb_backend import iteritems
 
 REBUILD = False
 
@@ -50,7 +52,7 @@ ENDANGERMENT_SOURCE = {'E20', 'ElCat', 'UNESCO', 'Glottolog'}
 ISORETIREMENT_REASON = {'split', 'merge', 'duplicate', 'non-existent', 'change'}
 
 
-def iterlanguoids(root=_backend.ROOT):
+def iterlanguoids(root=_files.ROOT):
     def getlines(cfg, section, option):
         if not cfg.has_option(section, option):
             return []
@@ -74,7 +76,7 @@ def iterlanguoids(root=_backend.ROOT):
         '(<trigger "(?P<trigger>[^\"]+)">)?')):
         return pattern.match(s).groupdict()
 
-    for path_tuple, cfg in _backend.iterconfig(root):
+    for path_tuple, cfg in _files.iterconfig(root):
         item = {
             'id': path_tuple[-1],
             'parent_id': path_tuple[-2] if len(path_tuple) > 1 else None,
@@ -266,7 +268,7 @@ isoretirement_supersedes = sa.Table('isoretirement_supersedes', _backend.Model.m
     sa.Column('supersedes', sa.String(3), primary_key=True))
 
 
-def load(root=_backend.ROOT, rebuild=False):
+def load(rebuild=False, root=_files.ROOT):
     if _backend.DBFILE.exists():
         if rebuild:
             _backend.DBFILE.unlink()

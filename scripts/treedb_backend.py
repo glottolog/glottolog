@@ -1,4 +1,4 @@
-# treedb_backend.py
+# treedb_backend.py - ini content as (path, section, option, line, value) rows
 
 from __future__ import unicode_literals
 
@@ -13,143 +13,88 @@ import zipfile
 import itertools
 import contextlib
 import subprocess
-import configparser
 
-if sys.version_info < (3,):
-    from scandir import scandir
-    iteritems = lambda x: x.iteritems()
-else:
-    from os import scandir
-    iteritems = lambda x: iter(x.items())
+from treedb_files import iteritems
 
 import sqlalchemy as sa
 import sqlalchemy.orm
 import sqlalchemy.ext.declarative
 
-REBUILD, ECHO = False, False
+import treedb_files as _files
 
-ROOT, BASENAME = pathlib.Path('../languoids/tree'), 'md.ini'
+REBUILD, ECHO = False, False
 
 DBFILE = pathlib.Path('treedb.sqlite3')
 
-FIELDS = {
-    ('core', 'name'): False,
-    ('core', 'hid'): False,
-    ('core', 'level'): False,
-    ('core', 'iso639-3'): False,
-    ('core', 'latitude'): False,
-    ('core', 'longitude'): False,
-    ('core', 'macroareas'): True,
-    ('core', 'countries'): True,
-    ('core', 'name_comment'): False,
-    # FIXME: core hapaxes
-    ('core', 'comment'): False,
-    ('core', 'comment_type'): False,
-    ('core', 'ethnologue_versions'): False,
-    ('core', 'isohid'): False,
-    ('core', 'location'): False,
-    ('core', 'name_pronunciation'): False,
-    ('core', 'speakers'): False,
-
-    ('sources', None): True,
-
-    ('altnames', None): True,
-
-    ('triggers', None): True,
-
-    ('identifier', None): False,
-
-    ('classification', 'sub'): False,
-    ('classification', 'subrefs'): True,
-    ('classification', 'family'): False,
-    ('classification', 'familyrefs'): True,
-
-    ('endangerment', 'status'): False,
-    ('endangerment', 'source'): False,
-    ('endangerment', 'date'): False,
-    ('endangerment', 'comment'): False,
-
-    ('hh_ethnologue_comment', 'isohid'): False,
-    ('hh_ethnologue_comment', 'comment_type'): False,
-    ('hh_ethnologue_comment', 'ethnologue_versions'): False,
-    ('hh_ethnologue_comment', 'comment'): False,
-
-    ('iso_retirement', 'change_request'): False,
-    ('iso_retirement', 'effective'): False,
-    ('iso_retirement', 'supersedes'): True,
-    ('iso_retirement', 'code'): False,
-    ('iso_retirement', 'name'): False,
-    ('iso_retirement', 'remedy'): False,
-    ('iso_retirement', 'comment'): False,
-    ('iso_retirement', 'reason'): False,
-}
+PY2 = sys.version_info < (3,)
 
 
-def is_lines(section, option, _fields=FIELDS):
-    """Return whether the section option is treated as list of lines."""
-    result = _fields.get((section, None))
-    if result is None:
-        # use .get() instead to permit unknown fields as scalar
-        return _fields[(section, option)]
-    return result
+class Fields(object):
 
+    _fields = {
+        ('core', 'name'): False,
+        ('core', 'hid'): False,
+        ('core', 'level'): False,
+        ('core', 'iso639-3'): False,
+        ('core', 'latitude'): False,
+        ('core', 'longitude'): False,
+        ('core', 'macroareas'): True,
+        ('core', 'countries'): True,
+        ('core', 'name_comment'): False,
+        # FIXME: core hapaxes
+        ('core', 'comment'): False,
+        ('core', 'comment_type'): False,
+        ('core', 'ethnologue_versions'): False,
+        ('core', 'isohid'): False,
+        ('core', 'location'): False,
+        ('core', 'name_pronunciation'): False,
+        ('core', 'speakers'): False,
 
-def iterfiles(top=ROOT, verbose=False):
-    """Yield DirEntry objects for all files under top."""
-    if isinstance(top, pathlib.Path):
-        top = str(top)
-    stack = [top]
-    while stack:
-        root = stack.pop()
-        if verbose:
-            print(root)
-        direntries = scandir(root)
-        dirs = []
-        for d in direntries:
-            if d.is_dir():
-                dirs.append(d.path)
-            else:
-                yield d
-        stack.extend(dirs[::-1])
+        ('sources', None): True,
 
+        ('altnames', None): True,
 
-class ConfigParser(configparser.ConfigParser):
+        ('triggers', None): True,
 
-    _header = '# -*- coding: %s -*-\n'
-    _encoding = 'utf-8'
-    _newline = '\r\n'
-    _init_defaults = {
-        'delimiters': ('=',),
-        'comment_prefixes': ('#',),
-        'interpolation': None,
+        ('identifier', None): False,
+
+        ('classification', 'sub'): False,
+        ('classification', 'subrefs'): True,
+        ('classification', 'family'): False,
+        ('classification', 'familyrefs'): True,
+
+        ('endangerment', 'status'): False,
+        ('endangerment', 'source'): False,
+        ('endangerment', 'date'): False,
+        ('endangerment', 'comment'): False,
+
+        ('hh_ethnologue_comment', 'isohid'): False,
+        ('hh_ethnologue_comment', 'comment_type'): False,
+        ('hh_ethnologue_comment', 'ethnologue_versions'): False,
+        ('hh_ethnologue_comment', 'comment'): False,
+
+        ('iso_retirement', 'change_request'): False,
+        ('iso_retirement', 'effective'): False,
+        ('iso_retirement', 'supersedes'): True,
+        ('iso_retirement', 'code'): False,
+        ('iso_retirement', 'name'): False,
+        ('iso_retirement', 'remedy'): False,
+        ('iso_retirement', 'comment'): False,
+        ('iso_retirement', 'reason'): False,
     }
 
     @classmethod
-    def from_file(cls, filename, encoding=_encoding, **kwargs):
-        inst = cls(**kwargs)
-        with io.open(filename, encoding=encoding) as f:
-            inst.read_file(f)
-        return inst
+    def is_known(cls, section, option):
+        return (section, None) in cls._fields or (section, option) in cls._fields
 
-    def __init__(self, defaults=None, **kwargs):
-        for k, v in iteritems(self._init_defaults):
-            kwargs.setdefault(k, v)
-        super(ConfigParser, self).__init__(defaults=defaults, **kwargs)
-
-    def to_file(self, filename, encoding=_encoding, newline=_newline):
-        with io.open(filename, 'w', encoding=encoding, newline=newline) as f:
-            f.write(self._header % encoding)
-            self.write(f)
-
-
-def iterconfig(root=ROOT, assert_name=BASENAME, load=ConfigParser.from_file):
-    if not isinstance(root, pathlib.Path):
-        root = pathlib.Path(root)
-    root_len = len(root.parts)
-    for d in iterfiles(root):
-        assert d.name == assert_name
-        path_tuple = pathlib.Path(d.path).parts[root_len:-1]
-        yield path_tuple, load(d.path)
+    @classmethod
+    def is_lines(cls, section, option):
+        """Return whether the section option is treated as list of lines."""
+        result = cls._fields.get((section, None))
+        if result is None:
+            # use .get() instead to permit unknown fields as scalar
+            return cls._fields[(section, option)]
+        return result
 
 
 engine = sa.create_engine('sqlite:///%s' % DBFILE, echo=ECHO)
@@ -161,16 +106,54 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
         cursor.execute('PRAGMA foreign_keys = ON')
 
 
+Model = sa.ext.declarative.declarative_base()
+
+
 def create_tables(bind=engine):
     Model.metadata.create_all(bind)
+
+
+def export(metadata=Model.metadata, engine=engine, encoding='utf-8'):
+    filename = '%s.zip' % os.path.splitext(engine.url.database)[0]
+    with engine.connect() as conn, zipfile.ZipFile(filename, 'w', zipfile.ZIP_DEFLATED) as z:
+        for table in metadata.sorted_tables:
+            rows = table.select(bind=conn).execute()
+            with _csv_io() as f:
+                _csv_write(f, encoding, header=rows.keys(), rows=rows)
+                data = f.getvalue()
+            if not PY2:
+                data = data.encode(encoding)
+            z.writestr('%s.csv' % table.name, data)
+
+
+def _csv_io():
+    if PY2:
+        return io.BytesIO()
+    return io.StringIO()
+
+
+def _csv_open(filename, mode, encoding):
+    if PY2:
+        if not mode.endswith('b'):
+            mode = mode + 'b'
+        return io.open(filename, mode)
+    return io.open(filename, mode, newline='', encoding=encoding)
+    
+
+def _csv_write(f, encoding, header, rows):
+    writer = csv.writer(f)
+    if PY2:
+        writer.writerow([h.encode(encoding) for h in header])
+        for r in rows:
+            writer.writerow([unicode(col).encode(encoding) if col else col for col in r])
+        return
+    writer.writerow(header)
+    writer.writerows(rows)
 
 
 def print_rows(query, format_):
     for r in query.execute():
         print(format_.format(**r))
-
-
-Model = sa.ext.declarative.declarative_base()
 
 
 class Dataset(Model):
@@ -215,7 +198,7 @@ class Data(Model):
     value = sa.Column(sa.Text, nullable=False)
 
 
-def load(root=ROOT, rebuild=False):
+def load(rebuild=False, root=_files.ROOT):
     if DBFILE.exists():
         if rebuild:
             DBFILE.unlink()
@@ -233,7 +216,7 @@ def load(root=ROOT, rebuild=False):
     print(time.time() - start)
 
 
-def _load(conn, root):
+def _load(conn, root, is_lines=Fields.is_lines):
     git_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip()
     sa.insert(Dataset, bind=conn).execute(git_commit=git_commit)
 
@@ -253,7 +236,7 @@ def _load(conn, root):
 
     options = Options()
 
-    for path_tuple, cfg in iterconfig():
+    for path_tuple, cfg in _files.iterconfig(root):
         path_id, = insert_path(path='/'.join(path_tuple)).inserted_primary_key
         for section, sec in cfg.items():
             for option, value in sec.items():
@@ -267,20 +250,20 @@ def _load(conn, root):
                                 line=0, value=value)
 
 
-def stats(bind=engine):
-    return sa.select([
-            Option.section, Option.option, sa.func.count().label('n'),
-        ], bind=bind)\
-        .select_from(sa.join(Option, Data))\
-        .group_by(Option.section, Option.option)\
-        .order_by(Option.section, sa.desc('n'))
+def to_csv(filename='data.csv', bind=engine, encoding='utf-8'):
+    query = sa.select([
+            Path.path, Option.section, Option.option, Data.line, Data.value,
+        ], bind=engine).select_from(sa.join(Path, Data).join(Option))\
+        .order_by(Path.path, Option.section, Option.option, Data.line)
+    rows = query.execute()
+    with _csv_open(filename, 'w', encoding=encoding) as f:
+        _csv_write(f, encoding, header=rows.keys(), rows=rows)
 
 
 def iterrecords(bind=engine, _groupby=itertools.groupby):
     select_paths = sa.select([Path.path], bind=bind).order_by(Path.path)
     select_data = sa.select([
-            Option.section, Option.option, Option.lines, Data.line,
-            Data.value,
+            Option.section, Option.option, Option.lines, Data.line, Data.value,
         ], bind=bind)\
         .select_from(sa.join(Path, Data).join(Option))\
         .where(Path.path == sa.bindparam('path'))\
@@ -294,47 +277,25 @@ def iterrecords(bind=engine, _groupby=itertools.groupby):
         yield p, record
 
 
-def to_csv(filename=None, bind=engine, encoding='utf-8'):
+def to_json(filename=None, bind=engine, encoding='utf-8'):
     if filename is None:
         filename = '%s-json.csv' % os.path.splitext(bind.url.database)[0]
-    with io.open(filename, 'w', newline='', encoding=encoding) as f:
-        # FIXME: PY3 only, use backport
-        csvwriter = csv.writer(f)
-        csvwriter.writerow(['path', 'json'])
-        for path, data in iterrecords(bind=bind):
-            csvwriter.writerow([path, json.dumps(data)])
+    rows = ((path, json.dumps(data)) for path, data in iterrecords(bind=bind))
+    with _csv_open(filename, 'w', encoding=encoding) as f:
+        _csv_write(f, encoding, header=['path', 'json'], rows=rows)
 
 
-def to_files(root=ROOT, basename=BASENAME, bind=engine, load=ConfigParser.from_file):
-    for p, r in iterrecords(bind=bind):
-        path = str(root / p / basename)
-        cfg = load(path)
-        for section, s in iteritems(r):
-            for option, value in iteritems(s):
-                if is_lines(section, option):
-                    value = '\n'.join([''] + value)
-                cfg.set(section, option, value)
-        cfg.to_file(path)
+def to_files(bind=engine, is_lines=Fields.is_lines):
+    def iterpairs(records):
+        for p, r in records:
+            path_tuple = pathlib.Path(p).parts
+            for section, s in iteritems(r):
+                for option in s:
+                    if is_lines(section, option):
+                        s[option] = '\n'.join([''] + s[option])
+            yield path_tuple, r
 
-
-def export_csv(metadata=Model.metadata, engine=engine, encoding='utf-8'):
-    filename = '%s.zip' % os.path.splitext(engine.url.database)[0]
-    with engine.connect() as conn,\
-         zipfile.ZipFile(filename, 'w', zipfile.ZIP_DEFLATED) as z:
-        get_fd = io.BytesIO if sys.version_info < (3,) else io.StringIO
-        for table in metadata.sorted_tables:
-            with contextlib.closing(get_fd()) as f:
-                writer = csv.writer(f)
-                result = conn.execute(table.select())
-                writer.writerow(result.keys())
-                if sys.version_info < (3,):
-                    for row in result:
-                        writer.writerow([unicode(col).encode(encoding) if col else col for col in row])
-                    data = f.getvalue()
-                else:
-                    writer.writerows(result)
-                    data = f.getvalue().encode(encoding)
-                z.writestr('%s.csv' % table.name, data)
+    _files.to_files(iterpairs(iterrecords(bind=bind)))
 
 
 def print_fields(bind=engine):
@@ -351,20 +312,21 @@ def print_fields(bind=engine):
     print('}')
 
 
-def dump_data(filename='data.csv', bind=engine, encoding='utf-8'):
-    query = sa.select([
-            Path.path, Option.section, Option.option, Data.line, Data.value,
-        ], bind=engine).select_from(sa.join(Path, Data).join(Option))\
-        .order_by(Path.path, Option.section, Option.option, Data.line)
-    with io.open(filename, 'w', newline='', encoding=encoding) as f:
-        csvwriter = csv.writer(f)
-        csvwriter.writerows(iter(query.execute()))
+def stats(bind=engine):
+    return sa.select([
+            Option.section, Option.option, sa.func.count().label('n'),
+        ], bind=bind)\
+        .select_from(sa.join(Option, Data))\
+        .group_by(Option.section, Option.option)\
+        .order_by(Option.section, sa.desc('n'))
 
 
 if __name__ == '__main__':
     load(rebuild=REBUILD)
     print_rows(stats(), '{section:<22} {option:<22} {n:,}')
     print_fields()
+    print(next(iterrecords()))
+    #export()
     #to_csv()
+    #to_json()
     #to_files()
-    #export_csv()
