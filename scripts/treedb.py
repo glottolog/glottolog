@@ -465,4 +465,4 @@ _backend.print_rows(query, '{languoid_id} {field} {ord} {trigger}')
 
 query = sa.select([IsoRetirement], bind=_backend.engine)\
     .order_by(IsoRetirement.change_request, IsoRetirement.code == None, IsoRetirement.code, IsoRetirement.name)
-_backend.print_rows(query, '{languoid_id} {change_request} {effective} {code:4} {name}')
+_backend.print_rows(query, '{languoid_id} {change_request!s} {effective!s} {code!s:4} {name!s}')
