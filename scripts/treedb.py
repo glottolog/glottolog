@@ -404,18 +404,26 @@ tree = tree_cte(with_terminal=True)
 query = sa.select([tree], bind=_backend.engine).where(tree.c.child_id == 'ostr1239')
 print(query.execute().fetchall())
 
-tree = tree_cte()  # FIXME: order_by
-query = sa.select([
+tree = tree_cte()
+squery = sa.select([
         Languoid.id,
-        Languoid.parent_id,
-        sa.select([sa.func.group_concat(tree.c.parent_id, '/')])
-            .where(tree.c.child_id == Languoid.id).label('path'),
-    ], bind=_backend.engine)
+        tree.c.steps,
+        tree.c.parent_id.label('path_part'),
+    ], bind=_backend.engine)\
+    .select_from(sa.join(Languoid, tree, Languoid.id == tree.c.child_id))\
+    .order_by(Languoid.id, tree.c.steps)
+query = sa.select([
+        squery.c.id,
+        sa.func.group_concat(squery.c.path_part, '/').label('path'),
+    ], bind=_backend.engine)\
+    .group_by(squery.c.id)
 print(query)
 print(query.limit(10).execute().fetchall())
 
 
 import pandas as pd
+
+print(pd.read_sql_query(query, _backend.engine, index_col='id'))
 
 query = sa.select(
         [c for c in Languoid.__table__.columns] +
