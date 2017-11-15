@@ -411,7 +411,7 @@ squery = sa.select([
         tree.c.parent_id.label('path_part'),
     ], bind=_backend.engine)\
     .select_from(sa.join(Languoid, tree, Languoid.id == tree.c.child_id))\
-    .order_by(Languoid.id, tree.c.steps)
+    .order_by(Languoid.id, tree.c.steps.desc())
 query = sa.select([
         squery.c.id,
         sa.func.group_concat(squery.c.path_part, '/').label('path'),
@@ -423,7 +423,9 @@ print(query.limit(10).execute().fetchall())
 
 import pandas as pd
 
-print(pd.read_sql_query(query, _backend.engine, index_col='id'))
+pf = pd.read_sql_query(query, _backend.engine, index_col='id')
+print(query)
+print(pf)
 
 query = sa.select(
         [c for c in Languoid.__table__.columns] +
