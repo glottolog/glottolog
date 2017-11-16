@@ -254,6 +254,29 @@ class EthnologueComment(_backend.Model):
     comment = sa.Column(sa.Text, sa.CheckConstraint("comment != ''"), nullable=False)
 
 
+"""TODO: isoretirement https://github.com/clld/glottolog/issues/151
+
+languoid
+    isoretirement_id  # (only the most recent one, thus n:1?)
+    isoretirement_code
+    isoretirement_name
+
+isoretirement
+    id
+    change_request effective
+    reason remedy comment
+
+isoretirementsuperseder
+    isoretirement_id
+    languoid_id
+    code
+    name
+
+isoretirementsupersedes
+    supersedes
+"""
+
+
 class IsoRetirement(_backend.Model):
 
     __tablename__ = 'isoretirement'
@@ -268,6 +291,11 @@ class IsoRetirement(_backend.Model):
     remedy = sa.Column(sa.Text, sa.CheckConstraint("remedy != ''"))
     # TODO: empty string?
     comment = sa.Column(sa.Text)
+
+    __table_args__ = (
+        sa.CheckConstraint(sa.func.coalesce(change_request, effective) != None),
+        #sa.Index('isoretirement_pk', sa.func.coalesce(change_request, effective), unique=True),
+    )
 
 
 isoretirement_supersedes = sa.Table('isoretirement_supersedes', _backend.Model.metadata,

@@ -69,7 +69,7 @@ class ConfigParser(configparser.ConfigParser):
 
 
 def iterconfig(root=ROOT, assert_name=BASENAME, load=ConfigParser.from_file):
-    """Yield ((<path_parts>, ...), <ConfigParser object>) pairs.""" 
+    """Yield ((<path_part>, ...), <ConfigParser object>) pairs.""" 
     if not isinstance(root, pathlib.Path):
         root = pathlib.Path(root)
     root_len = len(root.parts)
@@ -80,7 +80,7 @@ def iterconfig(root=ROOT, assert_name=BASENAME, load=ConfigParser.from_file):
 
 
 def to_files(pairs, root=ROOT, basename=BASENAME, load=ConfigParser.from_file):
-    """Write ((<path_parts>, ...), <dict of dicts>) pairs to root."""
+    """Write ((<path_part>, ...), <dict of dicts>) pairs to root."""
     for path_tuple, d in pairs:
         path = str(root.joinpath(*path_tuple) / basename)
         cfg = load(path)
