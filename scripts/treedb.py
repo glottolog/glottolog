@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 import re
 import time
 import datetime
+import warnings
 import itertools
 
 from treedb_files import iteritems
@@ -15,7 +16,7 @@ import sqlalchemy.orm
 import treedb_files as _files
 import treedb_backend as _backend
 
-REBUILD = False
+REBUILD = True
 
 LEVEL = ('family', 'language', 'dialect')
 
@@ -132,7 +133,7 @@ def iterlanguoids(root=_files.ROOT):
                 'code': cfg.get('iso_retirement', 'code', fallback=None),
                 'name': cfg.get('iso_retirement', 'name', fallback=None),
                 'remedy': cfg.get('iso_retirement', 'remedy', fallback=None),
-                'comment': cfg.get('iso_retirement', 'comment', fallback=None),
+                'comment': cfg.get('iso_retirement', 'comment', fallback=None) or None,  # TODO: drop after cleaning
                 'reason': cfg.get('iso_retirement', 'reason', fallback=None),
             }
         yield item
@@ -266,13 +267,13 @@ isoretirement
     change_request effective
     reason remedy comment
 
-isoretirementsuperseder
+isoretirementsuperseder?
     isoretirement_id
     languoid_id
     code
     name
 
-isoretirementsupersedes
+isoretirementsupersedes?
     supersedes
 """
 
@@ -281,26 +282,29 @@ class IsoRetirement(_backend.Model):
 
     __tablename__ = 'isoretirement'
 
-    languoid_id = sa.Column(sa.ForeignKey('languoid.id'), primary_key=True)
-    # FIXME: all nullable?, m:n?
+    id = sa.Column(sa.Integer, primary_key=True)
     change_request = sa.Column(sa.String(8), sa.CheckConstraint("change_request LIKE '____-___' "))
     effective = sa.Column(sa.Date)
-    code = sa.Column(sa.String(3), sa.CheckConstraint('length(code) = 3'))
-    name = sa.Column(sa.Text, sa.CheckConstraint("name != ''"))
+    code = sa.Column(sa.String(3), sa.CheckConstraint('length(code) = 3'), nullable=False)
+    name = sa.Column(sa.Text, sa.CheckConstraint("name != ''"), nullable=False)
     reason = sa.Column(sa.Enum(*sorted(ISORETIREMENT_REASON)))
     remedy = sa.Column(sa.Text, sa.CheckConstraint("remedy != ''"))
-    # TODO: empty string?
-    comment = sa.Column(sa.Text)
+    comment = sa.Column(sa.Text, sa.CheckConstraint("comment != ''"))
 
     __table_args__ = (
         sa.CheckConstraint(sa.func.coalesce(change_request, effective) != None),
-        #sa.Index('isoretirement_pk', sa.func.coalesce(change_request, effective), unique=True),
+        sa.Index('isoretirement_key', sa.func.coalesce(change_request, effective), unique=True),
     )
 
 
-isoretirement_supersedes = sa.Table('isoretirement_supersedes', _backend.Model.metadata,
-    sa.Column('isoretirement_languoid_id', sa.ForeignKey('isoretirement.languoid_id'), primary_key=True),
-    sa.Column('supersedes', sa.String(3), sa.CheckConstraint('length(supersedes) = 3'), primary_key=True))
+languoid_isoretirement = sa.Table('languoiud_isoretiremnt', _backend.Model.metadata,
+    sa.Column('languoid_id', sa.ForeignKey('languoid.id'), primary_key=True),
+    sa.Column('isoretirement_id', sa.ForeignKey('isoretirement.id'), primary_key=True))
+
+
+#isoretirement_supersedes = sa.Table('isoretirement_supersedes', _backend.Model.metadata,
+#    sa.Column('isoretirement_languoid_id', sa.ForeignKey('isoretirement.languoid_id'), primary_key=True),
+#    sa.Column('supersedes', sa.String(3), sa.CheckConstraint('length(supersedes) = 3'), primary_key=True))
 
 
 def load(rebuild=False, root=_files.ROOT):
@@ -310,12 +314,11 @@ def load(rebuild=False, root=_files.ROOT):
         else:
             return
 
-    _backend.create_tables(_backend.engine)
-
     start = time.time()
     with _backend.engine.begin() as conn:
         conn.execute('PRAGMA synchronous = OFF')
         conn.execute('PRAGMA journal_mode = MEMORY')
+        _backend.create_tables(_backend.engine)
         conn = conn.execution_options(compiled_cache={})
         _backend._load(conn, root)
         _load(conn, root)
@@ -340,8 +343,15 @@ def _load(conn, root):
     insert_ref = sa.insert(ClassificationRef, bind=conn).execute
     insert_enda = sa.insert(Endangerment, bind=conn).execute
     insert_el = sa.insert(EthnologueComment, bind=conn).execute
+
+    ir_where = sa.func.coalesce(IsoRetirement.change_request, IsoRetirement.effective) == \
+               sa.func.coalesce(sa.bindparam('change_request'), sa.bindparam('effective'))
+    has_ir = sa.select([sa.exists().where(ir_where)], bind=conn).scalar
+    select_irid = sa.select([IsoRetirement.id], bind=conn).where(ir_where).scalar
+    select_ir = sa.select([IsoRetirement], bind=conn).where(ir_where).execute
     insert_ir = sa.insert(IsoRetirement, bind=conn).execute
-    insert_irsu = isoretirement_supersedes.insert(bind=conn).execute
+    lang_ir = languoid_isoretirement.insert(bind=conn).execute
+    #insert_irsu = isoretirement_supersedes.insert(bind=conn).execute
 
     for l in iterlanguoids(root):
         lid = l['id']
@@ -394,9 +404,23 @@ def _load(conn, root):
             insert_el(languoid_id=lid, **hh_ethnologue_comment)
         if iso_retirement is not None:
             supersedes = iso_retirement.pop('supersedes')
-            insert_ir(languoid_id=lid, **iso_retirement)
-            for s in supersedes:
-                insert_irsu(isoretirement_languoid_id=lid, supersedes=s)
+            if iso_retirement['reason'] is None:  # from https://github.com/clld/glottolog/pull/128
+                continue
+            params = {k: iso_retirement[k] for k in ('change_request', 'effective')}
+            if has_ir(**params):
+                irid = select_irid(**params)
+                ir, = select_ir(**params)
+                disagreement = [(f, iso_retirement[f], ir[f])
+                                for f in ('reason', 'remedy', 'comment')
+                                if iso_retirement[f] != ir[f]]
+                if disagreement:
+                    for f, ini, db in disagreement:
+                        warnings.warn('%s %s %s:\n\t%r\n\t%r' % (ir.change_request, ir.effective, f, ini, db))
+            else:
+                irid, = insert_ir(**iso_retirement).inserted_primary_key
+            lang_ir(languoid_id=lid, isoretirement_id=irid)
+            #for s in supersedes:
+            #    insert_irsu(isoretirement_languoid_id=lid, supersedes=s)
 
 
 load(rebuild=REBUILD)
@@ -506,6 +530,6 @@ query = self.select(bind=_backend.engine)\
 _backend.print_rows(query, '{languoid_id} {field} {ord} {trigger}')
 
 
-query = sa.select([IsoRetirement], bind=_backend.engine)\
-    .order_by(IsoRetirement.change_request, IsoRetirement.code == None, IsoRetirement.code, IsoRetirement.name)
-_backend.print_rows(query, '{languoid_id} {change_request!s} {effective!s} {code!s:4} {name!s}')
+#query = sa.select([IsoRetirement], bind=_backend.engine)\
+#    .order_by(IsoRetirement.change_request, IsoRetirement.code == None, IsoRetirement.code, IsoRetirement.name)
+#_backend.print_rows(query, '{languoid_id} {change_request!s} {effective!s} {code!s:4} {name!s}')

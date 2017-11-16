@@ -212,12 +212,11 @@ def load(rebuild=False, root=_files.ROOT):
         else:
             return
 
-    create_tables(engine)
-
     start = time.time()
     with engine.begin() as conn:
         conn.execute('PRAGMA synchronous = OFF')
         conn.execute('PRAGMA journal_mode = MEMORY')
+        create_tables(engine)
         conn = conn.execution_options(compiled_cache={})
         _load(conn, root)
     print(time.time() - start)
