@@ -165,7 +165,7 @@ class Dataset(Model):
 
     id = sa.Column(sa.Boolean, sa.CheckConstraint('id'),
                    primary_key=True, server_default=sa.true())
-    git_commit = sa.Column(sa.String(40), nullable=False, unique=True)
+    git_commit = sa.Column(sa.String(40), sa.CheckConstraint('length(git_commit) = 40'), nullable=False, unique=True)
 
 
 class Path(Model):
@@ -174,7 +174,7 @@ class Path(Model):
     __tablename__ = '_path'
 
     id = sa.Column(sa.Integer, primary_key=True)
-    path = sa.Column(sa.Text, nullable=False, unique=True)
+    path = sa.Column(sa.Text, sa.CheckConstraint('length(path) >= 8'), nullable=False, unique=True)
 
 
 class Option(Model):
@@ -183,8 +183,8 @@ class Option(Model):
     __tablename__ = '_option'
 
     id = sa.Column(sa.Integer, primary_key=True)
-    section = sa.Column(sa.Text, nullable=False)
-    option = sa.Column(sa.Text, nullable=False)
+    section = sa.Column(sa.Text, sa.CheckConstraint("section != ''"), nullable=False)
+    option = sa.Column(sa.Text, sa.CheckConstraint("option != ''"), nullable=False)
     lines = sa.Column(sa.Boolean, nullable=False)
 
     __table_args__ = (
@@ -199,8 +199,9 @@ class Data(Model):
 
     path_id = sa.Column(sa.ForeignKey('_path.id'), primary_key=True)
     option_id = sa.Column(sa.ForeignKey('_option.id'), primary_key=True)
-    line = sa.Column(sa.Integer, primary_key=True)
+    line = sa.Column(sa.Integer, sa.CheckConstraint('line >= 0'), primary_key=True)
     # TODO: consider adding version for selective updates
+    # TODO: should there be empty strings here?
     value = sa.Column(sa.Text, nullable=False)
 
 

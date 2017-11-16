@@ -17,6 +17,8 @@ import treedb_backend as _backend
 
 REBUILD = False
 
+LEVEL = ('family', 'language', 'dialect')
+
 MACROAREA = {
     'North America', 'South America',
     'Eurasia',
@@ -140,14 +142,18 @@ class Languoid(_backend.Model):
 
     __tablename__ = 'languoid'
 
-    id = sa.Column(sa.String(8), primary_key=True)
-    level = sa.Column(sa.Enum('family', 'language', 'dialect'), nullable=False)
-    name = sa.Column(sa.String, nullable=False, unique=True)
+    id = sa.Column(sa.String(8), sa.CheckConstraint('length(id) = 8'), primary_key=True)
+    level = sa.Column(sa.Enum(*LEVEL), nullable=False)
+    name = sa.Column(sa.String, sa.CheckConstraint("name != ''"), nullable=False, unique=True)
     parent_id = sa.Column(sa.ForeignKey('languoid.id'), index=True)
-    hid = sa.Column(sa.Text, unique=True)
-    iso639_3 = sa.Column(sa.String(3), unique=True)
+    hid = sa.Column(sa.Text, sa.CheckConstraint('length(hid) >= 3'), unique=True)
+    iso639_3 = sa.Column(sa.String(3), sa.CheckConstraint('length(iso639_3) = 3'), unique=True)
     latitude = sa.Column(sa.Float, sa.CheckConstraint('latitude BETWEEN -90 AND 90'))
     longitude = sa.Column(sa.Float, sa.CheckConstraint('longitude BETWEEN -180 AND 180'))
+
+    __table_args__ = (
+        sa.CheckConstraint('(latitude IS NULL) = (longitude IS NULL)'),
+    )
 
 
 languoid_macroarea = sa.Table('languoid_macroarea', _backend.Model.metadata,
@@ -159,8 +165,8 @@ class Country(_backend.Model):
 
     __tablename__ = 'country'
 
-    id = sa.Column(sa.String(2), primary_key=True)
-    name = sa.Column(sa.Text, unique=True)
+    id = sa.Column(sa.String(2), sa.CheckConstraint('length(id) = 2'), primary_key=True)
+    name = sa.Column(sa.Text, sa.CheckConstraint("name != ''"), nullable=False, unique=True)
 
 
 languoid_country = sa.Table('languoid_country', _backend.Model.metadata,
@@ -173,12 +179,12 @@ class Source(_backend.Model):
     __tablename__ = 'source'
 
     languoid_id = sa.Column(sa.ForeignKey('languoid.id'), primary_key=True)
-    bibfile = sa.Column(sa.Text, primary_key=True)
-    bibkey = sa.Column(sa.Text, primary_key=True)
+    bibfile = sa.Column(sa.Text, sa.CheckConstraint("bibfile != ''"), primary_key=True)
+    bibkey = sa.Column(sa.Text, sa.CheckConstraint("bibkey != ''"), primary_key=True)
     # FIXME: clean up duplicates (ord: primary key-> unique(languoid_id, ord))
-    ord = sa.Column(sa.Integer, primary_key=True)
-    pages = sa.Column(sa.Text)
-    trigger = sa.Column(sa.Text)
+    ord = sa.Column(sa.Integer, sa.CheckConstraint('ord >= 1'), primary_key=True)
+    pages = sa.Column(sa.Text, sa.CheckConstraint("pages != ''"))
+    trigger = sa.Column(sa.Text, sa.CheckConstraint("trigger != ''"))
 
 
 class Altname(_backend.Model):
@@ -186,23 +192,23 @@ class Altname(_backend.Model):
     __tablename__ = 'altname'
 
     languoid_id = sa.Column(sa.ForeignKey('languoid.id'), primary_key=True)
-    provider = sa.Column(sa.Text, primary_key=True)
-    ord = sa.Column(sa.Integer, primary_key=True)
-    name = sa.Column(sa.Text, nullable=False)
+    provider = sa.Column(sa.Text, sa.CheckConstraint("provider != ''"), primary_key=True)
+    ord = sa.Column(sa.Integer, sa.CheckConstraint('ord >= 1'), primary_key=True)
+    name = sa.Column(sa.Text, sa.CheckConstraint("name != ''"), nullable=False)
 
 
 languoid_trigger = sa.Table('languoid_trigger', _backend.Model.metadata,
     sa.Column('languoid_id', sa.ForeignKey('languoid.id'), primary_key=True),
     sa.Column('field', sa.Enum(*sorted(TRIGGER_FIELD)), primary_key=True),
     # FIXME: this should be set-like, right?
-    sa.Column('ord', sa.Integer, primary_key=True),
-    sa.Column('trigger', sa.Text, primary_key=True))
+    sa.Column('ord', sa.Integer, sa.CheckConstraint('ord >= 1'), primary_key=True),
+    sa.Column('trigger', sa.Text, sa.CheckConstraint("trigger != ''"), primary_key=True))
 
 
 languoid_identifier = sa.Table('languoid_identifier', _backend.Model.metadata,
     sa.Column('languoid_id', sa.ForeignKey('languoid.id'), primary_key=True),
     sa.Column('site', sa.Enum(*sorted(IDENTIFIER_SITE)), primary_key=True),
-    sa.Column('identifier', sa.Text, nullable=False))
+    sa.Column('identifier', sa.Text, sa.CheckConstraint("identifier != ''"), nullable=False))
 
 
 class ClassificationComment(_backend.Model):
@@ -211,7 +217,7 @@ class ClassificationComment(_backend.Model):
 
     languoid_id = sa.Column(sa.ForeignKey('languoid.id'), primary_key=True)
     kind = sa.Column(sa.Enum(*sorted(CLASSIFICATION_KIND)), primary_key=True)
-    comment = sa.Column(sa.Text, nullable=False)
+    comment = sa.Column(sa.Text, sa.CheckConstraint("comment != ''"), nullable=False)
 
 
 class ClassificationRef(_backend.Model):
@@ -219,11 +225,11 @@ class ClassificationRef(_backend.Model):
     __tablename__ = 'classificationref'
     languoid_id = sa.Column(sa.ForeignKey('languoid.id'), primary_key=True)
     kind = sa.Column(sa.Enum(*sorted(CLASSIFICATION_KIND)), primary_key=True)
-    bibfile = sa.Column(sa.Text, primary_key=True)
-    bibkey = sa.Column(sa.Text, primary_key=True)
+    bibfile = sa.Column(sa.Text, sa.CheckConstraint("bibfile != ''"),primary_key=True)
+    bibkey = sa.Column(sa.Text, sa.CheckConstraint("bibkey != ''"), primary_key=True)
     # FIXME: check for duplicates
-    ord = sa.Column(sa.Integer, primary_key=True)
-    pages = sa.Column(sa.Text)
+    ord = sa.Column(sa.Integer, sa.CheckConstraint('ord >= 1'), primary_key=True)
+    pages = sa.Column(sa.Text, sa.CheckConstraint("pages != ''"))
 
 
 class Endangerment(_backend.Model):
@@ -234,7 +240,7 @@ class Endangerment(_backend.Model):
     status = sa.Column(sa.Enum(*ENDANGERMENT_STATUS), nullable=False)
     source = sa.Column(sa.Enum(*sorted(ENDANGERMENT_SOURCE)), nullable=False)
     date = sa.Column(sa.DateTime, nullable=False)
-    comment = sa.Column(sa.Text, nullable=False)
+    comment = sa.Column(sa.Text, sa.CheckConstraint("comment != ''"), nullable=False)
 
 
 class EthnologueComment(_backend.Model):
@@ -242,10 +248,10 @@ class EthnologueComment(_backend.Model):
     __tablename__ = 'ethnologuecomment'
 
     languoid_id = sa.Column(sa.ForeignKey('languoid.id'), primary_key=True)
-    isohid = sa.Column(sa.Text, nullable=False)
+    isohid = sa.Column(sa.Text, sa.CheckConstraint('length(isohid) >= 3'), nullable=False)
     comment_type = sa.Column(sa.Enum(*sorted(EL_COMMENT_TYPE)), nullable=False)
-    ethnologue_versions = sa.Column(sa.Text, nullable=False)
-    comment = sa.Column(sa.Text, nullable=False)
+    ethnologue_versions = sa.Column(sa.Text, sa.CheckConstraint('length(ethnologue_versions) >= 3'), nullable=False)
+    comment = sa.Column(sa.Text, sa.CheckConstraint("comment != ''"), nullable=False)
 
 
 class IsoRetirement(_backend.Model):
@@ -254,18 +260,19 @@ class IsoRetirement(_backend.Model):
 
     languoid_id = sa.Column(sa.ForeignKey('languoid.id'), primary_key=True)
     # FIXME: all nullable?, m:n?
-    change_request = sa.Column(sa.String(8))
+    change_request = sa.Column(sa.String(8), sa.CheckConstraint("change_request LIKE '____-___' "))
     effective = sa.Column(sa.Date)
-    code = sa.Column(sa.String(3))
-    name = sa.Column(sa.Text)
+    code = sa.Column(sa.String(3), sa.CheckConstraint('length(code) = 3'))
+    name = sa.Column(sa.Text, sa.CheckConstraint("name != ''"))
     reason = sa.Column(sa.Enum(*sorted(ISORETIREMENT_REASON)))
-    remedy = sa.Column(sa.Text)
+    remedy = sa.Column(sa.Text, sa.CheckConstraint("remedy != ''"))
+    # TODO: empty string?
     comment = sa.Column(sa.Text)
 
 
 isoretirement_supersedes = sa.Table('isoretirement_supersedes', _backend.Model.metadata,
     sa.Column('isoretirement_languoid_id', sa.ForeignKey('isoretirement.languoid_id'), primary_key=True),
-    sa.Column('supersedes', sa.String(3), primary_key=True))
+    sa.Column('supersedes', sa.String(3), sa.CheckConstraint('length(supersedes) = 3'), primary_key=True))
 
 
 def load(rebuild=False, root=_files.ROOT):
@@ -308,8 +315,6 @@ def _load(conn, root):
     insert_ir = sa.insert(IsoRetirement, bind=conn).execute
     insert_irsu = isoretirement_supersedes.insert(bind=conn).execute
 
-    insert_ord = itertools.count()
-
     for l in iterlanguoids(root):
         lid = l['id']
 
@@ -334,8 +339,8 @@ def _load(conn, root):
             lang_country(languoid_id=lid, country_id=cc)
         if sources is not None:
             for provider, data in iteritems(sources):
-                for s in data:
-                    insert_source(languoid_id=lid, provider=provider, ord=next(insert_ord), **s)
+                for i, s in enumerate(data, 1):
+                    insert_source(languoid_id=lid, provider=provider, ord=i, **s)
         if altnames is not None:
             for provider, names in iteritems(altnames):
                 for i, n in enumerate(names, 1):
