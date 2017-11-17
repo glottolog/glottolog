@@ -9,18 +9,19 @@ import configparser
 
 if sys.version_info < (3,):
     from scandir import scandir
-    iteritems = lambda x: x.iteritems()
 else:
     from os import scandir
-    iteritems = lambda x: iter(x.items())
+
+from treedb_backend import iteritems
 
 ROOT, BASENAME = pathlib.Path('../languoids/tree'), 'md.ini'
 
-__all__ = ['ROOT', 'iterconfig', 'to_files']
+__all__ = ['ROOT', 'iterconfig', 'save']
 
 
 def iterfiles(top=ROOT, verbose=False):
     """Yield DirEntry objects for all files under top."""
+    # NOTE: os.walk() ignores errors and this can be more efficient
     if isinstance(top, pathlib.Path):
         top = str(top)
     stack = [top]
@@ -79,12 +80,19 @@ def iterconfig(root=ROOT, assert_name=BASENAME, load=ConfigParser.from_file):
         yield path_tuple, load(d.path)
 
 
-def to_files(pairs, root=ROOT, basename=BASENAME, load=ConfigParser.from_file):
+def save(pairs, root=ROOT, basename=BASENAME, load=ConfigParser.from_file):
     """Write ((<path_part>, ...), <dict of dicts>) pairs to root."""
     for path_tuple, d in pairs:
         path = str(root.joinpath(*path_tuple) / basename)
         cfg = load(path)
+        drop_sections = set(cfg.sections()).difference(set(d) | {'core', 'sources'})
+        for s in drop_sections:
+            cfg.remove_section(s)
         for section, s in iteritems(d):
+            if section != 'core':
+                drop_options = set(cfg.options(section)).difference(set(s))
+                for o in drop_options:
+                    cfg.remove_option(section, o)
             for option, value in iteritems(s):
                 cfg.set(section, option, value)
         cfg.to_file(path)
@@ -97,6 +105,5 @@ def roundtrip():
 
 
 if __name__ == '__main__':
-    print(next(iterfiles()))
     print(next(iterconfig()))
     #roundtrip()

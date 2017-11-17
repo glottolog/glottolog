@@ -3,20 +3,17 @@
 from __future__ import unicode_literals
 
 import re
-import time
 import datetime
 import warnings
-import itertools
 
-from treedb_files import iteritems
+from treedb_backend import iteritems
 
 import sqlalchemy as sa
 import sqlalchemy.orm
 
 import treedb_files as _files
 import treedb_backend as _backend
-
-REBUILD = True
+import treedb_values as _values
 
 LEVEL = ('family', 'language', 'dialect')
 
@@ -155,6 +152,34 @@ class Languoid(_backend.Model):
     __table_args__ = (
         sa.CheckConstraint('(latitude IS NULL) = (longitude IS NULL)'),
     )
+
+    @classmethod  # TODO: with_self (reflexive)
+    def tree(cls, with_terminal=False):
+        child = sa.orm.aliased(cls, name='child')
+        cols = [child.id.label('child_id'),
+                sa.literal(1).label('steps'),
+                child.parent_id.label('parent_id')]
+
+        if with_terminal:
+            cols.append(sa.literal(False).label('terminal'))
+
+        tree_1 = sa.select(cols)\
+            .where(child.parent_id != None)\
+            .cte(recursive=True).alias('tree')
+
+        parent = sa.orm.aliased(cls, name='parent')
+        fromclause = tree_1.join(parent, parent.id == tree_1.c.parent_id)
+        cols = [tree_1.c.child_id, tree_1.c.steps + 1, parent.parent_id]
+
+        if with_terminal:
+            gparent = sa.orm.aliased(Languoid, name='grandparent')
+            fromclause = fromclause.outerjoin(gparent, gparent.id == parent.parent_id)
+            cols.append(gparent.parent_id == None)
+
+        tree_2 = sa.select(cols).select_from(fromclause)\
+            .where(parent.parent_id != None)
+
+        return tree_1.union_all(tree_2)
 
 
 languoid_macroarea = sa.Table('languoid_macroarea', _backend.Model.metadata,
@@ -307,22 +332,19 @@ languoid_isoretirement = sa.Table('languoiud_isoretiremnt', _backend.Model.metad
 #    sa.Column('supersedes', sa.String(3), sa.CheckConstraint('length(supersedes) = 3'), primary_key=True))
 
 
-def load(rebuild=False, root=_files.ROOT):
-    if _backend.DBFILE.exists():
-        if rebuild:
-            _backend.DBFILE.unlink()
-        else:
-            return
+def load(root=_files.ROOT, with_values=True, rebuild=False):
+    _backend.load(make_loader(root, with_values), rebuild=rebuild)
 
-    start = time.time()
-    with _backend.engine.begin() as conn:
-        conn.execute('PRAGMA synchronous = OFF')
-        conn.execute('PRAGMA journal_mode = MEMORY')
-        _backend.create_tables(_backend.engine)
-        conn = conn.execution_options(compiled_cache={})
-        _backend._load(conn, root)
+
+def make_loader(root, with_values):
+
+    def load_func(conn):
+        if with_values:
+            import treedb_values
+            treedb_values.make_loader(root=root)(conn)
         _load(conn, root)
-    print(time.time() - start)
+
+    return load_func
 
 
 def _load(conn, root):
@@ -423,65 +445,29 @@ def _load(conn, root):
             #    insert_irsu(isoretirement_languoid_id=lid, supersedes=s)
 
 
-load(rebuild=REBUILD)
+load()
 
+_backend.print_rows(sa.select([Languoid]).order_by(Languoid.id).limit(5))
 
-print(sa.select([Languoid], bind=_backend.engine).limit(5).execute().fetchall())
+tree = Languoid.tree(with_terminal=True)
+_backend.print_rows(sa.select([tree]).where(tree.c.child_id == 'ramo1244'))
 
-
-def tree_cte(with_terminal=False):
-    child = sa.orm.aliased(Languoid, name='child')
-    cols = [child.id.label('child_id'),
-            sa.literal(1).label('steps'),
-            child.parent_id.label('parent_id')]
-
-    if with_terminal:
-        cols.append(sa.literal(False).label('terminal'))
-
-    tree_1 = sa.select(cols)\
-        .where(child.parent_id != None)\
-        .cte(recursive=True).alias('tree')
-
-    parent = sa.orm.aliased(Languoid, name='parent')
-    fromclause = tree_1.join(parent, parent.id == tree_1.c.parent_id)
-    cols = [tree_1.c.child_id, tree_1.c.steps + 1, parent.parent_id]
-
-    if with_terminal:
-        gparent = sa.orm.aliased(Languoid, name='grandparent')
-        fromclause = fromclause.outerjoin(gparent, gparent.id == parent.parent_id)
-        cols.append(gparent.parent_id == None)
-
-    tree_2 = sa.select(cols).select_from(fromclause)\
-        .where(parent.parent_id != None)
-
-    return tree_1.union_all(tree_2)
-
-
-tree = tree_cte(with_terminal=True)
-query = sa.select([tree], bind=_backend.engine).where(tree.c.child_id == 'ostr1239')
-print(query.execute().fetchall())
-
-tree = tree_cte()
+tree = Languoid.tree()
 squery = sa.select([
         Languoid.id,
         tree.c.steps,
         tree.c.parent_id.label('path_part'),
-    ], bind=_backend.engine)\
-    .select_from(sa.join(Languoid, tree, Languoid.id == tree.c.child_id))\
+    ])\
+    .select_from(sa.outerjoin(Languoid, tree, Languoid.id == tree.c.child_id))\
     .order_by(Languoid.id, tree.c.steps.desc())
 query = sa.select([
         squery.c.id,
         sa.func.group_concat(squery.c.path_part, '/').label('path'),
-    ], bind=_backend.engine)\
+    ])\
     .group_by(squery.c.id)
-print(query)
-print(query.limit(10).execute().fetchall())
+_backend.print_rows(query.limit(5))
 
-
-import pandas as pd
-
-pf = pd.read_sql_query(query, _backend.engine, index_col='id')
-print(query)
+pf = _backend.pd_read_sql(query, index_col='id')
 print(pf)
 
 query = sa.select(
@@ -499,9 +485,8 @@ query = sa.select(
     ]).select_from(sa.outerjoin(Languoid, Endangerment))\
     .order_by(Languoid.id)
 
-df = pd.read_sql_query(query, _backend.engine, index_col='id')
+df = _backend.pd_read_sql(query, index_col='id')
 df.info()
-
 
 self, other = (sa.orm.aliased(Source) for _ in range(2))
 query = sa.select([
@@ -509,7 +494,7 @@ query = sa.select([
         sa.func.group_concat(self.pages).label('pages'),
         sa.func.group_concat(self.trigger).label('trigger'),
         sa.func.group_concat(self.languoid_id).label('languoid_id'),
-    ], bind=_backend.engine)\
+    ])\
     .where(sa.exists()
         .where(other.languoid_id == self.languoid_id)
         .where(other.bibfile == self.bibfile)
@@ -519,9 +504,8 @@ query = sa.select([
     .order_by(self.bibfile, self.bibkey)
 _backend.print_rows(query, '{bibfile:8} {bibkey:24} {pages!s:8} {trigger!s:12} {languoid_id}')
 
-
 self, other = (sa.alias(languoid_trigger) for _ in range(2))
-query = self.select(bind=_backend.engine)\
+query = self.select()\
     .where(sa.exists()
         .where(other.c.languoid_id == self.c.languoid_id)
         .where(other.c.field == self.c.field)
@@ -529,7 +513,6 @@ query = self.select(bind=_backend.engine)\
         .where(other.c.ord != self.c.ord))
 _backend.print_rows(query, '{languoid_id} {field} {ord} {trigger}')
 
-
-#query = sa.select([IsoRetirement], bind=_backend.engine)\
+#query = sa.select([IsoRetirement])\
 #    .order_by(IsoRetirement.change_request, IsoRetirement.code == None, IsoRetirement.code, IsoRetirement.name)
 #_backend.print_rows(query, '{languoid_id} {change_request!s} {effective!s} {code!s:4} {name!s}')
