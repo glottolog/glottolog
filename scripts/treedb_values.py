@@ -214,7 +214,7 @@ def to_json(filename=None, bind=_backend.engine, encoding='utf-8'):
         _backend._csv_write(f, encoding, header=['path', 'json'], rows=rows)
 
 
-def to_files(bind=_backend.engine, is_lines=Fields.is_lines):
+def to_files(bind=_backend.engine, verbose=False, is_lines=Fields.is_lines):
     """Write (path, section, option, line, value) rows back into config files."""
     def iterpairs(records):
         for p, r in records:
@@ -225,7 +225,7 @@ def to_files(bind=_backend.engine, is_lines=Fields.is_lines):
                         s[option] = '\n'.join([''] + s[option])
             yield path_tuple, r
 
-    _files.save(iterpairs(iterrecords(bind=bind)))
+    _files.save(iterpairs(iterrecords(bind=bind)), verbose=verbose)
 
 
 def print_fields(bind=_backend.engine):
@@ -252,6 +252,23 @@ def print_stats(bind=_backend.engine, execute=False):
     _backend.print_rows(query, '{section:<22} {option:<22} {n:,}')
 
 
+def drop_broken_isoretirements(bind=_backend.engine, save=False, verbose=True):
+    other, other_option = sa.orm.aliased(Data), sa.orm.aliased(Option)
+    delete = sa.delete(Data, bind=bind)\
+        .where(sa.exists()
+            .where(Option.id == Data.option_id)
+            .where(Option.section == 'iso_retirement'))\
+        .where(sa.exists()
+            .where(other.path_id == Data.path_id)
+            .where(other_option.id == other.option_id)
+            .where(other_option.section == Option.section)
+            .where(other_option.option == 'supersedes'))
+    rows_deleted = delete.execute().rowcount
+    if save:
+        _to_files(bind=bind, verbose=verbose)
+    return rows_deleted
+
+
 if __name__ == '__main__':
     load()
     print(next(iterrecords()))
@@ -260,3 +277,5 @@ if __name__ == '__main__':
     #to_files()
     print_stats()
     print_fields()
+    #drop_broken_isoretirements()
+
