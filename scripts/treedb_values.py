@@ -264,7 +264,7 @@ def drop_broken_isoretirements(bind=_backend.engine, save=True, verbose=True):
             .where(other_option.section == Option.section)
             .where(other_option.option == 'supersedes'))
     rows_deleted = delete.execute().rowcount
-    if save:
+    if rows_deleted and save:
         to_files(bind=bind, verbose=verbose)
     return rows_deleted
 
@@ -281,7 +281,7 @@ def drop_duplicate_sources(bind=_backend.engine, save=True, verbose=True):
             .where(other.value == Data.value)
             .where(other.line < Data.line))
     rows_deleted = delete.execute().rowcount
-    if save:
+    if rows_deleted and save:
         to_files(bind=bind, verbose=verbose)
     return rows_deleted
 
