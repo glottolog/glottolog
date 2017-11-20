@@ -80,28 +80,28 @@ def iterconfig(root=ROOT, assert_name=BASENAME, load=ConfigParser.from_file):
         yield path_tuple, load(d.path)
 
 
-def save(pairs, root=ROOT, basename=BASENAME, verbose=False, changed=False,
-         load=ConfigParser.from_file):
+def save(pairs, root=ROOT, basename=BASENAME, assume_changed=False,
+         verbose=False, load=ConfigParser.from_file):
     """Write ((<path_part>, ...), <dict of dicts>) pairs to root."""
     for path_tuple, d in pairs:
         path = str(root.joinpath(*path_tuple) / basename)
         cfg = load(path)
         # FIXME: missing sections and options
         drop_sections = set(cfg.sections()).difference(set(d) | {'core', 'sources'})
-        cfg_changed = bool(changed or drop_sections)
+        changed = assume_changed or bool(drop_sections)
         for s in drop_sections:
             cfg.remove_section(s)
         for section, s in iteritems(d):
             if section != 'core':
                 drop_options = set(cfg.options(section)).difference(set(s))
-                cfg_changed = bool(cfg_changed or drop_options)
+                changed = changed or bool(drop_options)
                 for o in drop_options:
                     cfg.remove_option(section, o)
             for option, value in iteritems(s):
                 if cfg.get(section, option) != value:
-                    cfg_changed = True
+                    changed = True
                     cfg.set(section, option, value)
-        if cfg_changed:
+        if changed:
             if verbose:
                 print(path)
             cfg.to_file(path)
@@ -111,7 +111,7 @@ def roundtrip(verbose=False):
     """Do a load/save cycle with all config files."""
     pairs = ((path_tuple, {s: dict(cfg.items(s)) for s in cfg.sections()})
              for path_tuple, cfg in iterconfig())
-    save(pairs, changed=True, verbose=verbose)
+    save(pairs, assume_changed=True, verbose=verbose)
 
 
 if __name__ == '__main__':

@@ -492,7 +492,3 @@ query = self.select()\
         .where(other.c.trigger == self.c.trigger)
         .where(other.c.ord != self.c.ord))
 _backend.print_rows(query, '{languoid_id} {field} {ord} {trigger}')
-
-#query = sa.select([IsoRetirement])\
-#    .order_by(IsoRetirement.change_request, IsoRetirement.code == None, IsoRetirement.code, IsoRetirement.name)
-#_backend.print_rows(query, '{languoid_id} {change_request!s} {effective!s} {code!s:4} {name!s}')
