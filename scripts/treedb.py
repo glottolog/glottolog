@@ -3,19 +3,19 @@
 from __future__ import unicode_literals
 
 import re
-import time
 import datetime
-import itertools
+import warnings
 
-from treedb_files import iteritems
+from treedb_backend import iteritems
 
 import sqlalchemy as sa
 import sqlalchemy.orm
 
 import treedb_files as _files
 import treedb_backend as _backend
+import treedb_values as _values
 
-REBUILD = False
+LEVEL = ('family', 'language', 'dialect')
 
 MACROAREA = {
     'North America', 'South America',
@@ -130,7 +130,7 @@ def iterlanguoids(root=_files.ROOT):
                 'code': cfg.get('iso_retirement', 'code', fallback=None),
                 'name': cfg.get('iso_retirement', 'name', fallback=None),
                 'remedy': cfg.get('iso_retirement', 'remedy', fallback=None),
-                'comment': cfg.get('iso_retirement', 'comment', fallback=None),
+                'comment': cfg.get('iso_retirement', 'comment', fallback=None) or None,  # TODO: drop after cleaning
                 'reason': cfg.get('iso_retirement', 'reason', fallback=None),
             }
         yield item
@@ -140,14 +140,46 @@ class Languoid(_backend.Model):
 
     __tablename__ = 'languoid'
 
-    id = sa.Column(sa.String(8), primary_key=True)
-    level = sa.Column(sa.Enum('family', 'language', 'dialect'), nullable=False)
-    name = sa.Column(sa.String, nullable=False, unique=True)
+    id = sa.Column(sa.String(8), sa.CheckConstraint('length(id) = 8'), primary_key=True)
+    level = sa.Column(sa.Enum(*LEVEL), nullable=False)
+    name = sa.Column(sa.String, sa.CheckConstraint("name != ''"), nullable=False, unique=True)
     parent_id = sa.Column(sa.ForeignKey('languoid.id'), index=True)
-    hid = sa.Column(sa.Text, unique=True)
-    iso639_3 = sa.Column(sa.String(3), unique=True)
+    hid = sa.Column(sa.Text, sa.CheckConstraint('length(hid) >= 3'), unique=True)
+    iso639_3 = sa.Column(sa.String(3), sa.CheckConstraint('length(iso639_3) = 3'), unique=True)
     latitude = sa.Column(sa.Float, sa.CheckConstraint('latitude BETWEEN -90 AND 90'))
     longitude = sa.Column(sa.Float, sa.CheckConstraint('longitude BETWEEN -180 AND 180'))
+
+    __table_args__ = (
+        sa.CheckConstraint('(latitude IS NULL) = (longitude IS NULL)'),
+    )
+
+    @classmethod  # TODO: with_self (reflexive)
+    def tree(cls, with_terminal=False):
+        child = sa.orm.aliased(cls, name='child')
+        cols = [child.id.label('child_id'),
+                sa.literal(1).label('steps'),
+                child.parent_id.label('parent_id')]
+
+        if with_terminal:
+            cols.append(sa.literal(False).label('terminal'))
+
+        tree_1 = sa.select(cols)\
+            .where(child.parent_id != None)\
+            .cte(recursive=True).alias('tree')
+
+        parent = sa.orm.aliased(cls, name='parent')
+        fromclause = tree_1.join(parent, parent.id == tree_1.c.parent_id)
+        cols = [tree_1.c.child_id, tree_1.c.steps + 1, parent.parent_id]
+
+        if with_terminal:
+            gparent = sa.orm.aliased(Languoid, name='grandparent')
+            fromclause = fromclause.outerjoin(gparent, gparent.id == parent.parent_id)
+            cols.append(gparent.parent_id == None)
+
+        tree_2 = sa.select(cols).select_from(fromclause)\
+            .where(parent.parent_id != None)
+
+        return tree_1.union_all(tree_2)
 
 
 languoid_macroarea = sa.Table('languoid_macroarea', _backend.Model.metadata,
@@ -159,8 +191,8 @@ class Country(_backend.Model):
 
     __tablename__ = 'country'
 
-    id = sa.Column(sa.String(2), primary_key=True)
-    name = sa.Column(sa.Text, unique=True)
+    id = sa.Column(sa.String(2), sa.CheckConstraint('length(id) = 2'), primary_key=True)
+    name = sa.Column(sa.Text, sa.CheckConstraint("name != ''"), nullable=False, unique=True)
 
 
 languoid_country = sa.Table('languoid_country', _backend.Model.metadata,
@@ -173,12 +205,12 @@ class Source(_backend.Model):
     __tablename__ = 'source'
 
     languoid_id = sa.Column(sa.ForeignKey('languoid.id'), primary_key=True)
-    bibfile = sa.Column(sa.Text, primary_key=True)
-    bibkey = sa.Column(sa.Text, primary_key=True)
+    bibfile = sa.Column(sa.Text, sa.CheckConstraint("bibfile != ''"), primary_key=True)
+    bibkey = sa.Column(sa.Text, sa.CheckConstraint("bibkey != ''"), primary_key=True)
     # FIXME: clean up duplicates (ord: primary key-> unique(languoid_id, ord))
-    ord = sa.Column(sa.Integer, primary_key=True)
-    pages = sa.Column(sa.Text)
-    trigger = sa.Column(sa.Text)
+    ord = sa.Column(sa.Integer, sa.CheckConstraint('ord >= 1'), primary_key=True)
+    pages = sa.Column(sa.Text, sa.CheckConstraint("pages != ''"))
+    trigger = sa.Column(sa.Text, sa.CheckConstraint("trigger != ''"))
 
 
 class Altname(_backend.Model):
@@ -186,23 +218,23 @@ class Altname(_backend.Model):
     __tablename__ = 'altname'
 
     languoid_id = sa.Column(sa.ForeignKey('languoid.id'), primary_key=True)
-    provider = sa.Column(sa.Text, primary_key=True)
-    ord = sa.Column(sa.Integer, primary_key=True)
-    name = sa.Column(sa.Text, nullable=False)
+    provider = sa.Column(sa.Text, sa.CheckConstraint("provider != ''"), primary_key=True)
+    ord = sa.Column(sa.Integer, sa.CheckConstraint('ord >= 1'), primary_key=True)
+    name = sa.Column(sa.Text, sa.CheckConstraint("name != ''"), nullable=False)
 
 
 languoid_trigger = sa.Table('languoid_trigger', _backend.Model.metadata,
     sa.Column('languoid_id', sa.ForeignKey('languoid.id'), primary_key=True),
     sa.Column('field', sa.Enum(*sorted(TRIGGER_FIELD)), primary_key=True),
     # FIXME: this should be set-like, right?
-    sa.Column('ord', sa.Integer, primary_key=True),
-    sa.Column('trigger', sa.Text, primary_key=True))
+    sa.Column('ord', sa.Integer, sa.CheckConstraint('ord >= 1'), primary_key=True),
+    sa.Column('trigger', sa.Text, sa.CheckConstraint("trigger != ''"), primary_key=True))
 
 
 languoid_identifier = sa.Table('languoid_identifier', _backend.Model.metadata,
     sa.Column('languoid_id', sa.ForeignKey('languoid.id'), primary_key=True),
     sa.Column('site', sa.Enum(*sorted(IDENTIFIER_SITE)), primary_key=True),
-    sa.Column('identifier', sa.Text, nullable=False))
+    sa.Column('identifier', sa.Text, sa.CheckConstraint("identifier != ''"), nullable=False))
 
 
 class ClassificationComment(_backend.Model):
@@ -211,7 +243,7 @@ class ClassificationComment(_backend.Model):
 
     languoid_id = sa.Column(sa.ForeignKey('languoid.id'), primary_key=True)
     kind = sa.Column(sa.Enum(*sorted(CLASSIFICATION_KIND)), primary_key=True)
-    comment = sa.Column(sa.Text, nullable=False)
+    comment = sa.Column(sa.Text, sa.CheckConstraint("comment != ''"), nullable=False)
 
 
 class ClassificationRef(_backend.Model):
@@ -219,11 +251,11 @@ class ClassificationRef(_backend.Model):
     __tablename__ = 'classificationref'
     languoid_id = sa.Column(sa.ForeignKey('languoid.id'), primary_key=True)
     kind = sa.Column(sa.Enum(*sorted(CLASSIFICATION_KIND)), primary_key=True)
-    bibfile = sa.Column(sa.Text, primary_key=True)
-    bibkey = sa.Column(sa.Text, primary_key=True)
+    bibfile = sa.Column(sa.Text, sa.CheckConstraint("bibfile != ''"),primary_key=True)
+    bibkey = sa.Column(sa.Text, sa.CheckConstraint("bibkey != ''"), primary_key=True)
     # FIXME: check for duplicates
-    ord = sa.Column(sa.Integer, primary_key=True)
-    pages = sa.Column(sa.Text)
+    ord = sa.Column(sa.Integer, sa.CheckConstraint('ord >= 1'), primary_key=True)
+    pages = sa.Column(sa.Text, sa.CheckConstraint("pages != ''"))
 
 
 class Endangerment(_backend.Model):
@@ -234,7 +266,7 @@ class Endangerment(_backend.Model):
     status = sa.Column(sa.Enum(*ENDANGERMENT_STATUS), nullable=False)
     source = sa.Column(sa.Enum(*sorted(ENDANGERMENT_SOURCE)), nullable=False)
     date = sa.Column(sa.DateTime, nullable=False)
-    comment = sa.Column(sa.Text, nullable=False)
+    comment = sa.Column(sa.Text, sa.CheckConstraint("comment != ''"), nullable=False)
 
 
 class EthnologueComment(_backend.Model):
@@ -242,49 +274,77 @@ class EthnologueComment(_backend.Model):
     __tablename__ = 'ethnologuecomment'
 
     languoid_id = sa.Column(sa.ForeignKey('languoid.id'), primary_key=True)
-    isohid = sa.Column(sa.Text, nullable=False)
+    isohid = sa.Column(sa.Text, sa.CheckConstraint('length(isohid) >= 3'), nullable=False)
     comment_type = sa.Column(sa.Enum(*sorted(EL_COMMENT_TYPE)), nullable=False)
-    ethnologue_versions = sa.Column(sa.Text, nullable=False)
-    comment = sa.Column(sa.Text, nullable=False)
+    ethnologue_versions = sa.Column(sa.Text, sa.CheckConstraint('length(ethnologue_versions) >= 3'), nullable=False)
+    comment = sa.Column(sa.Text, sa.CheckConstraint("comment != ''"), nullable=False)
+
+
+"""TODO: isoretirement https://github.com/clld/glottolog/issues/151
+
+languoid
+    isoretirement_id  # (only the most recent one, thus n:1?)
+    isoretirement_code
+    isoretirement_name
+
+isoretirement
+    id
+    change_request effective
+    reason remedy comment
+
+isoretirementsuperseder?
+    isoretirement_id
+    languoid_id
+    code
+    name
+
+isoretirementsupersedes?
+    supersedes
+"""
 
 
 class IsoRetirement(_backend.Model):
 
     __tablename__ = 'isoretirement'
 
-    languoid_id = sa.Column(sa.ForeignKey('languoid.id'), primary_key=True)
-    # FIXME: all nullable?, m:n?
-    change_request = sa.Column(sa.String(8))
+    id = sa.Column(sa.Integer, primary_key=True)
+    change_request = sa.Column(sa.String(8), sa.CheckConstraint("change_request LIKE '____-___' "))
     effective = sa.Column(sa.Date)
-    code = sa.Column(sa.String(3))
-    name = sa.Column(sa.Text)
-    remedy = sa.Column(sa.Text)
-    comment = sa.Column(sa.Text)
+    code = sa.Column(sa.String(3), sa.CheckConstraint('length(code) = 3'), nullable=False)
+    name = sa.Column(sa.Text, sa.CheckConstraint("name != ''"), nullable=False)
     reason = sa.Column(sa.Enum(*sorted(ISORETIREMENT_REASON)))
+    remedy = sa.Column(sa.Text, sa.CheckConstraint("remedy != ''"))
+    comment = sa.Column(sa.Text, sa.CheckConstraint("comment != ''"))
+
+    __table_args__ = (
+        sa.CheckConstraint(sa.func.coalesce(change_request, effective) != None),
+        sa.Index('isoretirement_key', sa.func.coalesce(change_request, effective), unique=True),
+    )
 
 
-isoretirement_supersedes = sa.Table('isoretirement_supersedes', _backend.Model.metadata,
-    sa.Column('isoretirement_languoid_id', sa.ForeignKey('isoretirement.languoid_id'), primary_key=True),
-    sa.Column('supersedes', sa.String(3), primary_key=True))
+languoid_isoretirement = sa.Table('languoiud_isoretiremnt', _backend.Model.metadata,
+    sa.Column('languoid_id', sa.ForeignKey('languoid.id'), primary_key=True),
+    sa.Column('isoretirement_id', sa.ForeignKey('isoretirement.id'), primary_key=True))
 
 
-def load(rebuild=False, root=_files.ROOT):
-    if _backend.DBFILE.exists():
-        if rebuild:
-            _backend.DBFILE.unlink()
-        else:
-            return
+#isoretirement_supersedes = sa.Table('isoretirement_supersedes', _backend.Model.metadata,
+#    sa.Column('isoretirement_languoid_id', sa.ForeignKey('isoretirement.languoid_id'), primary_key=True),
+#    sa.Column('supersedes', sa.String(3), sa.CheckConstraint('length(supersedes) = 3'), primary_key=True))
 
-    _backend.create_tables(_backend.engine)
 
-    start = time.time()
-    with _backend.engine.begin() as conn:
-        conn.execute('PRAGMA synchronous = OFF')
-        conn.execute('PRAGMA journal_mode = MEMORY')
-        conn = conn.execution_options(compiled_cache={})
-        _backend._load(conn, root)
+def load(root=_files.ROOT, with_values=True, rebuild=False):
+    _backend.load(make_loader(root, with_values), rebuild=rebuild)
+
+
+def make_loader(root, with_values):
+
+    def load_func(conn):
+        if with_values:
+            import treedb_values
+            treedb_values.make_loader(root=root)(conn)
         _load(conn, root)
-    print(time.time() - start)
+
+    return load_func
 
 
 def _load(conn, root):
@@ -305,12 +365,17 @@ def _load(conn, root):
     insert_ref = sa.insert(ClassificationRef, bind=conn).execute
     insert_enda = sa.insert(Endangerment, bind=conn).execute
     insert_el = sa.insert(EthnologueComment, bind=conn).execute
+
+    ir_where = sa.func.coalesce(IsoRetirement.change_request, IsoRetirement.effective) == \
+               sa.func.coalesce(sa.bindparam('change_request'), sa.bindparam('effective'))
+    has_ir = sa.select([sa.exists().where(ir_where)], bind=conn).scalar
+    select_irid = sa.select([IsoRetirement.id], bind=conn).where(ir_where).scalar
+    select_ir = sa.select([IsoRetirement], bind=conn).where(ir_where).execute
     insert_ir = sa.insert(IsoRetirement, bind=conn).execute
-    insert_irsu = isoretirement_supersedes.insert(bind=conn).execute
+    lang_ir = languoid_isoretirement.insert(bind=conn).execute
+    #insert_irsu = isoretirement_supersedes.insert(bind=conn).execute
 
-    insert_ord = itertools.count()
-
-    for l in iterlanguoids():
+    for l in iterlanguoids(root):
         lid = l['id']
 
         macroareas = l.pop('macroareas')
@@ -334,8 +399,8 @@ def _load(conn, root):
             lang_country(languoid_id=lid, country_id=cc)
         if sources is not None:
             for provider, data in iteritems(sources):
-                for s in data:
-                    insert_source(languoid_id=lid, provider=provider, ord=next(insert_ord), **s)
+                for i, s in enumerate(data, 1):
+                    insert_source(languoid_id=lid, provider=provider, ord=i, **s)
         if altnames is not None:
             for provider, names in iteritems(altnames):
                 for i, n in enumerate(names, 1):
@@ -361,61 +426,49 @@ def _load(conn, root):
             insert_el(languoid_id=lid, **hh_ethnologue_comment)
         if iso_retirement is not None:
             supersedes = iso_retirement.pop('supersedes')
-            insert_ir(languoid_id=lid, **iso_retirement)
-            for s in supersedes:
-                insert_irsu(isoretirement_languoid_id=lid, supersedes=s)
+            if iso_retirement['reason'] is None:  # from https://github.com/clld/glottolog/pull/128
+                continue
+            params = {k: iso_retirement[k] for k in ('change_request', 'effective')}
+            if has_ir(**params):
+                irid = select_irid(**params)
+                ir, = select_ir(**params)
+                disagreement = [(f, iso_retirement[f], ir[f])
+                                for f in ('reason', 'remedy', 'comment')
+                                if iso_retirement[f] != ir[f]]
+                if disagreement:
+                    for f, ini, db in disagreement:
+                        warnings.warn('%s %s %s:\n\t%r\n\t%r' % (ir.change_request, ir.effective, f, ini, db))
+            else:
+                irid, = insert_ir(**iso_retirement).inserted_primary_key
+            lang_ir(languoid_id=lid, isoretirement_id=irid)
+            #for s in supersedes:
+            #    insert_irsu(isoretirement_languoid_id=lid, supersedes=s)
 
 
-load(rebuild=REBUILD)
+load()
 
+_backend.print_rows(sa.select([Languoid]).order_by(Languoid.id).limit(5))
 
-print(sa.select([Languoid], bind=_backend.engine).limit(5).execute().fetchall())
+tree = Languoid.tree(with_terminal=True)
+_backend.print_rows(sa.select([tree]).where(tree.c.child_id == 'ramo1244'))
 
-
-def get_tree(with_terminal=False):
-    child = sa.orm.aliased(Languoid, name='child')
-    cols = [child.id.label('child_id'),
-            sa.literal(1).label('steps'),
-            child.parent_id.label('parent_id')]
-
-    if with_terminal:
-        cols.append(sa.literal(False).label('terminal'))
-
-    tree_1 = sa.select(cols)\
-        .where(child.parent_id != None)\
-        .cte(recursive=True).alias('tree')
-
-    parent = sa.orm.aliased(Languoid, name='parent')
-    fromclause = tree_1.join(parent, parent.id == tree_1.c.parent_id)
-    cols = [tree_1.c.child_id, tree_1.c.steps + 1, parent.parent_id]
-
-    if with_terminal:
-        gparent = sa.orm.aliased(Languoid, name='grandparent')
-        fromclause = fromclause.outerjoin(gparent, gparent.id == parent.parent_id)
-        cols.append(gparent.parent_id == None)
-
-    tree_2 = sa.select(cols).select_from(fromclause)\
-        .where(parent.parent_id != None)
-
-    return tree_1.union_all(tree_2)
-
-
-tree = get_tree(with_terminal=True)
-query = sa.select([tree], bind=_backend.engine).where(tree.c.child_id == 'ostr1239')
-print(query.execute().fetchall())
-
-tree = get_tree()  # FIXME: order_by
-query = sa.select([
+tree = Languoid.tree()
+squery = sa.select([
         Languoid.id,
-        Languoid.parent_id,
-        sa.select([sa.func.group_concat(tree.c.parent_id, '/')])
-            .where(tree.c.child_id == Languoid.id).label('path'),
-    ], bind=_backend.engine)
-print(query)
-print(query.limit(10).execute().fetchall())
+        tree.c.steps,
+        tree.c.parent_id.label('path_part'),
+    ])\
+    .select_from(sa.outerjoin(Languoid, tree, Languoid.id == tree.c.child_id))\
+    .order_by(Languoid.id, tree.c.steps.desc())
+query = sa.select([
+        squery.c.id,
+        sa.func.group_concat(squery.c.path_part, '/').label('path'),
+    ])\
+    .group_by(squery.c.id)
+_backend.print_rows(query.limit(5))
 
-
-import pandas as pd
+pf = _backend.pd_read_sql(query, index_col='id')
+print(pf)
 
 query = sa.select(
         [c for c in Languoid.__table__.columns] +
@@ -432,9 +485,8 @@ query = sa.select(
     ]).select_from(sa.outerjoin(Languoid, Endangerment))\
     .order_by(Languoid.id)
 
-df = pd.read_sql_query(query, _backend.engine, index_col='id')
+df = _backend.pd_read_sql(query, index_col='id')
 df.info()
-
 
 self, other = (sa.orm.aliased(Source) for _ in range(2))
 query = sa.select([
@@ -442,7 +494,7 @@ query = sa.select([
         sa.func.group_concat(self.pages).label('pages'),
         sa.func.group_concat(self.trigger).label('trigger'),
         sa.func.group_concat(self.languoid_id).label('languoid_id'),
-    ], bind=_backend.engine)\
+    ])\
     .where(sa.exists()
         .where(other.languoid_id == self.languoid_id)
         .where(other.bibfile == self.bibfile)
@@ -452,12 +504,15 @@ query = sa.select([
     .order_by(self.bibfile, self.bibkey)
 _backend.print_rows(query, '{bibfile:8} {bibkey:24} {pages!s:8} {trigger!s:12} {languoid_id}')
 
-
 self, other = (sa.alias(languoid_trigger) for _ in range(2))
-query = self.select(bind=_backend.engine)\
+query = self.select()\
     .where(sa.exists()
         .where(other.c.languoid_id == self.c.languoid_id)
         .where(other.c.field == self.c.field)
         .where(other.c.trigger == self.c.trigger)
         .where(other.c.ord != self.c.ord))
 _backend.print_rows(query, '{languoid_id} {field} {ord} {trigger}')
+
+#query = sa.select([IsoRetirement])\
+#    .order_by(IsoRetirement.change_request, IsoRetirement.code == None, IsoRetirement.code, IsoRetirement.name)
+#_backend.print_rows(query, '{languoid_id} {change_request!s} {effective!s} {code!s:4} {name!s}')
