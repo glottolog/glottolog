@@ -124,14 +124,14 @@ def iterlanguoids(root=_files.ROOT):
             }
         if cfg.has_section('iso_retirement'):
             item['iso_retirement'] = {
+                'code': cfg.get('iso_retirement', 'code'),
+                'name': cfg.get('iso_retirement', 'name'),
                 'change_request': cfg.get('iso_retirement', 'change_request', fallback=None),
-                'effective': getdate(cfg, 'iso_retirement', 'effective', fallback=None),
-                'supersedes': getlines(cfg, 'iso_retirement', 'supersedes'),
-                'code': cfg.get('iso_retirement', 'code', fallback=None),
-                'name': cfg.get('iso_retirement', 'name', fallback=None),
+                'effective': getdate(cfg, 'iso_retirement', 'effective'),
+                'reason': cfg.get('iso_retirement', 'reason'),
+                'change_to': getlines(cfg, 'iso_retirement', 'change_to'),
                 'remedy': cfg.get('iso_retirement', 'remedy', fallback=None),
                 'comment': cfg.get('iso_retirement', 'comment', fallback=None) or None,  # TODO: drop after cleaning
-                'reason': cfg.get('iso_retirement', 'reason', fallback=None),
             }
         yield item
 
@@ -280,47 +280,40 @@ class EthnologueComment(_backend.Model):
     comment = sa.Column(sa.Text, sa.CheckConstraint("comment != ''"), nullable=False)
 
 
-"""TODO: isoretirement https://github.com/clld/glottolog/issues/151
-
-isoretirement
-    languoid_id  # primary_key=True, only the most recent one, thus 1:1/0
-    code name
-    change_request effective
-    reason remedy comment
-
-isoretirement_changeto
-    isoretirement_languoid_id
-    changeto
-"""
-
-
 class IsoRetirement(_backend.Model):
 
     __tablename__ = 'isoretirement'
 
-    id = sa.Column(sa.Integer, primary_key=True)
-    change_request = sa.Column(sa.String(8), sa.CheckConstraint("change_request LIKE '____-___' "))
-    effective = sa.Column(sa.Date)
+    languoid_id = sa.Column(sa.ForeignKey('languoid.id'), primary_key=True)
     code = sa.Column(sa.String(3), sa.CheckConstraint('length(code) = 3'), nullable=False)
     name = sa.Column(sa.Text, sa.CheckConstraint("name != ''"), nullable=False)
-    reason = sa.Column(sa.Enum(*sorted(ISORETIREMENT_REASON)))
+    changerequest_id = sa.Column(sa.ForeignKey('changerequest.id'), nullable=False)
+    # TODO: move reason (comment?) to cr, clean remedy disagreements
+    reason = sa.Column(sa.Enum(*sorted(ISORETIREMENT_REASON)), nullable=False)
     remedy = sa.Column(sa.Text, sa.CheckConstraint("remedy != ''"))
     comment = sa.Column(sa.Text, sa.CheckConstraint("comment != ''"))
 
     __table_args__ = (
-        sa.CheckConstraint(sa.func.coalesce(change_request, effective) != None),
-        sa.Index('isoretirement_key', sa.func.coalesce(change_request, effective), unique=True),
+        sa.CheckConstraint("remedy IS NOT NULL OR reason = 'non-existent'"),
     )
 
 
-languoid_isoretirement = sa.Table('languoiud_isoretiremnt', _backend.Model.metadata,
-    sa.Column('languoid_id', sa.ForeignKey('languoid.id'), primary_key=True),
-    sa.Column('isoretirement_id', sa.ForeignKey('isoretirement.id'), primary_key=True))
+class ChangeRequest(_backend.Model):
+
+    __tablename__ = 'changerequest'
+
+    id = sa.Column(sa.Integer, primary_key=True)
+    name = sa.Column(sa.String(8), sa.CheckConstraint("name LIKE '____-___' "))
+    effective = sa.Column(sa.Date, nullable=False)
+
+    __table_args__ = (
+        sa.Index('changerequest_key', sa.func.coalesce(name, effective), unique=True),
+    )
 
 
-#isoretirement_supersedes = sa.Table('isoretirement_supersedes', _backend.Model.metadata,
-#    sa.Column('isoretirement_languoid_id', sa.ForeignKey('isoretirement.languoid_id'), primary_key=True),
-#    sa.Column('supersedes', sa.String(3), sa.CheckConstraint('length(supersedes) = 3'), primary_key=True))
+isoretirement_changeto = sa.Table('isoretirement_changeto', _backend.Model.metadata,
+    sa.Column('isoretirement_languoid_id', sa.ForeignKey('isoretirement.languoid_id'), primary_key=True),
+    sa.Column('change_to', sa.String(3), sa.CheckConstraint('length(change_to) = 3'), primary_key=True))
 
 
 def load(root=_files.ROOT, with_values=True, rebuild=False):
@@ -357,14 +350,12 @@ def _load(conn, root):
     insert_enda = sa.insert(Endangerment, bind=conn).execute
     insert_el = sa.insert(EthnologueComment, bind=conn).execute
 
-    ir_where = sa.func.coalesce(IsoRetirement.change_request, IsoRetirement.effective) == \
-               sa.func.coalesce(sa.bindparam('change_request'), sa.bindparam('effective'))
-    has_ir = sa.select([sa.exists().where(ir_where)], bind=conn).scalar
-    select_irid = sa.select([IsoRetirement.id], bind=conn).where(ir_where).scalar
-    select_ir = sa.select([IsoRetirement], bind=conn).where(ir_where).execute
+    cr_where = sa.func.coalesce(ChangeRequest.name, ChangeRequest.effective) == \
+               sa.func.coalesce(sa.bindparam('name'), sa.bindparam('effective'))
+    select_crid = sa.select([ChangeRequest.id], bind=conn).where(cr_where).scalar
+    insert_cr = sa.insert(ChangeRequest, bind=conn).execute
     insert_ir = sa.insert(IsoRetirement, bind=conn).execute
-    lang_ir = languoid_isoretirement.insert(bind=conn).execute
-    #insert_irsu = isoretirement_supersedes.insert(bind=conn).execute
+    insert_irct = isoretirement_changeto.insert(bind=conn).execute
 
     for l in iterlanguoids(root):
         lid = l['id']
@@ -416,24 +407,22 @@ def _load(conn, root):
         if hh_ethnologue_comment is not None:
             insert_el(languoid_id=lid, **hh_ethnologue_comment)
         if iso_retirement is not None:
-            supersedes = iso_retirement.pop('supersedes')
-            if iso_retirement['reason'] is None:  # from https://github.com/clld/glottolog/pull/128
-                continue
-            params = {k: iso_retirement[k] for k in ('change_request', 'effective')}
-            if has_ir(**params):
-                irid = select_irid(**params)
-                ir, = select_ir(**params)
-                disagreement = [(f, iso_retirement[f], ir[f])
-                                for f in ('reason', 'remedy', 'comment')
-                                if iso_retirement[f] != ir[f]]
-                if disagreement:
-                    for f, ini, db in disagreement:
-                        warnings.warn('%s %s %s:\n\t%r\n\t%r' % (ir.change_request, ir.effective, f, ini, db))
+            cr, effective = (iso_retirement.pop(k) for k in ('change_request', 'effective'))
+            crid = select_crid(name=cr, effective=effective)
+            if crid is None:
+                crid, = insert_cr(name=cr, effective=effective).inserted_primary_key
             else:
-                irid, = insert_ir(**iso_retirement).inserted_primary_key
-            lang_ir(languoid_id=lid, isoretirement_id=irid)
-            #for s in supersedes:
-            #    insert_irsu(isoretirement_languoid_id=lid, supersedes=s)
+                pass
+            #    disagreement = [(f, iso_retirement[f], ir[f])
+            #                    for f in ('reason', 'remedy', 'comment')
+            #                    if iso_retirement[f] != ir[f]]
+            #    if disagreement:
+            #        for f, ini, db in disagreement:
+            #            warnings.warn('%s %s %s:\n\t%r\n\t%r' % (ir.change_request, ir.effective, f, ini, db))
+            change_to = iso_retirement.pop('change_to')
+            insert_ir(languoid_id=lid, changerequest_id= crid, **iso_retirement)
+            for c in change_to:
+                insert_irct(isoretirement_languoid_id=lid, change_to=c)
 
 
 load()
