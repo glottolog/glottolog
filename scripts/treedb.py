@@ -282,24 +282,15 @@ class EthnologueComment(_backend.Model):
 
 """TODO: isoretirement https://github.com/clld/glottolog/issues/151
 
-languoid
-    isoretirement_id  # (only the most recent one, thus n:1?)
-    isoretirement_code
-    isoretirement_name
-
 isoretirement
-    id
+    languoid_id  # primary_key=True, only the most recent one, thus 1:1/0
+    code name
     change_request effective
     reason remedy comment
 
-isoretirementsuperseder?
-    isoretirement_id
-    languoid_id
-    code
-    name
-
-isoretirementsupersedes?
-    supersedes
+isoretirement_changeto
+    isoretirement_languoid_id
+    changeto
 """
 
 

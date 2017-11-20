@@ -61,14 +61,14 @@ class Fields(object):
         ('hh_ethnologue_comment', 'ethnologue_versions'): False,
         ('hh_ethnologue_comment', 'comment'): False,
 
-        ('iso_retirement', 'change_request'): False,
-        ('iso_retirement', 'effective'): False,
-        ('iso_retirement', 'supersedes'): True,
         ('iso_retirement', 'code'): False,
         ('iso_retirement', 'name'): False,
+        ('iso_retirement', 'change_request'): False,
+        ('iso_retirement', 'effective'): False,
+        ('iso_retirement', 'reason'): False,
+        ('iso_retirement', 'change_to'): True,
         ('iso_retirement', 'remedy'): False,
         ('iso_retirement', 'comment'): False,
-        ('iso_retirement', 'reason'): False,
     }
 
     @classmethod
