@@ -93,7 +93,10 @@ def save(pairs, root=ROOT, basename=BASENAME, assume_changed=False,
             cfg.remove_section(s)
         for section, s in iteritems(d):
             if section != 'core':
-                drop_options = set(cfg.options(section)).difference(set(s))
+                drop_options = set(cfg.options(section))
+                if section == 'iso_retirement':
+                    drop_options.discard('change_to')
+                drop_options.difference_update(set(s))
                 changed = changed or bool(drop_options)
                 for o in drop_options:
                     cfg.remove_option(section, o)
