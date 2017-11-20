@@ -252,7 +252,7 @@ def print_stats(bind=_backend.engine, execute=False):
     _backend.print_rows(query, '{section:<22} {option:<22} {n:,}')
 
 
-def drop_broken_isoretirements(bind=_backend.engine, save=False, verbose=True):
+def drop_broken_isoretirements(bind=_backend.engine, save=True, verbose=True):
     other, other_option = sa.orm.aliased(Data), sa.orm.aliased(Option)
     delete = sa.delete(Data, bind=bind)\
         .where(sa.exists()
@@ -265,7 +265,24 @@ def drop_broken_isoretirements(bind=_backend.engine, save=False, verbose=True):
             .where(other_option.option == 'supersedes'))
     rows_deleted = delete.execute().rowcount
     if save:
-        _to_files(bind=bind, verbose=verbose)
+        to_files(bind=bind, verbose=verbose)
+    return rows_deleted
+
+
+def drop_duplicate_sources(bind=_backend.engine, save=True, verbose=True):
+    other = sa.orm.aliased(Data)
+    delete = sa.delete(Data, bind=bind)\
+        .where(sa.exists()
+            .where(Option.id == Data.option_id)
+            .where(Option.section == 'sources'))\
+        .where(sa.exists()
+            .where(other.path_id == Data.path_id)
+            .where(other.option_id == Data.option_id)
+            .where(other.value == Data.value)
+            .where(other.line < Data.line))
+    rows_deleted = delete.execute().rowcount
+    if save:
+        to_files(bind=bind, verbose=verbose)
     return rows_deleted
 
 
@@ -278,4 +295,4 @@ if __name__ == '__main__':
     print_stats()
     print_fields()
     #drop_broken_isoretirements()
-
+    #drop_duplicate_sources()
