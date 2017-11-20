@@ -18,9 +18,11 @@ Merging the BibTeX files
      - Switch back to `clld/glottolog`
      - Run `glottolog copy_benjamins PATH/TO/clld/benjamins/benjamins.bib`
 2. Run `glottolog bib`
-3. Merge list of replacements for refs
+3. Merge list of replacements for refs references/replacements.json
 
 4. FIXME: Create list of new refs/languoids, querying the old db.
+   - look up previous version in releases.ini
+   - compute (new - old) for each criterion
 5. Drop db
 
 - update version info and editors
