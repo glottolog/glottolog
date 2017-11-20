@@ -207,11 +207,13 @@ class Source(_backend.Model):
     languoid_id = sa.Column(sa.ForeignKey('languoid.id'), primary_key=True)
     bibfile = sa.Column(sa.Text, sa.CheckConstraint("bibfile != ''"), primary_key=True)
     bibkey = sa.Column(sa.Text, sa.CheckConstraint("bibkey != ''"), primary_key=True)
-    # FIXME: clean up duplicates (ord: primary key-> unique(languoid_id, ord))
-    ord = sa.Column(sa.Integer, sa.CheckConstraint('ord >= 1'), primary_key=True)
+    ord = sa.Column(sa.Integer, sa.CheckConstraint('ord >= 1'), nullable=False)
     pages = sa.Column(sa.Text, sa.CheckConstraint("pages != ''"))
     trigger = sa.Column(sa.Text, sa.CheckConstraint("trigger != ''"))
 
+    __table_args__ = (
+        sa.UniqueConstraint(languoid_id, ord),
+    )
 
 class Altname(_backend.Model):
 
@@ -467,22 +469,6 @@ query = sa.select(
 
 df = _backend.pd_read_sql(query, index_col='id')
 df.info()
-
-self, other = (sa.orm.aliased(Source) for _ in range(2))
-query = sa.select([
-        self.bibfile, self.bibkey,
-        sa.func.group_concat(self.pages).label('pages'),
-        sa.func.group_concat(self.trigger).label('trigger'),
-        sa.func.group_concat(self.languoid_id).label('languoid_id'),
-    ])\
-    .where(sa.exists()
-        .where(other.languoid_id == self.languoid_id)
-        .where(other.bibfile == self.bibfile)
-        .where(other.bibkey == self.bibkey)
-        .where(other.ord != self.ord))\
-    .group_by(self.bibfile, self.bibkey)\
-    .order_by(self.bibfile, self.bibkey)
-_backend.print_rows(query, '{bibfile:8} {bibkey:24} {pages!s:8} {trigger!s:12} {languoid_id}')
 
 self, other = (sa.alias(languoid_trigger) for _ in range(2))
 query = self.select()\
