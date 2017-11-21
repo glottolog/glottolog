@@ -205,6 +205,7 @@ class Source(_backend.Model):
     __tablename__ = 'source'
 
     languoid_id = sa.Column(sa.ForeignKey('languoid.id'), primary_key=True)
+    provider = sa.Column(sa.Text, sa.CheckConstraint("provider != ''"), primary_key=True)
     bibfile = sa.Column(sa.Text, sa.CheckConstraint("bibfile != ''"), primary_key=True)
     bibkey = sa.Column(sa.Text, sa.CheckConstraint("bibkey != ''"), primary_key=True)
     ord = sa.Column(sa.Integer, sa.CheckConstraint('ord >= 1'), nullable=False)
@@ -212,8 +213,9 @@ class Source(_backend.Model):
     trigger = sa.Column(sa.Text, sa.CheckConstraint("trigger != ''"))
 
     __table_args__ = (
-        sa.UniqueConstraint(languoid_id, ord),
+        sa.UniqueConstraint(languoid_id, provider, ord),
     )
+
 
 class Altname(_backend.Model):
 
