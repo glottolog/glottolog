@@ -251,9 +251,21 @@ def print_stats(bind=_backend.engine, execute=False):
     _backend.print_rows(query, '{section:<22} {option:<22} {n:,}')
 
 
-def drop_broken_isoretirements(bind=_backend.engine, save=True, verbose=True):
+
+def dropfunc(func, bind=_backend.engine, save=True, verbose=True):
+    def wrapper(bind=bind, save=save, verbose=verbose):
+        delete_query = func()
+        rows_deleted = bind.execute(delete_query).rowcount
+        if rows_deleted and save:
+            to_files(bind=bind, verbose=verbose)
+        return rows_deleted
+    return wrapper
+
+
+@dropfunc
+def drop_broken_isoretirements():
     other, other_option = sa.orm.aliased(Data), sa.orm.aliased(Option)
-    delete = sa.delete(Data, bind=bind)\
+    return sa.delete(Data)\
         .where(sa.exists()
             .where(Option.id == Data.option_id)
             .where(Option.section == 'iso_retirement'))\
@@ -262,15 +274,12 @@ def drop_broken_isoretirements(bind=_backend.engine, save=True, verbose=True):
             .where(other_option.id == other.option_id)
             .where(other_option.section == Option.section)
             .where(other_option.option == 'supersedes'))
-    rows_deleted = delete.execute().rowcount
-    if rows_deleted and save:
-        to_files(bind=bind, verbose=verbose)
-    return rows_deleted
 
 
-def drop_duplicate_sources(bind=_backend.engine, save=True, verbose=True):
+@dropfunc
+def drop_duplicate_sources():
     other = sa.orm.aliased(Data)
-    delete = sa.delete(Data, bind=bind)\
+    return sa.delete(Data)\
         .where(sa.exists()
             .where(Option.id == Data.option_id)
             .where(Option.section == 'sources'))\
@@ -279,23 +288,30 @@ def drop_duplicate_sources(bind=_backend.engine, save=True, verbose=True):
             .where(other.option_id == Data.option_id)
             .where(other.value == Data.value)
             .where(other.line < Data.line))
-    rows_deleted = delete.execute().rowcount
-    if rows_deleted and save:
-        to_files(bind=bind, verbose=verbose)
-    return rows_deleted
 
 
-def drop_empty_string_comments(bind=_backend.engine, save=True, verbose=True):
-    delete = sa.delete(Data, bind=bind)\
+@dropfunc
+def drop_empty_string_comments():
+    return sa.delete(Data)\
         .where(Data.value == '')\
         .where(sa.exists()
             .where(Option.id == Data.option_id)
             .where(Option.section == 'iso_retirement')
             .where(Option.option == 'comment'))
-    rows_deleted = delete.execute().rowcount
-    if rows_deleted and save:
-        to_files(bind=bind, verbose=verbose)
-    return rows_deleted
+
+
+@dropfunc
+def drop_duplicated_triggers():
+    other = sa.orm.aliased(Data)
+    return sa.delete(Data)\
+        .where(sa.exists()
+            .where(Option.id == Data.option_id)
+            .where(Option.section == 'triggers'))\
+        .where(sa.exists()
+            .where(other.path_id == Data.path_id)
+            .where(other.option_id == Data.option_id)
+            .where(other.value == Data.value)
+            .where(other.line < Data.line))
 
 
 if __name__ == '__main__':
@@ -308,3 +324,5 @@ if __name__ == '__main__':
     print_fields()
     #drop_broken_isoretirements()
     #drop_duplicate_sources()
+    #drop_empty_string_comments()
+    #drop_duplicated_triggers()
