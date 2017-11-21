@@ -295,14 +295,6 @@ class IsoRetirement(_backend.Model):
     code = sa.Column(sa.String(3), sa.CheckConstraint('length(code) = 3'), nullable=False)
     name = sa.Column(sa.Text, sa.CheckConstraint("name != ''"), nullable=False)
     changerequest_id = sa.Column(sa.ForeignKey('changerequest.id'), nullable=False)
-    # TODO: move reason (comment?) to cr, clean remedy disagreements
-    reason = sa.Column(sa.Enum(*sorted(ISORETIREMENT_REASON)), nullable=False)
-    remedy = sa.Column(sa.Text, sa.CheckConstraint("remedy != ''"))
-    comment = sa.Column(sa.Text, sa.CheckConstraint("comment != ''"))
-
-    __table_args__ = (
-        sa.CheckConstraint("remedy IS NOT NULL OR reason = 'non-existent'"),
-    )
 
 
 class ChangeRequest(_backend.Model):
@@ -312,15 +304,21 @@ class ChangeRequest(_backend.Model):
     id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.String(8), sa.CheckConstraint("name LIKE '____-___' "))
     effective = sa.Column(sa.Date, nullable=False)
+    reason = sa.Column(sa.Enum(*sorted(ISORETIREMENT_REASON)), nullable=False)
+    remedy = sa.Column(sa.Text, sa.CheckConstraint("remedy != ''"))
+    comment = sa.Column(sa.Text, sa.CheckConstraint("comment != ''"))
 
     __table_args__ = (
         sa.Index('changerequest_key', sa.func.coalesce(name, effective), unique=True),
+        sa.CheckConstraint("remedy IS NOT NULL OR reason = 'non-existent'"),
     )
 
 
-isoretirement_changeto = sa.Table('isoretirement_changeto', _backend.Model.metadata,
-    sa.Column('isoretirement_languoid_id', sa.ForeignKey('isoretirement.languoid_id'), primary_key=True),
-    sa.Column('change_to', sa.String(3), sa.CheckConstraint('length(change_to) = 3'), primary_key=True))
+changerequest_changeto = sa.Table('changerequest_changeto', _backend.Model.metadata,
+    sa.Column('changerequest_id', sa.ForeignKey('changerequest.id'), primary_key=True),
+    sa.Column('change_to', sa.String(3), sa.CheckConstraint('length(change_to) = 3'), primary_key=True),
+    sa.Column('ord', sa.Integer, sa.CheckConstraint('ord >= 1'), nullable=False),
+    sa.UniqueConstraint('changerequest_id', 'ord'))
 
 
 def load(root=_files.ROOT, with_values=True, rebuild=False):
@@ -362,7 +360,7 @@ def _load(conn, root):
     select_crid = sa.select([ChangeRequest.id], bind=conn).where(cr_where).scalar
     insert_cr = sa.insert(ChangeRequest, bind=conn).execute
     insert_ir = sa.insert(IsoRetirement, bind=conn).execute
-    insert_irct = isoretirement_changeto.insert(bind=conn).execute
+    insert_crct = changerequest_changeto.insert(bind=conn).execute
 
     for l in iterlanguoids(root):
         lid = l['id']
@@ -414,22 +412,27 @@ def _load(conn, root):
         if hh_ethnologue_comment is not None:
             insert_el(languoid_id=lid, **hh_ethnologue_comment)
         if iso_retirement is not None:
-            cr, effective = (iso_retirement.pop(k) for k in ('change_request', 'effective'))
-            crid = select_crid(name=cr, effective=effective)
+            crkey = {c: iso_retirement.pop(i) for c, i in [('name', 'change_request'), ('effective', 'effective')]}
+            crparams = {i: iso_retirement.pop(i) for i in ('reason', 'change_to', 'remedy', 'comment')}
+            crid = select_crid(**crkey)
             if crid is None:
-                crid, = insert_cr(name=cr, effective=effective).inserted_primary_key
+                crparams.update(crkey)
+                change_to = crparams.pop('change_to')
+                crid, = insert_cr(**crparams).inserted_primary_key
+                for i, c in enumerate(change_to, 1):
+                    insert_crct(changerequest_id=crid, change_to=c, ord=i)
             else:
-                pass
-            #    disagreement = [(f, iso_retirement[f], ir[f])
-            #                    for f in ('reason', 'remedy', 'comment')
-            #                    if iso_retirement[f] != ir[f]]
-            #    if disagreement:
-            #        for f, ini, db in disagreement:
-            #            warnings.warn('%s %s %s:\n\t%r\n\t%r' % (ir.change_request, ir.effective, f, ini, db))
-            change_to = iso_retirement.pop('change_to')
-            insert_ir(languoid_id=lid, changerequest_id= crid, **iso_retirement)
-            for c in change_to:
-                insert_irct(isoretirement_languoid_id=lid, change_to=c)
+                # TODO: fix disagreement
+                indb = dict(sa.select([ChangeRequest.reason, ChangeRequest.remedy, ChangeRequest.comment], bind=conn)\
+                    .where(ChangeRequest.id == crid).execute().first())
+                indb['change_to'] = [c for c, in sa.select([changerequest_changeto.c.change_to], bind=conn)\
+                    .where(changerequest_changeto.c.changerequest_id == crid)\
+                    .order_by(changerequest_changeto.c.ord).execute()]
+                disagreement = [(k, indb[k], crparams[k]) for k in indb if indb[k] != crparams[k]]
+                if disagreement:
+                    for f, db, ini in disagreement:
+                        warnings.warn('%s %s:\n\t%r\n\t%r' % (crid, f, db, ini))
+            insert_ir(languoid_id=lid, changerequest_id=crid, **iso_retirement)
 
 
 load()
