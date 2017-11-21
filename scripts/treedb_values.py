@@ -286,6 +286,19 @@ def drop_duplicate_sources(bind=_backend.engine, save=True, verbose=True):
     return rows_deleted
 
 
+def drop_empty_string_comments(bind=_backend.engine, save=True, verbose=True):
+    delete = sa.delete(Data, bind=bind)\
+        .where(Data.value == '')\
+        .where(sa.exists()
+            .where(Option.id == Data.option_id)
+            .where(Option.section == 'iso_retirement')
+            .where(Option.option == 'comment'))
+    rows_deleted = delete.execute().rowcount
+    if rows_deleted and save:
+        to_files(bind=bind, verbose=verbose)
+    return rows_deleted
+
+
 if __name__ == '__main__':
     load()
     print(next(iterrecords()))
