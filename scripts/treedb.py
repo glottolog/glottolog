@@ -228,9 +228,9 @@ class Altname(_backend.Model):
 languoid_trigger = sa.Table('languoid_trigger', _backend.Model.metadata,
     sa.Column('languoid_id', sa.ForeignKey('languoid.id'), primary_key=True),
     sa.Column('field', sa.Enum(*sorted(TRIGGER_FIELD)), primary_key=True),
-    # FIXME: this should be set-like, right?
-    sa.Column('ord', sa.Integer, sa.CheckConstraint('ord >= 1'), primary_key=True),
-    sa.Column('trigger', sa.Text, sa.CheckConstraint("trigger != ''"), primary_key=True))
+    sa.Column('trigger', sa.Text, sa.CheckConstraint("trigger != ''"), primary_key=True),
+    sa.Column('ord', sa.Integer, sa.CheckConstraint('ord >= 1'), nullable=False),
+    sa.UniqueConstraint('languoid_id', 'field', 'ord'))
 
 
 languoid_identifier = sa.Table('languoid_identifier', _backend.Model.metadata,
@@ -392,7 +392,7 @@ def _load(conn, root):
         if triggers is not None:
             for field, triggers in iteritems(triggers):
                 for i, t in enumerate(triggers, 1):
-                    insert_trigger(languoid_id=lid, field=field, ord=i, trigger=t)
+                    insert_trigger(languoid_id=lid, field=field, trigger=t, ord=i)
         if identifier is not None:
             for site, i in iteritems(identifier):
                 insert_ident(languoid_id=lid, site=site, identifier=i)
@@ -469,12 +469,3 @@ query = sa.select(
 
 df = _backend.pd_read_sql(query, index_col='id')
 df.info()
-
-self, other = (sa.alias(languoid_trigger) for _ in range(2))
-query = self.select()\
-    .where(sa.exists()
-        .where(other.c.languoid_id == self.c.languoid_id)
-        .where(other.c.field == self.c.field)
-        .where(other.c.trigger == self.c.trigger)
-        .where(other.c.ord != self.c.ord))
-_backend.print_rows(query, '{languoid_id} {field} {ord} {trigger}')
