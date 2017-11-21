@@ -181,7 +181,7 @@ def get_retirements(scrape_missing_remedies=True):
     
     if scrape_missing_remedies:  # get remedies for non-splits
 
-        def get_detail_pages(iso_codes, rebuild=False, encoding='utf-8', cache='iso_detail_pages.json'):
+        def get_detail_pages(iso_codes, rebuild=True, encoding='utf-8', cache='iso_detail_pages.json'):
             if rebuild or not os.path.exists(cache):
                 if PY2:
                     open_encoding, decode = None, lambda s: s.decode(encoding)

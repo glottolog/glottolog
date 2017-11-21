@@ -221,14 +221,15 @@ class ClassificationComment(object):
 
 @attr.s
 class ISORetirement(object):
+
     code = attr.ib(default=None)
-    comment = attr.ib(convert=lambda s: s.replace('\n.', '\n') if s else s, default=None)
     name = attr.ib(default=None)
+    change_request = attr.ib(default=None)
     effective = attr.ib(default=None)
     reason = attr.ib(default=None)
+    change_to = attr.ib(default=attr.Factory(list))
     remedy = attr.ib(default=None)
-    change_request = attr.ib(default=None)
-    supersedes = attr.ib(default=attr.Factory(list))
+    comment = attr.ib(convert=lambda s: s.replace('\n.', '\n') if s else s, default=None)
 
     def asdict(self):
         return attr.asdict(self)

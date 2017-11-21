@@ -335,10 +335,12 @@ class Languoid(UnicodeMixin):
     @property
     def iso_retirement(self):
         if 'iso_retirement' in self.cfg:
-            kw = self.cfg['iso_retirement']
+            kw = dict(self.cfg['iso_retirement'])
+            if 'change_to' in kw:
+                kw['change_to'] = self.cfg.getlist('iso_retirement', 'change_to')
             if 'comment' in kw:
                 kw['comment'] = self.cfg.gettext('iso_retirement', 'comment')
-            return ISORetirement(**self.cfg['iso_retirement'])
+            return ISORetirement(**kw)
 
     @property
     def fname(self):
