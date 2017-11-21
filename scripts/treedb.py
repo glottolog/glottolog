@@ -257,9 +257,12 @@ class ClassificationRef(_backend.Model):
     kind = sa.Column(sa.Enum(*sorted(CLASSIFICATION_KIND)), primary_key=True)
     bibfile = sa.Column(sa.Text, sa.CheckConstraint("bibfile != ''"),primary_key=True)
     bibkey = sa.Column(sa.Text, sa.CheckConstraint("bibkey != ''"), primary_key=True)
-    # FIXME: check for duplicates
-    ord = sa.Column(sa.Integer, sa.CheckConstraint('ord >= 1'), primary_key=True)
+    ord = sa.Column(sa.Integer, sa.CheckConstraint('ord >= 1'), nullable=False)
     pages = sa.Column(sa.Text, sa.CheckConstraint("pages != ''"))
+
+    __table_args__ = (
+        sa.UniqueConstraint(languoid_id, kind, ord),
+    )
 
 
 class Endangerment(_backend.Model):
