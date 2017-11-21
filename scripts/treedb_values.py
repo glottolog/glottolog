@@ -314,6 +314,21 @@ def drop_duplicated_triggers():
             .where(other.line < Data.line))
 
 
+@dropfunc
+def drop_duplicated_crefs():
+    other = sa.orm.aliased(Data)
+    return sa.delete(Data)\
+        .where(sa.exists()
+            .where(Option.id == Data.option_id)
+            .where(Option.section == 'classification')
+            .where(Option.option.in_(('familyrefs', 'subrefs'))))\
+        .where(sa.exists()
+            .where(other.path_id == Data.path_id)
+            .where(other.option_id == Data.option_id)
+            .where(other.value == Data.value)
+            .where(other.line < Data.line))
+
+
 if __name__ == '__main__':
     load()
     print(next(iterrecords()))
@@ -326,3 +341,4 @@ if __name__ == '__main__':
     #drop_duplicate_sources()
     #drop_empty_string_comments()
     #drop_duplicated_triggers()
+    #drop_duplicated_crefs()
