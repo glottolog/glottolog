@@ -131,7 +131,7 @@ def iterlanguoids(root=_files.ROOT):
                 'reason': cfg.get('iso_retirement', 'reason'),
                 'change_to': getlines(cfg, 'iso_retirement', 'change_to'),
                 'remedy': cfg.get('iso_retirement', 'remedy', fallback=None),
-                'comment': cfg.get('iso_retirement', 'comment', fallback=None) or None,  # TODO: drop after cleaning
+                'comment': cfg.get('iso_retirement', 'comment', fallback=None),
             }
         yield item
 

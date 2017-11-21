@@ -128,8 +128,7 @@ class Data(_backend.Model):
     option_id = sa.Column(sa.ForeignKey('_option.id'), primary_key=True)
     line = sa.Column(sa.Integer, sa.CheckConstraint('line >= 0'), primary_key=True)
     # TODO: consider adding version for selective updates
-    # TODO: should there be empty strings here?
-    value = sa.Column(sa.Text, nullable=False)
+    value = sa.Column(sa.Text, sa.CheckConstraint("value != ''"), nullable=False)
 
 
 def load(root=_files.ROOT, rebuild=False):
