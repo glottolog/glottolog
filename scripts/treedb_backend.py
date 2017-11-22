@@ -11,6 +11,7 @@ import zipfile
 import contextlib
 
 import sqlalchemy as sa
+import sqlalchemy.orm
 import sqlalchemy.ext.declarative
 
 PY2 = sys.version_info < (3,)
@@ -20,7 +21,12 @@ if PY2:
 else:
     iteritems = lambda x: iter(x.items())
 
-__all__ = ['engine', 'Model', 'load', 'export', 'print_rows', 'iteritems']
+__all__ = [
+    'engine', 'Session', 'Model',
+    'load', 'export',
+    'print_rows',
+    'iteritems',
+]
 
 DBFILE = pathlib.Path('treedb.sqlite3')
 
@@ -33,6 +39,9 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     """Activate sqlite3 forein key checks."""
     with contextlib.closing(dbapi_connection.cursor()) as cursor:
         cursor.execute('PRAGMA foreign_keys = ON')
+
+
+Session = sa.orm.sessionmaker(bind=engine)
 
 
 Model = sa.ext.declarative.declarative_base()
