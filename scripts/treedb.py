@@ -274,6 +274,17 @@ class Source(_backend.Model):
 
     languoid = sa.orm.relationship('Languoid', innerjoin=True, back_populates='sources')
 
+    @classmethod
+    def printf(cls):
+        return sa.case([
+            (sa.and_(cls.pages != None, cls.trigger != None),
+                 sa.func.printf('**%s:%s**:%s<trigger "%s">', cls.bibfile, cls.bibkey, cls.pages, cls.trigger)),
+            (cls.pages != None,
+                 sa.func.printf('**s:%s**:%s', cls.bibfile, cls.bibkey, cls.pages)),
+            (cls.trigger != None,
+                 sa.func.printf('**%s:%s**<trigger "%s">', cls.bibfile, cls.bibkey, cls.trigger)),
+            ], else_=sa.func.printf('**%s:%s**', cls.bibfile, cls.bibkey))
+
 
 class Altname(_backend.Model):
 
@@ -364,6 +375,11 @@ class ClassificationRef(_backend.Model):
             self.languoid_id, self.kind, self.bibfile, self.bibkey)
 
     languoid = sa.orm.relationship('Languoid', innerjoin=True)
+
+    @classmethod
+    def printf(cls):
+        format_ = sa.case([(cls.pages != None, '**s:%s**:%s')], else_='**%s:%s**')
+        return sa.func.printf(format_, cls.bibfile, cls.bibkey, cls.pages)
 
 
 class Endangerment(_backend.Model):
@@ -578,6 +594,74 @@ def _load(conn, root):
             insert_ir(languoid_id=lid, changerequest_id=crid, **iso_retirement)
 
 
+def get_query():
+    def get_cols(model, label='%s', ignore='id'):
+        cols = model.__table__.columns
+        if ignore:
+            ignore_suffix = '_%s' % ignore
+            cols = [c for c in cols if c.name != ignore and not c.name.endswith(ignore_suffix)]
+        return [c.label(label % c.name) for c in cols]
+
+    idents = [(s, sa.orm.aliased(Identifier)) for s in sorted(IDENTIFIER_SITE)]
+    s, i = idents[0]
+    fromclause = sa.outerjoin(Languoid, i, sa.and_(i.languoid_id == Languoid.id, i.site == s))
+    for s, i in idents[1:]:
+        fromclause = fromclause.outerjoin(i, sa.and_(i.languoid_id == Languoid.id, i.site == s))
+    ltrig, itrig = (sa.orm.aliased(Trigger) for _ in range(2))
+    subc, famc = (sa.orm.aliased(ClassificationComment) for _ in range(2))
+    subr, famr = (sa.orm.aliased(ClassificationRef) for _ in range(2))
+    return sa.select([
+            Languoid,
+            sa.select([sa.func.group_concat(languoid_macroarea.c.macroarea_name, ', ')])
+                .where(languoid_macroarea.c.languoid_id == Languoid.id)
+                .order_by(languoid_macroarea)
+                .label('macroareas'),
+            sa.select([sa.func.group_concat(Country.id, ' ')])
+                .select_from(languoid_country.join(Country))
+                .where(languoid_country.c.languoid_id == Languoid.id)
+                .order_by(Country.id)
+                .label('countries'),
+            sa.select([sa.func.group_concat(Source.printf(), ', ')])
+                .where(Source.languoid_id == Languoid.id)
+                .where(Source.provider == 'glottolog')
+                .order_by(Source.ord)
+                .label('sources_glottolog'),
+            ] + [i.identifier.label('identifier_%s' % s) for s, i in idents] + [
+            sa.select([sa.func.group_concat(ltrig.trigger, ', ')])
+                .where(ltrig.languoid_id == Languoid.id)
+                .where(ltrig.field == 'lgcode')
+                .order_by(ltrig.ord)
+                .label('triggers_lgcode'),
+            sa.select([sa.func.group_concat(itrig.trigger, ', ')])
+                .where(itrig.languoid_id == Languoid.id)
+                .where(itrig.field == 'inlg')
+                .order_by(itrig.ord)
+                .label('trigggers_inlg'),
+            subc.comment.label('classification_sub'),
+            sa.select([sa.func.group_concat(subr.printf(), ', ')])
+                .where(subr.languoid_id == Languoid.id)
+                .where(subr.kind == 'sub')
+                .order_by(subr.ord)
+                .label('classification_subrefs'),
+            famc.comment.label('classification_family'),
+            sa.select([sa.func.group_concat(famr.printf(), ', ')])
+                .where(famr.languoid_id == Languoid.id)
+                .where(famr.kind == 'family')
+                .order_by(famr.ord)
+                .label('classification_familyrefs'),
+            ] + get_cols(Endangerment, label='endangerment_%s') +
+            get_cols(EthnologueComment, label='elcomment_%s') +
+            get_cols(IsoRetirement, label='isoretirement_%s') +
+            get_cols(ChangeRequest, label='isoretirement_cr_%s')
+        ).select_from(fromclause
+            .outerjoin(subc, sa.and_(subc.languoid_id == Languoid.id, subc.kind == 'sub'))
+            .outerjoin(famc, sa.and_(famc.languoid_id == Languoid.id, famc.kind == 'family'))
+            .outerjoin(Endangerment)
+            .outerjoin(EthnologueComment)
+            .outerjoin(sa.join(IsoRetirement, ChangeRequest)))\
+        .order_by(Languoid.id)
+
+
 load()
 
 _backend.print_rows(sa.select([Languoid]).order_by(Languoid.id).limit(5))
@@ -603,20 +687,6 @@ _backend.print_rows(query.limit(5))
 pf = _backend.pd_read_sql(query, index_col='id')
 print(pf)
 
-query = sa.select(
-        [c for c in Languoid.__table__.columns] +
-        [c.label('endangerment_%s' % c.name) for c in Endangerment.__table__.columns if c.name != 'languoid_id'] +
-        [sa.select([sa.func.group_concat(languoid_macroarea.c.macroarea_name, ', ')])
-             .where(languoid_macroarea.c.languoid_id == Languoid.id)
-             .order_by(languoid_macroarea)
-             .label('macroareas'),
-         sa.select([sa.func.group_concat(Country.id, ' ')])
-             .select_from(languoid_country.join(Country))
-             .where(languoid_country.c.languoid_id == Languoid.id)
-             .order_by(Country.id)
-             .label('countries')
-    ]).select_from(sa.outerjoin(Languoid, Endangerment))\
-    .order_by(Languoid.id)
-
+query = get_query()
 df = _backend.pd_read_sql(query, index_col='id')
 df.info()
