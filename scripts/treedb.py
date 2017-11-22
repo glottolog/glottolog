@@ -85,6 +85,14 @@ def iterlanguoids(root=_files.ROOT):
         '(<trigger "(?P<trigger>[^\"]+)">)?')):
         return pattern.match(s).groupdict()
 
+    def splitaltname(s, pattern=re.compile(
+        r'(?P<name>[^]]+)'
+        r'(?: \[(?P<lang>[a-z]{2,3})\])?$'), parse_fail='!'):
+        ma = pattern.match(s)
+        if ma is None:
+            return {'name': s, 'lang': parse_fail}
+        return ma.groupdict('')
+
     for path_tuple, cfg in _files.iterconfig(root):
         item = {
             'id': path_tuple[-1],
@@ -102,7 +110,7 @@ def iterlanguoids(root=_files.ROOT):
             item['sources'] = {provider: [splitsource(p) for p in getlines(cfg, 'sources', provider)]
                                for provider in cfg.options('sources')}
         if cfg.has_section('altnames'):
-            item['altnames'] = {provider: getlines(cfg, 'altnames', provider)
+            item['altnames'] = {provider: [splitaltname(a) for a in getlines(cfg, 'altnames', provider)]
                                 for provider in cfg.options('altnames')}
         if cfg.has_section('triggers'):
             item['triggers'] = {field: getlines(cfg, 'triggers', field)
@@ -300,6 +308,7 @@ class Altname(_backend.Model):
 
     languoid_id = sa.Column(sa.ForeignKey('languoid.id'), primary_key=True)
     provider = sa.Column(sa.Text, sa.Enum(*sorted(ALTNAME_PROVIDER)), primary_key=True)
+    lang = sa.Column(sa.String(3), sa.CheckConstraint("length(lang) IN (0, 2, 3) OR lang = '!'"), primary_key=True)
     name = sa.Column(sa.Text, sa.CheckConstraint("name != ''"), primary_key=True)
     ord = sa.Column(sa.Integer, sa.CheckConstraint('ord >= 1'), nullable=False)
 
@@ -308,10 +317,19 @@ class Altname(_backend.Model):
     )
 
     def __repr__(self):
-        return '<%s languoid_id=%r povider=%r name=%r>' % (self.__class__.__name__,
-            self.languoid_id, self.provider, self.name)
+        return '<%s languoid_id=%r povider=%r lang=%r name=%r>' % (self.__class__.__name__,
+            self.languoid_id, self.provider, self.lang, self.name)
 
     languoid = sa.orm.relationship('Languoid', innerjoin=True, back_populates='altnames')
+
+    @classmethod
+    def printf(cls):
+        return sa.case([
+            (cls.lang == '',
+                 cls.name),
+            (sa.between(sa.func.length(cls.lang), 2, 3),
+                 sa.func.printf('%s [%s]', cls.name, cls.lang)),
+            ], else_=cls.name)
 
 
 class Trigger(_backend.Model):
@@ -558,7 +576,7 @@ def _load(conn, root):
         if altnames is not None:
             for provider, names in iteritems(altnames):
                 for i, n in enumerate(names, 1):
-                    insert_altname(languoid_id=lid, provider=provider, ord=i, name=n)
+                    insert_altname(languoid_id=lid, provider=provider, ord=i, **n)
         if triggers is not None:
             for field, triggers in iteritems(triggers):
                 for i, t in enumerate(triggers, 1):
