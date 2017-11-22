@@ -362,6 +362,7 @@ class HHType(object):
         self.rank = p.getint(s, 'rank')
         self.abbv = p.get(s, 'abbv')
         self.bibabbv = p.get(s, 'bibabbv')
+        self.description = p.get(s, 'description')
         self.triggers = [Trigger('hhtype', self.id, t)
                          for t in p.get(s, 'triggers').strip().splitlines() or []]
 
