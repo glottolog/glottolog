@@ -209,7 +209,11 @@ class Languoid(_backend.Model):
         if with_steps:
             cols.insert(1, sa.literal(0 if include_self else 1).label('steps'))
         if with_terminal:
-            cols.append(sa.literal(False).label('terminal'))
+            if include_self:
+                terminal = sa.type_coerce(child.parent_id == None, sa.Boolean)
+            else:
+                terminal = sa.literal(False)
+            cols.append(terminal.label('terminal'))
 
         tree_1 = sa.select(cols)
         if not include_self:
@@ -706,12 +710,12 @@ def get_query():
 
 if __name__ == '__main__':
     load()
-
     print(next(iterlanguoids()))
 
     _backend.print_rows(sa.select([Languoid]).order_by(Languoid.id).limit(5))
 
     tree = Languoid.tree(include_self=True, with_steps=True, with_terminal=True)
+    _backend.print_rows(tree.select().where(tree.c.child_id == 'book1242'))
     _backend.print_rows(tree.select().where(tree.c.child_id == 'ramo1244'))
 
     query = get_query()
