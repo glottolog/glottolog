@@ -226,6 +226,15 @@ class Languoid(_backend.Model):
             .where(parent.parent_id != None)
         return tree_1.union_all(tree_2)
 
+    @classmethod
+    def path(cls, label='path', delimiter='/', include_self=True, bottomup=False):
+        tree = cls.tree(include_self=include_self, with_terminal=False)
+        squery = sa.select([tree.c.parent_id.label('path_part')])\
+            .where(tree.c.child_id == cls.id).correlate(cls)\
+            .order_by(tree.c.steps if bottomup else tree.c.steps.desc())
+        path = sa.func.group_concat(squery.c.path_part, delimiter).label('path')
+        return sa.select([path]).label(label)
+
 
 class Macroarea(_backend.Model):
 
@@ -696,27 +705,12 @@ if __name__ == '__main__':
 
     _backend.print_rows(sa.select([Languoid]).order_by(Languoid.id).limit(5))
 
-    tree = Languoid.tree(with_terminal=True)
+    tree = Languoid.tree(include_self=True, with_terminal=True)
     _backend.print_rows(tree.select().where(tree.c.child_id == 'ramo1244'))
 
-    tree = Languoid.tree(include_self=True)
-    squery = sa.select([
-            Languoid.id,
-            tree.c.steps,
-            tree.c.parent_id.label('path_part'),
-        ])\
-        .select_from(sa.join(Languoid, tree, Languoid.id == tree.c.child_id))\
-        .order_by(Languoid.id, tree.c.steps.desc())
-    query = sa.select([
-            squery.c.id,
-            sa.func.group_concat(squery.c.path_part, '/').label('path'),
-        ])\
-        .group_by(squery.c.id)
-    _backend.print_rows(query.limit(5))
-
+    query = sa.select([Languoid.id, Languoid.path()])
     pf = _backend.pd_read_sql(query, index_col='id')
     print(pf)
 
-    query = get_query()
-    df = _backend.pd_read_sql(query, index_col='id')
+    df = _backend.pd_read_sql(get_query(), index_col='id')
     df.info()
