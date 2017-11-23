@@ -509,10 +509,11 @@ def load(root=_files.ROOT, with_values=True, rebuild=False):
 
 
 def make_loader(root, with_values):
+    if with_values:  # import here to register models for create_all()
+        import treedb_values
 
     def load_func(conn):
         if with_values:
-            import treedb_values
             treedb_values.make_loader(root=root)(conn)
         _load(conn, root)
 
@@ -627,6 +628,7 @@ def get_query():
             cols = [c for c in cols if c.name != ignore and not c.name.endswith(ignore_suffix)]
         return [c.label(label % c.name) for c in cols]
 
+    altnames = [(p, sa.orm.aliased(Altname)) for p in sorted(ALTNAME_PROVIDER)]
     idents = [(s, sa.orm.aliased(Identifier)) for s in sorted(IDENTIFIER_SITE)]
     s, i = idents[0]
     fromclause = sa.outerjoin(Languoid, i, sa.and_(i.languoid_id == Languoid.id, i.site == s))
@@ -641,7 +643,7 @@ def get_query():
                 .where(languoid_macroarea.c.languoid_id == Languoid.id)
                 .order_by(languoid_macroarea)
                 .label('macroareas'),
-            sa.select([sa.func.group_concat(Country.id, ' ')])
+            sa.select([sa.func.group_concat(Country.id, ', ')])
                 .select_from(languoid_country.join(Country))
                 .where(languoid_country.c.languoid_id == Languoid.id)
                 .order_by(Country.id)
@@ -651,7 +653,12 @@ def get_query():
                 .where(Source.provider == 'glottolog')
                 .order_by(Source.ord)
                 .label('sources_glottolog'),
-            ] + [i.identifier.label('identifier_%s' % s) for s, i in idents] + [
+            ] + [sa.select([sa.func.group_concat(a.printf(), ', ')])
+                    .where(a.languoid_id == Languoid.id)
+                    .where(a.provider == p)
+                    .order_by(a.ord)
+                    .label('altnames_%s' %p)
+                 for p, a in altnames] + [
             sa.select([sa.func.group_concat(ltrig.trigger, ', ')])
                 .where(ltrig.languoid_id == Languoid.id)
                 .where(ltrig.field == 'lgcode')
@@ -662,6 +669,7 @@ def get_query():
                 .where(itrig.field == 'inlg')
                 .order_by(itrig.ord)
                 .label('trigggers_inlg'),
+            ] + [i.identifier.label('identifier_%s' % s) for s, i in idents] + [
             subc.comment.label('classification_sub'),
             sa.select([sa.func.group_concat(subr.printf(), ', ')])
                 .where(subr.languoid_id == Languoid.id)
