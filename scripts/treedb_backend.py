@@ -109,7 +109,9 @@ def _csv_write(f, encoding, header, rows):
     writer.writerows(rows)
 
 
-def print_rows(query, format_=None, engine=engine):
+def print_rows(query, format_=None, engine=engine, verbose=False):
+    if verbose:
+        print(query)
     rows = engine.execute(query)
     if format_ is None:
         for r in rows:

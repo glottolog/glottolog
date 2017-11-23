@@ -201,24 +201,22 @@ class Languoid(_backend.Model):
     ethnologue_comment = sa.orm.relationship('EthnologueComment', uselist=False, back_populates='languoid')
     iso_retirement = sa.orm.relationship('IsoRetirement', uselist=False, back_populates='languoid')
 
-    @classmethod  # TODO: with_self (reflexive)
-    def tree(cls, with_terminal=False):
-        child = sa.orm.aliased(cls, name='child')
+    @classmethod
+    def tree(cls, include_self=False, with_terminal=False):
+        child, parent = (sa.orm.aliased(cls, name=n) for n in ('child', 'parent'))
         cols = [child.id.label('child_id'),
-                sa.literal(1).label('steps'),
-                child.parent_id.label('parent_id')]
-
+                sa.literal(0 if include_self else 1).label('steps'),
+                (child.id if include_self else child.parent_id).label('parent_id')]
         if with_terminal:
             cols.append(sa.literal(False).label('terminal'))
 
-        tree_1 = sa.select(cols)\
-            .where(child.parent_id != None)\
-            .cte(recursive=True).alias('tree')
+        tree_1 = sa.select(cols)
+        if not include_self:
+            tree_1 = tree_1.where(child.parent_id != None)
+        tree_1 = tree_1.cte(recursive=True).alias('tree')
 
-        parent = sa.orm.aliased(cls, name='parent')
         fromclause = tree_1.join(parent, parent.id == tree_1.c.parent_id)
         cols = [tree_1.c.child_id, tree_1.c.steps + 1, parent.parent_id]
-
         if with_terminal:
             gparent = sa.orm.aliased(Languoid, name='grandparent')
             fromclause = fromclause.outerjoin(gparent, gparent.id == parent.parent_id)
@@ -226,7 +224,6 @@ class Languoid(_backend.Model):
 
         tree_2 = sa.select(cols).select_from(fromclause)\
             .where(parent.parent_id != None)
-
         return tree_1.union_all(tree_2)
 
 
@@ -700,15 +697,15 @@ load()
 _backend.print_rows(sa.select([Languoid]).order_by(Languoid.id).limit(5))
 
 tree = Languoid.tree(with_terminal=True)
-_backend.print_rows(sa.select([tree]).where(tree.c.child_id == 'ramo1244'))
+_backend.print_rows(tree.select().where(tree.c.child_id == 'ramo1244'))
 
-tree = Languoid.tree()
+tree = Languoid.tree(include_self=True)
 squery = sa.select([
         Languoid.id,
         tree.c.steps,
         tree.c.parent_id.label('path_part'),
     ])\
-    .select_from(sa.outerjoin(Languoid, tree, Languoid.id == tree.c.child_id))\
+    .select_from(sa.join(Languoid, tree, Languoid.id == tree.c.child_id))\
     .order_by(Languoid.id, tree.c.steps.desc())
 query = sa.select([
         squery.c.id,
