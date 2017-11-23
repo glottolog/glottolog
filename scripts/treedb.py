@@ -202,11 +202,12 @@ class Languoid(_backend.Model):
     iso_retirement = sa.orm.relationship('IsoRetirement', uselist=False, back_populates='languoid')
 
     @classmethod
-    def tree(cls, include_self=False, with_terminal=False):
+    def tree(cls, include_self=False, with_steps=True, with_terminal=False):
         child, parent = (sa.orm.aliased(cls, name=n) for n in ('child', 'parent'))
         cols = [child.id.label('child_id'),
-                sa.literal(0 if include_self else 1).label('steps'),
                 (child.id if include_self else child.parent_id).label('parent_id')]
+        if with_steps:
+            cols.insert(1, sa.literal(0 if include_self else 1).label('steps'))
         if with_terminal:
             cols.append(sa.literal(False).label('terminal'))
 
@@ -216,7 +217,9 @@ class Languoid(_backend.Model):
         tree_1 = tree_1.cte(recursive=True).alias('tree')
 
         fromclause = tree_1.join(parent, parent.id == tree_1.c.parent_id)
-        cols = [tree_1.c.child_id, tree_1.c.steps + 1, parent.parent_id]
+        cols = [tree_1.c.child_id, parent.parent_id]
+        if with_steps:
+            cols.insert(1, tree_1.c.steps + 1)
         if with_terminal:
             gparent = sa.orm.aliased(Languoid, name='grandparent')
             fromclause = fromclause.outerjoin(gparent, gparent.id == parent.parent_id)
@@ -228,7 +231,7 @@ class Languoid(_backend.Model):
 
     @classmethod
     def path(cls, label='path', delimiter='/', include_self=True, bottomup=False):
-        tree = cls.tree(include_self=include_self, with_terminal=False)
+        tree = cls.tree(include_self=include_self, with_steps=True, with_terminal=False)
         squery = sa.select([tree.c.parent_id.label('path_part')])\
             .where(tree.c.child_id == cls.id).correlate(cls)\
             .order_by(tree.c.steps if bottomup else tree.c.steps.desc())
@@ -708,7 +711,7 @@ if __name__ == '__main__':
 
     _backend.print_rows(sa.select([Languoid]).order_by(Languoid.id).limit(5))
 
-    tree = Languoid.tree(include_self=True, with_terminal=True)
+    tree = Languoid.tree(include_self=True, with_steps=True, with_terminal=True)
     _backend.print_rows(tree.select().where(tree.c.child_id == 'ramo1244'))
 
     query = get_query()
