@@ -691,32 +691,32 @@ def get_query():
             .outerjoin(sa.join(IsoRetirement, ChangeRequest)))\
         .order_by(Languoid.id)
 
+if __name__ == '__main__':
+    load()
 
-load()
+    _backend.print_rows(sa.select([Languoid]).order_by(Languoid.id).limit(5))
 
-_backend.print_rows(sa.select([Languoid]).order_by(Languoid.id).limit(5))
+    tree = Languoid.tree(with_terminal=True)
+    _backend.print_rows(tree.select().where(tree.c.child_id == 'ramo1244'))
 
-tree = Languoid.tree(with_terminal=True)
-_backend.print_rows(tree.select().where(tree.c.child_id == 'ramo1244'))
+    tree = Languoid.tree(include_self=True)
+    squery = sa.select([
+            Languoid.id,
+            tree.c.steps,
+            tree.c.parent_id.label('path_part'),
+        ])\
+        .select_from(sa.join(Languoid, tree, Languoid.id == tree.c.child_id))\
+        .order_by(Languoid.id, tree.c.steps.desc())
+    query = sa.select([
+            squery.c.id,
+            sa.func.group_concat(squery.c.path_part, '/').label('path'),
+        ])\
+        .group_by(squery.c.id)
+    _backend.print_rows(query.limit(5))
 
-tree = Languoid.tree(include_self=True)
-squery = sa.select([
-        Languoid.id,
-        tree.c.steps,
-        tree.c.parent_id.label('path_part'),
-    ])\
-    .select_from(sa.join(Languoid, tree, Languoid.id == tree.c.child_id))\
-    .order_by(Languoid.id, tree.c.steps.desc())
-query = sa.select([
-        squery.c.id,
-        sa.func.group_concat(squery.c.path_part, '/').label('path'),
-    ])\
-    .group_by(squery.c.id)
-_backend.print_rows(query.limit(5))
+    pf = _backend.pd_read_sql(query, index_col='id')
+    print(pf)
 
-pf = _backend.pd_read_sql(query, index_col='id')
-print(pf)
-
-query = get_query()
-df = _backend.pd_read_sql(query, index_col='id')
-df.info()
+    query = get_query()
+    df = _backend.pd_read_sql(query, index_col='id')
+    df.info()
