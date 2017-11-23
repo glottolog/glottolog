@@ -251,7 +251,6 @@ def print_stats(bind=_backend.engine, execute=False):
     _backend.print_rows(query, '{section:<22} {option:<22} {n:,}')
 
 
-
 def dropfunc(func, bind=_backend.engine, save=True, verbose=True):
     def wrapper(bind=bind, save=save, verbose=verbose):
         delete_query = func()

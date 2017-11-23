@@ -14,7 +14,6 @@ import sqlalchemy.ext.associationproxy  # TODO: consider orderinglist
 
 import treedb_files as _files
 import treedb_backend as _backend
-import treedb_values as _values
 
 LEVEL = ('family', 'language', 'dialect')
 
@@ -190,13 +189,13 @@ class Languoid(_backend.Model):
     identifiers = sa.orm.relationship('Identifier', back_populates='languoid', order_by='Identifier.site')
 
     subclassificationcomment = sa.orm.relationship('ClassificationComment', uselist=False,
-                                                   primaryjoin="and_(ClassificationComment.languoid_id == Languoid.id, ClassificationComment.kind == 'sub')")
+        primaryjoin="and_(ClassificationComment.languoid_id == Languoid.id, ClassificationComment.kind == 'sub')")
     subclassificationrefs = sa.orm.relationship('ClassificationRef', order_by='ClassificationRef.ord',
-                                                   primaryjoin="and_(ClassificationRef.languoid_id == Languoid.id, ClassificationRef.kind == 'sub')")
+        primaryjoin="and_(ClassificationRef.languoid_id == Languoid.id, ClassificationRef.kind == 'sub')")
     familyclassificationcomment = sa.orm.relationship('ClassificationComment', uselist=False,
-                                                   primaryjoin="and_(ClassificationComment.languoid_id == Languoid.id, ClassificationComment.kind == 'family')")
+        primaryjoin="and_(ClassificationComment.languoid_id == Languoid.id, ClassificationComment.kind == 'family')")
     familyclassificationrefs = sa.orm.relationship('ClassificationRef', order_by='ClassificationRef.ord',
-                                                   primaryjoin="and_(ClassificationRef.languoid_id == Languoid.id, ClassificationRef.kind == 'family')")
+        primaryjoin="and_(ClassificationRef.languoid_id == Languoid.id, ClassificationRef.kind == 'family')")
 
     endangerment = sa.orm.relationship('Endangerment', uselist=False, back_populates='languoid')
     ethnologue_comment = sa.orm.relationship('EthnologueComment', uselist=False, back_populates='languoid')

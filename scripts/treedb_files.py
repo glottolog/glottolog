@@ -63,20 +63,20 @@ class ConfigParser(configparser.ConfigParser):
             kwargs.setdefault(k, v)
         super(ConfigParser, self).__init__(defaults=defaults, **kwargs)
 
-    def to_file(self, filename, encoding=_encoding, newline=_newline):
-        with io.open(filename, 'w', encoding=encoding, newline=newline) as f:
+    def to_file(self, filename, encoding=_encoding):
+        with io.open(filename, 'w', encoding=encoding, newline=self._newline) as f:
             f.write(self._header % encoding)
             self.write(f)
 
 
 def iterconfig(root=ROOT, assert_name=BASENAME, load=ConfigParser.from_file):
-    """Yield ((<path_part>, ...), <ConfigParser object>) pairs.""" 
+    """Yield ((<path_part>, ...), <ConfigParser object>) pairs."""
     if not isinstance(root, pathlib.Path):
         root = pathlib.Path(root)
-    root_len = len(root.parts)
+    path_slice = slice(len(root.parts), -1)
     for d in iterfiles(root):
         assert d.name == assert_name
-        path_tuple = pathlib.Path(d.path).parts[root_len:-1]
+        path_tuple = pathlib.Path(d.path).parts[path_slice]
         yield path_tuple, load(d.path)
 
 
