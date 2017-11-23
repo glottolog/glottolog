@@ -85,7 +85,7 @@ def iterlanguoids(root=_files.ROOT):
         return pattern.match(s).groupdict()
 
     def splitaltname(s, pattern=re.compile(
-        r'(?P<name>[^]]+)'
+        r'(?P<name>[^[]+)'
         r'(?: \[(?P<lang>[a-z]{2,3})\])?$'), parse_fail='!'):
         ma = pattern.match(s)
         if ma is None:
@@ -644,6 +644,7 @@ def get_query():
     subc, famc = (sa.orm.aliased(ClassificationComment) for _ in range(2))
     subr, famr = (sa.orm.aliased(ClassificationRef) for _ in range(2))
     return sa.select([
+            Languoid.path(label='path'),
             Languoid,
             sa.select([sa.func.group_concat(languoid_macroarea.c.macroarea_name, ', ')])
                 .where(languoid_macroarea.c.languoid_id == Languoid.id)
@@ -703,14 +704,13 @@ def get_query():
 if __name__ == '__main__':
     load()
 
+    print(next(iterlanguoids()))
+
     _backend.print_rows(sa.select([Languoid]).order_by(Languoid.id).limit(5))
 
     tree = Languoid.tree(include_self=True, with_terminal=True)
     _backend.print_rows(tree.select().where(tree.c.child_id == 'ramo1244'))
 
-    query = sa.select([Languoid.id, Languoid.path()])
-    pf = _backend.pd_read_sql(query, index_col='id')
-    print(pf)
-
-    df = _backend.pd_read_sql(get_query(), index_col='id')
+    query = get_query()
+    df = _backend.pd_read_sql(query, index_col='id')
     df.info()

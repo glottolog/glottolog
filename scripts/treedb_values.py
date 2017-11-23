@@ -262,20 +262,6 @@ def dropfunc(func, bind=_backend.engine, save=True, verbose=True):
 
 
 @dropfunc
-def drop_broken_isoretirements():
-    other, other_option = sa.orm.aliased(Data), sa.orm.aliased(Option)
-    return sa.delete(Data)\
-        .where(sa.exists()
-            .where(Option.id == Data.option_id)
-            .where(Option.section == 'iso_retirement'))\
-        .where(sa.exists()
-            .where(other.path_id == Data.path_id)
-            .where(other_option.id == other.option_id)
-            .where(other_option.section == Option.section)
-            .where(other_option.option == 'supersedes'))
-
-
-@dropfunc
 def drop_duplicate_sources():
     other = sa.orm.aliased(Data)
     return sa.delete(Data)\
@@ -287,16 +273,6 @@ def drop_duplicate_sources():
             .where(other.option_id == Data.option_id)
             .where(other.value == Data.value)
             .where(other.line < Data.line))
-
-
-@dropfunc
-def drop_empty_string_comments():
-    return sa.delete(Data)\
-        .where(Data.value == '')\
-        .where(sa.exists()
-            .where(Option.id == Data.option_id)
-            .where(Option.section == 'iso_retirement')
-            .where(Option.option == 'comment'))
 
 
 @dropfunc
@@ -336,8 +312,6 @@ if __name__ == '__main__':
     #to_files()
     print_stats()
     print_fields()
-    #drop_broken_isoretirements()
     #drop_duplicate_sources()
-    #drop_empty_string_comments()
     #drop_duplicated_triggers()
     #drop_duplicated_crefs()
