@@ -6,7 +6,6 @@ import json
 import pathlib
 import itertools
 import functools
-import subprocess
 
 from treedb_backend import iteritems
 
@@ -85,20 +84,10 @@ class Fields(object):
         return result
 
 
-class Dataset(_backend.Model):
-    """Git commit loaded into the database."""
-
-    __tablename__ = 'dataset'
-
-    id = sa.Column(sa.Boolean, sa.CheckConstraint('id'),
-                   primary_key=True, server_default=sa.true())
-    git_commit = sa.Column(sa.String(40), sa.CheckConstraint('length(git_commit) = 40'), nullable=False, unique=True)
-
-
-class Path(_backend.Model):
+class File(_backend.Model):
     """Forward-slash-joined ids from the root to each item."""
 
-    __tablename__ = '_path'
+    __tablename__ = '_file'
 
     id = sa.Column(sa.Integer, primary_key=True)
     path = sa.Column(sa.Text, sa.CheckConstraint('length(path) >= 8'), nullable=False, unique=True)
@@ -124,7 +113,7 @@ class Data(_backend.Model):
 
     __tablename__ = '_data'
 
-    path_id = sa.Column(sa.ForeignKey('_path.id'), primary_key=True)
+    file_id = sa.Column(sa.ForeignKey('_file.id'), primary_key=True)
     option_id = sa.Column(sa.ForeignKey('_option.id'), primary_key=True)
     line = sa.Column(sa.Integer, sa.CheckConstraint('line >= 0'), primary_key=True)
     # TODO: consider adding version for selective updates
@@ -136,15 +125,12 @@ def load(root=_files.ROOT, rebuild=False):
 
 
 def make_loader(root):
-    git_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip()
-    return functools.partial(_load, root=root, git_commit=git_commit)
+    return functools.partial(_load, root=root)
 
 
-def _load(conn, root, git_commit=None, is_lines=Fields.is_lines):
-    if git_commit is not None:
-        sa.insert(Dataset, bind=conn).execute(git_commit=git_commit)
+def _load(conn, root, is_lines=Fields.is_lines):
 
-    insert_path = sa.insert(Path, bind=conn).execute
+    insert_file = sa.insert(File, bind=conn).execute
     insert_data = sa.insert(Data, bind=conn).execute
 
     class Options(dict):
@@ -162,27 +148,27 @@ def _load(conn, root, git_commit=None, is_lines=Fields.is_lines):
     options = Options()
 
     for path_tuple, cfg in _files.iterconfig(root):
-        path_id, = insert_path(path='/'.join(path_tuple)).inserted_primary_key
+        file_id, = insert_file(path='/'.join(path_tuple)).inserted_primary_key
         for section, sec in cfg.items():
             for option, value in sec.items():
                 option_id, lines = options[(section, option)]
                 if lines:
                     for i, v in enumerate(value.strip().splitlines(), 1):
-                        insert_data(path_id=path_id, option_id=option_id,
+                        insert_data(file_id=file_id, option_id=option_id,
                                     line=i, value=v)
                 else:
-                    insert_data(path_id=path_id, option_id=option_id,
+                    insert_data(file_id=file_id, option_id=option_id,
                                 line=0, value=value)
 
 
 def iterrecords(bind=_backend.engine, _groupby=itertools.groupby):
     """Yield (path, <dict of <dicts of strings/string_lists>>) pairs."""
-    select_paths = sa.select([Path.path], bind=bind).order_by(Path.path)
+    select_paths = sa.select([File.path], bind=bind).order_by(File.path)
     select_data = sa.select([
             Option.section, Option.option, Option.lines, Data.line, Data.value,
         ], bind=bind)\
-        .select_from(sa.join(Path, Data).join(Option))\
-        .where(Path.path == sa.bindparam('path'))\
+        .select_from(sa.join(File, Data).join(Option))\
+        .where(File.path == sa.bindparam('path'))\
         .order_by(Option.section, Option.option, Data.line)
     for p, in select_paths.execute():
         data = select_data.execute(path=p)
@@ -196,9 +182,9 @@ def iterrecords(bind=_backend.engine, _groupby=itertools.groupby):
 def to_csv(filename='data.csv', bind=_backend.engine, encoding='utf-8'):
     """Write (path, section, option, line, value) rows to <filename>.csv."""
     query = sa.select([
-            Path.path, Option.section, Option.option, Data.line, Data.value,
-        ], bind=bind).select_from(sa.join(Path, Data).join(Option))\
-        .order_by(Path.path, Option.section, Option.option, Data.line)
+            File.path, Option.section, Option.option, Data.line, Data.value,
+        ], bind=bind).select_from(sa.join(File, Data).join(Option))\
+        .order_by(File.path, Option.section, Option.option, Data.line)
     rows = query.execute()
     with _backend._csv_open(filename, 'w', encoding=encoding) as f:
         _backend._csv_write(f, encoding, header=rows.keys(), rows=rows)
@@ -269,7 +255,7 @@ def drop_duplicate_sources():
             .where(Option.id == Data.option_id)
             .where(Option.section == 'sources'))\
         .where(sa.exists()
-            .where(other.path_id == Data.path_id)
+            .where(other.file_id == Data.file_id)
             .where(other.option_id == Data.option_id)
             .where(other.value == Data.value)
             .where(other.line < Data.line))
@@ -283,7 +269,7 @@ def drop_duplicated_triggers():
             .where(Option.id == Data.option_id)
             .where(Option.section == 'triggers'))\
         .where(sa.exists()
-            .where(other.path_id == Data.path_id)
+            .where(other.file_id == Data.file_id)
             .where(other.option_id == Data.option_id)
             .where(other.value == Data.value)
             .where(other.line < Data.line))
@@ -298,7 +284,7 @@ def drop_duplicated_crefs():
             .where(Option.section == 'classification')
             .where(Option.option.in_(('familyrefs', 'subrefs'))))\
         .where(sa.exists()
-            .where(other.path_id == Data.path_id)
+            .where(other.file_id == Data.file_id)
             .where(other.option_id == Data.option_id)
             .where(other.value == Data.value)
             .where(other.line < Data.line))

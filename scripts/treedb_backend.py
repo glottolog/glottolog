@@ -9,6 +9,7 @@ import time
 import pathlib
 import zipfile
 import contextlib
+import subprocess
 
 import sqlalchemy as sa
 import sqlalchemy.orm
@@ -47,6 +48,16 @@ Session = sa.orm.sessionmaker(bind=engine)
 Model = sa.ext.declarative.declarative_base()
 
 
+class Dataset(Model):
+    """Git commit loaded into the database."""
+
+    __tablename__ = 'dataset'
+
+    id = sa.Column(sa.Boolean, sa.CheckConstraint('id'),
+                   primary_key=True, server_default=sa.true())
+    git_commit = sa.Column(sa.String(40), sa.CheckConstraint('length(git_commit) = 40'), nullable=False, unique=True)
+
+
 def create_tables(bind=engine):
     Model.metadata.create_all(bind)
 
@@ -63,9 +74,11 @@ def load(load_func, rebuild=False, engine=engine):
     start = time.time()
     with engine.begin() as conn:
         create_tables(conn)
+    git_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip()
     with engine.begin() as conn:
         conn.execute('PRAGMA synchronous = OFF')
         conn.execute('PRAGMA journal_mode = MEMORY')
+        sa.insert(Dataset, bind=conn).execute(git_commit=git_commit)
         load_func(conn.execution_options(compiled_cache={}))
     print(time.time() - start)
 
