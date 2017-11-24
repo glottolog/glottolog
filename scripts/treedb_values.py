@@ -108,10 +108,10 @@ class Option(_backend.Model):
     )
 
 
-class Data(_backend.Model):
+class Value(_backend.Model):
     """Item value as (path, section, option, line, value) combination."""
 
-    __tablename__ = '_data'
+    __tablename__ = '_value'
 
     file_id = sa.Column(sa.ForeignKey('_file.id'), primary_key=True)
     option_id = sa.Column(sa.ForeignKey('_option.id'), primary_key=True)
@@ -131,7 +131,7 @@ def make_loader(root):
 def _load(conn, root, is_lines=Fields.is_lines):
 
     insert_file = sa.insert(File, bind=conn).execute
-    insert_data = sa.insert(Data, bind=conn).execute
+    insert_value = sa.insert(Value, bind=conn).execute
 
     class Options(dict):
         """Insert optons on demand and cache id and lines config."""
@@ -154,37 +154,37 @@ def _load(conn, root, is_lines=Fields.is_lines):
                 option_id, lines = options[(section, option)]
                 if lines:
                     for i, v in enumerate(value.strip().splitlines(), 1):
-                        insert_data(file_id=file_id, option_id=option_id,
+                        insert_value(file_id=file_id, option_id=option_id,
                                     line=i, value=v)
                 else:
-                    insert_data(file_id=file_id, option_id=option_id,
+                    insert_value(file_id=file_id, option_id=option_id,
                                 line=0, value=value)
 
 
 def iterrecords(bind=_backend.engine, _groupby=itertools.groupby):
     """Yield (path, <dict of <dicts of strings/string_lists>>) pairs."""
     select_paths = sa.select([File.path], bind=bind).order_by(File.path)
-    select_data = sa.select([
-            Option.section, Option.option, Option.lines, Data.line, Data.value,
+    select_values = sa.select([
+            Option.section, Option.option, Option.lines, Value.line, Value.value,
         ], bind=bind)\
-        .select_from(sa.join(File, Data).join(Option))\
+        .select_from(sa.join(File, Value).join(Option))\
         .where(File.path == sa.bindparam('path'))\
-        .order_by(Option.section, Option.option, Data.line)
+        .order_by(Option.section, Option.option, Value.line)
     for p, in select_paths.execute():
-        data = select_data.execute(path=p)
+        values = select_values.execute(path=p)
         record = {
             s: {o: [l.value for l in lines] if islines else next(lines).value
                for (o, islines), lines in _groupby(sections, lambda r: (r.option, r.lines))}
-            for s, sections in _groupby(data, lambda r: r.section)}
+            for s, sections in _groupby(values, lambda r: r.section)}
         yield p, record
 
 
-def to_csv(filename='data.csv', bind=_backend.engine, encoding='utf-8'):
+def to_csv(filename='values.csv', bind=_backend.engine, encoding='utf-8'):
     """Write (path, section, option, line, value) rows to <filename>.csv."""
     query = sa.select([
-            File.path, Option.section, Option.option, Data.line, Data.value,
-        ], bind=bind).select_from(sa.join(File, Data).join(Option))\
-        .order_by(File.path, Option.section, Option.option, Data.line)
+            File.path, Option.section, Option.option, Value.line, Value.value,
+        ], bind=bind).select_from(sa.join(File, Value).join(Option))\
+        .order_by(File.path, Option.section, Option.option, Value.line)
     rows = query.execute()
     with _backend._csv_open(filename, 'w', encoding=encoding) as f:
         _backend._csv_write(f, encoding, header=rows.keys(), rows=rows)
@@ -214,12 +214,12 @@ def to_files(bind=_backend.engine, verbose=False, is_lines=Fields.is_lines):
 
 
 def print_fields(bind=_backend.engine):
-    has_scalar = (sa.func.min(Data.line) == 0).label('scalar')
-    has_lines = (sa.func.max(Data.line) != 0).label('lines')
+    has_scalar = (sa.func.min(Value.line) == 0).label('scalar')
+    has_lines = (sa.func.max(Value.line) != 0).label('lines')
     query = sa.select([
             Option.section, Option.option, has_scalar, has_lines,
         ], bind=bind)\
-        .select_from(sa.join(Option, Data))\
+        .select_from(sa.join(Option, Value))\
         .group_by(Option.section, Option.option)\
         .order_by(Option.section, Option.option)
     print('FIELDS_LIST = {')
@@ -231,7 +231,7 @@ def print_stats(bind=_backend.engine, execute=False):
     query = sa.select([
             Option.section, Option.option, sa.func.count().label('n'),
         ], bind=bind)\
-        .select_from(sa.join(Option, Data))\
+        .select_from(sa.join(Option, Value))\
         .group_by(Option.section, Option.option)\
         .order_by(Option.section, sa.desc('n'))
     _backend.print_rows(query, '{section:<22} {option:<22} {n:,}')
@@ -249,45 +249,45 @@ def dropfunc(func, bind=_backend.engine, save=True, verbose=True):
 
 @dropfunc
 def drop_duplicate_sources():
-    other = sa.orm.aliased(Data)
-    return sa.delete(Data)\
+    other = sa.orm.aliased(Value)
+    return sa.delete(Value)\
         .where(sa.exists()
-            .where(Option.id == Data.option_id)
+            .where(Option.id == Value.option_id)
             .where(Option.section == 'sources'))\
         .where(sa.exists()
-            .where(other.file_id == Data.file_id)
-            .where(other.option_id == Data.option_id)
-            .where(other.value == Data.value)
-            .where(other.line < Data.line))
+            .where(other.file_id == Value.file_id)
+            .where(other.option_id == Value.option_id)
+            .where(other.value == Value.value)
+            .where(other.line < Value.line))
 
 
 @dropfunc
 def drop_duplicated_triggers():
-    other = sa.orm.aliased(Data)
-    return sa.delete(Data)\
+    other = sa.orm.aliased(Value)
+    return sa.delete(Value)\
         .where(sa.exists()
-            .where(Option.id == Data.option_id)
+            .where(Option.id == Value.option_id)
             .where(Option.section == 'triggers'))\
         .where(sa.exists()
-            .where(other.file_id == Data.file_id)
-            .where(other.option_id == Data.option_id)
-            .where(other.value == Data.value)
-            .where(other.line < Data.line))
+            .where(other.file_id == Value.file_id)
+            .where(other.option_id == Value.option_id)
+            .where(other.value == Value.value)
+            .where(other.line < Value.line))
 
 
 @dropfunc
 def drop_duplicated_crefs():
-    other = sa.orm.aliased(Data)
-    return sa.delete(Data)\
+    other = sa.orm.aliased(Value)
+    return sa.delete(Value)\
         .where(sa.exists()
-            .where(Option.id == Data.option_id)
+            .where(Option.id == Value.option_id)
             .where(Option.section == 'classification')
             .where(Option.option.in_(('familyrefs', 'subrefs'))))\
         .where(sa.exists()
-            .where(other.file_id == Data.file_id)
-            .where(other.option_id == Data.option_id)
-            .where(other.value == Data.value)
-            .where(other.line < Data.line))
+            .where(other.file_id == Value.file_id)
+            .where(other.option_id == Value.option_id)
+            .where(other.value == Value.value)
+            .where(other.line < Value.line))
 
 
 if __name__ == '__main__':
