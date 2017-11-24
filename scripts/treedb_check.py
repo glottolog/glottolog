@@ -25,28 +25,23 @@ SPECIAL_FAMILIES = (
 
 DUMMY_SESSION = sa.orm.scoped_session(sa.orm.sessionmaker(bind=None))
 
+CHECKS = []
+
 
 def main(make_session=_backend.Session):
-    for subcls in itersubclasses(Check):
-        if 'invalid_query' in subcls.__dict__:
-            session = make_session()
-            check = subcls(session)
-            try:
-                check.validate()
-            finally:
-                session.close()
+    for check_cls in CHECKS:
+        session = make_session()
+        check = check_cls(session)
+        try:
+            check.validate()
+        finally:
+            session.close()
 
 
-def itersubclasses(cls):
-    """Recursively yield proper subclasses in depth-first order."""
-    stack = cls.__subclasses__()[::-1]
-    seen = set()
-    while stack:
-        cls = stack.pop()
-        if cls not in seen:
-            seen.add(cls)
-            yield cls
-            stack.extend(cls.__subclasses__()[::-1])
+def check(func):
+    cls = type('%sCheck' % func.__name__, (Check,), {'invalid_query': staticmethod(func)})
+    CHECKS.append(cls)
+    return cls
 
 
 class Check(object):
@@ -86,47 +81,44 @@ class Check(object):
         print('    %s%s' % (', '.join(ids), cont))
 
 
-class DialectParent(Check):
+@check
+def dialect_parent(session):
     """Parent of a dialect is a language or dialect."""
-
-    def invalid_query(self, session):
-        return session.query(Languoid).filter_by(level=DIALECT).order_by('id')\
-            .join(Languoid.parent, aliased=True)\
-            .filter(Languoid.level.notin_([LANGUAGE, DIALECT]))
+    return session.query(Languoid).filter_by(level=DIALECT).order_by('id')\
+        .join(Languoid.parent, aliased=True)\
+        .filter(Languoid.level.notin_([LANGUAGE, DIALECT]))
 
 
-class FamilyChildren(Check):
+@check
+def family_children(session):
     """Family has at least one subfamily or language."""
-
-    def invalid_query(self, session):
-        return session.query(Languoid).filter_by(level=FAMILY).order_by('id')\
-            .filter(~Languoid.children.any(
-                Languoid.level.in_([FAMILY, LANGUAGE])))
+    return session.query(Languoid).filter_by(level=FAMILY).order_by('id')\
+        .filter(~Languoid.children.any(
+            Languoid.level.in_([FAMILY, LANGUAGE])))
 
 
-class FamilyLanguages(Check):
+
+def family_languages(session, exclude=SPECIAL_FAMILIES):
     """Family has at least two languages."""
+    child = sa.orm.aliased(Languoid)
+    return
+    #session.query(Languoid).filter_by(level='FAMILY').order_by('id')\
+    #    .filter(Languoid.family.has(Languoid.name.notin_(exclude)))\
+    #    .join(TreeClosureTable, TreeClosureTable.parent_pk == Languoid.pk)\
+    #    .outerjoin(child, and_(
+    #        TreeClosureTable.child_pk == child.pk,
+    #        TreeClosureTable.depth > 0,
+    #        child.level == LanguoidLevel.language))\
+    #    .group_by(Language.pk, Languoid.pk)\
+    #    .having(func.count(child.pk) < 2)\
 
-    def todo_invalid_query(self, session, exclude=SPECIAL_FAMILIES):
-        child = sa.orm.aliased(Languoid)
-        #return session.query(Languoid).filter_by(level='FAMILY').order_by('id')\
-        #    .filter(Languoid.family.has(Languoid.name.notin_(exclude)))\
-        #    .join(TreeClosureTable, TreeClosureTable.parent_pk == Languoid.pk)\
-        #    .outerjoin(child, and_(
-        #        TreeClosureTable.child_pk == child.pk,
-        #        TreeClosureTable.depth > 0,
-        #        child.level == LanguoidLevel.language))\
-        #    .group_by(Language.pk, Languoid.pk)\
-        #    .having(func.count(child.pk) < 2)\
 
-
-class BookkeepingNoChildren(Check):
+@check
+def bookkeeping_no_children(session):
     """Bookkeeping languoids lack children."""
-
-    def invalid_query(self, session, **kw):
-        return session.query(Languoid).order_by('id')\
-            .filter(Languoid.parent.has(name='Bookkeeping'))\
-            .filter(Languoid.children.any())
+    return session.query(Languoid).order_by('id')\
+        .filter(Languoid.parent.has(name='Bookkeeping'))\
+        .filter(Languoid.children.any())
 
 
 if __name__ == '__main__':
