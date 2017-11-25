@@ -222,15 +222,16 @@ class Languoid(_backend.Model):
             tree_1.append_column(terminal.label('terminal'))
         tree_1 = tree_1.cte(recursive=True).alias('tree')
 
-        tree_2 = sa.select([tree_1.c.child_id, parent.parent_id])
-        fromclause = tree_1.join(parent, parent.id == tree_1.c.parent_id)
+        tree_2 = sa.select([tree_1.c.child_id, parent.parent_id])\
+            .select_from(tree_1.join(parent, parent.id == tree_1.c.parent_id))\
+            .where(parent.parent_id != None)
         if with_steps:
             tree_2.append_column(tree_1.c.steps + 1)
         if with_terminal:
             gparent = sa.orm.aliased(Languoid, name='grandparent')
             tree_2.append_column(gparent.parent_id == None)
-            fromclause = fromclause.outerjoin(gparent, gparent.id == parent.parent_id)
-        tree_2 = tree_2.select_from(fromclause).where(parent.parent_id != None)
+            tree_2 = tree_2.select_from(tree_2.froms[-1]
+                .outerjoin(gparent, gparent.id == parent.parent_id))
         return tree_1.union_all(tree_2)
 
     @classmethod
@@ -643,10 +644,9 @@ def get_query():
 
     altnames = [(p, sa.orm.aliased(Altname)) for p in sorted(ALTNAME_PROVIDER)]
     idents = [(s, sa.orm.aliased(Identifier)) for s in sorted(IDENTIFIER_SITE)]
-    s, i = idents[0]
-    fromclause = sa.outerjoin(Languoid, i, sa.and_(i.languoid_id == Languoid.id, i.site == s))
-    for s, i in idents[1:]:
-        fromclause = fromclause.outerjoin(i, sa.and_(i.languoid_id == Languoid.id, i.site == s))
+    froms = Languoid.__table__
+    for s, i in idents:
+        froms = froms.outerjoin(i, sa.and_(i.languoid_id == Languoid.id, i.site == s))
     ltrig, itrig = (sa.orm.aliased(Trigger) for _ in range(2))
     subc, famc = (sa.orm.aliased(ClassificationComment) for _ in range(2))
     subr, famr = (sa.orm.aliased(ClassificationRef) for _ in range(2))
@@ -700,7 +700,7 @@ def get_query():
             get_cols(EthnologueComment, label='elcomment_%s') +
             get_cols(IsoRetirement, label='isoretirement_%s') +
             get_cols(ChangeRequest, label='isoretirement_cr_%s')
-        ).select_from(fromclause
+        ).select_from(froms
             .outerjoin(subc, sa.and_(subc.languoid_id == Languoid.id, subc.kind == 'sub'))
             .outerjoin(famc, sa.and_(famc.languoid_id == Languoid.id, famc.kind == 'family'))
             .outerjoin(Endangerment)
