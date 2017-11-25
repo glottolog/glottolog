@@ -204,33 +204,33 @@ class Languoid(_backend.Model):
     @classmethod
     def tree(cls, include_self=False, with_steps=True, with_terminal=False):
         child, parent = (sa.orm.aliased(cls, name=n) for n in ('child', 'parent'))
-        cols = [child.id.label('child_id'),
-                (child.id if include_self else child.parent_id).label('parent_id')]
+        tree_1 = sa.select([child.id.label('child_id')])
+        if include_self:
+            parent_id = child.id
+        else:
+            parent_id = child.parent_id
+            tree_1.append_whereclause(parent_id != None)
+        tree_1.append_column(parent_id.label('parent_id'))
         if with_steps:
-            cols.insert(1, sa.literal(0 if include_self else 1).label('steps'))
+            steps = 0 if include_self else 1
+            tree_1.append_column(sa.literal(steps).label('steps'))
         if with_terminal:
             if include_self:
                 terminal = sa.type_coerce(child.parent_id == None, sa.Boolean)
             else:
                 terminal = sa.literal(False)
-            cols.append(terminal.label('terminal'))
-
-        tree_1 = sa.select(cols)
-        if not include_self:
-            tree_1 = tree_1.where(child.parent_id != None)
+            tree_1.append_column(terminal.label('terminal'))
         tree_1 = tree_1.cte(recursive=True).alias('tree')
 
+        tree_2 = sa.select([tree_1.c.child_id, parent.parent_id])
         fromclause = tree_1.join(parent, parent.id == tree_1.c.parent_id)
-        cols = [tree_1.c.child_id, parent.parent_id]
         if with_steps:
-            cols.insert(1, tree_1.c.steps + 1)
+            tree_2.append_column(tree_1.c.steps + 1)
         if with_terminal:
             gparent = sa.orm.aliased(Languoid, name='grandparent')
+            tree_2.append_column(gparent.parent_id == None)
             fromclause = fromclause.outerjoin(gparent, gparent.id == parent.parent_id)
-            cols.append(gparent.parent_id == None)
-
-        tree_2 = sa.select(cols).select_from(fromclause)\
-            .where(parent.parent_id != None)
+        tree_2 = tree_2.select_from(fromclause).where(parent.parent_id != None)
         return tree_1.union_all(tree_2)
 
     @classmethod
