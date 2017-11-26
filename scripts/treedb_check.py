@@ -7,9 +7,9 @@ import itertools
 import sqlalchemy as sa
 
 import treedb_backend as _backend
-from treedb import Languoid
+from treedb import LEVEL, Languoid
 
-FAMILY, LANGUAGE, DIALECT = 'family', 'language', 'dialect'
+FAMILY, LANGUAGE, DIALECT = LEVEL
 
 BOOKKEEPING = 'Bookkeeping'
 
@@ -22,8 +22,6 @@ SPECIAL_FAMILIES = (
     'Speech Register',
     'Sign Language',
 )
-
-DUMMY_SESSION = sa.orm.scoped_session(sa.orm.sessionmaker(bind=None))
 
 CHECKS = []
 
@@ -49,7 +47,7 @@ class Check(object):
 
     detail = True
 
-    def __init__(self, session=DUMMY_SESSION):
+    def __init__(self, session):
         self.session = session
         self.query = self.invalid_query(session)
 
@@ -119,7 +117,7 @@ def family_languages(session):
 def bookkeeping_no_children(session):
     """Bookkeeping languoids lack children."""
     return session.query(Languoid).order_by('id')\
-        .filter(Languoid.parent.has(name='Bookkeeping'))\
+        .filter(Languoid.parent.has(name=BOOKKEEPING))\
         .filter(Languoid.children.any())
 
 
