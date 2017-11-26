@@ -74,7 +74,8 @@ def load(load_func, rebuild=False, engine=engine):
     start = time.time()
     with engine.begin() as conn:
         create_tables(conn)
-    git_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip()
+    stdout = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
+    git_commit = stdout.decode('ascii').strip()
     with engine.begin() as conn:
         conn.execute('PRAGMA synchronous = OFF')
         conn.execute('PRAGMA journal_mode = MEMORY')

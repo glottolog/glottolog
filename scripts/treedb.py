@@ -10,7 +10,6 @@ from treedb_backend import iteritems
 
 import sqlalchemy as sa
 import sqlalchemy.orm
-import sqlalchemy.ext.associationproxy  # TODO: consider orderinglist
 
 import treedb_files as _files
 import treedb_backend as _backend
@@ -179,7 +178,6 @@ class Languoid(_backend.Model):
 
     macroareas = sa.orm.relationship('Macroarea', secondary='languoid_macroarea', order_by='Macroarea.name',
                                       back_populates='languoids')
-    macroarea_names = sa.ext.associationproxy.association_proxy('macroareas', 'name')
     countries = sa.orm.relationship('Country', secondary='languoid_country', order_by='Country.id',
                                     back_populates='languoids')
 
@@ -462,60 +460,46 @@ class IsoRetirement(_backend.Model):
     languoid_id = sa.Column(sa.ForeignKey('languoid.id'), primary_key=True)
     code = sa.Column(sa.String(3), sa.CheckConstraint('length(code) = 3'), nullable=False)
     name = sa.Column(sa.Text, sa.CheckConstraint("name != ''"), nullable=False)
-    changerequest_id = sa.Column(sa.ForeignKey('changerequest.id'), nullable=False)
-
-    def __repr__(self):
-        return '<%s languoid_id=%r code=%r name=%r>' % (self.__class__.__name__,
-            self.languoid_id, self.code, self.name)
-
-    languoid = sa.orm.relationship('Languoid', innerjoin=True, back_populates='iso_retirement')
-    change_request = sa.orm.relationship('ChangeRequest', innerjoin=True, back_populates='iso_retirements')
-
-
-class ChangeRequest(_backend.Model):
-
-    __tablename__ = 'changerequest'
-
-    id = sa.Column(sa.Integer, primary_key=True)
-    name = sa.Column(sa.String(8), sa.CheckConstraint("name LIKE '____-___' "))
+    change_request = sa.Column(sa.String(8), sa.CheckConstraint("change_request LIKE '____-___' "))
     effective = sa.Column(sa.Date, nullable=False)
     reason = sa.Column(sa.Enum(*sorted(ISORETIREMENT_REASON)), nullable=False)
     remedy = sa.Column(sa.Text, sa.CheckConstraint("remedy != ''"))
     comment = sa.Column(sa.Text, sa.CheckConstraint("comment != ''"))
 
     __table_args__ = (
-        sa.Index('changerequest_key', sa.func.coalesce(name, effective), unique=True),
+        # TODO: fix disagreement
+        sa.Index('change_request_key', sa.func.coalesce(change_request, effective)),
         sa.CheckConstraint("remedy IS NOT NULL OR reason = 'non-existent'"),
     )
 
     def __repr__(self):
-        return '<%s name=%r effective=%r reason=%r remedy=%r>' % (self.__class__.__name__,
-            self.name, self.effective, self.reason, self.remedy)
+        return '<%s languoid_id=%r code=%r name=%r change_request=%r effective=%r reason=%r remedy=%r>' % (
+            self.__class__.__name__, self.languoid_id, self.code, self.name, self.change_request,
+            self.effective, self.reason, self.remedy)
 
-    iso_retirements = sa.orm.relationship('IsoRetirement', order_by='IsoRetirement.languoid_id',
-                                          back_populates='change_request')
-    change_to = sa.orm.relationship('ChangeRequestChangeTo', order_by='ChangeRequestChangeTo.ord',
-                                    back_populates='change_request')
-    change_to_codes = sa.ext.associationproxy.association_proxy('change_to', 'code')
+    languoid = sa.orm.relationship('Languoid', innerjoin=True, back_populates='iso_retirement')
+
+    change_to = sa.orm.relationship('IsoRetirementChangeTo', order_by='IsoRetirementChangeTo.ord',
+                                    back_populates='iso_retirement')
 
 
-class ChangeRequestChangeTo(_backend.Model):
+class IsoRetirementChangeTo(_backend.Model):
 
-    __tablename__ = 'changerequest_changeto'
+    __tablename__ = 'isoretirement_changeto'
 
-    changerequest_id = sa.Column(sa.ForeignKey('changerequest.id'), primary_key=True)
+    languoid_id = sa.Column(sa.ForeignKey('isoretirement.languoid_id'), primary_key=True)
     code = sa.Column(sa.String(3), sa.CheckConstraint('length(code) = 3'), primary_key=True)
     ord = sa.Column(sa.Integer, sa.CheckConstraint('ord >= 1'), nullable=False)
 
     __table_args__ = (
-        sa.UniqueConstraint('changerequest_id', 'ord'),
+        sa.UniqueConstraint('languoid_id', 'ord'),
     )
 
     def __repr__(self):
-        return '<%s changerequest_id=%r code=%r>' % (self.__class__.__name__,
-            self.changerequest_id, self.code)
+        return '<%s languoid_id=%r code=%r>' % (self.__class__.__name__,
+            self.languoid_id, self.code)
 
-    change_request = sa.orm.relationship('ChangeRequest', innerjoin=True, back_populates='change_to')
+    iso_retirement = sa.orm.relationship('IsoRetirement', innerjoin=True, back_populates='change_to')
 
 
 def load(root=_files.ROOT, with_values=True, rebuild=False):
@@ -554,12 +538,8 @@ def _load(conn, root):
     insert_enda = sa.insert(Endangerment, bind=conn).execute
     insert_el = sa.insert(EthnologueComment, bind=conn).execute
 
-    cr_where = sa.func.coalesce(ChangeRequest.name, ChangeRequest.effective) == \
-               sa.func.coalesce(sa.bindparam('name'), sa.bindparam('effective'))
-    select_crid = sa.select([ChangeRequest.id], bind=conn).where(cr_where).scalar
-    insert_cr = sa.insert(ChangeRequest, bind=conn).execute
     insert_ir = sa.insert(IsoRetirement, bind=conn).execute
-    insert_crct = sa.insert(ChangeRequestChangeTo, bind=conn).execute
+    insert_irct = sa.insert(IsoRetirementChangeTo, bind=conn).execute
 
     for l in iterlanguoids(root):
         lid = l['id']
@@ -611,27 +591,10 @@ def _load(conn, root):
         if hh_ethnologue_comment is not None:
             insert_el(languoid_id=lid, **hh_ethnologue_comment)
         if iso_retirement is not None:
-            crkey = {c: iso_retirement.pop(i) for c, i in [('name', 'change_request'), ('effective', 'effective')]}
-            crparams = {i: iso_retirement.pop(i) for i in ('reason', 'change_to', 'remedy', 'comment')}
-            crid = select_crid(**crkey)
-            if crid is None:
-                crparams.update(crkey)
-                change_to = crparams.pop('change_to')
-                crid, = insert_cr(**crparams).inserted_primary_key
-                for i, c in enumerate(change_to, 1):
-                    insert_crct(changerequest_id=crid, code=c, ord=i)
-            else:
-                # TODO: fix disagreement
-                indb = dict(sa.select([ChangeRequest.reason, ChangeRequest.remedy, ChangeRequest.comment], bind=conn)\
-                    .where(ChangeRequest.id == crid).execute().first())
-                indb['change_to'] = [c for c, in sa.select([ChangeRequestChangeTo.code], bind=conn)\
-                    .where(ChangeRequestChangeTo.changerequest_id == crid)\
-                    .order_by(ChangeRequestChangeTo.ord).execute()]
-                disagreement = [(k, indb[k], crparams[k]) for k in indb if indb[k] != crparams[k]]
-                if disagreement:
-                    for f, db, ini in disagreement:
-                        warnings.warn('%s %s:\n\t%r\n\t%r' % (crid, f, db, ini))
-            insert_ir(languoid_id=lid, changerequest_id=crid, **iso_retirement)
+            change_to = iso_retirement.pop('change_to')
+            insert_ir(languoid_id=lid, **iso_retirement)
+            for i, c in enumerate(change_to, 1):
+                insert_irct(languoid_id=lid, code=c, ord=i)
 
 
 def get_query():
@@ -698,15 +661,19 @@ def get_query():
                 .label('classification_familyrefs'),
             ] + get_cols(Endangerment, label='endangerment_%s') +
             get_cols(EthnologueComment, label='elcomment_%s') +
-            get_cols(IsoRetirement, label='isoretirement_%s') +
-            get_cols(ChangeRequest, label='isoretirement_cr_%s')
-        ).select_from(froms
+            get_cols(IsoRetirement, label='iso_retirement_%s') + [
+            sa.select([sa.func.group_concat(IsoRetirementChangeTo.code, ', ')])
+                .where(IsoRetirementChangeTo.languoid_id == Languoid.id)
+                .order_by(IsoRetirementChangeTo.ord)
+                .label('iso_retirement_change_to'),
+        ]).select_from(froms
             .outerjoin(subc, sa.and_(subc.languoid_id == Languoid.id, subc.kind == 'sub'))
             .outerjoin(famc, sa.and_(famc.languoid_id == Languoid.id, famc.kind == 'family'))
             .outerjoin(Endangerment)
             .outerjoin(EthnologueComment)
-            .outerjoin(sa.join(IsoRetirement, ChangeRequest)))\
+            .outerjoin(IsoRetirement))\
         .order_by(Languoid.id)
+
 
 if __name__ == '__main__':
     load()
