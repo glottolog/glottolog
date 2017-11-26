@@ -202,7 +202,7 @@ class Languoid(_backend.Model):
     iso_retirement = sa.orm.relationship('IsoRetirement', uselist=False, back_populates='languoid')
 
     @classmethod
-    def tree(cls, include_self=False, with_steps=True, with_terminal=False):
+    def tree(cls, include_self=False, with_steps=False, with_terminal=False):
         child, parent = (sa.orm.aliased(cls, name=n) for n in ('child', 'parent'))
         tree_1 = sa.select([child.id.label('child_id')])
         if include_self:

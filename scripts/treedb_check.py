@@ -29,8 +29,10 @@ CHECKS = []
 
 
 def main(make_session=_backend.Session):
-    for check_cls in CHECKS:
+    for func in CHECKS:
         session = make_session()
+        ns = {'invalid_query': staticmethod(func), '__doc__': func.__doc__}
+        check_cls = type(str('%sCheck' % func.__name__), (Check,), ns)
         check = check_cls(session)
         try:
             check.validate()
@@ -39,9 +41,8 @@ def main(make_session=_backend.Session):
 
 
 def check(func):
-    cls = type('%sCheck' % func.__name__, (Check,), {'invalid_query': staticmethod(func)})
-    CHECKS.append(cls)
-    return cls
+    CHECKS.append(func)
+    return func
 
 
 class Check(object):
@@ -97,20 +98,21 @@ def family_children(session):
             Languoid.level.in_([FAMILY, LANGUAGE])))
 
 
-
-def family_languages(session, exclude=SPECIAL_FAMILIES):
+@check
+def family_languages(session):
     """Family has at least two languages."""
-    child = sa.orm.aliased(Languoid)
-    return
-    #session.query(Languoid).filter_by(level='FAMILY').order_by('id')\
-    #    .filter(Languoid.family.has(Languoid.name.notin_(exclude)))\
-    #    .join(TreeClosureTable, TreeClosureTable.parent_pk == Languoid.pk)\
-    #    .outerjoin(child, and_(
-    #        TreeClosureTable.child_pk == child.pk,
-    #        TreeClosureTable.depth > 0,
-    #        child.level == LanguoidLevel.language))\
-    #    .group_by(Language.pk, Languoid.pk)\
-    #    .having(func.count(child.pk) < 2)\
+    family, child = (sa.orm.aliased(Languoid) for _ in range(2))
+    tree = Languoid.tree(include_self=True, with_terminal=True)
+    return session.query(Languoid).filter_by(level=FAMILY).order_by('id')\
+        .filter(~session.query(family).filter_by(level=FAMILY)
+            .filter(family.name.in_(SPECIAL_FAMILIES))
+            .join(tree, tree.c.parent_id == family.id)
+            .filter_by(terminal=True, child_id=Languoid.id)
+            .exists())\
+        .filter(session.query(sa.func.count())
+            .select_from(child).filter_by(level=LANGUAGE)
+            .join(tree, tree.c.child_id == child.id)
+            .filter_by(parent_id=Languoid.id).as_scalar() < 2)
 
 
 @check
