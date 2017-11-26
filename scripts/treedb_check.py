@@ -81,6 +81,22 @@ class Check(object):
 
 
 @check
+def family_parent(session):
+    """Parent of a family is a family."""
+    return session.query(Languoid).filter_by(level=FAMILY).order_by('id')\
+        .join(Languoid.parent, aliased=True)\
+        .filter(Languoid.level != FAMILY)
+
+
+@check
+def language_parent(session):
+    """Parent of a language is a family."""
+    return session.query(Languoid).filter_by(level=LANGUAGE).order_by('id')\
+        .join(Languoid.parent, aliased=True)\
+        .filter(Languoid.level != FAMILY)
+
+
+@check
 def dialect_parent(session):
     """Parent of a dialect is a language or dialect."""
     return session.query(Languoid).filter_by(level=DIALECT).order_by('id')\
