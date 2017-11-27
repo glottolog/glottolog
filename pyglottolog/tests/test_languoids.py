@@ -6,8 +6,8 @@ from clldutils.testing import WithTempDir
 from clldutils import jsonlib
 
 from pyglottolog.tests.util import WithApi
-from pyglottolog.languoids import Languoid, EndangermentStatus
-from pyglottolog.objects import Glottocodes, Glottocode, Level, Country, Macroarea
+from pyglottolog.languoids import (Languoid, EndangermentStatus,
+    Glottocodes, Glottocode, Level, Country, Macroarea)
 
 
 class TestGlottocodes(WithTempDir):

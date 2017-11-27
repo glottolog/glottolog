@@ -3,7 +3,7 @@
 import re
 import collections
 
-import pyglottolog.api
+import pyglottolog
 
 FIELD = 'gbid'
 
@@ -17,7 +17,7 @@ GBID = re.compile(
 
 
 if __name__ == '__main__':
-    api = pyglottolog.api.Glottolog()
+    api = pyglottolog.Glottolog()
 
     def iterfixed(bibfile, field='gbid', pattern=GBID):
         for e in bibfile.iterentries():

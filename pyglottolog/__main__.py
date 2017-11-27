@@ -18,9 +18,9 @@ import sys
 from clldutils.clilib import ArgumentParserWithLogging, ParserError
 from clldutils.path import copytree, rmtree, remove
 
-from pyglottolog.languoids import Glottocode
-from pyglottolog.api import Glottolog
-from pyglottolog import commands
+from .languoids import Glottocode
+from .api import Glottolog
+from . import commands
 assert commands
 
 

@@ -1,9 +1,12 @@
-# _compare_names.py - compare regex-based with pybtex name parsing
+# compare_names.py - compare regex-based with pybtex name parsing
+
 from __future__ import print_function
 
-import _bibfiles
-import _bibtex
-import _libmonster
+from collections import Counter
+
+from . import bibfiles
+from . import bibtex
+from . import libmonster
 
 
 def names1(s):  # pragma: no cover
@@ -24,9 +27,7 @@ def debr(s):  # pragma: no cover
     return s
 
 
-if __name__ == '__main__':  # pragma: no cover
-    from collections import Counter
-
+def main():  # pragma: no cover
     counts = Counter()
     for b in _bibfiles.Collection():
         print(b.filename.center(80, '#'))
@@ -43,3 +44,7 @@ if __name__ == '__main__':  # pragma: no cover
                     print()
 
     print('\n'.join('%d\t%s' % (n, f) for f, n in sorted(counts.most_common())))
+
+
+if __name__ == '__main__':  # pragma: no cover
+    main()

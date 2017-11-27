@@ -1,5 +1,7 @@
-# coding: utf8
+# languoid.py
+
 from __future__ import unicode_literals
+
 import os
 from collections import defaultdict
 
@@ -8,10 +10,13 @@ from clldutils.path import Path
 from clldutils.inifile import INI
 from newick import Node
 
-from pyglottolog.objects import (
-    Glottocode, EthnologueComment, Reference, Level, Country, Macroarea,
-    EndangermentStatus, ClassificationComment, ISORetirement,
+from .models import (
+    Glottocode, Level, Country, Macroarea, Reference, 
+    EndangermentStatus, ClassificationComment,
+    EthnologueComment, ISORetirement,
 )
+
+__all__ = ['Languoid']
 
 INFO_FILENAME = 'md.ini'
 

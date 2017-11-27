@@ -1,4 +1,4 @@
-# _bibfiles_db.py - load bibfiles into sqlite3, hash, assign ids (split/merge)
+# bibfiles_db.py - load bibfiles into sqlite3, hash, assign ids (split/merge)
 
 import sqlite3
 import difflib
@@ -13,12 +13,16 @@ from clldutils.dsv import UnicodeWriter
 from clldutils import jsonlib
 from clldutils.path import remove
 
-from pyglottolog.util import unique, group_first
-from pyglottolog.monsterlib import _bibtex
+from ..util import unique, group_first
+from . import bibtex
+
+__all__ = ['Database']
+
+UNION_FIELDS = {'fn', 'asjp_name', 'isbn'}
+
+IGNORE_FIELDS = {'crossref', 'numnote', 'glotto_id'}
 
 log = logging.getLogger('pyglottolog')
-UNION_FIELDS = {'fn', 'asjp_name', 'isbn'}
-IGNORE_FIELDS = {'crossref', 'numnote', 'glotto_id'}
 
 
 class Database(object):
@@ -76,7 +80,7 @@ class Database(object):
                 assign_ids(conn, verbose=verbose)
 
     def to_bibfile(self, filename, encoding='utf-8', ):
-        _bibtex.save(self.merged(), filename.as_posix(), sortkey=None, encoding=encoding)
+        bibtex.save(self.merged(), filename.as_posix(), sortkey=None, encoding=encoding)
 
     def to_csvfile(self, filename):
         """Write a CSV file with one row for each entry in each bibfile."""
@@ -464,7 +468,7 @@ def hashfields(conn, filename, bibkey):
 
 
 def generate_hashes(conn):
-    from _libmonster import wrds, keyid
+    from .libmonster import wrds, keyid
 
     words = collections.Counter()
     cursor = conn.execute('SELECT value FROM value WHERE field = ?', ('title',))

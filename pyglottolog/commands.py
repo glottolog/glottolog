@@ -16,14 +16,13 @@ from clldutils.markup import Table
 from clldutils.path import Path, write_text, read_text, git_describe
 
 import pyglottolog
-from pyglottolog.languoids import Languoid
-from pyglottolog.objects import Level, Reference
-from pyglottolog import fts
-from pyglottolog import lff
-from pyglottolog.monster import compile
-from pyglottolog.references import BibFile
 import pyglottolog.iso
-from pyglottolog.util import message, sprint
+from .languoids import Languoid, Level, Reference
+from . import fts
+from . import lff
+from .monster import compile
+from .references import BibFile
+from .util import message, sprint
 
 
 @command()

@@ -6,6 +6,7 @@ import io
 import collections
 
 from six import PY2, text_type
+
 from pybtex.database.input.bibtex import BibTeXEntryIterator, Parser, UndefinedMacro
 from pybtex.scanner import PybtexSyntaxError
 from pybtex.exceptions import PybtexError
@@ -14,7 +15,6 @@ from pybtex.bibtex.utils import split_name_list
 from pybtex.database import Person
 
 from clldutils.path import as_posix, memorymapped
-
 
 FIELDORDER = [
     'author', 'editor', 'title', 'booktitle', 'journal',

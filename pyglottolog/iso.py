@@ -22,7 +22,7 @@ else:
 import bs4
 import requests
 
-from pyglottolog.monsterlib._bibtex import save
+from .references.bibtex import save
 
 BASE_URL = 'http://www-01.sil.org/iso639-3/'
 

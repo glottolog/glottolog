@@ -7,7 +7,7 @@ from mock import Mock
 
 class Tests(TestCase):
     def test_Reference(self):
-        from pyglottolog.objects import Reference
+        from pyglottolog.languoids import Reference
 
         ref = Reference('bib:key', '12-34', 'German')
         self.assertEqual('{0}'.format(ref), '**bib:key**:12-34<trigger "German">')
@@ -17,7 +17,7 @@ class Tests(TestCase):
             Reference.from_list(['abc'])
 
     def test_ClassificationComment(self):
-        from pyglottolog.objects import ClassificationComment
+        from pyglottolog.languoids import ClassificationComment
 
         cc = ClassificationComment(family='**bib:key**')
         log = Mock()
@@ -28,7 +28,7 @@ class Tests(TestCase):
         self.assertFalse(log.error.called)
 
     def test_EndangermentStatus(self):
-        from pyglottolog.objects import EndangermentStatus
+        from pyglottolog.languoids import EndangermentStatus
 
         c = EndangermentStatus.critical
         self.assertEqual(EndangermentStatus.get(c), c)
@@ -37,7 +37,7 @@ class Tests(TestCase):
             EndangermentStatus.get(123)
 
     def test_EthnologueComment(self):
-        from pyglottolog.objects import EthnologueComment
+        from pyglottolog.languoids import EthnologueComment
 
         with self.assertRaises(ValueError):
             EthnologueComment('abc', 't')
