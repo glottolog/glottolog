@@ -30,9 +30,6 @@ class Fields(object):
         ('core', 'name_comment'): False,
         # FIXME: core hapaxes
         ('core', 'comment'): False,
-        ('core', 'comment_type'): False,
-        ('core', 'ethnologue_versions'): False,
-        ('core', 'isohid'): False,
         ('core', 'location'): False,
         ('core', 'name_pronunciation'): False,
         ('core', 'speakers'): False,
