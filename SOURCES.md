@@ -22,6 +22,19 @@ Glottolog contains data about language endangerment drawn (and merged) from vari
 The actual source of each individual language's endangerment status is given in the
 `[endangerment]` section of the info file.
 
+Source data has been merged using the following mapping between the endangerment categories in the source databases,
+resulting in what we call *the Agglomerated Endangerment Scale (AES)*:
+
+
+UNESCO       | LES-ELCat  | EGIDS           | AES
+---          | ---        | ---             | ---
+safe         | at risk    | <ul><li>1 (National)</li><li>2 (Regional)</li><li>3 (Trade) </li><li>4 (Educational)</li><li>5 (Written) </li><li>6a (Vigorous)</li></ul>   | Not endangered
+vulnerable   | vulnerable | 6b (Threatened) | 6b (Threatened)
+definitely endangered | <ul><li>threatened</li><li>endangered</li></ul> | 7 (Shifting) | 7 (Shifting)
+severely endangered | severely endangered | 8a (Moribund) | 8a (Moribund)
+critically endangered | critically endangered | 8b (Nearly extinct) | 8b (Nearly extinct)
+extinct |  <ul><li>dormant</li><li>awakening</li></ul>  | <ul><li>9 (Dormant)</li><li>9 (Reawakening)</li><li>9 (Second language only)</li><li>10 (Extinct)</li></ul> | 10 (Extinct)
+
 
 ## Language location
 
