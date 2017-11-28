@@ -22,6 +22,8 @@ Glottolog contains data about language endangerment drawn (and merged) from vari
 The actual source of each individual language's endangerment status is given in the
 `[endangerment]` section of the info file.
 
+<a id="aes-mapping"> </a>
+
 Source data has been merged using the following mapping between the endangerment categories in the source databases,
 resulting in what we call *the Agglomerated Endangerment Scale (AES)*:
 
