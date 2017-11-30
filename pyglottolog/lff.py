@@ -7,8 +7,7 @@ import logging
 
 from clldutils.path import as_posix, move, readlines
 
-from pyglottolog.languoids import Languoid
-from pyglottolog.objects import Level, Glottocode
+from .languoids import Languoid, Level, Glottocode
 
 ISOLATE_ID = '-isolate-'
 LINEAGE_SEP = ';'

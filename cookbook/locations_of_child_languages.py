@@ -1,6 +1,6 @@
 from clldutils.dsv import UnicodeWriter
-from pyglottolog.api import Glottolog
-from pyglottolog.objects import Level
+from pyglottolog import Glottolog
+from pyglottolog.languoids import Level
 
 
 def locations(glottolog, fid, outpath):

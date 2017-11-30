@@ -1,6 +1,6 @@
 # fix_isbn.py - clean up mix of different delimiters in hh.bib
 
-import pyglottolog.api
+import pyglottolog
 from pyglottolog.references import Isbns
 
 FIELD = 'isbn'
@@ -8,7 +8,7 @@ FIELD = 'isbn'
 FIXES = {}
 
 if __name__ == '__main__':
-    api = pyglottolog.api.Glottolog()
+    api = pyglottolog.Glottolog()
     hh = api.bibfiles['hh.bib']
 
     def iterfixed(bibfile):

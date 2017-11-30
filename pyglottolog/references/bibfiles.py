@@ -1,30 +1,26 @@
-# coding: utf8
+# bibfiles.py
 
 from __future__ import unicode_literals, print_function, division
 
 import re
-import functools
-from itertools import chain
 from collections import Counter, OrderedDict
 import unicodedata
 import datetime
 
 from six import string_types
-from six.moves import map
 
 import attr
 
-from clldutils.misc import cached_property, UnicodeMixin
+from clldutils.misc import UnicodeMixin
 from clldutils.path import memorymapped
 from clldutils.source import Source
 from clldutils.text import split_text
 from clldutils.inifile import INI
 
-from pyglottolog.util import Trigger
-from pyglottolog.monsterlib import _bibtex
-from pyglottolog.monsterlib._bibfiles_db import Database
+from . import bibtex
+from .bibfiles_db import Database
 
-__all__ = ['Bibfiles', 'Isbns', 'HHTypes']
+__all__ = ['BibFiles', 'BibFile', 'Entry']
 
 
 class BibFiles(list):
@@ -95,7 +91,7 @@ class BibFile(UnicodeMixin):
                 else:
                     text = string[m.start():]
         if text:
-            for k, (t, f) in _bibtex.iterentries_from_text(text, encoding=self.encoding):
+            for k, (t, f) in bibtex.iterentries_from_text(text, encoding=self.encoding):
                 return Entry(k, t, f, self)
         raise KeyError(item)
 
@@ -115,7 +111,7 @@ class BibFile(UnicodeMixin):
         return datetime.datetime.fromtimestamp(self.fname.stat().st_mtime)
 
     def iterentries(self):
-        for k, (t, f) in _bibtex.iterentries(filename=self.fname, encoding=self.encoding):
+        for k, (t, f) in bibtex.iterentries(filename=self.fname, encoding=self.encoding):
             yield Entry(k, t, f, self)
 
     def keys(self):
@@ -130,7 +126,7 @@ class BibFile(UnicodeMixin):
     def update(self, fname):
         entries = OrderedDict()
         ref_id_map = self.glottolog_ref_id_map
-        for key, (type_, fields) in _bibtex.iterentries(fname, self.encoding):
+        for key, (type_, fields) in bibtex.iterentries(fname, self.encoding):
             if key in ref_id_map and 'glottolog_ref_id' not in fields:
                 fields['glottolog_ref_id'] = ref_id_map[key]
             entries[key] = (type_, fields)
@@ -138,12 +134,12 @@ class BibFile(UnicodeMixin):
 
     def load(self):
         """Return entries as bibkey -> (entrytype, fields) dict."""
-        return _bibtex.load(
+        return bibtex.load(
             self.fname, preserve_order=self.sortkey is None, encoding=self.encoding)
 
     def save(self, entries):
         """Write bibkey -> (entrytype, fields) map to file."""
-        _bibtex.save(
+        bibtex.save(
             entries, filename=self.fname, sortkey=self.sortkey, encoding=self.encoding)
 
     def __unicode__(self):
@@ -151,7 +147,7 @@ class BibFile(UnicodeMixin):
 
     def check(self, log):
         entries = self.load()  # bare BibTeX syntax
-        invalid = _bibtex.check(filename=self.fname)  # names/macros etc.
+        invalid = bibtex.check(filename=self.fname)  # names/macros etc.
         verdict = ('(%d invalid)' % invalid) if invalid else 'OK'
         method = log.warn if invalid else log.info
         method('%s %d %s' % (self, len(entries), verdict))
@@ -191,7 +187,7 @@ class Entry(UnicodeMixin):
         :return: BibTeX representation of the entry.
         """
         res = "@%s{%s" % (self.type, self.key)
-        for k, v in _bibtex.fieldorder.itersorted(self.fields):
+        for k, v in bibtex.fieldorder.itersorted(self.fields):
             res += ',\n    %s = {%s}' % (k, v.strip() if hasattr(v, 'strip') else v)
         res += '\n}\n' if self.fields else ',\n}\n'
         return res
@@ -242,167 +238,3 @@ class Entry(UnicodeMixin):
                 if ss in hhtypes:
                     res.append(hhtypes[ss])
         return res, self.parse_ca(self.fields.get('hhtype'))
-
-
-class Isbns(list):
-
-    class Parser(object):
-        @staticmethod
-        def parse(ma):
-            return ''.join(g for g in ma.groups() if g is not None)
-
-    class Numeric(Parser):
-        pattern = re.compile(r'(97[89])?(\d{9})([\dXx])(?![\dXx])')
-
-    
-    class Hyphened(Parser):
-        pattern = re.compile(r'''
-            (?:
-              (?:ISBN[- ])? (97[89])-
-              |
-              ISBN-10[ ]
-            )?
-            (\d{1,5})- (\d+)- (\d+)- ([\dXx])(?![\dXx])''', flags=re.VERBOSE)
-
-        
-    class Ten99(Parser):
-        pattern = re.compile(r'(99)-(\d{7})-([\dXx])(?![\dXx])')
-
-    @classmethod
-    def _iterparse(cls, s, pos=0, parsers=(Numeric, Hyphened, Ten99), delimiters=(', ', ' ')):
-        while True:
-            for p in parsers:
-                ma = p.pattern.match(s, pos)
-                if ma is not None:
-                    yield p.parse(ma)
-                    pos += len(ma.group())
-                    break
-            else:
-                raise ValueError('no matching ISBN pattern at index %s: %r' % (pos, s))
-            if pos == len(s):
-                return
-            for delim in delimiters:
-                if s.startswith(delim, pos):
-                    pos += len(delim)
-                    break
-            else:
-                raise ValueError('no matching delimiter at index %s: %r' % (pos, s))
-
-    @classmethod
-    def from_field(cls, field):
-        isbns = map(Isbn, cls._iterparse(field))
-        seen = set()
-        return cls(i for i in isbns if i not in seen and not seen.add(i))
-
-    def to_string(self):
-        return ', '.join(i.digits for i in self)
-
-
-class Isbn(object):
-    """A 13 digit ISBN from a string of 13 or 10 digits. 
-
-    see also https://en.wikipedia.org/wiki/International_Standard_Book_Number
-    """
-
-    _isbn10_prefix = '978'
-
-    @staticmethod
-    def _isbn13_check_digit(digits):
-        assert len(digits) in (12, 13)
-        halfes = (digits[i:12:2] for i in (0, 1))
-        odd, even = (sum(map(int, h)) for h in halfes)
-        return str(-(odd + 3 * even) % 10)
-
-    @staticmethod
-    def _isbn10_check_digit(digits):
-        assert len(digits) in (9, 10)
-        result = sum(i * int(d) for i, d in enumerate(digits[:9], 1)) % 11
-        return 'X' if result == 10 else str(result) 
-
-    def __init__(self, digits):
-        if len(digits) == 13:
-            check = self._isbn13_check_digit(digits)
-        elif len(digits) == 10:
-            digits = digits.upper()
-            check = self._isbn10_check_digit(digits)
-        else:
-            raise ValueError('invalid ISBN digits length (%s): %r' % (len(digits), digits))
-
-        if digits[-1] != check:
-            raise ValueError('invalid ISBN check digit (%s instead of %s): %r'
-                             % (digits[-1], check, digits))
-
-        if len(digits) == 10:  # convert
-            digits = self._isbn10_prefix + digits[:9]
-            digits += self._isbn13_check_digit(digits)
-        self.digits = digits
-
-    def __hash__(self):
-        return hash(self.digits)
-
-    def __eq__(self, other):
-        if isinstance(other, self.__class__):
-            return self.digits == other.digits
-        return NotImplemented  # pragma: no cover
-
-    def __ne__(self, other):
-        if isinstance(other, self.__class__):
-            return self.digits != other.digits
-        return NotImplemented  # pragma: no cover
-    
-    def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, self.digits)
-
-
-@functools.total_ordering
-class HHType(object):
-    def __init__(self, s, p):
-        self.name = s
-        self.id = p.get(s, 'id')
-        self.rank = p.getint(s, 'rank')
-        self.abbv = p.get(s, 'abbv')
-        self.bibabbv = p.get(s, 'bibabbv')
-        self.description = p.get(s, 'description')
-        self.triggers = [Trigger('hhtype', self.id, t)
-                         for t in p.get(s, 'triggers').strip().splitlines() or []]
-
-    def __repr__(self):
-        return '<%s %s rank=%s>' % (self.__class__.__name__, self.id, self.rank)
-
-    def __eq__(self, other):
-        return self.rank == other.rank
-
-    def __lt__(self, other):
-        return self.rank < other.rank
-
-
-class HHTypes(object):
-    _rekillparen = re.compile(" \([^\)]*\)")
-    _respcomsemic = re.compile("[;,]\s?")
-
-    def __init__(self, api):
-        ini = INI.from_file(api.references_path('hhtype.ini'), interpolation=None)
-        self._types = sorted([HHType(s, ini) for s in ini.sections()], reverse=True)
-        self._type_by_id = {t.id: t for t in self._types}
-
-    @classmethod
-    def parse(cls, s):
-        return cls._respcomsemic.split(cls._rekillparen.sub("", s))
-
-    def __iter__(self):
-        return iter(self._types)
-
-    def __len__(self):
-        return len(self._types)
-
-    def __contains__(self, item):
-        return item in self._type_by_id
-
-    def __getitem__(self, item):
-        if isinstance(item, int):
-            return self._types[item]
-        return self._type_by_id.get(item, self._type_by_id.get('unknown'))
-
-    @cached_property()
-    def triggers(self):
-        return list(chain(*[t.triggers for t in self]))

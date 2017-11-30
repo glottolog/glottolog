@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-from pyglottolog.api import Glottolog
+from pyglottolog import Glottolog
 from treemaker import TreeMaker
 from newick import loads
 

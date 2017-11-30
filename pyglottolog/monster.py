@@ -52,8 +52,8 @@ import time
 from collections import Counter
 import logging
 
-from pyglottolog.monsterlib._libmonster import lgcode, add_inlg_e, markconservative
-from pyglottolog.references import BibFile
+from .references import BibFile
+from .references.libmonster import lgcode, add_inlg_e, markconservative
 
 
 def macro_area_from_lgcode(m, lgd):

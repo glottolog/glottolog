@@ -39,7 +39,7 @@ setup(
     zip_safe=False,
     install_requires=requires,
     entry_points={
-        'console_scripts': ['glottolog=pyglottolog.cli:main'],
+        'console_scripts': ['glottolog=pyglottolog.__main__:main'],
     },
     tests_require=['mock'],
     test_suite="pyglottolog")

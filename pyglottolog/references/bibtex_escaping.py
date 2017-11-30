@@ -16,17 +16,20 @@ See also:
   http://www.math.boun.edu.tr/instructors/gurel/symbols-a4.pdf
 
 see also:
-  _bibtex_undiacritic.py rules
+  bibtex_undiacritic.py rules
   http://github.com/clld/clld/blob/master/clld/lib/bibtex.py
   http://github.com/clld/clld/blob/master/clld/lib/latex.py
   http://github.com/mcmtroffaes/latexcodec/blob/develop/latexcodec/codec.py#L97
 
 """
+
 from __future__ import print_function
+
 import re
 import unicodedata
 
 from six import text_type, unichr, PY2
+
 import latexcodec
 
 __all__ = ['ulatex_postprocess', 'ulatex_preprocess']

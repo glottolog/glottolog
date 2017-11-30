@@ -10,7 +10,7 @@ from pyglottolog.tests.util import WithApi
 
 class Tests(WithApi):
     def test_roman(self):
-        from pyglottolog.monsterlib.roman import introman, romanint
+        from pyglottolog.references.roman import introman, romanint
 
         self.assertEqual(introman(5), 'v')
         self.assertEqual(introman(8), 'viii')
@@ -18,7 +18,7 @@ class Tests(WithApi):
             self.assertEqual(i, romanint(introman(i)))
 
     def test_Collection(self):
-        from pyglottolog.monsterlib._bibfiles_db import Database
+        from pyglottolog.references.bibfiles_db import Database
 
         if not PY2:  # pragma: no cover
             return
@@ -53,7 +53,7 @@ class Tests(WithApi):
                 pass
 
     def test_markconcservative(self):
-        from pyglottolog.monsterlib._libmonster import markconservative
+        from pyglottolog.references.libmonster import markconservative
 
         res = markconservative(
             {1: ('article', {'title': 'Grammar'})},
@@ -75,7 +75,7 @@ class Tests(WithApi):
         self.assertNotIn('hhtype', res[1][1])
 
     def test_markall(self):
-        from pyglottolog.monsterlib._libmonster import markall
+        from pyglottolog.references.libmonster import markall
 
         bib = {
             1: ('article', {'title': "other grammar of lang"}),
@@ -92,7 +92,7 @@ class Tests(WithApi):
         self.assertIn('language', bib[1][1]['lgcode'])
 
     def test_add_inlg_e(self):
-        from pyglottolog.monsterlib._libmonster import add_inlg_e, INLG
+        from pyglottolog.references.libmonster import add_inlg_e, INLG
 
         res = add_inlg_e(
             {1: ('article', {'title': 'Grammar of language'})},
@@ -102,7 +102,7 @@ class Tests(WithApi):
 
 
 def test_names():
-    from pyglottolog.monsterlib._bibtex import names
+    from pyglottolog.references.bibtex import names
 
     assert_equal(
         [n.last for n in names('Alfred Meier and Peter von Bohr')],
@@ -110,7 +110,7 @@ def test_names():
 
 
 def test_undiacritic():
-    from pyglottolog.monsterlib._bibtex_undiacritic import undiacritic
+    from pyglottolog.references.bibtex_undiacritic import undiacritic
 
     if not PY2:
         return  # pragma: no cover
@@ -122,7 +122,7 @@ def test_undiacritic():
 
 
 def test_ulatex_decode():
-    from pyglottolog.monsterlib._bibtex_escaping import ulatex_decode
+    from pyglottolog.references.bibtex_escaping import ulatex_decode
 
     if not PY2:
         return  # pragma: no cover
@@ -149,7 +149,7 @@ def test_ulatex_decode():
 
 
 def test_distance():
-    from pyglottolog.monsterlib._bibfiles_db import distance
+    from pyglottolog.references.bibfiles_db import distance
 
     assert_almost_equal(distance({}, {}), 0)
     d1 = dict(author='An Author', year='1998', title='The Title', ENTRYTYPE='article')
@@ -164,7 +164,7 @@ def test_distance():
 
 
 def test_keyid():
-    from pyglottolog.monsterlib._libmonster import keyid
+    from pyglottolog.references.libmonster import keyid
 
     for fields, res in [
         ({}, '__missingcontrib__'),
@@ -182,7 +182,7 @@ def test_keyid():
 
 
 def test_pyear():
-    from pyglottolog.monsterlib._libmonster import pyear
+    from pyglottolog.references.libmonster import pyear
 
     for year, res in [
         ('', '[nd]'),
@@ -193,7 +193,7 @@ def test_pyear():
 
 
 def test_pagecount():
-    from pyglottolog.monsterlib._libmonster import pagecount
+    from pyglottolog.references.libmonster import pagecount
 
     for pages, res in [
         ('', ''),
@@ -207,7 +207,7 @@ def test_pagecount():
 
 
 def test_lgcode():
-    from pyglottolog.monsterlib._libmonster import lgcode
+    from pyglottolog.references.libmonster import lgcode
 
     for lgcode_, codes in [
         ('', []),
@@ -218,7 +218,7 @@ def test_lgcode():
 
 
 def test_grp2fd():
-    from pyglottolog.monsterlib._libmonster import grp2fd
+    from pyglottolog.references.libmonster import grp2fd
 
     l = [(1, 2), (1, 3), (2, 4), (1, 5)]
     assert_equal(grp2fd(l), {1: {2: 1, 3: 1, 5: 1}, 2: {4: 1}})

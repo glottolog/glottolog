@@ -5,13 +5,13 @@
 
 Syntactically, a valid Glottocode is a 8-letter string, matching the regular expression `[0-9a-z]{4}[0-9]{4}`. Using `pyglottocode` this validation should be done as
 ```python
->>> from pyglottolog.objects import Glottocode
+>>> from pyglottolog.languoids import Glottocode
 >>> assert Glottocode.pattern.match('abcd1234')
 ```
 
 Valid Glottocodes in the sense of codes that have already been assigned to a languoid can be accessed through the Glottolog API as follows:
 ```python
->>> from pyglottolog.api import Glottolog
+>>> from pyglottolog import Glottolog
 >>> gl = Glottolog()
 >>> codes = list(gl.glottocodes)
 >>> len(codes)
@@ -22,7 +22,7 @@ Valid Glottocodes in the sense of codes that have already been assigned to a lan
 
 Valid Glottocodes in the sense of codes of languoids in the current classification can be accessed through the Glottolog API as follows:
 ```python
->>> from pyglottolog.api import Glottolog
+>>> from pyglottolog import Glottolog
 >>> gl = Glottolog()
 >>> gl.languoid('beqa1234') is None  # code no longer in Glottolog
 True

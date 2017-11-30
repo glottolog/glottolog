@@ -1,5 +1,7 @@
 # coding=utf8
+
 from __future__ import unicode_literals
+
 import re
 import os
 from collections import OrderedDict
@@ -10,19 +12,20 @@ from clldutils.declenum import EnumSymbol
 import pycountry
 from termcolor import colored
 
-from pyglottolog import util
-from pyglottolog import languoids
-from pyglottolog import references
-from pyglottolog import objects
+from . import util
+from . import languoids
+from . import references
+from .languoids import models
+
+__all__ = ['Glottolog']
 
 ISO_CODE_PATTERN = re.compile('[a-z]{3}$')
 
 
 class Glottolog(UnicodeMixin):
-    """
-    API to access Glottolog data
-    """
-    countries = [objects.Country(c.alpha_2, c.name) for c in pycountry.countries]
+    """API to access Glottolog data"""
+
+    countries = [models.Country(c.alpha_2, c.name) for c in pycountry.countries]
 
     def __init__(self, repos=None):
         self.repos = (Path(repos) if repos else Path(__file__).parent.parent).resolve()
@@ -49,7 +52,7 @@ class Glottolog(UnicodeMixin):
 
     @property
     def glottocodes(self):
-        return objects.Glottocodes(self.languoids_path('glottocodes.json'))
+        return models.Glottocodes(self.languoids_path('glottocodes.json'))
 
     @property
     def ftsindex(self):
@@ -69,7 +72,7 @@ class Glottolog(UnicodeMixin):
                 if d.name == id_:
                     return languoids.Languoid.from_dir(d)
 
-    def languoids(self, ids=None, maxlevel=objects.Level.dialect):
+    def languoids(self, ids=None, maxlevel=models.Level.dialect):
         nodes = {}
 
         for dirpath, dirnames, filenames in os.walk(as_posix(self.tree)):
@@ -108,7 +111,7 @@ class Glottolog(UnicodeMixin):
         for lang in nodes.values():
             if not lang.lineage and not lang.category.startswith('Pseudo '):
                 ns = lang.newick_node(nodes=nodes).newick
-                if lang.level == objects.Level.language:
+                if lang.level == models.Level.language:
                     # an isolate: we wrap it in a pseudo-family with the same name and ID.
                     ns = '({0}){0}'.format(ns)
                 trees.append('{0};'.format(ns))
@@ -162,8 +165,8 @@ def _ascii_node(n, level, last, maxlevel, prefix):
     nprefix = prefix + ('   ' if last else '\u2502  ')
 
     color = 'red' if not level else (
-        'green' if n.level == objects.Level.language else (
-            'blue' if n.level == objects.Level.dialect else None))
+        'green' if n.level == models.Level.language else (
+            'blue' if n.level == models.Level.dialect else None))
 
     util.sprint(
         '{0}{1}{2} [{3}]',

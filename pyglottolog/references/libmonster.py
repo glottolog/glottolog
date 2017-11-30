@@ -1,5 +1,5 @@
 """
-_libmonster.py - mixed support library
+libmonster.py - mixed support library
 
 # TODO: consider replacing pauthor in keyid with _bibtex.names
 # TODO: enusure \emph is dropped from titles in keyid calculation
@@ -13,10 +13,10 @@ from operator import itemgetter
 
 from clldutils.dsv import UnicodeWriter
 
-from pyglottolog.util import unique, Trigger
-from pyglottolog.references import Entry
-from pyglottolog.monsterlib._bibtex_undiacritic import undiacritic
-from pyglottolog.monsterlib.roman import roman, romanint
+from ..util import unique, Trigger
+from .bibfiles import Entry
+from .bibtex_undiacritic import undiacritic
+from .roman import roman, romanint
 
 
 lgcodestr = Entry.lgcodes
