@@ -11,7 +11,7 @@ import logging
 from six import string_types, viewkeys
 from clldutils.dsv import UnicodeWriter
 from clldutils import jsonlib
-from clldutils.path import remove
+from clldutils.path import Path, remove
 
 from ..util import unique, group_first
 from . import bibtex
@@ -29,16 +29,18 @@ class Database(object):
     """Bibfile collection parsed into an sqlite3 file."""
 
     @classmethod
-    def from_bibfiles(cls, bibfiles, filename, rebuild=False):
+    def from_bibfiles(cls, bibfiles, filepath, rebuild=False):
         """If needed, (re)build the db from the bibfiles, hash, split/merge."""
-        if filename.exists():
+        if not isinstance(filepath, Path):
+            filepath = Path(filepath)
+        if filepath.exists():
             if not rebuild:
-                self = cls(filename, bibfiles)
+                self = cls(filepath, bibfiles)
                 if self.is_uptodate():
                     return self
-            remove(filename)
+            remove(filepath)
 
-        self = cls(filename, bibfiles)
+        self = cls(filepath, bibfiles)
         with self.connect(async=True) as conn:
             create_tables(conn)
             with conn:
@@ -56,8 +58,10 @@ class Database(object):
 
         return self
 
-    def __init__(self, filename, bibfiles):
-        self.filename = filename.as_posix()
+    def __init__(self, filepath, bibfiles):
+        if not isinstance(filepath, Path):
+            filepath = Path(filepath)
+        self.filename = filepath.as_posix()
         self._bibfiles = bibfiles
 
     def is_uptodate(self, bibfiles=None, verbose=False):
@@ -79,8 +83,10 @@ class Database(object):
             with conn:
                 assign_ids(conn, verbose=verbose)
 
-    def to_bibfile(self, filename, encoding='utf-8', ):
-        bibtex.save(self.merged(), filename.as_posix(), sortkey=None, encoding=encoding)
+    def to_bibfile(self, filepath, encoding='utf-8', ):
+        if not isinstance(filepath, Path):
+            filepath = Path(filepath)
+        bibtex.save(self.merged(), filepath.as_posix(), sortkey=None, encoding=encoding)
 
     def to_csvfile(self, filename):
         """Write a CSV file with one row for each entry in each bibfile."""
