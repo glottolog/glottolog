@@ -10,20 +10,20 @@ FIELDS = ('last_changed', 'owner', 'timestamp', 'modified', 'added', 'rating')
 
 api = pyglottolog.Glottolog()
 
-def iterfixed(bibfile, infos, fields=FIELDS):
+def iterfixed(bibfile, deleted, fields=FIELDS):
     for e in bibfile.iterentries():
         for f in fields:
             if f in e.fields:
                 del e.fields[f]
-                infos['deleted'] += 1
+                deleted.update([f])
         yield e.key, (e.type, e.fields)
 
 for bf in api.bibfiles:
     print(bf, end='\t')
     if bf.fname.name != 'hh.bib':
-        infos = {'deleted': 0}
-        entries = collections.OrderedDict(iterfixed(bf, infos))
-        n = infos['deleted']
+        deleted = collections.Counter()
+        entries = collections.OrderedDict(iterfixed(bf, deleted))
+        n = sum(deleted.values())
         print(n)
         if n:
             bf.save(entries)
