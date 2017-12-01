@@ -1,9 +1,9 @@
-# bibfiles.py
+# bibfiles.py - ordered collection of bibfiles with load/save api
 
-from __future__ import unicode_literals, print_function, division
+from __future__ import unicode_literals, print_function
 
 import re
-from collections import Counter, OrderedDict
+import collections
 import unicodedata
 import datetime
 
@@ -12,7 +12,7 @@ from six import string_types
 import attr
 
 from clldutils.misc import UnicodeMixin
-from clldutils.path import memorymapped
+from clldutils.path import memorymapped, Path
 from clldutils.source import Source
 from clldutils.text import split_text
 from clldutils.inifile import INI
@@ -24,21 +24,27 @@ __all__ = ['BibFiles', 'BibFile', 'Entry']
 
 
 class BibFiles(list):
-    """
-    Represents BibTeX files within the `bibtex` sub-directory of `references` as
-    `BibFile` objects, if they are listed in `BIBFILES.ini`.
-    """
-    def __init__(self, api):
-        ini = INI.from_file(api.references_path('BIBFILES.ini'), interpolation=None)
-        res = []
+    """Ordered collection of `BibFile` objects accessible by filname or index."""
+
+    @classmethod
+    def from_path(cls, path):
+        """BibTeX files from `<path>/bibtex/*.bib` if listed in `<path>/BIBFILES.ini`."""
+        if not isinstance(path, Path):
+            path = Path(path)
+        ini = INI.from_file(path / 'BIBFILES.ini', interpolation=None)
+        return cls(cls._iterbibfiles(ini, path / 'bibtex'))
+
+    @staticmethod
+    def _iterbibfiles(ini, bibtex_path):
         for sec in ini.sections():
             if sec.endswith('.bib'):
-                fname = api.references_path('bibtex', sec)
-                if not fname.exists():  # pragma: no cover
+                fpath = bibtex_path / sec
+                if not fpath.exists():  # pragma: no cover
                     raise ValueError('invalid bibtex file referenced in BIBFILES.ini')
-                res.append(BibFile(fname=fname, **ini[sec]))
+                yield BibFile(fname=fpath, **ini[sec])
 
-        super(BibFiles, self).__init__(res)
+    def __init__(self, bibfiles):
+        super(BibFiles, self).__init__(bibfiles)
         self._map = {b.fname.name: b for b in self}
 
     def __getitem__(self, index_or_filename):
@@ -63,6 +69,7 @@ def file_if_exists(i, a, value):
 
 @attr.s
 class BibFile(UnicodeMixin):
+
     fname = attr.ib(validator=file_if_exists)
     name = attr.ib(default=None)
     title = attr.ib(default=None)
@@ -96,7 +103,7 @@ class BibFile(UnicodeMixin):
         raise KeyError(item)
 
     def visit(self, visitor=None):
-        entries = OrderedDict()
+        entries = collections.OrderedDict()
         for entry in self.iterentries():
             if visitor is None or visitor(entry) is not True:
                 entries[entry.key] = (entry.type, entry.fields)
@@ -124,7 +131,7 @@ class BibFile(UnicodeMixin):
             if 'glottolog_ref_id' in e.fields}
 
     def update(self, fname):
-        entries = OrderedDict()
+        entries = collections.OrderedDict()
         ref_id_map = self.glottolog_ref_id_map
         for key, (type_, fields) in bibtex.iterentries(fname, self.encoding):
             if key in ref_id_map and 'glottolog_ref_id' not in fields:
@@ -160,7 +167,8 @@ class BibFile(UnicodeMixin):
     def show_characters(self, include_plain=False):
         """Display character-frequencies (excluding printable ASCII)."""
         with self.fname.open(encoding=self.encoding) as fd:
-            hist = Counter(fd.read())
+            text = fd.read()
+        hist = collections.Counter(text)
         table = '\n'.join(
             '%d\t%-9r\t%s\t%s' % (n, c, c, unicodedata.name(c, ''))
             for c, n in hist.most_common()
@@ -170,6 +178,7 @@ class BibFile(UnicodeMixin):
 
 @attr.s
 class Entry(UnicodeMixin):
+
     key = attr.ib()
     type = attr.ib()
     fields = attr.ib()

@@ -9,6 +9,7 @@ from pyglottolog.tests.util import WithApi
 
 
 class Tests(WithApi):
+
     def test_roman(self):
         from pyglottolog.references.roman import introman, romanint
 
@@ -17,7 +18,7 @@ class Tests(WithApi):
         for i in range(1, 2000):
             self.assertEqual(i, romanint(introman(i)))
 
-    def test_Collection(self):
+    def test_Database(self):
         from pyglottolog.references.bibfiles_db import Database
 
         if not PY2:  # pragma: no cover

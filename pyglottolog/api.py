@@ -119,7 +119,7 @@ class Glottolog(UnicodeMixin):
 
     @cached_property()
     def bibfiles(self):
-        return references.BibFiles(self)
+        return references.BibFiles.from_path(self.references_path())
 
     @cached_property()
     def hhtypes(self):

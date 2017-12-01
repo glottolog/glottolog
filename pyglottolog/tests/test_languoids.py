@@ -1,16 +1,20 @@
 # coding: utf8
 from __future__ import unicode_literals
-from unittest import TestCase
+
+import unittest
+import mock
 
 from clldutils.testing import WithTempDir
 from clldutils import jsonlib
 
 from pyglottolog.tests.util import WithApi
 from pyglottolog.languoids import (Languoid, EndangermentStatus,
-    Glottocodes, Glottocode, Level, Country, Macroarea)
+    Glottocodes, Glottocode, Level, Country, Reference, Macroarea,
+    ClassificationComment, EthnologueComment)
 
 
 class TestGlottocodes(WithTempDir):
+
     def test_Glottocodes(self):
         gcjson = self.tmp_path('glottocodes.json')
         jsonlib.dump({}, gcjson)
@@ -26,11 +30,19 @@ class TestGlottocodes(WithTempDir):
         self.assertEqual(len(list(Glottocodes(gcjson))), 1)
 
 
-class Tests(TestCase):
+class Tests(unittest.TestCase):
+
     def test_es(self):
         self.assertEqual(
             EndangermentStatus.critical,
             EndangermentStatus.get('nearly extinct'))
+
+    def test_EndangermentStatus(self):
+        c = EndangermentStatus.critical
+        self.assertEqual(EndangermentStatus.get(c), c)
+
+        with self.assertRaises(ValueError):
+            EndangermentStatus.get(123)
 
     def test_pattern(self):
         pattern = Glottocode.pattern
@@ -58,8 +70,49 @@ class Tests(TestCase):
         with self.assertRaises(ValueError):
             Glottocode('a2')
 
+    def test_Reference(self):
+        ref = Reference('bib:key', '12-34', 'German')
+        self.assertEqual('{0}'.format(ref), '**bib:key**:12-34<trigger "German">')
+        Reference.from_list(['{0}'.format(ref)])
+
+        with self.assertRaises(ValueError):
+            Reference.from_list(['abc'])
+
+    def test_ClassificationComment(self):
+        cc = ClassificationComment(family='**bib:key**')
+        log = mock.Mock()
+        cc.check(mock.Mock(), [], log)
+        self.assertTrue(log.error.called)
+        log = mock.Mock()
+        cc.check(mock.Mock(), ['bib:key'], log)
+        self.assertFalse(log.error.called)
+
+    def test_EthnologueComment(self):
+        with self.assertRaises(ValueError):
+            EthnologueComment('abc', 't')
+
+        with self.assertRaises(ValueError):
+            EthnologueComment('abc', 'missing', 'E15')
+
+        with self.assertRaises(ValueError):
+            EthnologueComment('abc', 'missing', 'E16')
+
+        with self.assertRaises(ValueError):
+            EthnologueComment('abc', 'missing', 'E16', 'äöü'.encode('utf8'))
+
+        log = mock.Mock()
+        ec = EthnologueComment('abc', 'missing', 'E16', 'abc')
+        ec.check(mock.Mock(), [], log)
+        self.assertFalse(log.error.called)
+
+        log = mock.Mock()
+        ec = EthnologueComment('abc', 'missing', 'E16', '**bib:key**')
+        ec.check(mock.Mock(), [], log)
+        self.assertTrue(log.error.called)
+
 
 class TestLanguoid(WithApi):
+
     def test_Level(self):
         self.assertGreater(Level.dialect, Level.language)
         self.assertEqual(Level.language, self.api.languoid('abcd1235').level)
