@@ -20,7 +20,7 @@ requires = [
 
 setup(
     name='pyglottolog',
-    version='1.0.0',
+    version='2.0.0.dev0',
     description='python package for glottolog data curation',
     long_description='',
     classifiers=[
