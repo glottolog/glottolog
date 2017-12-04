@@ -279,7 +279,7 @@ def tree(args):
     if len(args.args) > 1:
         try:
             maxlevel = int(args.args[1])
-        except:
+        except Exception:
             maxlevel = getattr(Level, args.args[1], None)
     args.repos.ascii_tree(start, maxlevel=maxlevel)
 

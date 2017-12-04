@@ -165,7 +165,7 @@ def lff2tree(api, log=logging.getLogger(__name__)):
         if builddir.exists():
             try:
                 rmtree(builddir)
-            except:  # pragma: no cover
+            except Exception:  # pragma: no cover
                 pass
             if builddir.exists():  # pragma: no cover
                 raise ValueError('please remove %s before proceeding' % builddir)
