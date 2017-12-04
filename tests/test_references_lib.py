@@ -13,7 +13,7 @@ def test_roman(api):
     assert introman(5) == 'v'
     assert introman(8) == 'viii'
     for i in range(1, 2000):
-        assert i == romanint(introman(i))
+        assert romanint(introman(i)) == i
 
 
 def test_Database(tmpdir, api):
@@ -110,43 +110,42 @@ def test_names():
            ['Meier', 'Bohr']
 
 
-def test_undiacritic():
+@pytest.mark.parametrize('input_, expected', [
+        ("\\cmd{äöüß}", "aouss"),
+])
+def test_undiacritic(input_, expected):
     from pyglottolog.references.bibtex_undiacritic import undiacritic
 
     if not PY2:
         return  # pragma: no cover
 
-    for i, o in [
-        ("\\cmd{äöüß}", "aouss"),
-    ]:
-        assert undiacritic(i) == o
+    assert undiacritic(input_) == expected
 
 
-def test_ulatex_decode():
+@pytest.mark.parametrize('input_, decoded, recoded', [
+    ("", "", None),
+    ("&#97;", "a", None),
+    ("a\tb", "a\tb", None),
+    ("\\%\\&\\#", "%&#", "\\%\\&\\#"),
+    ("a\\^o\=\,b", "aôb̦̄", None),
+    ("Luise\\~no", "Luiseño", None),
+    ("\\textdoublevertline", "‖", None),
+    ("\\url{abcdefg}", "abcdefg", None),
+    ("\\textdoublegrave{o}", "\u020d", None),
+    ("\\textsubu{\\'{v}}a", "v\u032e\u0301a", None),
+    ("ng\\~{\\;u}", "ngữ", None),
+    ('\germ \\"Uber den Wolken', "[deu] Über den Wolken", None),
+    ('P. V\\u{a}n-T\\;u\\;o', 'P. Văn-Tươ', None),
+    ('\\textit{\\"{u}bertext}', 'übertext', None),
+])
+def test_ulatex_decode(input_, decoded, recoded):
     from pyglottolog.references.bibtex_escaping import ulatex_decode
 
     if not PY2:
         return  # pragma: no cover
 
-    for i, o, r in [
-        ("", "", ""),
-        ("&#97;", "a", ""),
-        ("a\tb", "a\tb", ""),
-        ("\\%\\&\\#", "%&#", "\\%\\&\\#"),
-        ("a\\^o\=\,b", "aôb̦̄", ""),
-        ("Luise\\~no", "Luiseño", ""),
-        ("\\textdoublevertline", "‖", ""),
-        ("\\url{abcdefg}", "abcdefg", ""),
-        ("\\textdoublegrave{o}", "\u020d", ""),
-        ("\\textsubu{\\'{v}}a", "v\u032e\u0301a", ""),
-        ("ng\\~{\\;u}", "ngữ", ""),
-        ('\germ \\"Uber den Wolken', "[deu] Über den Wolken", ""),
-        ('P. V\\u{a}n-T\\;u\\;o', 'P. Văn-Tươ', ""),
-        ('\\textit{\\"{u}bertext}', 'übertext', ""),
-    ]:
-        assert ulatex_decode(i) == o
-        if r:
-            assert o.encode('ulatex+utf8', errors='keep') == r
+    assert ulatex_decode(input_) == decoded
+    assert recoded is None or decoded.encode('ulatex+utf8', errors='keep') == recoded
 
 
 def test_distance():
@@ -164,58 +163,60 @@ def test_distance():
         assert distance(d1, d2) == pytest.approx(dist, rel=0.001)
 
 
-def test_keyid():
+@pytest.mark.parametrize('fields, expected', [
+    ({}, '__missingcontrib__'),
+    (dict(author='An Author'), 'author_no-titlend'),
+    (dict(editor='An Author'), 'author_no-titlend'),
+    (dict(author='An Author', title='A rather long title'), 'author_rather-longnd'),
+    (dict(author='An Author', title='Title', year='2014'), 'author_title2014'),
+    (dict(author='An Author', volume='IV'), 'author_no-titleivnd'),
+    (dict(author='An Author', extra_hash='a'), 'author_no-titlenda'),
+])
+def test_keyid(fields, expected):
     from pyglottolog.references.libmonster import keyid
+    assert keyid(fields, {}) == expected
 
-    for fields, res in [
-        ({}, '__missingcontrib__'),
-        (dict(author='An Author'), 'author_no-titlend'),
-        (dict(editor='An Author'), 'author_no-titlend'),
-        (dict(author='An Author', title='A rather long title'), 'author_rather-longnd'),
-        (dict(author='An Author', title='Title', year='2014'), 'author_title2014'),
-        (dict(author='An Author', volume='IV'), 'author_no-titleivnd'),
-        (dict(author='An Author', extra_hash='a'), 'author_no-titlenda'),
-    ]:
-        assert keyid(fields, {}) == res
 
+def test_keyid_fail():
+    from pyglottolog.references.libmonster import keyid
     with capture(keyid, dict(author='An Author and '), {}) as out:
         assert 'Unparsed' in out
 
 
-def test_pyear():
+@pytest.mark.parametrize('year, expected', [
+    ('', '[nd]'),
+    ('1931', '1931'),
+    ('1931-32', '1931-1932'),
+])
+def test_pyear(year, expected):
     from pyglottolog.references.libmonster import pyear
 
-    for year, res in [
-        ('', '[nd]'),
-        ('1931', '1931'),
-        ('1931-32', '1931-1932'),
-    ]:
-        assert pyear(year) == res
+    assert pyear(year) == expected
 
 
-def test_pagecount():
+@pytest.mark.parametrize('pages, expected', [
+    ('', ''),
+    ('1', '1'),
+    ('10-20', '11'),
+    ('10-20,v-viii', '4+11'),
+    ('20,viii', '8+20'),
+    ('10-2', '3'),  # interpreted as 10-12
+])
+def test_pagecount(pages, expected):
     from pyglottolog.references.libmonster import pagecount
 
-    for pages, res in [
-        ('', ''),
-        ('1', '1'),
-        ('10-20', '11'),
-        ('10-20,v-viii', '4+11'),
-        ('20,viii', '8+20'),
-        ('10-2', '3'),  # interpreted as 10-12
-    ]:
-        assert pagecount(pages) == res
+    assert pagecount(pages) == expected
 
 
-def test_lgcode():
+@pytest.mark.parametrize('lgcode_, expected', [
+    ('', []),
+    ('[abc]', ['abc']),
+    ('abc,NOCODE_Abc', ['abc', 'NOCODE_Abc']),
+])
+def test_lgcode(lgcode_, expected):
     from pyglottolog.references.libmonster import lgcode
 
-    for lgcode_, codes in [
-        ('', []),
-        ('[abc]', ['abc']),
-        ('abc,NOCODE_Abc', ['abc', 'NOCODE_Abc']),
-    ]:
-        assert lgcode((None, dict(lgcode=lgcode_))) == codes
+    assert lgcode((None, {'lgcode': lgcode_})) == expected
 
 
 def test_grp2fd():

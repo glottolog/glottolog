@@ -4,8 +4,7 @@ from __future__ import unicode_literals
 def test_unique():
     from pyglottolog.util import unique
 
-    l = [1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6]
-    assert len(set(l)) == len(list(unique(l)))
+    assert list(unique([1, 2, 1, 2, 3])) == [1, 2, 3]
 
 
 def test_wrap():
@@ -25,8 +24,7 @@ def test_group_first():
     from pyglottolog.util import group_first
 
     key, items = next(group_first([(1, 2), (1, 3)]))
-    assert key == 1
-    assert len(list(items)) == 2
+    assert key, list(items) == (1, [(1, 2), (1, 3)])
 
 
 def test_Trigger():
