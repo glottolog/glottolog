@@ -1,19 +1,12 @@
-# coding: utf8
-from __future__ import unicode_literals, print_function, division
-
-from mock import patch, Mock
-
-from pyglottolog.tests.util import WithApi
+from __future__ import unicode_literals
 
 
-class Tests(WithApi):
-    def test_bibtex(self):
-        from pyglottolog.iso import bibtex
+def test_bibtex(mocker, api):
+    from pyglottolog.iso import bibtex
 
-        with patch(
-                'pyglottolog.iso.requests',
-                Mock(get=Mock(return_value=Mock(content=HTML)))):
-            self.assertEqual(bibtex(self.api, Mock()), 2)
+    requests = mocker.patch('pyglottolog.iso.requests')
+    requests.get.return_value.content = HTML
+    assert bibtex(api, mocker.Mock()) == 2
 
 
 HTML = """\
