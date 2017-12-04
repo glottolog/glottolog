@@ -75,7 +75,7 @@ def compile(api, log=None, rebuild=False):
         fname=api.build_path('monster-utf8.bib'), encoding='utf-8', sortkey='bibkey')
 
     log.info('%s open/rebuild bibfiles db' % time.ctime())
-    db = api.bibfiles.to_sqlite(api.build_path('_bibfiles.sqlite3'), rebuild=rebuild)
+    db = api.bibfiles.to_sqlite(api.build_path('bibfiles.sqlite3'), rebuild=rebuild)
 
     log.info('%s compile_monster' % time.ctime())
     m = dict(db.merged())

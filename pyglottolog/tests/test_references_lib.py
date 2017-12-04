@@ -24,7 +24,7 @@ class Tests(WithApi):
         if not PY2:  # pragma: no cover
             return
 
-        db = self.tmp_path('test.sqlite')
+        db = self.tmp_path('test.sqlite3')
         with capture(self.api.bibfiles.to_sqlite, db) as out:
             self.assertIn('ENTRYTYPE', out)
         with capture(self.api.bibfiles.to_sqlite, db) as out:
