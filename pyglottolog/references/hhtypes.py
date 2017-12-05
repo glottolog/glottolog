@@ -6,7 +6,7 @@ import re
 import functools
 import itertools
 
-from clldutils.misc import cached_property
+from clldutils.misc import lazyproperty
 from clldutils.inifile import INI
 
 from ..util import Trigger
@@ -65,7 +65,7 @@ class HHTypes(object):
             return self._types[item]
         return self._type_by_id.get(item, self._type_by_id.get('unknown'))
 
-    @cached_property()
+    @lazyproperty
     def triggers(self):
         flattened = itertools.chain.from_iterable(t.triggers for t in self)
         return list(flattened)

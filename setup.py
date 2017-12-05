@@ -19,7 +19,7 @@ setup(
     },
     install_requires=[
         'six>=1.9',
-        'clldutils>=1.9.1',
+        'clldutils>=1.14.0',
         'pybtex>=0.20',
         'latexcodec',
         'unidecode',

@@ -7,7 +7,7 @@ import os
 from collections import OrderedDict
 
 from clldutils.path import Path, as_posix, walk, git_describe
-from clldutils.misc import UnicodeMixin, cached_property
+from clldutils.misc import UnicodeMixin, lazyproperty
 from clldutils.declenum import EnumSymbol
 import pycountry
 from termcolor import colored
@@ -46,7 +46,7 @@ class Glottolog(UnicodeMixin):
     def languoids_path(self, *comps):
         return self.repos.joinpath('languoids', *comps)
 
-    @cached_property()
+    @lazyproperty
     def iso(self):
         return util.get_iso(self.build_path())
 
@@ -117,15 +117,15 @@ class Glottolog(UnicodeMixin):
                 trees.append('{0};'.format(ns))
         return '\n'.join(trees)
 
-    @cached_property()
+    @lazyproperty
     def bibfiles(self):
         return references.BibFiles.from_path(self.references_path())
 
-    @cached_property()
+    @lazyproperty
     def hhtypes(self):
         return references.HHTypes(self.references_path('hhtype.ini'))
 
-    @cached_property()
+    @lazyproperty
     def triggers(self):
         res = {'inlg': [], 'lgcode': []}
         for lang in self.languoids():
@@ -136,7 +136,7 @@ class Glottolog(UnicodeMixin):
                                        for text in lang.cfg.getlist('triggers', type_)])
         return res
 
-    @cached_property()
+    @lazyproperty
     def macroarea_map(self):
         res = {}
         for lang in self.languoids():
