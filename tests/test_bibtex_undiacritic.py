@@ -1,5 +1,3 @@
-# coding: utf8
-
 from __future__ import unicode_literals
 
 import six
@@ -11,7 +9,7 @@ import pytest
 
 @pytest.mark.skipif(six.PY3, reason='PY2 only')
 @pytest.mark.parametrize('input_, expected', [
-    ("\\cmd{äöüß}", "aouss"),
+    ('\\cmd{\u00e4\u00f6\u00fc\u00df}', 'aouss'),
 ])
 def test_undiacritic(input_, expected):
     assert undiacritic(input_) == expected

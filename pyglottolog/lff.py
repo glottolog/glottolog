@@ -75,9 +75,11 @@ def read_lff(api, log, new, level, fname=None):
     assert level in [Level.language, Level.dialect]
     log.info('reading {0}s from {1}'.format(level.name, fname))
 
+    if fname is None:
+        fname = api.build_path('%sff.txt' % level.name[0])
+
     path = None
-    for line in fname if isinstance(fname, list) \
-            else readlines(fname or api.build_path('%sff.txt' % level.name[0])):
+    for line in readlines(fname):
         line = line.rstrip()
         if line.startswith('#') or not line.strip():
             # ignore comments or empty lines

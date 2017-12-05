@@ -1,9 +1,6 @@
-# coding: utf8
 from __future__ import unicode_literals
 
 import pytest
-
-from clldutils import jsonlib
 
 from pyglottolog.languoids import (Languoid, EndangermentStatus,
     Glottocodes, Glottocode, Level, Country, Reference, Macroarea,
@@ -11,22 +8,22 @@ from pyglottolog.languoids import (Languoid, EndangermentStatus,
 
 
 def test_Glottocodes(tmpdir):
-    gcjson = str(tmpdir / 'glottocodes.json')
-    jsonlib.dump({}, gcjson)
+    json = tmpdir / 'glottocodes.json'
+    json.write_text('{}', encoding='ascii')
 
-    glottocodes = Glottocodes(gcjson)
+    glottocodes = Glottocodes(str(json))
     gc = glottocodes.new('a', dry_run=True)
     assert gc.startswith('aaaa')
     assert gc not in glottocodes
     gc = glottocodes.new('a')
     assert gc in glottocodes
     # make sure it's also written to file:
-    assert gc in Glottocodes(gcjson)
-    assert len(list(Glottocodes(gcjson))) == 1
+    assert gc in Glottocodes(str(json))
+    assert len(list(Glottocodes(str(json)))) == 1
 
 
 def test_es():
-    assert EndangermentStatus.critical == EndangermentStatus.get('nearly extinct')
+    assert EndangermentStatus.get('nearly extinct') == EndangermentStatus.critical
 
 
 def test_EndangermentStatus():
@@ -91,7 +88,7 @@ def test_EthnologueComment(mocker):
         EthnologueComment('abc', 'missing', 'E16')
 
     with pytest.raises(ValueError):
-        EthnologueComment('abc', 'missing', 'E16', 'äöü'.encode('utf8'))
+        EthnologueComment('abc', 'missing', 'E16', '\u00e4\u00f6\u00fc'.encode('utf-8'))
 
     log = mocker.Mock()
     ec = EthnologueComment('abc', 'missing', 'E16', 'abc')

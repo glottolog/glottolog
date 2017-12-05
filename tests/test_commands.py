@@ -57,18 +57,18 @@ def test_metadata(capsys, sapi):
     assert "longitude" in capsys.readouterr()[0]
 
 
-def test_lff(capsys, api):
+def test_lff(capsys, api, encoding='utf-8'):
     commands.tree2lff(_args(api))
-    with api.build_path('dff.txt').open(encoding='utf8') as fp:
-        dfftxt = fp.read().replace('dialect', 'Dialect Name')
-    with api.build_path('dff.txt').open('w', encoding='utf8') as fp:
-        fp.write(dfftxt)
+
+    dff = api.build_path('dff.txt')
+    dfftxt = dff.read_text(encoding=encoding).replace('dialect', 'Dialect Name')
+    dff.write_text(dfftxt, encoding=encoding)
     commands.lff2tree(_args(api))
     assert 'git status' in capsys.readouterr()[0]
     assert api.languoid('abcd1236').name == 'Dialect Name'
+
     commands.tree2lff(_args(api))
-    with api.build_path('dff.txt').open(encoding='utf8') as fp:
-        assert dfftxt == fp.read()
+    dfftxt = dff.read_text(encoding=encoding)
 
 
 def test_index(api):
