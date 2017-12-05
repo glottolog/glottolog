@@ -8,20 +8,20 @@ from pyglottolog.references.bibfiles_db import Database, distance
 
 
 @pytest.mark.skipif(six.PY3, reason='PY2 only')
-def test_Database(capsys, tmpdir, api):
-    db = str(tmpdir / 'test.sqlite3')
-    api.bibfiles.to_sqlite(db)
+def test_Database(capsys, tmpdir, bibfiles_copy):
+    fpath = str(tmpdir / 'test.sqlite3')
+    bibfiles_copy.to_sqlite(fpath)
     assert 'ENTRYTYPE' in capsys.readouterr()[0]
 
-    api.bibfiles.to_sqlite(db)
-    api.bibfiles.to_sqlite(db, rebuild=True)
+    bibfiles_copy.to_sqlite(fpath)
+    bibfiles_copy.to_sqlite(fpath, rebuild=True)
     capsys.readouterr()
 
-    db = Database(db, api.bibfiles)
-    db.recompute(reload_priorities=api.bibfiles)
+    db = Database(fpath, bibfiles_copy)
+    db.recompute(reload_priorities=bibfiles_copy)
     assert len(capsys.readouterr()[0].splitlines()) == 34
 
-    db.is_uptodate(api.bibfiles[1:], verbose=True)
+    db.is_uptodate(bibfiles_copy[1:], verbose=True)
     assert len(capsys.readouterr()[0].splitlines()) == 3
 
     db.to_bibfile(str(tmpdir / 'out.bib'))

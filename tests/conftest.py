@@ -6,23 +6,40 @@ from clldutils import path
 
 import pyglottolog
 
-REPOS = path.Path(__file__).parent / 'repos'
+TESTS_DIR = path.Path(__file__).parent
 
 
 @pytest.fixture(scope='session')
-def repos():
-    return REPOS
+def repos_path():
+    return TESTS_DIR / 'repos'
 
 
 @pytest.fixture(scope='session')
-def sapi(repos):
-    """Glottolog instance from shared directory for read-only tests."""
-    return pyglottolog.Glottolog(str(repos))
+def references_path(repos_path):
+    return repos_path / 'references'
+
+
+@pytest.fixture(scope='session')
+def bibfiles(references_path):
+    return pyglottolog.references.BibFiles.from_path(str(references_path))
 
 
 @pytest.fixture
-def api(tmpdir, repos):
+def bibfiles_copy(tmpdir, references_path):
+    references_copy = tmpdir / 'references'
+    path.copytree(str(references_path), str(references_copy))
+    return pyglottolog.references.BibFiles.from_path(str(references_copy))
+
+
+@pytest.fixture(scope='session')
+def sapi(repos_path):
+    """Glottolog instance from shared directory for read-only tests."""
+    return pyglottolog.Glottolog(str(repos_path))
+
+
+@pytest.fixture
+def api(tmpdir, repos_path):
     """Glottolog instance from isolated directory copy."""
     repos_copy = str(tmpdir / 'repos')
-    path.copytree(str(repos), repos_copy)
+    path.copytree(str(repos_path), repos_copy)
     return pyglottolog.Glottolog(repos_copy)

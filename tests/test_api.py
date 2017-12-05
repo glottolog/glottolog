@@ -25,16 +25,3 @@ def test_load_triggers(sapi):
 
 def test_macroarea_map(sapi):
     assert sapi.macroarea_map['abc'] == 'Eurasia'
-
-
-def test_bibfiles(capsys, api):
-    api.bibfiles.roundtrip_all()
-    assert 'a.bib' in capsys.readouterr()[0]
-
-    api.bibfiles['b.bib'].show_characters()
-    assert 'CJK UNIFIED IDEOGRAPH' in capsys.readouterr()[0]
-
-    bf = api.bibfiles[0]
-    assert len(list(bf.iterentries())) == 3
-    assert bf.size
-    assert bf.mtime
