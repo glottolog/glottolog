@@ -5,6 +5,11 @@ import pytest
 from pyglottolog.references.roman import introman, romanint
 
 
+def test_legacy_import():
+    from pyglottolog.monsterlib import roman
+    assert roman.romanint is romanint
+
+
 @pytest.mark.parametrize('input_, expected', [
     (5, 'v',),
     (8, 'viii'),

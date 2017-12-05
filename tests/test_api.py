@@ -3,6 +3,12 @@ from __future__ import unicode_literals
 from pyglottolog import languoids
 
 
+def test_legacy_import():
+    from pyglottolog import api
+    from pyglottolog import Glottolog
+    assert api.Glottolog is Glottolog
+
+
 def test_paths(sapi):
     assert sapi.ftsindex
 

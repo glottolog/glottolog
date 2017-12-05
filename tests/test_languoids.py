@@ -7,6 +7,14 @@ from pyglottolog.languoids import (Languoid, EndangermentStatus,
     ClassificationComment, EthnologueComment)
 
 
+def test_legacy_imports():
+    from pyglottolog import objects
+    assert objects.Glottocode is Glottocode
+    assert objects.Macroarea is Macroarea
+    assert objects.Level is Level
+    assert objects.Reference is Reference
+
+
 def test_Glottocodes(tmpdir):
     json = tmpdir / 'glottocodes.json'
     json.write_text('{}', encoding='ascii')
