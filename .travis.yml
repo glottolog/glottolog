@@ -6,7 +6,7 @@ python:
   - "3.6"
 cache: pip
 before_cache: rm -f $HOME/.cache/pip/log/debug.log
-install: pip install .[test]
+install: pip install -e .[test]
 script: pytest
 git:
   depth: 3
