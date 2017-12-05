@@ -4,13 +4,18 @@ import pytest
 
 from clldutils import path
 
-DATA = path.Path(__file__).parent / 'data'
+import pyglottolog
+
+REPOS = path.Path(__file__).parent / 'repos'
 
 
-@pytest.fixture  # FIXME: session scope w/ tmpdir_factory.getbasetemp()?
+@pytest.fixture(scope='session')
+def api_ro():
+    return pyglottolog.Glottolog(str(REPOS))
+
+
+@pytest.fixture
 def api(tmpdir):
-    from pyglottolog import Glottolog
-
-    repos = tmpdir / 'repos'
-    path.copytree(str(DATA), str(repos))
-    return Glottolog(str(repos))
+    repos = str(tmpdir / 'repos')
+    path.copytree(str(REPOS), repos)
+    return pyglottolog.Glottolog(repos)
