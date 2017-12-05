@@ -16,6 +16,7 @@ __all__ = ['HHType', 'HHTypes']
 
 @functools.total_ordering
 class HHType(object):
+
     def __init__(self, s, p):
         self.name = s
         self.id = p.get(s, 'id')
@@ -37,11 +38,12 @@ class HHType(object):
 
 
 class HHTypes(object):
+
     _rekillparen = re.compile(" \([^\)]*\)")
     _respcomsemic = re.compile("[;,]\s?")
 
-    def __init__(self, api):
-        ini = INI.from_file(api.references_path('hhtype.ini'), interpolation=None)
+    def __init__(self, fpath):
+        ini = INI.from_file(fpath, interpolation=None)
         self._types = sorted([HHType(s, ini) for s in ini.sections()], reverse=True)
         self._type_by_id = {t.id: t for t in self._types}
 

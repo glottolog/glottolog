@@ -32,6 +32,11 @@ def bibfiles_copy(tmpdir, references_path):
 
 
 @pytest.fixture(scope='session')
+def hhtypes(references_path):
+    return pyglottolog.references.HHTypes(str(references_path / 'hhtype.ini'))
+
+
+@pytest.fixture(scope='session')
 def sapi(repos_path):
     """Glottolog instance from shared directory for read-only tests."""
     return pyglottolog.Glottolog(str(repos_path))

@@ -123,7 +123,7 @@ class Glottolog(UnicodeMixin):
 
     @cached_property()
     def hhtypes(self):
-        return references.HHTypes(self)
+        return references.HHTypes(self.references_path('hhtype.ini'))
 
     @cached_property()
     def triggers(self):

@@ -54,8 +54,8 @@ def test_fts(capsys, api):
     assert "abcd1234" in capsys.readouterr()[0]
 
 
-def test_metadata(capsys, api):
-    commands.metadata(_args(api))
+def test_metadata(capsys, sapi):
+    commands.metadata(_args(sapi))
     assert "longitude" in capsys.readouterr()[0]
 
 
@@ -78,14 +78,14 @@ def test_index(api):
     assert len(list(api.repos.joinpath('languoids').glob('*.md'))) == 7
 
 
-def test_tree(capsys, api):
+def test_tree(capsys, sapi):
     with pytest.raises(commands.ParserError):
-        commands.tree(_args(api))
+        commands.tree(_args(sapi))
 
     with pytest.raises(commands.ParserError):
-        commands.tree(_args(api, 'xyz'))
+        commands.tree(_args(sapi, 'xyz'))
 
-    commands.tree(_args(api, 'abc', 'language'))
+    commands.tree(_args(sapi, 'abc', 'language'))
     out, _ = capsys.readouterr()
     if not isinstance(out, six.text_type):
         out = out.decode('utf-8')
@@ -93,8 +93,8 @@ def test_tree(capsys, api):
     assert 'dialect' not in out
 
 
-def test_newick(capsys, api):
-    commands.newick(_args(api, 'abcd1235'))
+def test_newick(capsys, sapi):
+    commands.newick(_args(sapi, 'abcd1235'))
     assert 'language' in capsys.readouterr()[0]
 
 

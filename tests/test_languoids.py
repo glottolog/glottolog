@@ -36,23 +36,17 @@ def test_EndangermentStatus():
     with pytest.raises(ValueError):
         EndangermentStatus.get(123)
 
-
-def test_pattern():
-    pattern = Glottocode.pattern
-    for valid in [
-        'abcd1234',
-        'a12d3456',
-    ]:
-        assert pattern.match(valid) is not None
-
-    for invalid in [
-        'abcd123',
-        '12d3456',
-        'aNOCODE',
-        'NOCODE_abd',
-        'nocode',
-    ]:
-        assert pattern.match(invalid) is None
+@pytest.mark.parametrize('input_, valid', [
+    ('abcd1234', True),
+    ('a12d3456', True),
+    ('abcd123', False),
+    ('12d3456', False),
+    ('aNOCODE', False),
+    ('NOCODE_abd', False),
+    ('nocode', False),
+])
+def test_pattern(input_, valid, _match=Glottocode.pattern.match):
+    assert (_match(input_) is not None) == valid
 
 
 def test_Country():

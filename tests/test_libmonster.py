@@ -6,12 +6,12 @@ from pyglottolog.references.libmonster import (markconservative, markall,
     add_inlg_e, INLG, keyid, pyear, pagecount, lgcode, grp2fd)
 
 
-def test_markconcservative(tmpdir, sapi):
+def test_markconcservative(tmpdir, hhtypes):
     res = markconservative(
         {1: ('article', {'title': 'Grammar'})},
-        sapi.hhtypes.triggers,
+        hhtypes.triggers,
         {1: ('article', {'title': 'Grammar'})},
-        sapi.hhtypes,
+        hhtypes,
         str(tmpdir /'marks.txt'),
         verbose=False)
     assert res[1][1]['hhtype'].split()[0] == 'grammar'
@@ -19,23 +19,22 @@ def test_markconcservative(tmpdir, sapi):
     # If a higher hhtype is computed, this cancels out previous computations.
     res = markconservative(
         {1: ('article', {'title': 'grammar', 'lgcode': 'abc'})},
-        sapi.hhtypes.triggers,
+        hhtypes.triggers,
         {1: ('article', {'title': 'other', 'hhtype': 'other', 'lgcode': 'abc'})},
-        sapi.hhtypes,
+        hhtypes,
         str(tmpdir /'marks.txt'),
         verbose=False)
     assert 'hhtype' not in res[1][1]
 
 
-def test_markall(sapi):
+def test_markall(sapi, hhtypes):
     bib = {
         1: ('article', {'title': "other grammar of lang"}),
         2: ('article', {'title': "grammar of lang and dial"}),
         3: ('article', {'title': "other"}),
         4: ('article', {'title': "grammar and phonologie and morphologie"})
     }
-    hht = sapi.hhtypes
-    markall(bib, hht.triggers, verbose=False, rank=lambda l: hht[l].rank)
+    markall(bib, hhtypes.triggers, verbose=False, rank=lambda l: hhtypes[l].rank)
     assert 'grammar' in bib[1][1]['hhtype']
     assert 'morphologie and phonologie;grammar' in bib[4][1]['hhtype']
 
@@ -53,19 +52,19 @@ def test_add_inlg_e(sapi):
 
 @pytest.mark.parametrize('fields, expected', [
     ({}, '__missingcontrib__'),
-    (dict(author='An Author'), 'author_no-titlend'),
-    (dict(editor='An Author'), 'author_no-titlend'),
-    (dict(author='An Author', title='A rather long title'), 'author_rather-longnd'),
-    (dict(author='An Author', title='Title', year='2014'), 'author_title2014'),
-    (dict(author='An Author', volume='IV'), 'author_no-titleivnd'),
-    (dict(author='An Author', extra_hash='a'), 'author_no-titlenda'),
+    ({'author': 'An Author'}, 'author_no-titlend'),
+    ({'editor': 'An Author'}, 'author_no-titlend'),
+    ({'author': 'An Author', 'title': 'A rather long title'}, 'author_rather-longnd'),
+    ({'author': 'An Author', 'title': 'Title', 'year': '2014'}, 'author_title2014'),
+    ({'author': 'An Author', 'volume': 'IV'}, 'author_no-titleivnd'),
+    ({'author': 'An Author', 'extra_hash': 'a'}, 'author_no-titlenda'),
 ])
 def test_keyid(fields, expected):
     assert keyid(fields, {}) == expected
 
 
 def test_keyid_invalid(capsys):
-    keyid(dict(author='An Author and '), {})
+    assert keyid({'author': 'An Author and '}, {}) == 'author_no-titlend'
     assert 'Unparsed' in capsys.readouterr()[0]
 
 
