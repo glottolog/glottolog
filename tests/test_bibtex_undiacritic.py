@@ -9,7 +9,7 @@ from pyglottolog.references.bibtex_undiacritic import undiacritic
 import pytest
 
 
-@pytest.mark.skipif(six.PY3, reason='skip')
+@pytest.mark.skipif(six.PY3, reason='PY2 only')
 @pytest.mark.parametrize('input_, expected', [
     ("\\cmd{äöüß}", "aouss"),
 ])

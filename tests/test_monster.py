@@ -1,14 +1,14 @@
 from __future__ import unicode_literals
 
-from six import PY2
+import six
+
+import pytest
 
 from pyglottolog import monster
 
 
+@pytest.mark.skipif(six.PY3, reason='PY2 only')
 def test_main(capsys, api):
-    if not PY2:  # pragma: no cover
-        return
-
     monster.compile(api)
     out, _ = capsys.readouterr()
     assert len(out.splitlines()) == 43

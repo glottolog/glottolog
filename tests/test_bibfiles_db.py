@@ -7,7 +7,7 @@ import pytest
 from pyglottolog.references.bibfiles_db import Database, distance
 
 
-@pytest.mark.skipif(six.PY3, reason='skip')
+@pytest.mark.skipif(six.PY3, reason='PY2 only')
 def test_Database(capsys, tmpdir, api):
     db = str(tmpdir / 'test.sqlite3')
     api.bibfiles.to_sqlite(db)

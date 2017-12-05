@@ -1,14 +1,14 @@
 # coding: utf8
 from __future__ import unicode_literals
 
-import pytest
-
 import six
+
+import pytest
 
 from pyglottolog.references.bibtex_escaping import ulatex_decode
 
 
-@pytest.mark.skipif(six.PY3, reason='skip')
+@pytest.mark.skipif(six.PY3, reason='PY2 only')
 @pytest.mark.parametrize('input_, decoded, recoded', [
     ("", "", None),
     ("&#97;", "a", None),

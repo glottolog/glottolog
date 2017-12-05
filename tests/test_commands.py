@@ -1,9 +1,9 @@
 from __future__ import unicode_literals
 
+import six
+
 import pytest
 import mock
-
-from six import text_type, PY2
 
 from clldutils.path import copytree
 
@@ -16,13 +16,13 @@ def _args(api, *args):
 
 def test_show(capsys, sapi):
     commands.show(_args(sapi, '**a:key**'))
-    assert (b'@misc' if PY2 else '@misc') in capsys.readouterr()[0]
+    assert (b'@misc' if six.PY2 else '@misc') in capsys.readouterr()[0]
 
     commands.show(_args(sapi, 'a:key'))
-    assert (b'@misc' if PY2 else '@misc') in capsys.readouterr()[0]
+    assert (b'@misc' if six.PY2 else '@misc') in capsys.readouterr()[0]
 
     commands.show(_args(sapi, 'abcd1236'))
-    assert (b'Classification' if PY2 else 'Classificat') in capsys.readouterr()[0]
+    assert (b'Classification' if six.PY2 else 'Classificat') in capsys.readouterr()[0]
 
 
 def test_edit(mocker, sapi):
@@ -87,7 +87,7 @@ def test_tree(capsys, api):
 
     commands.tree(_args(api, 'abc', 'language'))
     out, _ = capsys.readouterr()
-    if not isinstance(out, text_type):
+    if not isinstance(out, six.text_type):
         out = out.decode('utf-8')
     assert 'language' in out
     assert 'dialect' not in out
@@ -119,9 +119,7 @@ def test_check(capsys, api):
     assert args.log.error.call_count == 6
 
 
+@pytest.mark.skipif(six.PY3, reason='PY2 only')
 def test_monster(capsys, api):
-    if not PY2:  # pragma: no cover
-        return
-
     commands.bib(_args(api))
     assert capsys.readouterr()[0]
