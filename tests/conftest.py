@@ -10,12 +10,14 @@ REPOS = path.Path(__file__).parent / 'repos'
 
 
 @pytest.fixture(scope='session')
-def api_ro():
+def sapi():
+    """Glottolog instance from shared directory for read-only tests."""
     return pyglottolog.Glottolog(str(REPOS))
 
 
 @pytest.fixture
 def api(tmpdir):
+    """Glottolog instance from isolated directory copy."""
     repos = str(tmpdir / 'repos')
     path.copytree(str(REPOS), repos)
     return pyglottolog.Glottolog(repos)

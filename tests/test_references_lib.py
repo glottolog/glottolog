@@ -6,7 +6,7 @@ import pytest
 from six import PY2
 
 
-def test_roman(api):
+def test_roman():
     from pyglottolog.references.roman import introman, romanint
 
     assert introman(5) == 'v'
@@ -59,14 +59,14 @@ def test_Database(capsys, tmpdir, api):
     db.show_combined()
 
 
-def test_markconcservative(tmpdir, api):
+def test_markconcservative(tmpdir, sapi):
     from pyglottolog.references.libmonster import markconservative
 
     res = markconservative(
         {1: ('article', {'title': 'Grammar'})},
-        api.hhtypes.triggers,
+        sapi.hhtypes.triggers,
         {1: ('article', {'title': 'Grammar'})},
-        api.hhtypes,
+        sapi.hhtypes,
         str(tmpdir /'marks.txt'),
         verbose=False)
     assert res[1][1]['hhtype'].split()[0] == 'grammar'
@@ -74,15 +74,15 @@ def test_markconcservative(tmpdir, api):
     # If a higher hhtype is computed, this cancels out previous computations.
     res = markconservative(
         {1: ('article', {'title': 'grammar', 'lgcode': 'abc'})},
-        api.hhtypes.triggers,
+        sapi.hhtypes.triggers,
         {1: ('article', {'title': 'other', 'hhtype': 'other', 'lgcode': 'abc'})},
-        api.hhtypes,
+        sapi.hhtypes,
         str(tmpdir /'marks.txt'),
         verbose=False)
     assert 'hhtype' not in res[1][1]
 
 
-def test_markall(api):
+def test_markall(sapi):
     from pyglottolog.references.libmonster import markall
 
     bib = {
@@ -91,21 +91,21 @@ def test_markall(api):
         3: ('article', {'title': "other"}),
         4: ('article', {'title': "grammar and phonologie and morphologie"})
     }
-    hht = api.hhtypes
+    hht = sapi.hhtypes
     markall(bib, hht.triggers, verbose=False, rank=lambda l: hht[l].rank)
     assert 'grammar' in bib[1][1]['hhtype']
     assert 'morphologie and phonologie;grammar' in bib[4][1]['hhtype']
 
-    markall(bib, api.triggers['lgcode'], verbose=False)
+    markall(bib, sapi.triggers['lgcode'], verbose=False)
     assert 'language' in bib[1][1]['lgcode']
 
 
-def test_add_inlg_e(api):
+def test_add_inlg_e(sapi):
     from pyglottolog.references.libmonster import add_inlg_e, INLG
 
     res = add_inlg_e(
         {1: ('article', {'title': 'Grammar of language'})},
-        api.triggers[INLG],
+        sapi.triggers[INLG],
         verbose=False)
     assert res[1][1][INLG] == 'language [abc]'
 

@@ -7,15 +7,15 @@ from clldutils.path import read_text, write_text
 from pyglottolog import references
 
 
-def test_Entry(api):
+def test_Entry():
     assert references.Entry.lgcodes(None) == []
     e = references.Entry(
         'x', 'misc', {'hhtype': 'grammar (computerized assignment from "xyz")'}, None)
     assert e.doctypes({'grammar': 1}) == ([1], 'xyz')
 
 
-def test_HHTypes(api):
-    hht = api.hhtypes
+def test_HHTypes(sapi):
+    hht = sapi.hhtypes
     assert hht['grammar'].rank == 17
     assert 'grammar' in hht
 
@@ -64,7 +64,7 @@ def test_BibFile(tmpdir, api):
     assert len(bibfile.keys()) == 0
 
 
-def test_Isbns(api):
+def test_Isbns():
     assert references.Isbns.from_field('9783866801929, 3866801920') == \
            [references.Isbn('9783866801929')]
 
@@ -81,7 +81,7 @@ def test_Isbns(api):
            '9780199593569, 9780191739385'
 
 
-def test_Isbn(api):
+def test_Isbn():
     with pytest.raises(ValueError, match='length'):
         references.Isbn('978-3-86680-192-9')
 

@@ -14,20 +14,20 @@ def _args(api, *args):
     return mock.Mock(repos=api, args=list(args), log=mock.Mock())
 
 
-def test_show(capsys, api):
-    commands.show(_args(api, '**a:key**'))
+def test_show(capsys, sapi):
+    commands.show(_args(sapi, '**a:key**'))
     assert (b'@misc' if PY2 else '@misc') in capsys.readouterr()[0]
 
-    commands.show(_args(api, 'a:key'))
+    commands.show(_args(sapi, 'a:key'))
     assert (b'@misc' if PY2 else '@misc') in capsys.readouterr()[0]
 
-    commands.show(_args(api, 'abcd1236'))
+    commands.show(_args(sapi, 'abcd1236'))
     assert (b'Classification' if PY2 else 'Classificat') in capsys.readouterr()[0]
 
 
-def test_edit(mocker, api):
+def test_edit(mocker, sapi):
     mocker.patch('pyglottolog.commands.subprocess')
-    commands.edit(_args(api, 'abcd1236'))
+    commands.edit(_args(sapi, 'abcd1236'))
 
 
 def test_create(capsys, api):

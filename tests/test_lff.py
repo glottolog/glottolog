@@ -8,7 +8,7 @@ from pyglottolog.lff import read_lff, rmtree, lff2tree, tree2lff
 from pyglottolog.languoids import Level
 
 
-def test_rmtree(tmpdir, api):
+def test_rmtree(tmpdir):
     comps = []
     for i in range(80):
         comps.append('a')
@@ -178,10 +178,10 @@ None [xyzz1234]; Other [-isolate-]
         lff2tree(api)
 
 
-def test_read_lff_error(mocker, api):
+def test_read_lff_error(mocker, sapi):
     _lff = """
 Name [ac1234]; Name2 [abcd1235]
     Lang [abcd1236]abc
 """
     with pytest.raises(ValueError):
-        list(read_lff(api, mocker.Mock(), {}, Level.language, _lff.split('\n')))
+        list(read_lff(sapi, mocker.Mock(), {}, Level.language, _lff.split('\n')))

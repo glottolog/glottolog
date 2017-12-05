@@ -10,7 +10,7 @@ from pyglottolog.languoids import (Languoid, EndangermentStatus,
     ClassificationComment, EthnologueComment)
 
 
-def test_Glottocodes(tmpdir, api):
+def test_Glottocodes(tmpdir):
     gcjson = str(tmpdir / 'glottocodes.json')
     jsonlib.dump({}, gcjson)
 
@@ -109,9 +109,9 @@ def test_EthnologueComment(mocker):
     assert log.error.called
 
 
-def test_Level(api):
+def test_Level(sapi):
     assert Level.dialect > Level.language
-    assert Level.language == api.languoid('abcd1235').level
+    assert Level.language == sapi.languoid('abcd1235').level
     with pytest.raises(ValueError):
         Level.get('abcde')
 
@@ -161,16 +161,16 @@ def test_factory(tmpdir, api):
     assert 'multitree' in l.identifier
 
 
-def test_isolate(api):
-    l = Languoid.from_dir(api.tree / 'isol1234')
+def test_isolate(sapi):
+    l = Languoid.from_dir(sapi.tree / 'isol1234')
     assert l.isolate
     assert l.parent is None
     assert l.family is None
 
 
-def test_attrs(api):
+def test_attrs(sapi):
     l = Languoid.from_name_id_level(
-        api.tree, 'name', 'abcd1235', Level.language, hid='NOCODE')
+        sapi.tree, 'name', 'abcd1235', Level.language, hid='NOCODE')
     l.name = 'other'
     assert l.name == 'other'
     with pytest.raises(AttributeError):
