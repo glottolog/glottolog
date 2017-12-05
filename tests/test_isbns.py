@@ -44,4 +44,3 @@ def test_Isbn():
 
     assert repr(Isbn('9783866801929')) in \
            ["Isbn(u'9783866801929')", "Isbn('9783866801929')"]
-

@@ -14,7 +14,7 @@ def test_rmtree(tmpdir):
         comps.append('a')
         d = tmpdir.join(*comps)
         d.mkdir()
-        with (d /'a.ini').open('w', encoding='utf8') as fp:
+        with (d / 'a.ini').open('w', encoding='utf8') as fp:
             fp.write('a')
     assert (tmpdir / 'a').exists()
     rmtree(str(tmpdir / 'a'))

@@ -12,7 +12,7 @@ def test_markconcservative(tmpdir, hhtypes):
         hhtypes.triggers,
         {1: ('article', {'title': 'Grammar'})},
         hhtypes,
-        str(tmpdir /'marks.txt'),
+        str(tmpdir / 'marks.txt'),
         verbose=False)
     assert res[1][1]['hhtype'].split()[0] == 'grammar'
 
@@ -22,7 +22,7 @@ def test_markconcservative(tmpdir, hhtypes):
         hhtypes.triggers,
         {1: ('article', {'title': 'other', 'hhtype': 'other', 'lgcode': 'abc'})},
         hhtypes,
-        str(tmpdir /'marks.txt'),
+        str(tmpdir / 'marks.txt'),
         verbose=False)
     assert 'hhtype' not in res[1][1]
 

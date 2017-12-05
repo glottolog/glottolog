@@ -26,7 +26,7 @@ def test_Database(capsys, tmpdir, bibfiles_copy):
 
     db.to_bibfile(str(tmpdir / 'out.bib'))
     db.to_csvfile(str(tmpdir / 'out.csv'))
-    db.to_replacements(str(tmpdir /'out.json'))
+    db.to_replacements(str(tmpdir / 'out.json'))
     assert db.to_hhmapping() == {'s:Karang:Tati-Harzani': 41999}
 
     db.trickle()
@@ -48,7 +48,7 @@ def test_Database(capsys, tmpdir, bibfiles_copy):
 
 
 d1 = {
-    'ENTRYTYPE':'article',
+    'ENTRYTYPE': 'article',
     'author': 'An Author',
     'year': '1998',
     'title': 'The Title',

@@ -33,7 +33,7 @@ def test_BibFile(tmpdir, bibfiles):
 
     lines = [line for line in read_text(bf.fname).split('\n')
              if not line.strip().startswith('glottolog_ref_id')]
-    write_text(str(tmpdir /'a.bib'), '\n'.join(lines))
+    write_text(str(tmpdir / 'a.bib'), '\n'.join(lines))
 
     entries = bf.load()  # FIXME
     bf.fname = str(tmpdir / ' newa.bib')

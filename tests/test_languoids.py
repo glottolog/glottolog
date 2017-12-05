@@ -36,6 +36,7 @@ def test_EndangermentStatus():
     with pytest.raises(ValueError):
         EndangermentStatus.get(123)
 
+
 @pytest.mark.parametrize('input_, valid', [
     ('abcd1234', True),
     ('a12d3456', True),

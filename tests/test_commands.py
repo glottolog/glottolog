@@ -37,8 +37,6 @@ def test_create(capsys, api):
 
 
 def test_fts(capsys, api):
-    from pyglottolog.commands import refindex, refsearch, langindex, langsearch
-
     with pytest.raises(ValueError):
         commands.refsearch(_args(api, 'Harzani year:1334'))
 

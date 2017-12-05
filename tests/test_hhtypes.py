@@ -21,6 +21,3 @@ def test_HHTypes(hhtypes):
     assert len(hhtypes) == 2
     assert 'rank' in repr(hhtypes[0])
     assert hhtypes.parse('grammar') == ['grammar']
-
-
-
