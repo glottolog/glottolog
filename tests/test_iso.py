@@ -1,12 +1,13 @@
 from __future__ import unicode_literals
 
+from pyglottolog import iso
+
 
 def test_bibtex(mocker, api):
-    from pyglottolog.iso import bibtex
-
     requests = mocker.patch('pyglottolog.iso.requests')
     requests.get.return_value.content = HTML
-    assert bibtex(api, mocker.Mock()) == 2
+
+    assert iso.bibtex(api, mocker.Mock()) == 2
 
 
 HTML = """\

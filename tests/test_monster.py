@@ -2,16 +2,15 @@ from __future__ import unicode_literals
 
 from six import PY2
 
-from clldutils.testing import capture
+from pyglottolog import monster
 
 
-def test_main(api):
-    from pyglottolog.monster import compile
-
+def test_main(capsys, api):
     if not PY2:  # pragma: no cover
         return
 
-    with capture(compile, api) as out:
-        assert len(out.splitlines()) == 43
-        assert '2 splitted' in out
-        assert '2 merged' in out
+    monster.compile(api)
+    out, _ = capsys.readouterr()
+    assert len(out.splitlines()) == 43
+    assert '2 splitted' in out
+    assert '2 merged' in out

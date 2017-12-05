@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 import pytest
 
 from six import PY2
-from clldutils.testing import capture
 
 
 def test_roman(api):
@@ -16,40 +15,48 @@ def test_roman(api):
         assert romanint(introman(i)) == i
 
 
-def test_Database(tmpdir, api):
+def test_Database(capsys, tmpdir, api):
     from pyglottolog.references.bibfiles_db import Database
 
     if not PY2:  # pragma: no cover
         return
 
     db = str(tmpdir / 'test.sqlite3')
-    with capture(api.bibfiles.to_sqlite, db) as out:
-        assert 'ENTRYTYPE' in out
-    with capture(api.bibfiles.to_sqlite, db) as out:
-        pass
-    with capture(api.bibfiles.to_sqlite, db, rebuild=True) as out:
-        pass
+    api.bibfiles.to_sqlite(db)
+    assert 'ENTRYTYPE' in capsys.readouterr()[0]
+
+    api.bibfiles.to_sqlite(db)
+    api.bibfiles.to_sqlite(db, rebuild=True)
+    capsys.readouterr()
 
     db = Database(db, api.bibfiles)
-    with capture(db.recompute, reload_priorities=api.bibfiles) as out:
-        assert len(out.splitlines()) == 34
-    with capture(db.is_uptodate, api.bibfiles[1:], verbose=True) as out:
-        assert len(out.splitlines()) == 3
+    db.recompute(reload_priorities=api.bibfiles)
+    assert len(capsys.readouterr()[0].splitlines()) == 34
+
+    db.is_uptodate(api.bibfiles[1:], verbose=True)
+    assert len(capsys.readouterr()[0].splitlines()) == 3
+
     db.to_bibfile(str(tmpdir / 'out.bib'))
     db.to_csvfile(str(tmpdir / 'out.csv'))
     db.to_replacements(str(tmpdir /'out.json'))
     assert db.to_hhmapping() == {'s:Karang:Tati-Harzani': 41999}
-    with capture(db.trickle) as out:
-        assert '2 changed 1 added in a' in out
+
+    db.trickle()
+    assert '2 changed 1 added in a' in capsys.readouterr()[0]
+
     key, (entrytype, fields) = db[('b.bib', 'arakawa97')]
     assert entrytype == 'article'
     assert fields['volume'] == '16'
-    with capture(db.stats) as out:
-        pass
 
-    for attr in ['splits', 'merges', 'identified', 'combined']:
-        with capture(getattr(db, 'show_' + attr)) as out:
-            pass
+    db.stats()
+
+    db.show_splits()
+
+    db.show_merges()
+
+    db.show_identified()
+
+    db.show_combined()
 
 
 def test_markconcservative(tmpdir, api):
@@ -174,13 +181,15 @@ def test_distance():
 ])
 def test_keyid(fields, expected):
     from pyglottolog.references.libmonster import keyid
+
     assert keyid(fields, {}) == expected
 
 
-def test_keyid_fail():
+def test_keyid_invalid(capsys):
     from pyglottolog.references.libmonster import keyid
-    with capture(keyid, dict(author='An Author and '), {}) as out:
-        assert 'Unparsed' in out
+
+    keyid(dict(author='An Author and '), {})
+    assert 'Unparsed' in capsys.readouterr()[0]
 
 
 @pytest.mark.parametrize('year, expected', [
