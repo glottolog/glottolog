@@ -37,13 +37,13 @@ def hhtypes(references_path):
 
 
 @pytest.fixture(scope='session')
-def sapi(repos_path):
+def api(repos_path):
     """Glottolog instance from shared directory for read-only tests."""
     return pyglottolog.Glottolog(str(repos_path))
 
 
 @pytest.fixture
-def api(tmpdir, repos_path):
+def api_copy(tmpdir, repos_path):
     """Glottolog instance from isolated directory copy."""
     repos_copy = str(tmpdir / 'repos')
     path.copytree(str(repos_path), repos_copy)

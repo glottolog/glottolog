@@ -10,80 +10,80 @@ from clldutils.path import copytree
 from pyglottolog import commands
 
 
-def _args(api, *args):
-    return mock.Mock(repos=api, args=list(args), log=mock.Mock())
+def _args(api_copy, *args):
+    return mock.Mock(repos=api_copy, args=list(args), log=mock.Mock())
 
 
-def test_show(capsys, sapi):
-    commands.show(_args(sapi, '**a:key**'))
+def test_show(capsys, api):
+    commands.show(_args(api, '**a:key**'))
     assert (b'@misc' if six.PY2 else '@misc') in capsys.readouterr()[0]
 
-    commands.show(_args(sapi, 'a:key'))
+    commands.show(_args(api, 'a:key'))
     assert (b'@misc' if six.PY2 else '@misc') in capsys.readouterr()[0]
 
-    commands.show(_args(sapi, 'abcd1236'))
+    commands.show(_args(api, 'abcd1236'))
     assert (b'Classification' if six.PY2 else 'Classificat') in capsys.readouterr()[0]
 
 
-def test_edit(mocker, sapi):
+def test_edit(mocker, api):
     mocker.patch('pyglottolog.commands.subprocess')
-    commands.edit(_args(sapi, 'abcd1236'))
+    commands.edit(_args(api, 'abcd1236'))
 
 
-def test_create(capsys, api):
-    commands.create(_args(api, 'abcd1234', 'new name', 'language'))
+def test_create(capsys, api_copy):
+    commands.create(_args(api_copy, 'abcd1234', 'new name', 'language'))
     assert 'Info written' in capsys.readouterr()[0]
-    assert 'new name' in [c.name for c in api.languoid('abcd1234').children]
+    assert 'new name' in [c.name for c in api_copy.languoid('abcd1234').children]
 
 
-def test_fts(capsys, api):
+def test_fts(capsys, api_copy):
     with pytest.raises(ValueError):
-        commands.refsearch(_args(api, 'Harzani year:1334'))
+        commands.refsearch(_args(api_copy, 'Harzani year:1334'))
 
-    commands.refindex(_args(api))
-    commands.refsearch(_args(api, 'Harzani year:1334'))
+    commands.refindex(_args(api_copy))
+    commands.refsearch(_args(api_copy, 'Harzani year:1334'))
     assert "'Abd-al-'Ali Karang" in capsys.readouterr()[0]
 
-    commands.langindex(_args(api))
-    commands.langsearch(_args(api, 'id:abcd*'))
+    commands.langindex(_args(api_copy))
+    commands.langsearch(_args(api_copy, 'id:abcd*'))
     assert "abcd1234" in capsys.readouterr()[0]
 
-    commands.langsearch(_args(api, 'classification'))
+    commands.langsearch(_args(api_copy, 'classification'))
     assert "abcd1234" in capsys.readouterr()[0]
 
 
-def test_metadata(capsys, sapi):
-    commands.metadata(_args(sapi))
+def test_metadata(capsys, api):
+    commands.metadata(_args(api))
     assert "longitude" in capsys.readouterr()[0]
 
 
-def test_lff(capsys, api, encoding='utf-8'):
-    commands.tree2lff(_args(api))
+def test_lff(capsys, api_copy, encoding='utf-8'):
+    commands.tree2lff(_args(api_copy))
 
-    dff = api.build_path('dff.txt')
+    dff = api_copy.build_path('dff.txt')
     dfftxt = dff.read_text(encoding=encoding).replace('dialect', 'Dialect Name')
     dff.write_text(dfftxt, encoding=encoding)
-    commands.lff2tree(_args(api))
+    commands.lff2tree(_args(api_copy))
     assert 'git status' in capsys.readouterr()[0]
-    assert api.languoid('abcd1236').name == 'Dialect Name'
+    assert api_copy.languoid('abcd1236').name == 'Dialect Name'
 
-    commands.tree2lff(_args(api))
+    commands.tree2lff(_args(api_copy))
     dfftxt = dff.read_text(encoding=encoding)
 
 
-def test_index(api):
-    commands.index(_args(api))
-    assert len(list(api.repos.joinpath('languoids').glob('*.md'))) == 7
+def test_index(api_copy):
+    commands.index(_args(api_copy))
+    assert len(list(api_copy.repos.joinpath('languoids').glob('*.md'))) == 7
 
 
-def test_tree(capsys, sapi):
+def test_tree(capsys, api):
     with pytest.raises(commands.ParserError):
-        commands.tree(_args(sapi))
+        commands.tree(_args(api))
 
     with pytest.raises(commands.ParserError):
-        commands.tree(_args(sapi, 'xyz'))
+        commands.tree(_args(api, 'xyz'))
 
-    commands.tree(_args(sapi, 'abc', 'language'))
+    commands.tree(_args(api, 'abc', 'language'))
     out, _ = capsys.readouterr()
     if not isinstance(out, six.text_type):
         out = out.decode('utf-8')
@@ -91,15 +91,15 @@ def test_tree(capsys, sapi):
     assert 'dialect' not in out
 
 
-def test_newick(capsys, sapi):
-    commands.newick(_args(sapi, 'abcd1235'))
+def test_newick(capsys, api):
+    commands.newick(_args(api, 'abcd1235'))
     assert 'language' in capsys.readouterr()[0]
 
 
-def test_check(capsys, api):
-    commands.check(_args(api, 'refs'))
+def test_check(capsys, api_copy):
+    commands.check(_args(api_copy, 'refs'))
 
-    args = _args(api)
+    args = _args(api_copy)
     commands.check(args)
     assert 'family' in capsys.readouterr()[0]
     for call in args.log.error.call_args_list:
@@ -107,10 +107,10 @@ def test_check(capsys, api):
     assert args.log.error.call_count == 4
 
     copytree(
-        api.tree.joinpath('abcd1234', 'abcd1235'),
-        api.tree.joinpath('abcd1235'))
+        api_copy.tree.joinpath('abcd1234', 'abcd1235'),
+        api_copy.tree.joinpath('abcd1235'))
 
-    args = _args(api)
+    args = _args(api_copy)
     commands.check(args)
     assert 'duplicate glottocode' in \
             ''.join(c[0][0] for c in args.log.error.call_args_list)
@@ -118,6 +118,6 @@ def test_check(capsys, api):
 
 
 @pytest.mark.skipif(six.PY3, reason='PY2 only')
-def test_monster(capsys, api):
-    commands.bib(_args(api))
+def test_monster(capsys, api_copy):
+    commands.bib(_args(api_copy))
     assert capsys.readouterr()[0]

@@ -109,17 +109,17 @@ def test_EthnologueComment(mocker):
     assert log.error.called
 
 
-def test_Level(sapi):
+def test_Level(api):
     assert Level.dialect > Level.language
-    assert Level.language == sapi.languoid('abcd1235').level
+    assert Level.language == api.languoid('abcd1235').level
     with pytest.raises(ValueError):
         Level.get('abcde')
 
 
-def test_factory(tmpdir, api):
-    f = Languoid.from_dir(api.tree / 'abcd1234')
+def test_factory(tmpdir, api_copy):
+    f = Languoid.from_dir(api_copy.tree / 'abcd1234')
     assert f.category == 'Family'
-    l = Languoid.from_dir(api.tree / f.id / 'abcd1235')
+    l = Languoid.from_dir(api_copy.tree / f.id / 'abcd1235')
     assert l.name == 'language'
     assert 'abcd1235' in repr(l)
     assert 'language' in '%s' % l
@@ -141,7 +141,7 @@ def test_factory(tmpdir, api):
     l.macroareas = [Macroarea.africa]
     assert l.macroareas == [Macroarea.africa]
 
-    l.countries = api.countries[:2]
+    l.countries = api_copy.countries[:2]
     assert len(l.countries) == 2
 
     assert l.parent == f
@@ -149,7 +149,7 @@ def test_factory(tmpdir, api):
     assert l.children[0].family == f
     l.write_info(str(tmpdir))
     assert (tmpdir / 'abcd1235').exists()
-    assert isinstance(api.languoid('abcd1235').iso_retirement.asdict(), dict)
+    assert isinstance(api_copy.languoid('abcd1235').iso_retirement.asdict(), dict)
     assert l.classification_comment is None
     l.endangerment = 'nearly extinct'
     assert l.endangerment == EndangermentStatus.critical
@@ -161,16 +161,16 @@ def test_factory(tmpdir, api):
     assert 'multitree' in l.identifier
 
 
-def test_isolate(sapi):
-    l = Languoid.from_dir(sapi.tree / 'isol1234')
+def test_isolate(api):
+    l = Languoid.from_dir(api.tree / 'isol1234')
     assert l.isolate
     assert l.parent is None
     assert l.family is None
 
 
-def test_attrs(sapi):
+def test_attrs(api):
     l = Languoid.from_name_id_level(
-        sapi.tree, 'name', 'abcd1235', Level.language, hid='NOCODE')
+        api.tree, 'name', 'abcd1235', Level.language, hid='NOCODE')
     l.name = 'other'
     assert l.name == 'other'
     with pytest.raises(AttributeError):

@@ -8,8 +8,8 @@ from pyglottolog import monster
 
 
 @pytest.mark.skipif(six.PY3, reason='PY2 only')
-def test_main(capsys, api):
-    monster.compile(api)
+def test_main(capsys, api_copy):
+    monster.compile(api_copy)
     out, _ = capsys.readouterr()
     assert len(out.splitlines()) == 43
     assert '2 splitted' in out

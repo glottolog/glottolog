@@ -27,7 +27,7 @@ def test_markconcservative(tmpdir, hhtypes):
     assert 'hhtype' not in res[1][1]
 
 
-def test_markall(sapi, hhtypes):
+def test_markall(api, hhtypes):
     bib = {
         1: ('article', {'title': "other grammar of lang"}),
         2: ('article', {'title': "grammar of lang and dial"}),
@@ -38,14 +38,14 @@ def test_markall(sapi, hhtypes):
     assert 'grammar' in bib[1][1]['hhtype']
     assert 'morphologie and phonologie;grammar' in bib[4][1]['hhtype']
 
-    markall(bib, sapi.triggers['lgcode'], verbose=False)
+    markall(bib, api.triggers['lgcode'], verbose=False)
     assert 'language' in bib[1][1]['lgcode']
 
 
-def test_add_inlg_e(sapi):
+def test_add_inlg_e(api):
     res = add_inlg_e(
         {1: ('article', {'title': 'Grammar of language'})},
-        sapi.triggers[INLG],
+        api.triggers[INLG],
         verbose=False)
     assert res[1][1][INLG] == 'language [abc]'
 
