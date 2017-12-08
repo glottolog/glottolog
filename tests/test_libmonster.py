@@ -98,6 +98,8 @@ def test_lgcode(lgcode_, expected):
     assert lgcode((None, {'lgcode': lgcode_})) == expected
 
 
-def test_grp2fd():
-    assert grp2fd([(1, 2), (1, 3), (2, 4), (1, 5)]) == \
-           {1: {2: 1, 3: 1, 5: 1}, 2: {4: 1}}
+@pytest.mark.parametrize('input_, expected', [
+    ([(1, 2), (1, 3), (2, 4), (1, 5)], {1: {2: 1, 3: 1, 5: 1}, 2: {4: 1}}),
+])
+def test_grp2fd(input_, expected):
+    assert grp2fd(input_) == expected
