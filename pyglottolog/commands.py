@@ -358,7 +358,7 @@ def check(args):
     args.log.info('checking tree at %s' % args.repos)
     by_level = Counter()
     by_category = Counter()
-    iso_in_gl, languoids, iso_splits = {}, {}, []
+    iso_in_gl, languoids, iso_splits , hid = {}, {}, [], {}
     names = defaultdict(set)
 
     for lang in args.repos.languoids():
@@ -415,6 +415,14 @@ def check(args):
                             level = warn
                             msg += ' changed to [%s]' % isocode.change_to[0].code
                         level(lang, msg)
+
+        if lang.hid is not None:
+            print(lang.hid)
+            if lang.hid in hid:
+                error(lang.hid,
+                    'duplicate hid\n{0}\n{1}'.format(languoids[hid[lang.hid]].dir, lang.dir))
+            else:
+                hid[lang.hid] = lang.id
 
         if not lang.id.startswith('unun9') and lang.id not in args.repos.glottocodes:
             error(lang, 'unregistered glottocode')

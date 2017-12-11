@@ -102,19 +102,26 @@ def test_check(capsys, api_copy):
     args = _args(api_copy)
     commands.check(args)
     assert 'family' in capsys.readouterr()[0]
-    for call in args.log.error.call_args_list:
-        assert 'unregistered glottocode' in call[0][0]
-    assert args.log.error.call_count == 4
+    msgs = [a[0] for a, _ in args.log.error.call_args_list]
+    assert all('unregistered glottocode' in m for m in msgs)
+    assert len(msgs) == 4
 
     copytree(
-        api_copy.tree.joinpath('abcd1234', 'abcd1235'),
-        api_copy.tree.joinpath('abcd1235'))
+        api_copy.tree / 'abcd1234' / 'abcd1235',
+        api_copy.tree / 'abcd1235')
 
     args = _args(api_copy)
     commands.check(args)
-    assert 'duplicate glottocode' in \
-            ''.join(c[0][0] for c in args.log.error.call_args_list)
-    assert args.log.error.call_count == 6
+    msgs = [a[0] for a, _ in args.log.error.call_args_list]
+    assert any('duplicate glottocode' in m for m in msgs)
+    assert len(msgs) == 6
+
+    (api_copy.tree / 'abcd1235').rename(api_copy.tree / 'abcd1237')
+    args = _args(api_copy)
+    commands.check(args)
+    msgs = [a[0] for a, _ in args.log.error.call_args_list]
+    assert any('duplicate hid' in m for m in msgs)
+    assert len(msgs) == 8
 
 
 @pytest.mark.skipif(six.PY3, reason='PY2 only')
