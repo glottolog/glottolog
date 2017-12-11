@@ -417,7 +417,6 @@ def check(args):
                         level(lang, msg)
 
         if lang.hid is not None:
-            print(lang.hid)
             if lang.hid in hid:
                 error(lang.hid,
                     'duplicate hid\n{0}\n{1}'.format(languoids[hid[lang.hid]].dir, lang.dir))
