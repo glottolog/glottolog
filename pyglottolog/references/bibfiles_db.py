@@ -5,6 +5,7 @@ from __future__ import print_function
 import logging
 import difflib
 import operator
+import functools
 import itertools
 import contextlib
 import collections
@@ -35,10 +36,10 @@ class Database(object):
     @classmethod
     def from_bibfiles(cls, bibfiles, filepath, rebuild=False, page_size=32768):
         """If needed, (re)build the db from the bibfiles, hash, split/merge."""
-        self = cls(filepath, bibfiles)
+        self = cls(filepath)
 
         if self.filepath.exists():
-            if not rebuild and self.is_uptodate():
+            if not rebuild and self.is_uptodate(bibfiles):
                 return self
             path.remove(filepath)
 
@@ -69,16 +70,15 @@ class Database(object):
 
         return self
 
-    def __init__(self, filepath, bibfiles):
+    def __init__(self, filepath):
         if not isinstance(filepath, path.Path):
             filepath = path.Path(filepath)
         self.filepath = filepath
         self.engine = sa.create_engine('sqlite:///%s' % filepath, paramstyle='qmark')
-        self._bibfiles = bibfiles
 
-    def is_uptodate(self, bibfiles=None, verbose=False):
-        """Does the db have the same filenames, sizes, and mtimes as bibfiles?"""
-        return File.same_as(self.engine, bibfiles or self._bibfiles, verbose=verbose)
+    def is_uptodate(self, bibfiles, verbose=False):
+        """Does the db have the same filenames, sizes, and mtimes as the given bibfiles?"""
+        return File.same_as(self.engine, bibfiles, verbose=verbose)
 
     def stats(self, field_files=False):
         Entry.stats(self.engine)
@@ -93,9 +93,7 @@ class Database(object):
         return cursor
 
     def to_bibfile(self, filepath, encoding='utf-8', ):
-        if not isinstance(filepath, path.Path):
-            filepath = path.Path(filepath)
-        bibtex.save(self.merged(), filepath.as_posix(), sortkey=None, encoding=encoding)
+        bibtex.save(self.merged(), str(filepath), sortkey=None, encoding=encoding)
 
     def to_csvfile(self, filename):
         """Write a CSV file with one row for each entry in each bibfile."""
@@ -124,11 +122,10 @@ class Database(object):
         with self.execute(select_items) as cursor:
             return dict(iter(cursor))
 
-    def trickle(self):
-        """Write new/changed glottolog_ref_ids back into the bibfiles."""
+    def trickle(self, bibfiles):
+        """Write new/changed glottolog_ref_ids back into the given bibfiles."""
         assert Entry.allid(self.engine)
-        bibfiles = self._bibfiles
-        if not self.is_uptodate(verbose=True):
+        if not self.is_uptodate(bibfiles, verbose=True):
             raise RuntimeError('trickle with an outdated db')  # pragma: no cover
         changed = (Entry.id != sa.func.coalesce(Entry.refid, -1))
         select_files = sa.select([File.name])\
@@ -141,12 +138,11 @@ class Database(object):
             ]).where(Entry.filename == sa.bindparam('filename')).where(changed)\
             .order_by(sa.func.lower(Entry.bibkey))
         with self.engine.connect() as conn:
-            filenames = conn.execute(select_files).fetchall()
-            for f, in filenames:
-                b = bibfiles[f]
+            for filename, in conn.execute(select_files).fetchall():
+                b = bibfiles[filename]
                 entries = b.load()
                 added = changed = 0
-                for bibkey, refid, new in conn.execute(select_changed, filename=f):
+                for bibkey, refid, new in conn.execute(select_changed, filename=filename):
                     entrytype, fields = entries[bibkey]
                     old = fields.pop('glottolog_ref_id', None)
                     assert old == refid
@@ -444,10 +440,7 @@ class Entry(Model):
         col = cls.__table__.c[colname]
         select_col = sa.select([col.distinct()], bind=bind).order_by(col)
         with contextlib.closing(select_col.execute()) as cursor:
-            while True:
-                rows = cursor.fetchmany(chunksize)
-                if not rows:
-                    break
+            for rows in iter(functools.partial(cursor.fetchmany, chunksize), []):
                 (first,), (last,) = rows[0], rows[-1]
                 yield first, last
 
@@ -514,10 +507,7 @@ def generate_hashes(conn):
 
     words = collections.Counter()
     cursor = sa.select([Value.value], bind=conn).where(Value.field == 'title').execute()
-    while True:
-        rows = cursor.fetchmany(10000)
-        if not rows:
-            break
+    for rows in iter(functools.partial(cursor.fetchmany, 10000), []):
         for title, in rows:
             words.update(wrds(title))
     # TODO: consider dropping stop words/hapaxes from freq. distribution
@@ -530,10 +520,7 @@ def generate_hashes(conn):
             .order_by(Entry.bibkey).execute
         for filename, in select_files.execute().fetchall():
             with contextlib.closing(select_bibkeys(filename=filename)) as cursor:
-                while True:
-                    bibkeys = cursor.fetchmany(chunksize)
-                    if not bibkeys:
-                        break
+                for bibkeys in iter(functools.partial(cursor.fetchmany, chunksize), []):
                     (first,), (last,) = bibkeys[0], bibkeys[-1]
                     yield filename, first, last
 

@@ -131,7 +131,7 @@ def compile(api, log=None, rebuild=False):
 
     # Trickling back
     log.info('%s trickle' % time.ctime())
-    db.trickle()
+    db.trickle(api.bibfiles)
 
     # Save
     log.info('%s save as utf8' % time.ctime())
