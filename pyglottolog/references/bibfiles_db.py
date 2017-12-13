@@ -1,20 +1,24 @@
 # bibfiles_db.py - load bibfiles into sqlite3, hash, assign ids (split/merge)
 
-import sqlite3
+from __future__ import print_function
+
+import logging
 import difflib
 import operator
 import itertools
 import contextlib
 import collections
-import logging
 
-from six import string_types, viewkeys
-from clldutils.dsv import UnicodeWriter
-from clldutils import jsonlib
-from clldutils.path import Path, remove
+from six import string_types, iteritems, itervalues, viewkeys
+from six.moves import map
 
-from ..util import unique, group_first
+import sqlalchemy as sa
+import sqlalchemy.orm
+import sqlalchemy.ext.declarative
+from clldutils import path, dsv, jsonlib
+
 from . import bibtex
+from ..util import unique, group_first
 
 __all__ = ['Database']
 
@@ -26,115 +30,123 @@ log = logging.getLogger('pyglottolog')
 
 
 class Database(object):
-    """Bibfile collection parsed into an sqlite3 file."""
+    """Bibfile collection parsed into an sqlite3 database."""
 
     @classmethod
-    def from_bibfiles(cls, bibfiles, filepath, rebuild=False):
+    def from_bibfiles(cls, bibfiles, filepath, rebuild=False, page_size=32768):
         """If needed, (re)build the db from the bibfiles, hash, split/merge."""
-        if not isinstance(filepath, Path):
-            filepath = Path(filepath)
-        if filepath.exists():
-            if not rebuild:
-                self = cls(filepath, bibfiles)
-                if self.is_uptodate():
-                    return self
-            remove(filepath)
-
         self = cls(filepath, bibfiles)
-        with self.connect(async=True) as conn:
-            create_tables(conn)
-            with conn:
+
+        if self.filepath.exists():
+            if not rebuild and self.is_uptodate():
+                return self
+            path.remove(filepath)
+
+        with self.engine.connect() as conn:
+            if page_size is not None:
+                conn.execute('PRAGMA page_size = %d' % page_size)
+            Model.metadata.create_all(conn)
+
+        with self.engine.connect() as conn:
+            conn.execute('PRAGMA synchronous = OFF')
+            conn.execute('PRAGMA journal_mode = MEMORY')
+            conn = conn.execution_options(compiled_cache={})
+
+            with conn.begin():
                 import_bibfiles(conn, bibfiles)
-            entrystats(conn)
-            fieldstats(conn)
 
-            with conn:
+            Entry.stats(conn)
+            Value.fieldstats(conn)
+
+            with conn.begin():
                 generate_hashes(conn)
-            hashstats(conn)
-            hashidstats(conn)
 
-            with conn:
+            Entry.hashstats(conn)
+            Entry.hashidstats(conn)
+
+            with conn.begin():
                 assign_ids(conn)
 
         return self
 
     def __init__(self, filepath, bibfiles):
-        if not isinstance(filepath, Path):
-            filepath = Path(filepath)
-        self.filename = filepath.as_posix()
+        if not isinstance(filepath, path.Path):
+            filepath = path.Path(filepath)
+        self.filepath = filepath
+        self.engine = sa.create_engine('sqlite:///%s' % filepath, paramstyle='qmark')
         self._bibfiles = bibfiles
 
     def is_uptodate(self, bibfiles=None, verbose=False):
         """Does the db have the same filenames, sizes, and mtimes as bibfiles?"""
-        with self.connect() as conn:
-            return compare_bibfiles(conn, bibfiles or self._bibfiles, verbose=verbose)
+        return File.same_as(self.engine, bibfiles or self._bibfiles, verbose=verbose)
 
-    def recompute(self, hashes=True, reload_priorities=True, verbose=True):
-        """Call _libmonster.keyid for all entries, splits/merges -> new ids."""
-        with self.connect(async=True) as conn:
-            if hashes:
-                with conn:
-                    generate_hashes(conn)
-                hashstats(conn)
-                hashidstats(conn)
-            if reload_priorities:
-                with conn:
-                    update_priorities(conn, self._bibfiles)
-            with conn:
-                assign_ids(conn, verbose=verbose)
+    def stats(self, field_files=False):
+        Entry.stats(self.engine)
+        Value.fieldstats(self.engine, field_files)
+        Entry.hashstats(self.engine)
+        Entry.hashidstats(self.engine)
+
+    def execute(self, statement, closing=True):
+        cursor = self.engine.execute(statement)
+        if closing:
+            cursor = contextlib.closing(cursor)
+        return cursor
 
     def to_bibfile(self, filepath, encoding='utf-8', ):
-        if not isinstance(filepath, Path):
-            filepath = Path(filepath)
+        if not isinstance(filepath, path.Path):
+            filepath = path.Path(filepath)
         bibtex.save(self.merged(), filepath.as_posix(), sortkey=None, encoding=encoding)
 
     def to_csvfile(self, filename):
         """Write a CSV file with one row for each entry in each bibfile."""
-        with self.connect() as conn:
-            cursor = conn.execute(
-                'SELECT filename, bibkey, hash, cast(id AS text) AS id '
-                'FROM entry ORDER BY lower(filename), lower(bibkey), hash, id')
-            with UnicodeWriter(filename) as writer:
-                writer.writerow([col[0] for col in cursor.description])
+        select_rows = sa.select([
+                Entry.filename, Entry.bibkey, Entry.hash, sa.cast(Entry.id, sa.Text).label('id'),
+            ]).order_by(sa.func.lower(Entry.filename), sa.func.lower(Entry.bibkey), Entry.hash, Entry.id)
+        with self.execute(select_rows) as cursor:
+            with dsv.UnicodeWriter(filename) as writer:
+                writer.writerow(cursor.keys())
                 for row in cursor:
                     writer.writerow(row)
 
     def to_replacements(self, filename):
         """Write a JSON file with 301s from merged glottolog_ref_ids."""
-        with self.connect() as conn:
-            conn.row_factory = sqlite3.Row
-            cursor = conn.execute(
-                'SELECT refid AS id, id AS replacement '
-                'FROM entry WHERE id != refid ORDER BY id')
-            pairs = map(dict, cursor)
+        select_pairs = sa.select([Entry.refid.label('id'), Entry.id.label('replacement')])\
+            .where(Entry.id != Entry.refid)\
+            .order_by(Entry.id)
+        with self.execute(select_pairs) as cursor:
+            pairs = list(map(dict, cursor))
         with jsonlib.update(filename, default=[], indent=4) as repls:
             repls.extend(pairs)
 
     def to_hhmapping(self):
-        with self.connect() as conn:
-            assert allid(conn)
-            query = 'SELECT bibkey, id FROM entry WHERE filename = ?'
-            return dict(conn.execute(query, ('hh.bib',)))
+        assert Entry.allid(self.engine)
+        select_items = sa.select([Entry.bibkey, Entry.id]).where(Entry.filename == 'hh.bib')
+        with self.execute(select_items) as cursor:
+            return dict(iter(cursor))
 
     def trickle(self):
         """Write new/changed glottolog_ref_ids back into the bibfiles."""
+        assert Entry.allid(self.engine)
         bibfiles = self._bibfiles
         if not self.is_uptodate(verbose=True):
             raise RuntimeError('trickle with an outdated db')  # pragma: no cover
-        with self.connect() as conn:
-            filenames = conn.execute(
-                'SELECT name FROM file WHERE EXISTS '
-                '(SELECT 1 FROM entry WHERE filename = name '
-                'AND id != coalesce(refid, -1)) ORDER BY name').fetchall()
+        changed = (Entry.id != sa.func.coalesce(Entry.refid, -1))
+        select_files = sa.select([File.name])\
+            .where(sa.exists().where(Entry.filename == File.name).where(changed))\
+            .order_by(File.name)
+        select_changed = sa.select([
+                Entry.bibkey,
+                sa.cast(Entry.refid, sa.Text).label('refid'),
+                sa.cast(Entry.id, sa.Text).label('id'),
+            ]).where(Entry.filename == sa.bindparam('filename')).where(changed)\
+            .order_by(sa.func.lower(Entry.bibkey))
+        with self.engine.connect() as conn:
+            filenames = conn.execute(select_files).fetchall()
             for f, in filenames:
                 b = bibfiles[f]
                 entries = b.load()
-                cursor = conn.execute(
-                    'SELECT bibkey, cast(refid AS text), cast(id AS text) '
-                    'FROM entry WHERE filename = ? AND id != coalesce(refid, -1) '
-                    'ORDER BY lower(bibkey)', (f,))
                 added = changed = 0
-                for bibkey, refid, new in cursor:
+                for bibkey, refid, new in conn.execute(select_changed, filename=f):
                     entrytype, fields = entries[bibkey]
                     old = fields.pop('glottolog_ref_id', None)
                     assert old == refid
@@ -153,72 +165,48 @@ class Database(object):
             fields['glottolog_ref_id'] = id
             yield hash, (entrytype, fields)
 
-    def connect(self, close=True, async=False):
-        conn = sqlite3.connect(self.filename)
-        if async:
-            conn.execute('PRAGMA synchronous = OFF')
-            conn.execute('PRAGMA journal_mode = MEMORY')
-        if close:
-            conn = contextlib.closing(conn)
-        return conn
-
     def __iter__(self, chunksize=100):
-        with self.connect() as conn:
-            assert allid(conn)
-
-            allpriority, = conn.execute(
-                'SELECT NOT EXISTS '
-                '(SELECT 1 FROM entry WHERE NOT EXISTS (SELECT 1 FROM file '
-                'WHERE name = filename))').fetchone()
-            assert allpriority
-
-            assert onetoone(conn)
-
-            get_id_hash, get_field = operator.itemgetter(0, 1), operator.itemgetter(2)
-            for first, last in windowed(conn, 'id', chunksize):
-                cursor = conn.execute(
-                    'SELECT e.id, e.hash, v.field, v.value, v.filename, v.bibkey '
-                    'FROM entry AS e '
-                    'JOIN file AS f ON e.filename = f.name '
-                    'JOIN value AS v ON e.filename = v.filename AND e.bibkey = v.bibkey '
-                    'LEFT JOIN field AS d ON '
-                    'v.filename = d.filename AND v.field = d.field '
-                    'WHERE e.id BETWEEN ? AND ? '
-                    'ORDER BY e.id, v.field, coalesce(d.priority, f.priority) '
-                    'DESC, v.filename, v.bibkey',
-                    (first, last))
+        assert Entry.allid(self.engine)
+        assert Entry.onetoone(self.engine)
+        select_values = sa.select([
+                Entry.id, Entry.hash, Value.field, Value.value, Value.filename, Value.bibkey,
+            ]).select_from(sa.join(Entry, File).join(Value)
+                .outerjoin(Field, sa.and_(Field.filename == Value.filename, Field.field == Value.field)))\
+            .where(sa.between(Entry.id, sa.bindparam('first'), sa.bindparam('last')))\
+            .order_by(Entry.id, Value.field, sa.func.coalesce(Field.priority, File.priority).desc(),
+                      Value.filename, Value.bibkey)
+        get_id_hash, get_field = operator.itemgetter(0, 1), operator.itemgetter(2)
+        with self.engine.connect() as conn:
+            for first, last in Entry.windowed(conn, 'id', chunksize):
+                cursor = conn.execute(select_values, first=first, last=last)
                 for id_hash, grp in itertools.groupby(cursor, get_id_hash):
                     yield (
                         id_hash,
                         [
-                            (field, [(vl, fn, bk) for id, hs, fd, vl, fn, bk in g])
+                            (field, [(vl, fn, bk) for _, _, _, vl, fn, bk in g])
                             for field, g in itertools.groupby(grp, get_field)])
 
-    def __getitem__(self, key):
+    def __getitem__(self, key, _types=(tuple, int) + string_types):
         """Entry by (fn, bk) or merged entry by refid (old grouping) or hash (current grouping)."""
-        if not isinstance(key, (tuple, int)) and not isinstance(key, string_types):
+        if not isinstance(key, _types):
             raise ValueError  # pragma: no cover
-        with self.connect() as conn:
-            if isinstance(key, tuple):
-                filename, bibkey = key
-                entrytype, fields = self._entry(conn, filename, bibkey)
-            else:
-                grp = self._entrygrp(conn, key)
-                entrytype, fields = self._merged_entry(grp)
-            return key, (entrytype, fields)
+        if isinstance(key, tuple):
+            filename, bibkey = key
+            entrytype, fields = self._entry(self.engine, filename, bibkey)
+        else:
+            grp = self._entrygrp(self.engine, key)
+            entrytype, fields = self._merged_entry(grp)
+        return key, (entrytype, fields)
 
     @staticmethod
-    def _entry(conn, filename, bibkey, raw=False):
-        cursor = conn.execute(
-            'SELECT field, value FROM value '
-            'WHERE filename = ? AND bibkey = ? ', (filename, bibkey))
-        fields = dict(cursor)
+    def _entry(bind, filename, bibkey):
+        select_items = sa.select([Value.field, Value.value], bind=bind)\
+            .where(Value.filename == filename)\
+            .where(Value.bibkey == bibkey)
+        fields = dict(iter(select_items.execute()))
         if not fields:
             raise KeyError((filename, bibkey))
-        if raw:
-            return fields
-        entrytype = fields.pop('ENTRYTYPE')
-        return entrytype, fields
+        return fields.pop('ENTRYTYPE'), fields
 
     @staticmethod
     def _merged_entry(grp, union=UNION_FIELDS, ignore=IGNORE_FIELDS, raw=False):
@@ -240,48 +228,29 @@ class Database(object):
         return entrytype, fields
 
     @staticmethod
-    def _entrygrp(conn, key, get_field=operator.itemgetter(0)):
-        col = 'refid' if isinstance(key, int) else 'hash'
-        cursor = conn.execute((
-            'SELECT v.field, v.value, v.filename, v.bibkey '
-            'FROM entry AS e '
-            'JOIN file AS f ON e.filename = f.name '
-            'JOIN value AS v ON e.filename = v.filename AND e.bibkey = v.bibkey '
-            'LEFT JOIN field AS d ON v.filename = d.filename AND v.field = d.field '
-            'WHERE %s = ? '
-            'ORDER BY v.field, coalesce(d.priority, f.priority) '
-            'DESC, v.filename, v.bibkey'
-        ) % col, (key,))
-        grp = [
-            (field, [(vl, fn, bk) for fd, vl, fn, bk in g])
-            for field, g in itertools.groupby(cursor, get_field)]
+    def _entrygrp(bind, key, get_field=operator.itemgetter(0)):
+        select_values = sa.select([
+                Value.field, Value.value, Value.filename, Value.bibkey
+            ], bind=bind).select_from(sa.join(Entry, File).join(Value)
+                .outerjoin(Field, sa.and_(Field.filename == Value.filename, Field.field == Value.field)))\
+            .where((Entry.refid if isinstance(key, int) else Entry.hash) == key)\
+            .order_by(Value.field, sa.func.coalesce(Field.priority, File.priority).desc(),
+                      Value.filename, Value.bibkey)
+        grouped = itertools.groupby(select_values.execute(), get_field)
+        grp = [(field, [(vl, fn, bk) for _, vl, fn, bk in g]) for field, g in grouped]
         if not grp:
             raise KeyError(key)
         return grp
 
-    def stats(self, field_files=False):
-        with self.connect() as conn:
-            entrystats(conn)
-            fieldstats(conn, field_files)
-            hashstats(conn)
-            hashidstats(conn)
-
-    @staticmethod
-    def print_group(conn, group):
-        for row in group:
-            print(row)
-        for row in group:
-            print('\t%r, %r, %r, %r' % hashfields(conn, row[-2], row[-1]))
-
     def show_splits(self):
-        with self.connect() as conn:
-            cursor = conn.execute(
-                'SELECT refid, hash, filename, bibkey '
-                'FROM entry AS e WHERE EXISTS (SELECT 1 FROM entry '
-                'WHERE refid = e.refid AND hash != e.hash) '
-                'ORDER BY refid, hash, filename, bibkey')
-            for refid, group in group_first(cursor):
-                self.print_group(conn, group)
+        other = sa.orm.aliased(Entry)
+        select_entries = sa.select([
+                Entry.refid, Entry.hash, Entry.filename, Entry.bibkey,
+            ]).order_by(Entry.refid, Entry.hash, Entry.filename, Entry.bibkey)\
+            .where(sa.exists().where(other.refid == Entry.refid).where(other.hash != Entry.hash))
+        with self.engine.connect() as conn:
+            for refid, group in group_first(conn.execute(select_entries)):
+                self._print_group(conn, group)
                 old = self._merged_entry(self._entrygrp(conn, refid), raw=True)
                 cand = [
                     (hs, self._merged_entry(self._entrygrp(conn, hs), raw=True))
@@ -290,14 +259,14 @@ class Database(object):
                 print('-> %s\n' % new)
 
     def show_merges(self):
-        with self.connect() as conn:
-            cursor = conn.execute(
-                'SELECT hash, refid, filename, bibkey '
-                'FROM entry AS e WHERE EXISTS (SELECT 1 FROM entry '
-                'WHERE hash = e.hash AND refid != e.refid) '
-                'ORDER BY hash, refid DESC, filename, bibkey')
-            for hash, group in group_first(cursor):
-                self.print_group(conn, group)
+        other = sa.orm.aliased(Entry)
+        select_entries = sa.select([
+                Entry.hash, Entry.refid, Entry.filename, Entry.bibkey,
+            ]).order_by(Entry.hash, Entry.refid.desc(), Entry.filename, Entry.bibkey)\
+            .where(sa.exists().where(other.hash == Entry.hash).where(other.refid != Entry.refid))
+        with self.engine.connect() as conn:
+            for hash, group in group_first(conn.execute(select_entries)):
+                self._print_group(conn, group)
                 new = self._merged_entry(self._entrygrp(conn, hash), raw=True)
                 cand = [
                     (ri, self._merged_entry(self._entrygrp(conn, ri), raw=True))
@@ -305,179 +274,246 @@ class Database(object):
                 old = min(cand, key=lambda p: distance(new, p[1]))[0]
                 print('-> %s\n' % old)
 
+    @staticmethod
+    def _print_group(conn, group, out=print):
+        for row in group:
+            out(row)
+        for row in group:
+            out('\t%r, %r, %r, %r' % Value.hashfields(conn, row['filename'], row['bibkey']))
+
     def _show(self, sql):
-        with self.connect() as conn:
+        with self.engine.connect() as conn:
             cursor = conn.execute(sql)
             for hash, group in group_first(cursor):
-                self.print_group(conn, group)
+                self._print_group(conn, group)
                 print()
 
     def show_identified(self):
-        self._show(
-            'SELECT hash, refid, filename, bibkey '
-            'FROM entry AS e WHERE EXISTS (SELECT 1 FROM entry '
-            'WHERE refid IS NULL AND hash = e.hash) '
-            'AND EXISTS (SELECT 1 FROM entry '
-            'WHERE refid IS NOT NULL AND hash = e.hash) '
-            'ORDER BY hash, refid IS NOT NULL, refid, filename, bibkey')
+        other = sa.orm.aliased(Entry)
+        select_entries = sa.select([
+                Entry.hash, Entry.refid, Entry.filename, Entry.bibkey,
+            ]).order_by(Entry.hash, Entry.refid != sa.null(), Entry.refid, Entry.filename, Entry.bibkey)\
+            .where(sa.exists().where(other.refid == sa.null()).where(other.hash == Entry.hash))\
+            .where(sa.exists().where(other.refid != sa.null()).where(other.hash == Entry.hash))
+        self._show(select_entries)
 
     def show_combined(self):
-        self._show(
-            'SELECT hash, filename, bibkey '
-            'FROM entry AS e WHERE refid IS NULL AND EXISTS (SELECT 1 FROM entry '
-            'WHERE refid IS NULL AND hash = e.hash '
-            'AND (filename != e.filename OR bibkey != e.bibkey)) '
-            'ORDER BY hash, filename, bibkey')
+        other = sa.orm.aliased(Entry)
+        select_entries = sa.select([
+                Entry.hash, Entry.filename, Entry.bibkey,
+            ]).order_by(Entry.hash, Entry.filename, Entry.bibkey)\
+            .where(Entry.refid == sa.null())\
+            .where(sa.exists().where(other.refid == sa.null()).where(other.hash == Entry.hash))
+        self._show(select_entries)
 
 
-def create_tables(conn, page_size=32768):
-    if page_size is not None:
-        conn.execute('PRAGMA page_size = %d' % page_size)
-    conn.execute(
-        'CREATE TABLE file ('
-        'name TEXT NOT NULL, '
-        'size INTEGER NOT NULL, '
-        'mtime DATETIME NOT NULL, '
-        'priority INTEGER NOT NULL, '
-        'PRIMARY KEY (name))')
-    conn.execute(
-        'CREATE TABLE field ('
-        'filename TEXT NOT NULL, '
-        'field TEXT NOT NULL, '
-        'priority INTEGER NOT NULL, '
-        'PRIMARY KEY (filename, field), '
-        'FOREIGN KEY (filename) REFERENCES file(name))')
-    conn.execute(
-        'CREATE TABLE entry ('
-        'filename TEXT NOT NULL, '
-        'bibkey TEXT NOT NULL, '
-        'refid INTEGER, '  # old glottolog_ref_id from bibfiles (previous hash groupings)
-        'hash TEXT, '      # current groupings, m:n with refid (splits/merges)
-        'srefid INTEGER, '  # split-resolved refid (every srefid maps to exactly one hash)
-        'id INTEGER, '    # new glottolog_ref_id save to bibfiles (current hash groupings)
-        'PRIMARY KEY (filename, bibkey), '
-        'FOREIGN KEY (filename) REFERENCES file(name))')
-    conn.execute('CREATE INDEX ix_refid ON entry(refid)')
-    conn.execute('CREATE INDEX ix_hash ON entry(hash)')
-    conn.execute('CREATE INDEX ix_srefid ON entry(srefid)')
-    conn.execute('CREATE INDEX ix_id ON entry(id)')
-    conn.execute(
-        'CREATE TABLE value ('
-        'filename TEXT NOT NULL, '
-        'bibkey TEXT NOT NULL, '
-        'field TEXT NOT NULL, '
-        'value TEXT NOT NULL, '
-        'PRIMARY KEY (filename, bibkey, field), '
-        'FOREIGN KEY (filename, bibkey) REFERENCES entry(filename, bibkey))')
+Model = sa.ext.declarative.declarative_base()
+
+
+class File(Model):
+
+    __tablename__ = 'file'
+
+    name = sa.Column(sa.Text, primary_key=True)
+    size = sa.Column(sa.Integer, nullable=False)
+    mtime = sa.Column(sa.DateTime, nullable=False)
+    priority = sa.Column(sa.Integer, nullable=False)
+
+    @classmethod
+    def same_as(cls, bind, bibfiles, verbose=False):
+        ondisk = collections.OrderedDict(
+            (b.fname.name, (b.size, b.mtime)) for b in bibfiles)
+        select_files = sa.select([cls.name, cls.size, cls.mtime], bind=bind).order_by(cls.name)
+        indb = collections.OrderedDict(
+            (name, (size, mtime)) for name, size, mtime in select_files.execute())
+        if dict(ondisk) == dict(indb):
+            return True
+        if verbose:
+            print('missing in db: %s' % [o for o in ondisk if o not in indb])
+            print('missing on disk: %s' % [i for i in indb if i not in ondisk])
+            print('differing in size/mtime: %s' % [
+                o for o in ondisk if o in indb and ondisk[o] != indb[o]])
+        return False
+
+
+class Field(Model):
+
+    __tablename__ = 'field'
+
+    filename = sa.Column(sa.ForeignKey('file.name'), primary_key=True)
+    field = sa.Column(sa.Text, primary_key=True)
+    priority = sa.Column(sa.Integer, nullable=False)
+
+
+class Entry(Model):
+
+    __tablename__ = 'entry'
+
+    filename = sa.Column(sa.ForeignKey('file.name'), primary_key=True)
+    bibkey = sa.Column(sa.Text, primary_key=True)
+    refid = sa.Column(sa.Integer, index=True)   # old glottolog_ref_id from bibfiles (previous hash groupings)
+    hash = sa.Column(sa.Text, index=True)       # current groupings, m:n with refid (splits/merges)
+    srefid = sa.Column(sa.Integer, index=True)  # split-resolved refid (every srefid maps to exactly one hash)
+    id = sa.Column(sa.Integer, index=True)      # new glottolog_ref_id save to bibfiles (current hash groupings)
+
+    @classmethod
+    def allhash(cls, bind):
+        return sa.select([~sa.exists().where(cls.hash == sa.null())], bind=bind).scalar()
+
+    @classmethod
+    def allid(cls, bind):
+        return sa.select([~sa.exists().where(cls.id == sa.null())], bind=bind).scalar()
+
+    @classmethod
+    def onetoone(cls, bind):
+        other = sa.orm.aliased(cls)
+        return sa.select([~sa.exists().select_from(cls).where(sa.exists().where(sa.or_(
+            sa.and_(other.hash == cls.hash, other.id != cls.id),
+            sa.and_(other.id == cls.hash, other.hash != cls.hash))))], bind=bind).scalar()
+
+    @classmethod
+    def stats(cls, bind, out=log.info):
+        out('entry stats:')
+        select_n = sa.select([cls.filename, sa.func.count().label('n')], bind=bind).group_by(cls.filename)
+        out('\n'.join('%(filename)s %(n)d' % row for row in select_n.execute()))
+        select_total = sa.select([sa.func.count()], bind=bind).select_from(cls)
+        out('%d entries total' % select_total.scalar())
+
+    @classmethod
+    def hashstats(cls, bind, out=print):
+        select_total = sa.select([
+                sa.func.count(cls.hash.distinct()).label('distinct'),
+                sa.func.count(cls.hash).label('total'),
+            ], bind=bind)
+        tmpl = '%(distinct)d\tdistinct keyids (from %(total)d total)'
+        out(tmpl % select_total.execute().first())
+
+        sq1 = sa.select([
+                cls.filename,
+                sa.func.count(cls.hash.distinct()).label('distinct'),
+                sa.func.count(cls.hash).label('total'),
+            ])\
+            .group_by(cls.filename).alias()
+        other = sa.orm.aliased(cls)
+        sq2 = sa.select([
+                cls.filename,
+                sa.func.count(cls.hash.distinct()).label('unique'),
+            ])\
+            .where(~sa.exists()
+                .where(other.hash == cls.hash)
+                .where(other.filename != cls.filename))\
+            .group_by(cls.filename).alias()
+        select_files = sa.select([
+                sa.func.coalesce(sq2.c.unique, 0).label('unique'),
+                sq1.c.filename, sq1.c.distinct, sq1.c.total,
+            ], bind=bind)\
+            .select_from(sq1.outerjoin(sq2, sq1.c.filename == sq2.c.filename))\
+            .order_by(sq1.c.filename)
+        tmpl = '%(unique)d\t%(filename)s (from %(distinct)d distinct of %(total)d total)'
+        out('\n'.join(tmpl % r for r in select_files.execute()))
+
+        select_multiple = sa.select([sa.func.count()], bind=bind)\
+            .select_from(sa.select([1])
+                .select_from(cls)
+                .group_by(cls.hash)
+                .having(sa.func.count(cls.filename.distinct()) > 1))
+        out('%d\tin multiple files' % select_multiple.scalar())
+
+    @classmethod
+    def hashidstats(cls, bind, out=print):
+        sq = sa.select([sa.func.count(cls.refid.distinct()).label('hash_nid')])\
+            .where(cls.hash != sa.null())\
+            .group_by(cls.hash)\
+            .having(sa.func.count(cls.refid.distinct()) > 1).alias()
+        select_nid = sa.select([sq.c.hash_nid, sa.func.count().label('n')], bind=bind)\
+            .group_by(sq.c.hash_nid).order_by(sa.desc('n'))
+        tmpl = '1 keyid %(hash_nid)d glottolog_ref_ids: %(n)d'
+        out('\n'.join(tmpl % r for r in select_nid.execute()))
+
+        sq = sa.select([sa.func.count(cls.hash.distinct()).label('id_nhash')])\
+            .where(cls.refid != sa.null())\
+            .group_by(cls.refid)\
+            .having(sa.func.count(cls.hash.distinct()) > 1).alias()
+        select_nhash = sa.select([sq.c.id_nhash, sa.func.count().label('n')], bind=bind)\
+            .group_by(sq.c.id_nhash).order_by(sa.desc('n'))
+        tmpl = '1 glottolog_ref_id %(id_nhash)d keyids: %(n)d'
+        out('\n'.join(tmpl % r for r in select_nhash.execute()))
+
+    @classmethod
+    def windowed(cls, bind, colname, chunksize):
+        col = cls.__table__.c[colname]
+        select_col = sa.select([col.distinct()], bind=bind).order_by(col)
+        with contextlib.closing(select_col.execute()) as cursor:
+            while True:
+                rows = cursor.fetchmany(chunksize)
+                if not rows:
+                    break
+                (first,), (last,) = rows[0], rows[-1]
+                yield first, last
+
+
+class Value(Model):
+
+    __tablename__ = 'value'
+
+    filename = sa.Column(sa.Text, primary_key=True)
+    bibkey = sa.Column(sa.Text, primary_key=True)
+    field = sa.Column(sa.Text, primary_key=True)
+    value = sa.Column(sa.Text, nullable=False)
+
+    __table_args__ = (
+        sa.ForeignKeyConstraint([filename, bibkey], ['entry.filename', 'entry.bibkey']),
+    )
+
+    @classmethod
+    def hashfields(cls, bind, filename, bibkey, _fields=('author', 'editor', 'year', 'title')):
+        # also: extra_hash, volume (if not journal, booktitle, or series)
+        select_items = sa.select([cls.field, cls.value], bind=bind)\
+            .where(cls.filename == filename)\
+            .where(cls.bibkey == bibkey)\
+            .where(cls.field.in_(_fields))
+        fields = dict(iter(select_items.execute()))
+        return tuple(fields.get(f) for f in _fields)
+
+    @classmethod
+    def fieldstats(cls, bind, with_files=False, out=print):
+        select_n = sa.select([cls.field, sa.func.count().label('n')], bind=bind)\
+            .group_by(cls.field).order_by(sa.desc('n'), cls.field)
+        tmpl = '%(n)d\t%(field)s'
+        if with_files:
+            files = sa.func.replace(sa.func.group_concat(cls.filename.distinct()), ',', ', ')
+            select_n.append_column(files.label('files'))
+            tmpl += '\t%(files)s'
+        out('\n'.join(tmpl % r for r in select_n.execute()))
 
 
 def import_bibfiles(conn, bibfiles):
     log.info('importing bibfiles into a new db')
+    assert conn.dialect.paramstyle == 'qmark'
+    insert_file = sa.insert(File, bind=conn)\
+        .compile(column_keys=['name', 'size', 'mtime', 'priority']).string
+    insert_entry = sa.insert(Entry, bind=conn)\
+        .compile(column_keys=['filename', 'bibkey', 'refid']).string
+    insert_value = sa.insert(Value, bind=conn)\
+        .compile(column_keys=['filename', 'bibkey', 'field', 'value']).string
+
+    conn = conn.connection
     for b in bibfiles:
-        conn.execute(
-            'INSERT INTO file (name, size, mtime, priority)'
-            'VALUES (?, ?, ?, ?)', (b.fname.name, b.size, b.mtime, b.priority))
+        filename = b.fname.name
+        conn.execute(insert_file, (filename, b.size, b.mtime, b.priority))
         for e in b.iterentries():
-            bibkey, entrytype, fields = e.key, e.type, e.fields
-            conn.execute(
-                'INSERT INTO entry (filename, bibkey, refid) VALUES (?, ?, ?)',
-                (b.fname.name, bibkey, fields.get('glottolog_ref_id')))
-            fields = itertools.chain([('ENTRYTYPE', entrytype)], fields.items())
-            conn.executemany(
-                'INSERT INTO value (filename, bibkey, field, value) VALUES (?, ?, ?, ?)',
-                ((b.fname.name, bibkey, field, value) for field, value in fields))
-
-
-def update_priorities(conn, bibfiles):
-    inini = {b.fname.name for b in bibfiles}
-    indb = {filename for filename, in conn.execute('SELECT name FROM file')}
-    assert inini == indb
-    for b in bibfiles:
-        conn.execute(
-            'UPDATE file SET priority = ? WHERE NAME = ?',
-            (b.priority, b.fname.name))
-    print('\n'.join('%d\t%s' % pn for pn in conn.execute(
-        'SELECT priority, name FROM file ORDER BY priority DESC, name')))
-
-
-def compare_bibfiles(conn, bibfiles, verbose=False):
-    ondisk = collections.OrderedDict(
-        (b.fname.name, (b.size, str(b.mtime))) for b in bibfiles)
-    indb = collections.OrderedDict(
-        (name, (size, mtime)) for name, size, mtime in
-        conn.execute('SELECT name, size, mtime FROM file ORDER BY name'))
-    if dict(ondisk) == dict(indb):
-        return True
-    if verbose:
-        print('missing in db: %s' % [o for o in ondisk if o not in indb])
-        print('missing on disk: %s' % [i for i in indb if i not in ondisk])
-        print('differing in size/mtime: %s' % [
-            o for o in ondisk if o in indb and ondisk[o] != indb[o]])
-    return False
-
-
-def allid(conn):
-    result, = conn.execute(
-        'SELECT NOT EXISTS (SELECT 1 FROM entry '
-        'WHERE id IS NULL)').fetchone()
-    return result
-
-
-def onetoone(conn):
-    result, = conn.execute(
-        'SELECT NOT EXISTS '
-        '(SELECT 1 FROM entry AS e WHERE EXISTS (SELECT 1 FROM entry '
-        'WHERE hash = e.hash AND id != e.id '
-        'OR id = e.id AND hash != e.hash))').fetchone()
-    return result
-
-
-def entrystats(conn):
-    log.info('entry stats:\n' + '\n'.join('%s %d' % (f, n) for f, n in conn.execute(
-        'SELECT filename, count(*) FROM entry GROUP BY filename')))
-    log.info('%d entries total' % conn.execute('SELECT count(*) FROM entry').fetchone())
-
-
-def fieldstats(conn, with_files=False):
-    if with_files:
-        print('\n'.join('%d\t%s\t%s' % (n, f, b) for f, n, b in conn.execute(
-            'SELECT field, count(*) AS n, replace(group_concat(DISTINCT filename), ",", ", ") '
-            'FROM value GROUP BY field ORDER BY n DESC, field')))
-    else:
-        print('\n'.join('%d\t%s' % (n, f) for f, n in conn.execute(
-            'SELECT field, count(*) AS n '
-            'FROM value GROUP BY field ORDER BY n DESC, field')))
-
-
-def windowed_entries(conn, chunksize):
-    for filename, in conn.execute('SELECT name FROM file ORDER BY name'):
-        cursor = conn.execute(
-            'SELECT bibkey FROM entry WHERE filename = ? '
-            'ORDER BY bibkey', (filename,))
-        while True:
-            bibkeys = cursor.fetchmany(chunksize)
-            if not bibkeys:
-                cursor.close()
-                break
-            (first,), (last,) = bibkeys[0], bibkeys[-1]
-            yield filename, first, last
-
-
-def hashfields(conn, filename, bibkey):
-    # also: extra_hash, volume (if not journal, booktitle, or series)
-    cursor = conn.execute(
-        'SELECT field, value FROM value '
-        "WHERE field IN ('author', 'editor', 'year', 'title') "
-        'AND filename = ? AND bibkey = ? ', (filename, bibkey))
-    fields = dict(cursor)
-    return tuple(fields.get(f) for f in ('author', 'editor', 'year', 'title'))
+            bibkey = e.key
+            conn.execute(insert_entry, (filename, bibkey, e.fields.get('glottolog_ref_id')))
+            fields = itertools.chain([('ENTRYTYPE', e.type)], iteritems(e.fields))
+            conn.executemany(insert_value,
+                ((filename, bibkey, field, value) for field, value in fields))
 
 
 def generate_hashes(conn):
     from .libmonster import wrds, keyid
 
     words = collections.Counter()
-    cursor = conn.execute('SELECT value FROM value WHERE field = ?', ('title',))
+    cursor = sa.select([Value.value], bind=conn).where(Value.field == 'title').execute()
     while True:
         rows = cursor.fetchmany(10000)
         if not rows:
@@ -485,171 +521,150 @@ def generate_hashes(conn):
         for title, in rows:
             words.update(wrds(title))
     # TODO: consider dropping stop words/hapaxes from freq. distribution
-    print('%d title words (from %d tokens)' % (len(words), sum(words.values())))
+    print('%d title words (from %d tokens)' % (len(words), sum(itervalues(words))))
 
+    def windowed_entries(chunksize=500):
+        select_files = sa.select([File.name], bind=conn).order_by(File.name)
+        select_bibkeys = sa.select([Entry.bibkey], bind=conn)\
+            .where(Entry.filename == sa.bindparam('filename'))\
+            .order_by(Entry.bibkey).execute
+        for filename, in select_files.execute().fetchall():
+            with contextlib.closing(select_bibkeys(filename=filename)) as cursor:
+                while True:
+                    bibkeys = cursor.fetchmany(chunksize)
+                    if not bibkeys:
+                        break
+                    (first,), (last,) = bibkeys[0], bibkeys[-1]
+                    yield filename, first, last
+
+    select_bfv = sa.select([Value.bibkey, Value.field, Value.value], bind=conn)\
+        .where(Value.filename == sa.bindparam('filename'))\
+        .where(Value.field != 'ENTRYTYPE')\
+        .where(Value.bibkey.between(sa.bindparam('first'), sa.bindparam('last')))\
+        .order_by(Value.bibkey).execute
+    assert conn.dialect.paramstyle == 'qmark'
+    update_entry = sa.update(Entry, bind=conn)\
+        .values(hash=sa.bindparam('hash'))\
+        .where(Entry.filename == sa.bindparam('filename'))\
+        .where(Entry.bibkey == sa.bindparam('bibkey')).compile().string
     get_bibkey = operator.itemgetter(0)
-    for filename, first, last in windowed_entries(conn, 500):
-        rows = conn.execute(
-            'SELECT bibkey, field, value FROM value '
-            'WHERE filename = ? AND bibkey BETWEEN ? AND ? '
-            'AND field != ? ORDER BY bibkey', (filename, first, last, 'ENTRYTYPE'))
-        conn.executemany(
-            'UPDATE entry SET hash = ? WHERE filename = ? AND bibkey = ?',
+    for filename, first, last in windowed_entries():
+        rows = select_bfv(filename=filename, first=first, last=last)
+        conn.connection.executemany(update_entry,
             ((keyid({k: v for b, k, v in grp}, words), filename, bibkey)
              for bibkey, grp in itertools.groupby(rows, get_bibkey)))
 
 
-def hashstats(conn):
-    print('%d\tdistinct keyids (from %d total)' % conn.execute(
-        'SELECT count(DISTINCT hash), count(hash) FROM entry').fetchone())
-    print('\n'.join(
-        '%d\t%s (from %d distinct of %d total)' % row
-        for row in conn.execute(
-            'SELECT coalesce(c2.unq, 0), '
-            'c1.filename, c1.dst, c1.tot FROM (SELECT filename, '
-            'count(hash) AS tot, count(DISTINCT hash) AS dst  '
-            'FROM entry GROUP BY filename) AS c1 LEFT JOIN '
-            '(SELECT filename, count(DISTINCT hash) AS unq '
-            'FROM entry AS e WHERE NOT EXISTS (SELECT 1 FROM entry '
-            'WHERE hash = e.hash AND filename != e.filename) '
-            'GROUP BY filename) AS c2 ON c1.filename = c2.filename '
-            'ORDER BY c1.filename')))
-    print('%d\tin multiple files' % conn.execute(
-        'SELECT count(*) FROM '
-        '(SELECT 1 FROM entry GROUP BY hash '
-        'HAVING COUNT(DISTINCT filename) > 1)').fetchone())
-
-
-def hashidstats(conn):
-    print('\n'.join(
-        '1 keyid %d glottolog_ref_ids: %d' % (hash_nid, n)
-        for (hash_nid, n) in conn.execute(
-            'SELECT hash_nid, count(*) AS n FROM '
-            '(SELECT count(DISTINCT refid) AS hash_nid FROM entry WHERE hash IS NOT NULL '
-            'GROUP BY hash HAVING count(DISTINCT refid) > 1) '
-            'GROUP BY hash_nid ORDER BY n desc')))
-    print('\n'.join(
-        '1 glottolog_ref_id %d keyids: %d' % (id_nhash, n)
-        for (id_nhash, n) in conn.execute(
-            'SELECT id_nhash, count(*) AS n FROM '
-            '(SELECT count(DISTINCT hash) AS id_nhash FROM entry WHERE refid IS NOT NULL '
-            'GROUP BY refid HAVING count(DISTINCT hash) > 1) '
-            'GROUP BY id_nhash ORDER BY n desc')))
-
-
-def windowed(conn, col, chunksize):
-    query = 'SELECT DISTINCT %(col)s FROM entry ORDER BY %(col)s' % {'col': col}
-    cursor = conn.execute(query)
-    while True:
-        rows = cursor.fetchmany(chunksize)
-        if not rows:
-            cursor.close()
-            break
-        (first,), (last,) = rows[0], rows[-1]
-        yield first, last
-
-
 def assign_ids(conn, verbose=False):
     merged_entry, entrygrp = Database._merged_entry, Database._entrygrp
+    other = sa.orm.aliased(Entry)
 
-    allhash, = conn.execute(
-        'SELECT NOT EXISTS (SELECT 1 FROM entry WHERE hash IS NULL)').fetchone()
-    assert allhash
+    assert Entry.allhash(conn)
 
-    print('%d entries' % conn.execute(
-        'UPDATE entry SET id = NULL, srefid = refid').rowcount)
+    reset_entries = sa.update(Entry, bind=conn).values(id=sa.null(), srefid=Entry.refid)
+    print('%d entries' % reset_entries.execute().rowcount)
 
     # resolve splits: srefid = refid only for entries from the most similar hash group
     nsplit = 0
-    cursor = conn.execute(
-        'SELECT refid, hash, filename, bibkey FROM entry AS e '
-        'WHERE EXISTS (SELECT 1 FROM entry WHERE refid = e.refid AND hash != e.hash) '
-        'ORDER BY refid, hash, filename, bibkey')
-    for refid, group in group_first(cursor):
+    select_split = sa.select([Entry.refid, Entry.hash, Entry.filename, Entry.bibkey], bind=conn)\
+        .order_by(Entry.refid, Entry.hash, Entry.filename, Entry.bibkey)\
+        .where(sa.exists()
+            .where(other.refid == Entry.refid)
+            .where(other.hash != Entry.hash))
+    update_split = sa.update(Entry, bind=conn)\
+        .where(Entry.refid == sa.bindparam('eq_refid'))\
+        .where(Entry.hash != sa.bindparam('ne_hash'))\
+        .values(srefid=sa.null()).execute
+    for refid, group in group_first(select_split.execute()):
         old = merged_entry(entrygrp(conn, refid), raw=True)
         nsplit += len(group)
         cand = [
             (hs, merged_entry(entrygrp(conn, hs), raw=True))
             for hs in unique(hs for ri, hs, fn, bk in group)]
         new = min(cand, key=lambda p: distance(old, p[1]))[0]
-        separated = conn.execute(
-            'UPDATE entry SET srefid = NULL WHERE refid = ? AND hash != ?',
-            (refid, new)).rowcount
+        separated = update_split(eq_refid=refid, ne_hash=new).rowcount
         if verbose:
             for row in group:
                 print(row)
             for ri, hs, fn, bk in group:
-                print('\t%r, %r, %r, %r' % hashfields(conn, fn, bk))
+                print('\t%r, %r, %r, %r' % Value.hashfields(conn, fn, bk))
             print('-> %s' % new)
             print('%d: %d separated from %s\n' % (refid, separated, new))
     print('%d splitted' % nsplit)
 
-    nosplits, = conn.execute(
-        'SELECT NOT EXISTS (SELECT 1 FROM entry AS e '
-        'WHERE EXISTS (SELECT 1 FROM entry WHERE srefid = e.srefid AND hash != e.hash))')\
-        .fetchone()
-    assert nosplits
+    nosplits = sa.select([~sa.exists().select_from(Entry).where(sa.exists()
+        .where(other.srefid == Entry.srefid)
+        .where(other.hash != Entry.hash))], bind=conn)
+    assert nosplits.scalar()
 
     # resolve merges: id = srefid of the most similar srefid group
     nmerge = 0
-    cursor = conn.execute(
-        'SELECT hash, srefid, filename, bibkey FROM entry AS e '
-        'WHERE EXISTS (SELECT 1 FROM entry WHERE hash = e.hash AND srefid != e.srefid) '
-        'ORDER BY hash, srefid DESC, filename, bibkey')
-    for hash, group in group_first(cursor):
+    select_merge = sa.select([Entry.hash, Entry.srefid, Entry.filename, Entry.bibkey], bind=conn)\
+        .order_by(Entry.hash, Entry.srefid.desc(), Entry.filename, Entry.bibkey)\
+        .where(sa.exists()
+            .where(other.hash == Entry.hash)
+            .where(other.srefid != Entry.srefid))
+    update_merge = sa.update(Entry, bind=conn)\
+        .where(Entry.hash == sa.bindparam('eq_hash'))\
+        .where(Entry.srefid != sa.bindparam('ne_srefid'))\
+        .values(id=sa.bindparam('new_id')).execute
+    for hash, group in group_first(select_merge.execute()):
         new = merged_entry(entrygrp(conn, hash), raw=True)
         nmerge += len(group)
         cand = [
             (ri, merged_entry(entrygrp(conn, ri), raw=True))
             for ri in unique(ri for hs, ri, fn, bk in group)]
         old = min(cand, key=lambda p: distance(new, p[1]))[0]
-        merged = conn.execute(
-            'UPDATE entry SET id = ? WHERE hash = ? AND srefid != ?',
-            (old, hash, old)).rowcount
+        merged = update_merge(eq_hash=hash, ne_srefid=old, new_id=old).rowcount
         if verbose:
             for row in group:
                 print(row)
             for hs, ri, fn, bk in group:
-                print('\t%r, %r, %r, %r' % hashfields(conn, fn, bk))
+                print('\t%r, %r, %r, %r' % Value.hashfields(conn, fn, bk))
             print('-> %s' % old)
             print('%s: %d merged into %d\n' % (hash, merged, old))
     print('%d merged' % nmerge)
 
     # unchanged entries
-    print('%d unchanged' % conn.execute(
-        'UPDATE entry SET id = srefid '
-        'WHERE id IS NULL AND srefid IS NOT NULL').rowcount)
+    update_unchanged = sa.update(Entry, bind=conn)\
+        .where(Entry.id == sa.null())\
+        .where(Entry.srefid != sa.null())\
+        .values(id=Entry.srefid)
+    print('%d unchanged' % update_unchanged.execute().rowcount)
 
-    nomerges, = conn.execute(
-        'SELECT NOT EXISTS (SELECT 1 FROM entry AS e '
-        'WHERE EXISTS (SELECT 1 FROM entry WHERE hash = e.hash AND id != e.id))')\
-        .fetchone()
-    assert nomerges
+    nomerges = sa.select([~sa.exists().select_from(Entry).where(sa.exists()
+        .where(other.hash == Entry.hash)
+        .where(other.id != Entry.id))], bind=conn)
+    assert nomerges.scalar()
 
     # identified
-    print('%d identified (new/separated)' % conn.execute(
-        'UPDATE entry '
-        'SET id = '
-        '(SELECT id FROM entry AS e WHERE e.hash = entry.hash AND e.id IS NOT NULL) '
-        'WHERE refid IS NULL AND id IS NULL AND EXISTS '
-        '(SELECT 1 FROM entry AS e WHERE e.hash = entry.hash AND e.id IS NOT NULL)')
-        .rowcount)
+    update_identified = sa.update(Entry, bind=conn)\
+        .where(Entry.refid == sa.null())\
+        .where(sa.exists()
+            .where(other.hash == Entry.hash)
+            .where(other.id != sa.null()))\
+        .values(id=sa.select([other.id]).where(other.hash == Entry.hash).where(other.id != sa.null()))
+    print('%d identified (new/separated)' % update_identified.execute().rowcount)
 
     # assign new ids to hash groups of separated/new entries
-    nextid, = conn.execute('SELECT coalesce(max(refid), 0) + 1 FROM entry').fetchone()
-    cursor = conn.execute(
-        'SELECT hash FROM entry WHERE id IS NULL GROUP BY hash ORDER BY hash')
-    print(
-        '%d new ids (new/separated)' % conn.executemany(
-            'UPDATE entry SET id = ? WHERE hash = ?',
-            ((id, hash) for id, (hash,) in enumerate(cursor, nextid))).rowcount)
+    nextid = sa.select([sa.func.coalesce(sa.func.max(Entry.refid), 0) + 1], bind=conn).scalar()
+    select_new = sa.select([Entry.hash], bind=conn)\
+        .where(Entry.id == sa.null())\
+        .group_by(Entry.hash)\
+        .order_by(Entry.hash)
+    assert conn.dialect.paramstyle == 'qmark'
+    update_new = sa.update(Entry, bind=conn)\
+        .values(id=sa.bindparam('new_id'))\
+        .where(Entry.hash == sa.bindparam('eq_hash')).compile().string
+    params = ((id, hash) for id, (hash,) in enumerate(select_new.execute(), nextid))
+    print('%d new ids (new/separated)' % conn.connection.executemany(update_new, params).rowcount)
 
-    assert allid(conn)
-    assert onetoone(conn)
+    assert Entry.allid(conn)
+    assert Entry.onetoone(conn)
 
     # supersede relation
-    superseded, = conn.execute('SELECT count(*) FROM entry WHERE id != srefid').fetchone()
-    print('%d supersede pairs' % superseded)
+    select_superseded = sa.select([sa.func.count()], bind=conn).where(Entry.id != Entry.srefid)
+    print('%d supersede pairs' % select_superseded.scalar())
 
 
 def distance(left, right, weight={'author': 3, 'year': 3, 'title': 3, 'ENTRYTYPE': 2}):
@@ -664,46 +679,5 @@ def distance(left, right, weight={'author': 3, 'year': 3, 'title': 3, 'ENTRYTYPE
     weights = {k: weight.get(k, 1) for k in keys}
     ratios = (
         w * difflib.SequenceMatcher(None, left[k], right[k]).ratio()
-        for k, w in weights.items())
-    return 1 - (sum(ratios) / sum(weights.values()))
-
-
-def _test_merge():  # pragma: no cover
-    import sqlalchemy as sa
-
-    engine = sa.create_engine('postgresql://postgres@/overrides')
-    metadata = sa.MetaData()
-    overrides = sa.Table(
-        'overrides', metadata,
-        sa.Column('hash', sa.Text, primary_key=True),
-        sa.Column('field', sa.Text, primary_key=True),
-        sa.Column('file1', sa.Text, primary_key=True),
-        sa.Column('bibkey1', sa.Text, primary_key=True),
-        sa.Column('file2', sa.Text, primary_key=True),
-        sa.Column('bibkey2', sa.Text, primary_key=True),
-        sa.Column('value1', sa.Text),
-        sa.Column('value2', sa.Text))
-    metadata.drop_all(engine)
-    metadata.create_all(engine)
-    insert_ov = overrides.insert(bind=engine).execute
-
-    for hash, grp in Database():
-        for field, values in grp:
-            if field in UNION_FIELDS:
-                continue
-            value1, file1, bibkey1 = values[0]
-            for value2, file2, bibkey2 in values[1:]:
-                if value1.lower() != value2.lower():
-                    insert_ov(
-                        hash=hash, field=field, value1=value1, value2=value2,
-                        file1=file1, bibkey1=bibkey1, file2=file2, bibkey2=bibkey2)
-
-    query = sa.select([
-        overrides.c.file1, overrides.c.file2, sa.func.count().label('n')
-    ])\
-        .where(overrides.c.file1 != overrides.c.file2)\
-        .group_by(overrides.c.file1, overrides.c.file2)\
-        .order_by(sa.literal_column('n'), overrides.c.file1, overrides.c.file2)
-
-    print(
-        '\n'.join('%d\t%s\t%s' % (n, f1, f2) for f1, f2, n in engine.execute(query)))
+        for k, w in iteritems(weights))
+    return 1 - (sum(ratios) / sum(itervalues(weights)))

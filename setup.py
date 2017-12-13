@@ -20,6 +20,7 @@ setup(
     install_requires=[
         'six>=1.9',
         'clldutils>=1.14.0',
+        'sqlalchemy',
         'pybtex>=0.20',
         'latexcodec',
         'unidecode',

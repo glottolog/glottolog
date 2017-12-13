@@ -18,9 +18,6 @@ def test_Database(capsys, tmpdir, bibfiles_copy):
     capsys.readouterr()
 
     db = Database(fpath, bibfiles_copy)
-    db.recompute(reload_priorities=bibfiles_copy)
-    assert len(capsys.readouterr()[0].splitlines()) == 34
-
     db.is_uptodate(bibfiles_copy[1:], verbose=True)
     assert len(capsys.readouterr()[0].splitlines()) == 3
 
