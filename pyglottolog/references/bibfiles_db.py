@@ -211,13 +211,13 @@ class Database(object):
         # 'journal': 'booktitle'}
         fields = {
             field: values[0][0] if field not in union
-            else ', '.join(unique(vl for vl, fn, bk in values))
+            else ', '.join(unique(vl for vl, _, _ in values))
             for field, values in grp if field not in ignore}
         fields['src'] = ', '.join(sorted(set(
-            fn.partition('.bib')[0] for field, values in grp for vl, fn, bk in values)))
+            fn.rpartition('.bib')[0] or fn for _, values in grp for _, fn, _ in values)))
         fields['srctrickle'] = ', '.join(sorted(set(
-            '%s#%s' % (fn.partition('.bib')[0], bk)
-            for field, values in grp for vl, fn, bk in values)))
+            '%s#%s' % (fn.rpartition('.bib')[0] or fn, bk)
+            for _, values in grp for _, fn, bk in values)))
         if raw:
             return fields
         entrytype = fields.pop('ENTRYTYPE')
@@ -250,7 +250,7 @@ class Database(object):
                 old = self._merged_entry(self._entrygrp(conn, refid), raw=True)
                 cand = [
                     (hs, self._merged_entry(self._entrygrp(conn, hs), raw=True))
-                    for hs in unique(hs for ri, hs, fn, bk in group)]
+                    for hs in unique(hs for _, hs, _, _ in group)]
                 new = min(cand, key=lambda p: distance(old, p[1]))[0]
                 print('-> %s\n' % new)
 
@@ -266,7 +266,7 @@ class Database(object):
                 new = self._merged_entry(self._entrygrp(conn, hash), raw=True)
                 cand = [
                     (ri, self._merged_entry(self._entrygrp(conn, ri), raw=True))
-                    for ri in unique(ri for hs, ri, fn, bk in group)]
+                    for ri in unique(ri for _, ri, _, _ in group)]
                 old = min(cand, key=lambda p: distance(new, p[1]))[0]
                 print('-> %s\n' % old)
 
@@ -325,10 +325,11 @@ class File(Model):
         if dict(ondisk) == dict(indb):
             return True
         if verbose:
-            print('missing in db: %s' % [o for o in ondisk if o not in indb])
-            print('missing on disk: %s' % [i for i in indb if i not in ondisk])
+            ondisk_names, indb_names = (viewkeys(d) for d in (ondisk, indb))
+            print('missing in db: %s' % list(ondisk_names - indb_names))
+            print('missing on disk: %s' % list(indb_names - ondisk_names))
             print('differing in size/mtime: %s' % [
-                o for o in ondisk if o in indb and ondisk[o] != indb[o]])
+                o for o in (ondisk_names & indb_names) if ondisk[o] != indb[o]])
         return False
 
 
@@ -371,7 +372,7 @@ class Entry(Model):
     def stats(cls, bind, out=log.info):
         out('entry stats:')
         select_n = sa.select([cls.filename, sa.func.count().label('n')], bind=bind).group_by(cls.filename)
-        out('\n'.join('%(filename)s %(n)d' % row for row in select_n.execute()))
+        out('\n'.join('%(filename)s %(n)d' % r for r in select_n.execute()))
         select_total = sa.select([sa.func.count()], bind=bind).select_from(cls)
         out('%d entries total' % select_total.scalar())
 
@@ -490,16 +491,17 @@ def import_bibfiles(conn, bibfiles):
     insert_value = sa.insert(Value, bind=conn)\
         .compile(column_keys=['filename', 'bibkey', 'field', 'value']).string
 
-    conn = conn.connection
+    insert_file = functools.partial(conn.connection.execute, insert_file)
+    insert_entry = functools.partial(conn.connection.execute, insert_entry)
+    insert_values = functools.partial(conn.connection.executemany, insert_value)
     for b in bibfiles:
         filename = b.fname.name
-        conn.execute(insert_file, (filename, b.size, b.mtime, b.priority))
+        insert_file((filename, b.size, b.mtime, b.priority))
         for e in b.iterentries():
             bibkey = e.key
-            conn.execute(insert_entry, (filename, bibkey, e.fields.get('glottolog_ref_id')))
+            insert_entry((filename, bibkey, e.fields.get('glottolog_ref_id')))
             fields = itertools.chain([('ENTRYTYPE', e.type)], iteritems(e.fields))
-            conn.executemany(insert_value,
-                ((filename, bibkey, field, value) for field, value in fields))
+            insert_values(((filename, bibkey, field, value) for field, value in fields))
 
 
 def generate_hashes(conn):
@@ -534,11 +536,12 @@ def generate_hashes(conn):
         .values(hash=sa.bindparam('hash'))\
         .where(Entry.filename == sa.bindparam('filename'))\
         .where(Entry.bibkey == sa.bindparam('bibkey')).compile().string
+    update_entry = functools.partial(conn.connection.executemany, update_entry)
     get_bibkey = operator.itemgetter(0)
     for filename, first, last in windowed_entries():
         rows = select_bfv(filename=filename, first=first, last=last)
-        conn.connection.executemany(update_entry,
-            ((keyid({k: v for b, k, v in grp}, words), filename, bibkey)
+        update_entry(
+            ((keyid({k: v for _, k, v in grp}, words), filename, bibkey)
              for bibkey, grp in itertools.groupby(rows, get_bibkey)))
 
 
@@ -567,13 +570,13 @@ def assign_ids(conn, verbose=False):
         nsplit += len(group)
         cand = [
             (hs, merged_entry(entrygrp(conn, hs), raw=True))
-            for hs in unique(hs for ri, hs, fn, bk in group)]
+            for hs in unique(hs for _, hs, _, _ in group)]
         new = min(cand, key=lambda p: distance(old, p[1]))[0]
         separated = update_split(eq_refid=refid, ne_hash=new).rowcount
         if verbose:
             for row in group:
                 print(row)
-            for ri, hs, fn, bk in group:
+            for _, _, fn, bk in group:
                 print('\t%r, %r, %r, %r' % Value.hashfields(conn, fn, bk))
             print('-> %s' % new)
             print('%d: %d separated from %s\n' % (refid, separated, new))
@@ -600,13 +603,13 @@ def assign_ids(conn, verbose=False):
         nmerge += len(group)
         cand = [
             (ri, merged_entry(entrygrp(conn, ri), raw=True))
-            for ri in unique(ri for hs, ri, fn, bk in group)]
+            for ri in unique(ri for _, ri, _, _ in group)]
         old = min(cand, key=lambda p: distance(new, p[1]))[0]
         merged = update_merge(eq_hash=hash, ne_srefid=old, new_id=old).rowcount
         if verbose:
             for row in group:
                 print(row)
-            for hs, ri, fn, bk in group:
+            for _, _, fn, bk in group:
                 print('\t%r, %r, %r, %r' % Value.hashfields(conn, fn, bk))
             print('-> %s' % old)
             print('%s: %d merged into %d\n' % (hash, merged, old))
