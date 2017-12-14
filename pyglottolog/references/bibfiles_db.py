@@ -41,7 +41,7 @@ class Database(object):
         if self.filepath.exists():
             if not rebuild and self.is_uptodate(bibfiles):
                 return self
-            path.remove(filepath)
+            path.remove(self.filepath)
 
         with self.engine.connect() as conn:
             if page_size is not None:
@@ -92,16 +92,16 @@ class Database(object):
             cursor = contextlib.closing(cursor)
         return cursor
 
-    def to_bibfile(self, filepath, encoding='utf-8', ):
+    def to_bibfile(self, filepath, encoding='utf-8'):
         bibtex.save(self.merged(), str(filepath), sortkey=None, encoding=encoding)
 
-    def to_csvfile(self, filename):
+    def to_csvfile(self, filename, encoding='utf-8', dialect='excel'):
         """Write a CSV file with one row for each entry in each bibfile."""
         select_rows = sa.select([
                 Entry.filename, Entry.bibkey, Entry.hash, sa.cast(Entry.id, sa.Text).label('id'),
             ]).order_by(sa.func.lower(Entry.filename), sa.func.lower(Entry.bibkey), Entry.hash, Entry.id)
         with self.execute(select_rows) as cursor:
-            with dsv.UnicodeWriter(filename) as writer:
+            with dsv.UnicodeWriter(filename, encoding=encoding, dialect=dialect) as writer:
                 writer.writerow(cursor.keys())
                 for row in cursor:
                     writer.writerow(row)
@@ -115,12 +115,6 @@ class Database(object):
             pairs = list(map(dict, cursor))
         with jsonlib.update(filename, default=[], indent=4) as repls:
             repls.extend(pairs)
-
-    def to_hhmapping(self):
-        assert Entry.allid(self.engine)
-        select_items = sa.select([Entry.bibkey, Entry.id]).where(Entry.filename == 'hh.bib')
-        with self.execute(select_items) as cursor:
-            return dict(iter(cursor))
 
     def trickle(self, bibfiles):
         """Write new/changed glottolog_ref_ids back into the given bibfiles."""

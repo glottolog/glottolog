@@ -24,7 +24,6 @@ def test_Database(capsys, tmpdir, bibfiles_copy):
     db.to_bibfile(str(tmpdir / 'out.bib'))
     db.to_csvfile(str(tmpdir / 'out.csv'))
     db.to_replacements(str(tmpdir / 'out.json'))
-    assert db.to_hhmapping() == {'s:Karang:Tati-Harzani': 41999}
 
     db.trickle(bibfiles_copy)
     assert '2 changed 1 added in a' in capsys.readouterr()[0]
