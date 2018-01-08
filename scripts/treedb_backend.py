@@ -6,16 +6,20 @@ import io
 import csv
 import sys
 import time
-import pathlib
 import zipfile
 import contextlib
 import subprocess
+
+try:
+    import pathlib2 as pathlib
+except ImportError:
+    import pathlib
 
 import sqlalchemy as sa
 import sqlalchemy.orm
 import sqlalchemy.ext.declarative
 
-PY2 = sys.version_info < (3,)
+PY2 = (sys.version_info.major == 2)
 
 if PY2:
     iteritems = lambda x: x.iteritems()

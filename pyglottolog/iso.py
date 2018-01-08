@@ -10,7 +10,7 @@ import itertools
 import contextlib
 import collections
 
-PY2 = sys.version_info < (3,)
+PY2 = (sys.version_info.major == 2)
 
 if PY2:
     from urlparse import urljoin

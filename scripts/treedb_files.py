@@ -4,10 +4,14 @@ from __future__ import unicode_literals
 
 import io
 import sys
-import pathlib
 import configparser
 
-if sys.version_info < (3,):
+try:
+    import pathlib2 as pathlib
+except ImportError:
+    import pathlib
+
+if sys.version_info.major == 2:
     from scandir import scandir
 else:
     from os import scandir
