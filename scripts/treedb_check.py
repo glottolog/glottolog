@@ -7,7 +7,7 @@ import itertools
 import sqlalchemy as sa
 
 import treedb_backend as _backend
-from treedb import LEVEL, Languoid
+from treedb import LEVEL, Languoid, Altname
 
 FAMILY, LANGUAGE, DIALECT = LEVEL
 
@@ -78,6 +78,22 @@ class Check(object):
         ids = (i.id for i in itertools.islice(invalid, number))
         cont = ', ...' if number < invalid_count else ''
         print('    %s%s' % (', '.join(ids), cont))
+
+
+@check
+def clean_name(session):
+    """Glottolog names lack problematic characters."""
+
+    def cond(col, problematic='`_*:\xa4\xab\xb6\xbc'):
+        yield col.startswith(' ')
+        yield col.endswith(' ')
+        for p in problematic:
+            yield col.contains(p.replace('_', '/_'), escape='/')
+
+    return session.query(Languoid).order_by('id')\
+        .filter(sa.or_(
+            Languoid.altnames.any(sa.or_(*cond(Altname.name)), provider='glottolog'),
+            *cond(Languoid.name)))
 
 
 @check
