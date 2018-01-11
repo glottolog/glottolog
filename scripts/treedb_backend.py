@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 import io
+import re
 import csv
 import sys
 import time
@@ -38,6 +39,16 @@ DBFILE = pathlib.Path('treedb.sqlite3')
 
 
 engine = sa.create_engine('sqlite:///%s' % DBFILE, echo=False)
+
+
+@sa.event.listens_for(sa.engine.Engine, 'begin')
+def create_regexp_function(conn):
+    """Enable REGEXP operator."""
+    def regexp(pattern, value):
+        if value is None:
+            return None
+        return re.search(pattern, value) is not None
+    conn.connection.create_function('regexp', 2, regexp)
 
 
 @sa.event.listens_for(sa.engine.Engine, 'connect')

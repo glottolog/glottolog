@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 import re
+import inspect
 import datetime
 import warnings
 import itertools
@@ -742,6 +743,37 @@ class Check(object):
         ids = (i.id for i in itertools.islice(invalid, number))
         cont = ', ...' if number < invalid_count else ''
         print('    %s%s' % (', '.join(ids), cont))
+
+
+def docformat(func):
+    spec = inspect.getargspec(func)
+    defaults = dict(zip(spec.args[-len(spec.defaults):], spec.defaults))
+    func.__doc__ = func.__doc__ % defaults
+    return func
+
+
+@check
+@docformat
+def valid_glottocode(session, pattern='^[a-z][a-z0-9]{3}[1-9]\d{3}$'):
+    """Glottocodes match %(pattern)r."""
+    return session.query(Languoid).order_by('id')\
+        .filter(~Languoid.id.op('REGEXP')(pattern))
+
+
+@check
+@docformat
+def valid_iso639_3(session, pattern='^[a-z]{3}$'):
+    """Iso codes match %(pattern)r."""
+    return session.query(Languoid).order_by('id')\
+        .filter(~Languoid.iso639_3.op('REGEXP')(pattern))
+
+
+@check
+@docformat
+def valid_hid(session, pattern='^(?:[a-z]{3}|NOCODE_[A-Z][a-zA-Z0-9-]+)$'):
+    """Hids match %(pattern)r."""
+    return session.query(Languoid).order_by('id')\
+        .filter(~Languoid.hid.op('REGEXP')(pattern))
 
 
 @check
