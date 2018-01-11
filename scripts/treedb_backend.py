@@ -7,6 +7,7 @@ import csv
 import sys
 import time
 import zipfile
+import platform
 import contextlib
 import subprocess
 
@@ -60,6 +61,8 @@ class Dataset(Model):
     id = sa.Column(sa.Boolean, sa.CheckConstraint('id'),
                    primary_key=True, server_default=sa.true())
     git_commit = sa.Column(sa.String(40), sa.CheckConstraint('length(git_commit) = 40'), nullable=False, unique=True)
+    git_describe = sa.Column(sa.Text, sa.CheckConstraint("git_describe != ''"), nullable=False, unique=True)
+    dirty = sa.Column(sa.Boolean, nullable=False)
 
 
 def create_tables(bind=engine):
@@ -75,15 +78,29 @@ def load(load_func, rebuild=False, engine=engine):
         else:
             return
 
+    if platform.system() == 'Windows':
+        STARTUPINFO = subprocess.STARTUPINFO()
+        STARTUPINFO.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        STARTUPINFO.wShowWindow = subprocess.SW_HIDE
+    else:
+        STARTUPINFO = None
+
+    def get_output(args, encoding='ascii'):
+        stdout = subprocess.check_output(args, startupinfo=STARTUPINFO)
+        return stdout.decode(encoding).strip()
+
     start = time.time()
     with engine.begin() as conn:
         create_tables(conn)
-    stdout = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
-    git_commit = stdout.decode('ascii').strip()
+    infos = {
+        'git_commit': get_output(['git', 'rev-parse', 'HEAD']),
+        'git_describe': get_output(['git', 'describe', '--tags', '--always']),
+        'dirty': bool(get_output(['git', 'status', '--porcelain'])),
+    }
     with engine.begin() as conn:
         conn.execute('PRAGMA synchronous = OFF')
         conn.execute('PRAGMA journal_mode = MEMORY')
-        sa.insert(Dataset, bind=conn).execute(git_commit=git_commit)
+        sa.insert(Dataset, bind=conn).execute(infos)
         load_func(conn.execution_options(compiled_cache={}))
     print(time.time() - start)
 
