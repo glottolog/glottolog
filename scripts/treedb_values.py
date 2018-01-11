@@ -87,7 +87,12 @@ class File(_backend.Model):
     __tablename__ = '_file'
 
     id = sa.Column(sa.Integer, primary_key=True)
+    glottocode = sa.Column(sa.String(8), sa.CheckConstraint('length(glottocode) = 8'), nullable=False, unique=True)
     path = sa.Column(sa.Text, sa.CheckConstraint('length(path) >= 8'), nullable=False, unique=True)
+
+    __table_args__ = (
+        sa.CheckConstraint('substr(path, -length(glottocode)) = glottocode'),
+    )
 
 
 class Option(_backend.Model):
@@ -145,7 +150,7 @@ def _load(conn, root, is_lines=Fields.is_lines):
     options = Options()
 
     for path_tuple, cfg in _files.iterconfig(root):
-        file_id, = insert_file(path='/'.join(path_tuple)).inserted_primary_key
+        file_id, = insert_file(glottocode=path_tuple[-1], path='/'.join(path_tuple)).inserted_primary_key
         for section, sec in cfg.items():
             for option, value in sec.items():
                 option_id, lines = options[(section, option)]
