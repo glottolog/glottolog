@@ -22,6 +22,8 @@ from .bibfiles_db import Database
 
 __all__ = ['BibFiles', 'BibFile', 'Entry']
 
+BIBFILES = 'bibfiles.sqlite3'
+
 
 class BibFiles(list):
     """Ordered collection of `BibFile` objects accessible by filname or index."""
@@ -53,7 +55,7 @@ class BibFiles(list):
             return self._map[index_or_filename]
         return super(BibFiles, self).__getitem__(index_or_filename)
 
-    def to_sqlite(self, filepath, rebuild=False):
+    def to_sqlite(self, filepath=BIBFILES, rebuild=False):
         """Return a database with the bibfiles loaded."""
         return Database.from_bibfiles(self, filepath, rebuild=rebuild)
 
