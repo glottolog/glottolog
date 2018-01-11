@@ -41,21 +41,18 @@ DBFILE = pathlib.Path('treedb.sqlite3')
 engine = sa.create_engine('sqlite:///%s' % DBFILE, echo=False)
 
 
-@sa.event.listens_for(sa.engine.Engine, 'begin')
-def create_regexp_function(conn):
-    """Enable REGEXP operator."""
-    def regexp(pattern, value):
-        if value is None:
-            return None
-        return re.search(pattern, value) is not None
-    conn.connection.create_function('regexp', 2, regexp)
-
-
 @sa.event.listens_for(sa.engine.Engine, 'connect')
-def set_sqlite_pragma(dbapi_connection, connection_record):
-    """Activate sqlite3 forein key checks."""
-    with contextlib.closing(dbapi_connection.cursor()) as cursor:
+def sqlite_engine_connect(dbapi_conn, connection_record):
+    """Activate sqlite3 forein key checks, enable REGEXP operator."""
+    with contextlib.closing(dbapi_conn.cursor()) as cursor:
         cursor.execute('PRAGMA foreign_keys = ON')
+    dbapi_conn.create_function('regexp', 2, _regexp)
+
+
+def _regexp(pattern, value):
+    if value is None:
+        return None
+    return re.search(pattern, value) is not None
 
 
 Session = sa.orm.sessionmaker(bind=engine)
@@ -73,7 +70,7 @@ class Dataset(Model):
                    primary_key=True, server_default=sa.true())
     git_commit = sa.Column(sa.String(40), sa.CheckConstraint('length(git_commit) = 40'), nullable=False, unique=True)
     git_describe = sa.Column(sa.Text, sa.CheckConstraint("git_describe != ''"), nullable=False, unique=True)
-    dirty = sa.Column(sa.Boolean, nullable=False)
+    clean = sa.Column(sa.Boolean, nullable=False)
 
 
 def create_tables(bind=engine):
@@ -106,7 +103,8 @@ def load(load_func, rebuild=False, engine=engine):
     infos = {
         'git_commit': get_output(['git', 'rev-parse', 'HEAD']),
         'git_describe': get_output(['git', 'describe', '--tags', '--always']),
-        'dirty': bool(get_output(['git', 'status', '--porcelain'])),
+        # neither changes in index nor untracked files
+        'clean': not get_output(['git', 'status', '--porcelain']),
     }
     with engine.begin() as conn:
         conn.execute('PRAGMA synchronous = OFF')
