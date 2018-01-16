@@ -160,10 +160,9 @@ class Database(object):
         assert Entry.onetoone(self.engine)
         select_values = sa.select([
                 Entry.id, Entry.hash, Value.field, Value.value, Value.filename, Value.bibkey,
-            ]).select_from(sa.join(Entry, File).join(Value)
-                .outerjoin(Field, sa.and_(Field.filename == Value.filename, Field.field == Value.field)))\
+            ]).select_from(sa.join(Entry, File).join(Value))\
             .where(sa.between(Entry.id, sa.bindparam('first'), sa.bindparam('last')))\
-            .order_by(Entry.id, Value.field, sa.func.coalesce(Field.priority, File.priority).desc(),
+            .order_by(Entry.id, Value.field, File.priority.desc(),
                       Value.filename, Value.bibkey)
         get_id_hash, get_field = operator.itemgetter(0, 1), operator.itemgetter(2)
         with self.engine.connect() as conn:
@@ -221,10 +220,9 @@ class Database(object):
     def _entrygrp(bind, key, get_field=operator.itemgetter(0)):
         select_values = sa.select([
                 Value.field, Value.value, Value.filename, Value.bibkey
-            ], bind=bind).select_from(sa.join(Entry, File).join(Value)
-                .outerjoin(Field, sa.and_(Field.filename == Value.filename, Field.field == Value.field)))\
+            ], bind=bind).select_from(sa.join(Entry, File).join(Value))\
             .where((Entry.refid if isinstance(key, int) else Entry.hash) == key)\
-            .order_by(Value.field, sa.func.coalesce(Field.priority, File.priority).desc(),
+            .order_by(Value.field, File.priority.desc(),
                       Value.filename, Value.bibkey)
         grouped = itertools.groupby(select_values.execute(), get_field)
         grp = [(field, [(vl, fn, bk) for _, vl, fn, bk in g]) for field, g in grouped]
@@ -325,15 +323,6 @@ class File(Model):
             print('differing in size/mtime: %s' % [
                 o for o in (ondisk_names & indb_names) if ondisk[o] != indb[o]])
         return False
-
-
-class Field(Model):
-
-    __tablename__ = 'field'
-
-    filename = sa.Column(sa.ForeignKey('file.name'), primary_key=True)
-    field = sa.Column(sa.Text, primary_key=True)
-    priority = sa.Column(sa.Integer, nullable=False)
 
 
 class Entry(Model):
