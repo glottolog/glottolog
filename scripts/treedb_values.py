@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 import json
 import pathlib
+import datetime
 import itertools
 import functools
 
@@ -89,6 +90,8 @@ class File(_backend.Model):
     id = sa.Column(sa.Integer, primary_key=True)
     glottocode = sa.Column(sa.String(8), sa.CheckConstraint('length(glottocode) = 8'), nullable=False, unique=True)
     path = sa.Column(sa.Text, sa.CheckConstraint('length(path) >= 8'), nullable=False, unique=True)
+    size = sa.Column(sa.Integer, nullable=False)
+    mtime = sa.Column(sa.DateTime, nullable=False)
 
     __table_args__ = (
         sa.CheckConstraint('substr(path, -length(glottocode)) = glottocode'),
@@ -149,8 +152,11 @@ def _load(conn, root, is_lines=Fields.is_lines):
 
     options = Options()
 
-    for path_tuple, cfg in _files.iterconfig(root):
-        file_id, = insert_file(glottocode=path_tuple[-1], path='/'.join(path_tuple)).inserted_primary_key
+    for path_tuple, dentry, cfg in _files.iterconfig(root):
+        d_stat = dentry.stat()
+        mtime = datetime.datetime.fromtimestamp(d_stat.st_mtime)
+        file_id, = insert_file(glottocode=path_tuple[-1], path='/'.join(path_tuple),
+                               size=d_stat.st_size, mtime=mtime).inserted_primary_key
         for section, sec in cfg.items():
             for option, value in sec.items():
                 option_id, lines = options[(section, option)]

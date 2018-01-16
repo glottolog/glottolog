@@ -107,7 +107,7 @@ def iterlanguoids(root=_files.ROOT):
             return {'name': s, 'lang': parse_fail}
         return ma.groupdict('')
 
-    for path_tuple, cfg in _files.iterconfig(root):
+    for path_tuple, _, cfg in _files.iterconfig(root):
         item = {
             'id': path_tuple[-1],
             'parent_id': path_tuple[-2] if len(path_tuple) > 1 else None,

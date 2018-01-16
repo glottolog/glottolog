@@ -74,14 +74,14 @@ class ConfigParser(configparser.ConfigParser):
 
 
 def iterconfig(root=ROOT, assert_name=BASENAME, load=ConfigParser.from_file):
-    """Yield ((<path_part>, ...), <ConfigParser object>) pairs."""
+    """Yield ((<path_part>, ...), DirEntry, <ConfigParser object>) triples."""
     if not isinstance(root, pathlib.Path):
         root = pathlib.Path(root)
     path_slice = slice(len(root.parts), -1)
     for d in iterfiles(root):
         assert d.name == assert_name
         path_tuple = pathlib.Path(d.path).parts[path_slice]
-        yield path_tuple, load(d.path)
+        yield path_tuple, d, load(d.path)
 
 
 def save(pairs, root=ROOT, basename=BASENAME, assume_changed=False,
@@ -117,7 +117,7 @@ def save(pairs, root=ROOT, basename=BASENAME, assume_changed=False,
 def roundtrip(verbose=False):
     """Do a load/save cycle with all config files."""
     pairs = ((path_tuple, {s: dict(cfg.items(s)) for s in cfg.sections()})
-             for path_tuple, cfg in iterconfig())
+             for path_tuple, _, cfg in iterconfig())
     save(pairs, assume_changed=True, verbose=verbose)
 
 
