@@ -3,7 +3,9 @@
 # TODO: make check fail on non-whitespace between entries (bibtex 'comments')
 
 import io
+import functools
 import collections
+import unicodedata
 
 from six import PY2, text_type
 
@@ -85,12 +87,12 @@ class Name(collections.namedtuple('Name', 'prelast last given lineage')):
         return cls(prelast, last, given, lineage)
 
 
-def save(entries, filename, sortkey, encoding='utf8'):
+def save(entries, filename, sortkey, encoding='utf-8', normalize='NFC'):
     with io.open(as_posix(filename), 'w', encoding=encoding, errors='strict') as fd:
-        dump(entries, fd, sortkey, encoding, None)
+        dump(entries, fd, sortkey, normalize)
 
 
-def dump(entries, fd, sortkey=None, encoding=None, errors='strict'):
+def dump(entries, fd, sortkey=None, normalize='NFC'):
     assert sortkey in [None, 'bibkey']
     if sortkey is None:
         if isinstance(entries, collections.OrderedDict):  # pragma: no cover
@@ -117,13 +119,16 @@ def dump(entries, fd, sortkey=None, encoding=None, errors='strict'):
       <: \textless
       >: \textgreater
     """
-    assert encoding
-    assert errors is None
+    assert normalize in (None, '', 'NFC', 'NFKC', 'NFD', 'NFKD')
+    if normalize:
+        normalize = functools.partial(unicodedata.normalize, normalize)
+    else:
+        normalize = lambda x: x
     fd.write(u'# -*- coding: utf-8 -*-\n')
     for bibkey, (entrytype, fields) in items:
         fd.write(u'@%s{%s' % (entrytype, bibkey))
         for k, v in fieldorder.itersorted(fields):
-            fd.write(u',\n    %s = {%s}' % (k, v.strip() if hasattr(v, 'strip') else v))
+            fd.write(u',\n    %s = {%s}' % (k, normalize(v.strip())))
         fd.write(u'\n}\n' if fields else u',\n}\n')
 
 
