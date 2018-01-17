@@ -844,10 +844,10 @@ def family_languages(session):
 
 @check
 def bookkeeping_no_children(session):
-    """Bookkeeping languoids lack children."""
+    """Bookkeeping languoids lack non-dialect children."""
     return session.query(Languoid).order_by('id')\
         .filter(Languoid.parent.has(name=BOOKKEEPING))\
-        .filter(Languoid.children.any())
+        .filter(Languoid.children.any(Languoid.level != DIALECT))
 
 
 if __name__ == '__main__':
