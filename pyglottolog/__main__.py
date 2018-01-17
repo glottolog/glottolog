@@ -49,3 +49,7 @@ def main():  # pragma: no cover
         type=Glottolog,
         default=Glottolog())
     sys.exit(parser.main())
+
+
+if __name__ == '__main__':
+    main()
