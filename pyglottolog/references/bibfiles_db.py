@@ -153,7 +153,7 @@ class Database(object):
         """Yield merged (bibkey, (entrytype, fields)) entries."""
         for (id, hash), grp in self:
             entrytype, fields = self._merged_entry(grp)
-            fields['glottolog_ref_id'] = id
+            fields['glottolog_ref_id'] = u'%d' % id
             yield hash, (entrytype, fields)
 
     def __iter__(self, chunksize=100):

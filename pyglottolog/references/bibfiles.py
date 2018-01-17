@@ -77,7 +77,8 @@ class BibFile(UnicodeMixin):
     title = attr.ib(default=None)
     description = attr.ib(default=None)
     abbr = attr.ib(default=None)
-    encoding = attr.ib(default='utf-8-sig')
+    encoding = attr.ib(default='utf-8')
+    normalize = attr.ib(default='NFC')
     sortkey = attr.ib(
         default=None, convert=lambda s: None if s is None or s.lower() == 'none' else s)
     priority = attr.ib(default=0, convert=int)
@@ -149,7 +150,7 @@ class BibFile(UnicodeMixin):
     def save(self, entries):
         """Write bibkey -> (entrytype, fields) map to file."""
         bibtex.save(
-            entries, filename=self.fname, sortkey=self.sortkey, encoding=self.encoding)
+            entries, filename=self.fname, sortkey=self.sortkey, encoding=self.encoding, normalize=self.normalize)
 
     def __unicode__(self):
         return '<%s %s>' % (self.__class__.__name__, self.fname.name)
