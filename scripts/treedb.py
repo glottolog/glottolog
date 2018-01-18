@@ -693,9 +693,10 @@ def get_query():
 
 def check(func=None):
     if func is not None:
-        if not hasattr(check, 'registered'):
-            check.registered = []
-        check.registered.append(func)
+        try:
+            check.registered.append(func)
+        except AttributeError:
+            check.registered = [func]
         return func
     for func in check.registered:
         session = _backend.Session()
