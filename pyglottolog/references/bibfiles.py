@@ -142,10 +142,11 @@ class BibFile(UnicodeMixin):
             entries[key] = (type_, fields)
         self.save(entries)
 
-    def load(self):
+    def load(self, preserve_order=None):
         """Return entries as bibkey -> (entrytype, fields) dict."""
-        return bibtex.load(
-            self.fname, preserve_order=self.sortkey is None, encoding=self.encoding)
+        if preserve_order is None:
+            preserve_order = self.sortkey is None
+        return bibtex.load(self.fname, preserve_order, encoding=self.encoding)
 
     def save(self, entries):
         """Write bibkey -> (entrytype, fields) map to file."""
