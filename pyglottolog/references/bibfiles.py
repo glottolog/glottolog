@@ -93,7 +93,7 @@ class BibFile(UnicodeMixin):
             item = item.split(':', 1)[1]
         text = None
         with memorymapped(self.fname) as string:
-            m = re.search(b'@[A-Za-z]+\{' + re.escape(item.encode('utf8')), string)
+            m = re.search(b'@[A-Za-z]+\{' + re.escape(item.encode(self.encoding)), string)
             if m:
                 next = string.find(b'\n@', m.end())
                 if next >= 0:

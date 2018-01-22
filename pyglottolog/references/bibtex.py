@@ -30,22 +30,21 @@ def load(filename, preserve_order=False, encoding=None):
     return cls(iterentries(filename, encoding))
 
 
-def py2_decode(text, encoding):
-    return text.decode(encoding) if PY2 else text
-
-
-def iterentries_from_text(text, encoding='utf8'):
-    if not PY2:  # pragma: no cover
+def iterentries_from_text(text, encoding='utf-8'):
+    if PY2:
+        py2_decode = lambda text: text.decode(encoding)
+    else:  # pragma: no cover
+        py2_decode = lambda text: text
         if hasattr(text, 'read'):
             text = text.read()
         if not isinstance(text, text_type):
             text = text.decode(encoding)
     for entrytype, (bibkey, fields) in BibTeXEntryIterator(text):
         fields = {
-            py2_decode(name, encoding).lower():
-                whitespace_re.sub(' ', py2_decode(''.join(values), encoding).strip())
+            py2_decode(name).lower():
+                whitespace_re.sub(' ', py2_decode(''.join(values)).strip())
             for name, values in fields}
-        yield py2_decode(bibkey, encoding), (py2_decode(entrytype, encoding), fields)
+        yield py2_decode(bibkey), (py2_decode(entrytype), fields)
 
 
 def iterentries(filename, encoding=None):
