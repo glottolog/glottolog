@@ -98,7 +98,8 @@ class Database(object):
     def to_csvfile(self, filename, encoding='utf-8', dialect='excel'):
         """Write a CSV file with one row for each entry in each bibfile."""
         select_rows = sa.select([
-                File.name, Entry.bibkey, Entry.hash, sa.cast(Entry.id, sa.Text).label('id'),
+                File.name.label('filename'), Entry.bibkey, Entry.hash,
+                sa.cast(Entry.id, sa.Text).label('id'),
             ]).select_from(sa.join(File, Entry))\
             .order_by(sa.func.lower(File.name), sa.func.lower(Entry.bibkey), Entry.hash, Entry.id)
         with self.execute(select_rows) as cursor:
