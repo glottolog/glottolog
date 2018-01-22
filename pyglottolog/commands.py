@@ -139,6 +139,11 @@ def evobib(args):
 
 
 @command()
+def roundtrip(args):
+    args.repos.bibfiles[args.args[0]].roundtrip()
+
+
+@command()
 def isobib(args):  # pragma: no cover
     """Update iso6393.bib - the file of references for ISO 639-3 change requests.
     """
