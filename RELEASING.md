@@ -39,18 +39,18 @@ Releasing `pyglottolog`
   ```
 - Make sure flake8 passes:
   ```
-  flake8 --ignore=E711,E712,D100,D101,D103,D102,D301 --max-line-length=100 pyglottolog
+  flake8 pyglottolog
   ```
 - Change version to the new version number in
   - `setup.py`
   - `pyglottolog/__init__.py`
 - Bump version number:
   ```
-  git commit -a -m"bumped version number"
+  git commit -a -m "bumped version number"
   ```
 - Create a release tag:
   ```
-  git tag -a pyglottolog-<version> -m"first version to be released on pypi"
+  git tag -a pyglottolog-<version> -m "first version to be released on pypi"
   ```
 - Push to github:
   ```
@@ -60,5 +60,7 @@ Releasing `pyglottolog`
 - Make sure your system Python has ``setuptools-git`` installed and release to PyPI:
   ```
   git checkout tags/v$1
-  python setup.py sdist register upload
+  rm dist/*
+  python setup.py sdist
+  twine upload dist/*
   ```

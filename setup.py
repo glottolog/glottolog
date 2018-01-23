@@ -35,6 +35,7 @@ setup(
         'requests',
     ],
     extras_require={
+        'dev': ['tox>=2.9', 'flake8', 'pep8-naming', 'twine'],
         'test': ['mock>=2', 'pytest>=3.3', 'pytest-mock', 'pytest-cov'],
     },
     long_description='',
