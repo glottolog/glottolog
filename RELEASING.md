@@ -46,21 +46,21 @@ Releasing `pyglottolog`
   - `pyglottolog/__init__.py`
 - Bump version number:
   ```
-  git commit -a -m "bumped version number"
+  git commit -a -m "release pyglottolog <version>"
   ```
 - Create a release tag:
   ```
   git tag -a pyglottolog-<version> -m "first version to be released on pypi"
   ```
+- Release to PyPI:
+  ```
+  git checkout tags/v$1
+  rm dist/*
+  python setup.py sdist bdist_wheel
+  twine upload dist/*
+  ```
 - Push to github:
   ```
   git push origin
   git push --tags
-  ```
-- Make sure your system Python has ``setuptools-git`` installed and release to PyPI:
-  ```
-  git checkout tags/v$1
-  rm dist/*
-  python setup.py sdist
-  twine upload dist/*
   ```

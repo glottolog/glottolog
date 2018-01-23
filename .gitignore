@@ -1,5 +1,5 @@
 *.py[cod]
-development.ini
+__pycache__
 
 # C extensions
 *.so
@@ -19,7 +19,7 @@ develop-eggs
 .installed.cfg
 lib
 lib64
-__pycache__
+
 #data
 
 # Installer logs
@@ -38,6 +38,7 @@ nosetests.xml
 .project
 .pydevproject
 .idea
+
 iso639-3
 
 /.venv/
