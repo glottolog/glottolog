@@ -178,7 +178,7 @@ def get_retirements(scrape_missing_remedies=True):
            if r.Ret_Reason == 'split' else
            r._replace(Change_To=[r.Change_To] if r.Change_To else [])
            for r in res]
-    
+
     if scrape_missing_remedies:  # get remedies for non-splits
 
         def get_detail_pages(iso_codes, rebuild=True, encoding='utf-8', cache='iso_detail_pages.json'):
@@ -187,10 +187,12 @@ def get_retirements(scrape_missing_remedies=True):
                     open_encoding, decode = None, lambda s: s.decode(encoding)
                 else:
                     open_encoding, decode_row = encoding, lambda r: r
+
                 def iterpairs():
                     for i in iso_codes:
                         with url_open('documentation.asp?id=%s' % i, encoding=open_encoding) as u:
                             yield i, decode(u.read())
+
                 result = dict(iterpairs())
                 with open(cache, 'w') as f:
                     json.dump(result, f)
@@ -202,7 +204,7 @@ def get_retirements(scrape_missing_remedies=True):
             if ma is None:
                 return None
             return ma.group(1).replace('\t', '').strip()
-        
+
         iso_codes = [r.Id for r in res if r.Ret_Reason != 'split']
         pages = get_detail_pages(iso_codes)
         res = [r._replace(Ret_Remedy=get_remedy(pages[r.Id])) if r.Id in pages else r for r in res]

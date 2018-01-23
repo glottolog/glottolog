@@ -12,13 +12,13 @@ from . import libmonster
 def names1(s):  # pragma: no cover
     return [
         (debr(n.get('firstname', '')), debr(n.get('lastname', '')), debr(n.get('jr', '')))
-        for n in _libmonster.pauthor(s)]
+        for n in libmonster.pauthor(s)]
 
 
 def names2(s):  # pragma: no cover
     return [
         (debr(first), debr(' '.join(n for n in (prelast, last) if n)), debr(lineage))
-        for prelast, last, first, lineage in _bibtex.names(s)]
+        for prelast, last, first, lineage in bibtex.names(s)]
 
 
 def debr(s):  # pragma: no cover
@@ -29,7 +29,7 @@ def debr(s):  # pragma: no cover
 
 def main():  # pragma: no cover
     counts = Counter()
-    for b in _bibfiles.Collection():
+    for b in bibfiles.Collection():
         print(b.filename.center(80, '#'))
         for bibkey, (entrytype, fields) in b.iterentries():
             for role in ('author', 'editor'):

@@ -19,7 +19,6 @@ class Isbns(list):
     class Numeric(Parser):
         pattern = re.compile(r'(97[89])?(\d{9})([\dXx])(?![\dXx])')
 
-    
     class Hyphened(Parser):
         pattern = re.compile(r'''
             (?:
@@ -29,7 +28,6 @@ class Isbns(list):
             )?
             (\d{1,5})- (\d+)- (\d+)- ([\dXx])(?![\dXx])''', flags=re.VERBOSE)
 
-        
     class Ten99(Parser):
         pattern = re.compile(r'(99)-(\d{7})-([\dXx])(?![\dXx])')
 
@@ -64,7 +62,7 @@ class Isbns(list):
 
 
 class Isbn(object):
-    """A 13 digit ISBN from a string of 13 or 10 digits. 
+    """A 13 digit ISBN from a string of 13 or 10 digits.
 
     see also https://en.wikipedia.org/wiki/International_Standard_Book_Number
     """
@@ -82,7 +80,7 @@ class Isbn(object):
     def _isbn10_check_digit(digits):
         assert len(digits) in (9, 10)
         result = sum(i * int(d) for i, d in enumerate(digits[:9], 1)) % 11
-        return 'X' if result == 10 else str(result) 
+        return 'X' if result == 10 else str(result)
 
     def __init__(self, digits):
         if len(digits) == 13:
@@ -114,6 +112,6 @@ class Isbn(object):
         if isinstance(other, self.__class__):
             return self.digits != other.digits
         return NotImplemented  # pragma: no cover
-    
+
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__, self.digits)

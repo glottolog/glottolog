@@ -142,7 +142,7 @@ Ashkxxxaraua [ashk1247]xyz
 Abaza [abaz1241]
     Bezshagh [bezs1238]
 """)
-    with pytest.raises(ValueError, match=r'inconsistent')as e:
+    with pytest.raises(ValueError, match=r'inconsistent'):
         lff2tree(api_copy)
 
     #

@@ -363,7 +363,7 @@ def check(args):
     args.log.info('checking tree at %s' % args.repos)
     by_level = Counter()
     by_category = Counter()
-    iso_in_gl, languoids, iso_splits , hid = {}, {}, [], {}
+    iso_in_gl, languoids, iso_splits, hid = {}, {}, [], {}
     names = defaultdict(set)
 
     for lang in args.repos.languoids():

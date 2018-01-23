@@ -18,7 +18,7 @@ from ..util import message
 __all__ = [
     'Glottocode', 'Glottocodes',
     'Reference',
-    'Level', 'Country', 'Macroarea', 
+    'Level', 'Country', 'Macroarea',
     'ClassificationComment',
     'ISORetirement',
     'EndangermentStatus',

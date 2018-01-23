@@ -121,7 +121,7 @@ def dump(entries, fd, sortkey=None, normalize='NFC'):
     assert normalize in (None, '', 'NFC', 'NFKC', 'NFD', 'NFKD')
     if normalize:
         normalize = functools.partial(unicodedata.normalize, normalize)
-    else:
+    else:  # pragma: no cover
         normalize = lambda x: x
     fd.write(u'# -*- coding: utf-8 -*-\n')
     for bibkey, (entrytype, fields) in items:

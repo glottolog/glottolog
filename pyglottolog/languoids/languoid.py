@@ -11,7 +11,7 @@ from clldutils.inifile import INI
 from newick import Node
 
 from .models import (
-    Glottocode, Level, Country, Macroarea, Reference, 
+    Glottocode, Level, Country, Macroarea, Reference,
     EndangermentStatus, ClassificationComment,
     EthnologueComment, ISORetirement,
 )

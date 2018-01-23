@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 import re
 import inspect
 import datetime
-import warnings
 import itertools
 
 from treedb_backend import iteritems
@@ -384,7 +383,7 @@ class Identifier(_backend.Model):
     __tablename__ = 'identifier'
 
     languoid_id = sa.Column(sa.ForeignKey('languoid.id'), primary_key=True)
-    site= sa.Column(sa.Enum(*sorted(IDENTIFIER_SITE)), primary_key=True)
+    site = sa.Column(sa.Enum(*sorted(IDENTIFIER_SITE)), primary_key=True)
     identifier = sa.Column(sa.Text, sa.CheckConstraint("identifier != ''"), nullable=False)
 
     def __repr__(self):
@@ -414,7 +413,7 @@ class ClassificationRef(_backend.Model):
     __tablename__ = 'classificationref'
     languoid_id = sa.Column(sa.ForeignKey('languoid.id'), primary_key=True)
     kind = sa.Column(sa.Enum(*sorted(CLASSIFICATION_KIND)), primary_key=True)
-    bibfile = sa.Column(sa.Text, sa.CheckConstraint("bibfile != ''"),primary_key=True)
+    bibfile = sa.Column(sa.Text, sa.CheckConstraint("bibfile != ''"), primary_key=True)
     bibkey = sa.Column(sa.Text, sa.CheckConstraint("bibkey != ''"), primary_key=True)
     ord = sa.Column(sa.Integer, sa.CheckConstraint('ord >= 1'), nullable=False)
     pages = sa.Column(sa.Text, sa.CheckConstraint("pages != ''"))
@@ -650,7 +649,7 @@ def get_query():
                     .where(a.languoid_id == Languoid.id)
                     .where(a.provider == p)
                     .order_by(a.ord)
-                    .label('altnames_%s' %p)
+                    .label('altnames_%s' % p)
                  for p, a in altnames] + [
             sa.select([sa.func.group_concat(ltrig.trigger, ', ')])
                 .where(ltrig.languoid_id == Languoid.id)

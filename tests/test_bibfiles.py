@@ -10,7 +10,7 @@ from pyglottolog.references import BibFiles, BibFile, Entry
 def test_BibFiles_getitem(bibfiles):
     bf = bibfiles[0]
     assert len(list(bf.iterentries())) == 3 and bf.size and bf.mtime
-    
+
 
 def test_BibFiles_roundtrip(capsys, bibfiles_copy):
     bibfiles_copy.roundtrip_all()
