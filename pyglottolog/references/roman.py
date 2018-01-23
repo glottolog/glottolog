@@ -1,13 +1,16 @@
-# coding: utf8
-from __future__ import unicode_literals, print_function, division
+from __future__ import unicode_literals
+
 import re
 
-roman_map = {'m': 1000, 'd': 500, 'c': 100, 'l': 50, 'x': 10, 'v': 5, 'i': 1}
-rerom = re.compile("(\d+)")
+__all__ = ['introman', 'romanint']
+
+ROMAN_MAP = {'m': 1000, 'd': 500, 'c': 100, 'l': 50, 'x': 10, 'v': 5, 'i': 1}
+
+REROM = re.compile("(\d+)")
 
 
 def introman(i):
-    iz = {v: k for k, v in roman_map.items()}
+    iz = {v: k for k, v in ROMAN_MAP.items()}
     x = ""
     for v, c in sorted(iz.items(), reverse=True):
         q, r = divmod(i, v)
@@ -23,7 +26,7 @@ def romanint(r):
     i = 0
     prev = 10000
     for c in r:
-        zc = roman_map[c]
+        zc = ROMAN_MAP[c]
         if zc > prev:
             i = i - 2 * prev + zc
         else:
@@ -33,4 +36,4 @@ def romanint(r):
 
 
 def roman(x):
-    return rerom.sub(lambda o: introman(int(o.group(1))), x).upper()
+    return REROM.sub(lambda o: introman(int(o.group(1))), x).upper()

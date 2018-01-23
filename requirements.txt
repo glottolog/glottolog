@@ -1,0 +1,2 @@
+# development environment: install in development mode
+-e .[test]
