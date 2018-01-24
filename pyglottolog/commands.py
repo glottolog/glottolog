@@ -140,13 +140,19 @@ def evobib(args):
 
 @command()
 def roundtrip(args):
+    """Load/save the bibfile with the given name."""
     args.repos.bibfiles[args.args[0]].roundtrip()
 
 
 @command()
+def bibfiles_db(args):
+    """(Re-)create bibfiles sqlite3 database in the current directory."""
+    args.repos.bibfiles.to_sqlite(rebuild=True)
+
+
+@command()
 def isobib(args):  # pragma: no cover
-    """Update iso6393.bib - the file of references for ISO 639-3 change requests.
-    """
+    """Update iso6393.bib - the file of references for ISO 639-3 change requests."""
     pyglottolog.iso.bibtex(args.repos, args.log)
 
 
@@ -167,8 +173,7 @@ def copy_benjamins(args):
 
 @command()
 def isoretirements(args):  # pragma: no cover
-    """Update iso6393.bib - the file of references for ISO 639-3 change requests.
-    """
+    """Update iso6393.bib - the file of references for ISO 639-3 change requests."""
     pyglottolog.iso.retirements(args.repos, args.log)
 
 
