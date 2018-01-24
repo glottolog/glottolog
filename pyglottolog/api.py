@@ -29,7 +29,9 @@ class Glottolog(UnicodeMixin):
 
     def __init__(self, repos=None):
         self.repos = (Path(repos) if repos else Path(__file__).parent.parent).resolve()
-        self.tree = self.repos.joinpath('languoids', 'tree')
+        self.tree = self.repos / 'languoids' / 'tree'
+        if not self.tree.exists():
+            raise ValueError('repos dir %s missing tree dir: %s' % (self.repos, self.tree))
 
     def __unicode__(self):
         return '<Glottolog repos {0} at {1}>'.format(git_describe(self.repos), self.repos)
@@ -106,7 +108,7 @@ class Glottolog(UnicodeMixin):
     def newick_tree(self, start=None):
         if start:
             return self.languoid(start).newick_node().newick
-        nodes = OrderedDict([(l.id, l) for l in self.languoids()])
+        nodes = OrderedDict((l.id, l) for l in self.languoids())
         trees = []
         for lang in nodes.values():
             if not lang.lineage and not lang.category.startswith('Pseudo '):

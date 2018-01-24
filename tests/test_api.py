@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+import pytest
+
 from pyglottolog import languoids
 
 
@@ -7,6 +9,12 @@ def test_legacy_import():
     from pyglottolog import api
     from pyglottolog import Glottolog
     assert api.Glottolog is Glottolog
+
+
+def test_glottolog_invalid_repos(tmpdir):
+    from pyglottolog import Glottolog
+    with pytest.raises(ValueError, match=r'missing tree dir'):
+        Glottolog(str(tmpdir))
 
 
 def test_paths(api):
