@@ -639,7 +639,9 @@ def assign_ids(conn, verbose=False):
         .values(id=sa.bindparam('new_id'))\
         .where(Entry.hash == sa.bindparam('eq_hash')).compile().string
     params = ((id, hash) for id, (hash,) in enumerate(select_new.execute(), nextid))
-    print('%d new ids (new/separated)' % conn.connection.executemany(update_new, params).rowcount)
+    dbapi_rowcount = conn.connection.executemany(update_new, params).rowcount
+    # https://docs.python.org/2/library/sqlite3.html#sqlite3.Cursor.rowcount
+    print('%d new ids (new/separated)' % (0 if dbapi_rowcount == -1 else dbapi_rowcount))
 
     assert Entry.allid(conn)
     assert Entry.onetoone(conn)
