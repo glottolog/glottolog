@@ -780,11 +780,10 @@ def valid_hid(session, pattern='^(?:[a-z]{3}|NOCODE_[A-Z][a-zA-Z0-9-]+)$'):
 def clean_name(session):
     """Glottolog names lack problematic characters."""
 
-    def cond(col, problematic='`_*:\xa4\xab\xb6\xbc'):
+    def cond(col):
         yield col.startswith(' ')
         yield col.endswith(' ')
-        for p in problematic:
-            yield col.contains(p.replace('_', '/_'), escape='/')
+        yield col.op('REGEXP')('[`_*:\xa4\xab\xb6\xbc]')  # \xa4.. common in mojibake
 
     return session.query(Languoid).order_by('id')\
         .filter(sa.or_(
