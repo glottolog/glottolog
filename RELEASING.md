@@ -2,14 +2,22 @@
 Releasing clld/glottolog
 ========================
 
-1. Check out `master` and pull the latest changes.
-2. Check the tree and references running `glottolog check`
+1. Check out `master` and pull the latest changes:
+```
+git checkout master
+git pull origin master
+```
+2. Check the tree and references running
+```
+glottolog check
+```
+making sure there are no `ÈRROR`s
 
 
 Merging the BibTeX files
 ------------------------
 
-1. Update automatically created files:
+3. Update automatically created files:
    - `iso6393.bib`: Run `glottolog isobib`
    - `benjamins.bib`:
      - Switch to the clone of `clld/benjamins`
@@ -17,17 +25,15 @@ Merging the BibTeX files
      - Recreate `benjamins.bib`, running `python to_bib.py`
      - Switch back to `clld/glottolog`
      - Run `glottolog copy_benjamins PATH/TO/clld/benjamins/benjamins.bib`
-2. Run `glottolog bib`
+4. Run `glottolog bib` to create `build/monster-utf8.bib`
+5. Commit and push all changes to master.
 
-3. FIXME: Create list of new refs/languoids, querying the old db.
-   - look up previous version in releases.ini
-   - compute (new - old) for each criterion
-4. Drop db
 
-- update version info and editors
+Releasing
+---------
 
-6. recreate db
-7. mark new refs/languoids reading in the lists created in 4.
+6. Draft a new release
+7. Add DOI badge from ZENODO as soon as it becomes available.
 
 
 Releasing `pyglottolog`
