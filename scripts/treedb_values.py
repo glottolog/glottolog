@@ -3,10 +3,14 @@
 from __future__ import unicode_literals
 
 import json
-import pathlib
 import datetime
 import itertools
 import functools
+
+try:
+    import pathlib2 as pathlib
+except ImportError:
+    import pathlib
 
 from treedb_backend import iteritems
 
