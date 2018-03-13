@@ -233,7 +233,7 @@ class Languoid(_backend.Model):
             else:
                 terminal = sa.literal(False)
             tree_1.append_column(terminal.label('terminal'))
-        tree_1 = tree_1.cte(recursive=True).alias('tree')
+        tree_1 = tree_1.cte('tree', recursive=True)
 
         tree_2 = sa.select([tree_1.c.child_id, parent.parent_id])\
             .select_from(tree_1.join(parent, parent.id == tree_1.c.parent_id))\
