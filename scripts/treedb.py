@@ -860,7 +860,13 @@ if __name__ == '__main__':
     _backend.print_rows(tree.select().where(tree.c.child_id == 'ramo1244'))
 
     query = get_query()
-    df = _backend.pd_read_sql(query, index_col='id')
-    df.info()
+
+    try:
+        import pandas
+    except ImportError:
+        pass
+    else:
+        df = _backend.pd_read_sql(query, index_col='id')
+        df.info()
 
     check()
