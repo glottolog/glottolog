@@ -233,7 +233,7 @@ class Languoid(_backend.Model):
             else:
                 terminal = sa.literal(False)
             tree_1.append_column(terminal.label('terminal'))
-        tree_1 = tree_1.cte(recursive=True).alias('tree')
+        tree_1 = tree_1.cte('tree', recursive=True)
 
         tree_2 = sa.select([tree_1.c.child_id, parent.parent_id])\
             .select_from(tree_1.join(parent, parent.id == tree_1.c.parent_id))\
@@ -860,7 +860,13 @@ if __name__ == '__main__':
     _backend.print_rows(tree.select().where(tree.c.child_id == 'ramo1244'))
 
     query = get_query()
-    df = _backend.pd_read_sql(query, index_col='id')
-    df.info()
+
+    try:
+        import pandas
+    except ImportError:
+        pass
+    else:
+        df = _backend.pd_read_sql(query, index_col='id')
+        df.info()
 
     check()
