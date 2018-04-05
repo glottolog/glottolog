@@ -180,11 +180,7 @@ def lff2tree(api, log=logging.getLogger(__name__)):
     languoids = {}
 
     def checked(l, lin):
-        try:
-            assert l.id not in languoids
-    	except AssertionError:
-            print(l.id)
-            raise AssertionError
+        assert l.id not in languoids
         for n, gc, _level, hid in lin:
             if gc in languoids:
                 if languoids[gc] != (n, _level, hid):
