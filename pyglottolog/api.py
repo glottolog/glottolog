@@ -50,6 +50,10 @@ class Glottolog(UnicodeMixin):
 
     @lazyproperty
     def iso(self):
+        """
+        :return: `clldutils.iso_639_3.ISO` instance, fed with the data of the latest
+        ISO code table zip found in the build directory.
+        """
         return util.get_iso(self.build_path())
 
     @property
