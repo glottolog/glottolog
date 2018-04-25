@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 import re
 import inspect
 import datetime
+import operator
 import itertools
 
 from treedb_backend import iteritems
@@ -233,7 +234,7 @@ class Languoid(_backend.Model):
             else:
                 terminal = sa.literal(False)
             tree_1.append_column(terminal.label('terminal'))
-        tree_1 = tree_1.cte(recursive=True).alias('tree')
+        tree_1 = tree_1.cte('tree', recursive=True)
 
         tree_2 = sa.select([tree_1.c.child_id, parent.parent_id])\
             .select_from(tree_1.join(parent, parent.id == tree_1.c.parent_id))\
@@ -612,6 +613,39 @@ def _load(conn, root):
                 insert_irct(languoid_id=lid, code=c, ord=i)
 
 
+def iterdescendants(parent_level=None, child_level=None, bind=_backend.engine):
+    """Yield pairs of (parent id, sorted list of their descendant ids)."""
+    # TODO: implement ancestors/descendants as sa.orm.relationship()
+    # see https://bitbucket.org/zzzeek/sqlalchemy/issues/4165
+    parent, child = (sa.orm.aliased(Languoid, name=n) for n in ('parent', 'child'))
+    tree = Languoid.tree()
+    select_pairs = sa.select([parent.id, child.id], bind=bind)\
+        .select_from(
+            sa.outerjoin(parent, tree, tree.c.parent_id == parent.id)\
+            .outerjoin(child, tree.c.child_id == child.id))\
+        .order_by(parent.id, child.id)
+    if parent_level is not None:
+        if parent_level == 'top':
+            cond = (parent.parent_id == sa.null())
+        elif parent_level in LEVEL:
+            cond = (parent.level == parent_level)
+        else:
+            raise ValueError('invalid parent_level: %r' % parent_level)
+        select_pairs = select_pairs.where(cond)
+    if child_level is not None:
+        if child_level not in LEVEL:
+            raise ValueError('invalid child_level: %r' % child_level)
+        select_pairs = select_pairs.where(child.level == child_level)
+    grouped = itertools.groupby(select_pairs.execute(), operator.itemgetter(0))
+    for parent_id, grp in grouped:
+        _, c = next(grp)
+        if c is None:
+            descendants = []
+        else:
+            descendants = [c] + [c for _, c in grp]
+        yield parent_id, descendants
+
+
 def get_query():
     def get_cols(model, label='%s', ignore='id'):
         cols = model.__table__.columns
@@ -859,8 +893,16 @@ if __name__ == '__main__':
     _backend.print_rows(tree.select().where(tree.c.child_id == 'book1242'))
     _backend.print_rows(tree.select().where(tree.c.child_id == 'ramo1244'))
 
+    print(next(iterdescendants(parent_level='top', child_level='language')))
+
     query = get_query()
-    df = _backend.pd_read_sql(query, index_col='id')
-    df.info()
+
+    try:
+        import pandas
+    except ImportError:
+        pass
+    else:
+        df = _backend.pd_read_sql(query, index_col='id')
+        df.info()
 
     check()

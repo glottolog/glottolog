@@ -37,7 +37,7 @@ def htmlmap(args):
     for n in nodes.values():
         if n.level == Level.language and n.latitude != None:
             fid = n.lineage[0][1] if n.lineage else n.id
-            if not nodes[fid].category.startswith('Pseudo'):
+            if not nodes[fid].category.startswith('Pseudo') and fid == n.id:
                 langs.append((n, fid))
                 legend.update([fid])
 
