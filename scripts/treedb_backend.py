@@ -86,14 +86,13 @@ def load(load_func, rebuild=False, engine=engine):
         else:
             return
 
-    if platform.system() == 'Windows':
-        STARTUPINFO = subprocess.STARTUPINFO()
-        STARTUPINFO.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-        STARTUPINFO.wShowWindow = subprocess.SW_HIDE
-    else:
-        STARTUPINFO = None
-
     def get_output(args, encoding='ascii'):
+        if platform.system() == 'Windows':
+            STARTUPINFO = subprocess.STARTUPINFO()
+            STARTUPINFO.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+            STARTUPINFO.wShowWindow = subprocess.SW_HIDE
+        else:
+            STARTUPINFO = None
         stdout = subprocess.check_output(args, startupinfo=STARTUPINFO)
         return stdout.decode(encoding).strip()
 
