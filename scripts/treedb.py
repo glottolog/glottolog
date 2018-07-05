@@ -780,7 +780,8 @@ class Check(object):
 
 
 def docformat(func):
-    spec = inspect.getargspec(func)
+    get_spec = inspect.getargspec if _backend.PY2 else inspect.getfullargspec
+    spec = get_spec(func)
     defaults = dict(zip(spec.args[-len(spec.defaults):], spec.defaults))
     func.__doc__ = func.__doc__ % defaults
     return func
