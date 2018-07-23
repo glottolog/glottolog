@@ -26,7 +26,7 @@ from .util import message, sprint
 
 
 @command()
-def htmlmap(args):
+def htmlmap(args, min_langs_for_legend_item=10):
     """
     glottolog htmlmap [OUTDIR]
     """
@@ -37,7 +37,7 @@ def htmlmap(args):
     for n in nodes.values():
         if n.level == Level.language and n.latitude != None:
             fid = n.lineage[0][1] if n.lineage else n.id
-            if not nodes[fid].category.startswith('Pseudo') and fid == n.id:
+            if (not nodes[fid].category.startswith('Pseudo')) or fid == n.id:
                 langs.append((n, fid))
                 legend.update([fid])
 
@@ -48,7 +48,7 @@ def htmlmap(args):
         n, fid = t
         lon, lat = n.longitude, n.latitude
         if lon <= -26:
-            lon += 360
+            lon += 360  # make the map pacific-centered.
 
         return {
             "geometry": {"coordinates": [lon, lat], "type": "Point"},
@@ -70,9 +70,11 @@ def htmlmap(args):
                 color_map[fid], fid, nodes[fid].name, c)
 
     geojson = {
-        "features": map(l2f, langs),
+        "features": list(map(l2f, langs)),
         "properties": {
-            "legend": {fid: legend_item(fid, c) for fid, c in legend.most_common() if c > 10},
+            "legend": {
+                fid: legend_item(fid, c) for fid, c in legend.most_common() if
+                c >= min_langs_for_legend_item},
         },
         "type": "FeatureCollection"
     }
@@ -97,6 +99,9 @@ def htmlmap(args):
 
 @command()
 def iso2codes(args):
+    """
+    Map ISO codes to the list of all Glottolog languages and dialects subsumed "under" it.
+    """
     from clldutils.dsv import UnicodeWriter
 
     nodes = list(args.repos.languoids())
@@ -119,14 +124,15 @@ def iso2codes(args):
             if matched:
                 break
 
-    with UnicodeWriter('iso2glottocodes.csv') as writer:
+    outdir = Path('.') if not args.args else Path(args.args[0])
+    with UnicodeWriter(outdir / 'iso2glottocodes.csv') as writer:
         writer.writerow(['iso', 'glottocodes'])
         for gc, (iso, gcs) in res.items():
             writer.writerow([iso, ';'.join([gc] + list(gcs))])
 
 
-@command()
-def evobib(args):
+#@command()
+#def evobib(args):
     # - remove timestamp
     # - remove owner
     # - usera -> title_english
@@ -135,7 +141,7 @@ def evobib(args):
     # - remove texisms: \emph \hana \'{o} \url  ``''
     # - replace http://wold.livingsources.org by http://wold.clld.org
     # - expand crossref: pull in all fields from referenced item
-    args.repos.bibfiles['evobib.bib'].visit(lambda e: e)
+    #args.repos.bibfiles['evobib.bib'].visit(lambda e: e)
 
 
 @command()
@@ -157,18 +163,24 @@ def isobib(args):  # pragma: no cover
 
 
 @command()
-def copy_benjamins(args):
+def copy_benjamins(args, name='benjamins.bib'):
+    """
+    glottolog copy_benjamins /path/to/benjamins/benjamins.bib
+    """
     # read new bib from benjamins repos
     # read current bib in clld/glottolog, extracting glottolog_ref_id by bibtex key map
     # merge glottolog_ref_id into new bib
     # write to clld/glottolog
-    key2id = args.repos.bibfiles['benjamins.bib'].glottolog_ref_id_map
-    newbib = OrderedDict()
+    key2id = args.repos.bibfiles[name].glottolog_ref_id_map
+    newbib, new = OrderedDict(), 0
     for entry in BibFile(Path(args.args[0])).iterentries():
         if entry.key in key2id:
             entry.fields['glottolog_ref_id'] = key2id[entry.key]
+        else:
+            new += 1
         newbib[entry.key] = (entry.type, entry.fields)
-    args.repos.bibfiles['benjamins.bib'].save(newbib)
+    args.repos.bibfiles[name].save(newbib)
+    print('{0} new entries'.format(new))
 
 
 @command()

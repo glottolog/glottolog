@@ -7,7 +7,6 @@ import pytest
 from pyglottolog.references.bibfiles_db import Database, distance
 
 
-@pytest.mark.skipif(six.PY3, reason='PY2 only')
 def test_Database(capsys, tmpdir, bibfiles_copy):
     fpath = str(tmpdir / 'test.sqlite3')
     bibfiles_copy.to_sqlite(fpath)

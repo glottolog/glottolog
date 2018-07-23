@@ -96,6 +96,32 @@ def test_newick(capsys, api):
     assert 'language' in capsys.readouterr()[0]
 
 
+def test_htmlmap(api, capsys, tmpdir):
+    commands.htmlmap(_args(api, str(tmpdir)), min_langs_for_legend_item=1)
+    out, _ = capsys.readouterr()
+    assert 'glottolog_map.html' in out
+
+
+def test_iso2codes(api, tmpdir):
+    commands.iso2codes(_args(api, str(tmpdir)))
+    assert tmpdir.join('iso2glottocodes.csv').check()
+
+
+def test_roundtrip(api_copy):
+    commands.roundtrip(_args(api_copy, 'a.bib'))
+
+
+def test_bibfiles_db(api_copy):
+    commands.bibfiles_db(_args(api_copy))
+
+
+def test_copy_benjamins(api_copy, references_path, capsys):
+    commands.copy_benjamins(
+        _args(api_copy, str(references_path / 'bibtex' / 'a.bib')), name='a.bib')
+    out, _ = capsys.readouterr()
+    assert '1 new' in out
+
+
 def test_check(capsys, api_copy):
     commands.check(_args(api_copy, 'refs'))
 
@@ -124,7 +150,6 @@ def test_check(capsys, api_copy):
     assert len(msgs) == 8
 
 
-@pytest.mark.skipif(six.PY3, reason='PY2 only')
 def test_monster(capsys, api_copy):
     commands.bib(_args(api_copy))
     assert capsys.readouterr()[0]

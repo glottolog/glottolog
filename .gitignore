@@ -48,3 +48,4 @@ iso639-3
 /scripts/*.csv
 /scripts/*.zip
 /iso_detail_pages.json
+.pytest_cache/

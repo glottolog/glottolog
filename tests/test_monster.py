@@ -7,7 +7,6 @@ import pytest
 from pyglottolog import monster
 
 
-@pytest.mark.skipif(six.PY3, reason='PY2 only')
 def test_main(capsys, api_copy):
     monster.compile(api_copy)
     out, _ = capsys.readouterr()
