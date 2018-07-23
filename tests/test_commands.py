@@ -7,7 +7,7 @@ import mock
 
 from clldutils.path import copytree
 
-from pyglottolog import commands
+from pyglottolog.__main__ import commands
 
 
 def _args(api_copy, *args):

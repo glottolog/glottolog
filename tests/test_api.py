@@ -33,6 +33,19 @@ def test_languoids(api):
     assert 'NOCODE_Family-name' in api.languoids_by_code()
 
 
+def test_newick_tree(api):
+    assert api.newick_tree(start='abcd1235') == \
+        "('dialect [abcd1236]':1)'language [abcd1235][abc]-l-':1"
+    assert set(api.newick_tree().split('\n')) == {
+        "('isolate [isol1234]-l-':1)'isolate [isol1234]-l-':1;",
+        "(('dialect [abcd1236]':1)'language [abcd1235][abc]-l-':1)'family [abcd1234][aaa]':1;"
+    }
+
+
+def test_hhtypes(api):
+    assert len(api.hhtypes) == 2
+
+
 def test_load_triggers(api):
     assert len(api.triggers) == 2
 

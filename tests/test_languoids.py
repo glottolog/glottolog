@@ -61,9 +61,15 @@ def test_Country():
     assert Country.from_id('abcdefg') is None
 
 
-def test_Glottocode():
+def test_Glottocode_validation():
     with pytest.raises(ValueError):
         Glottocode('a2')
+
+
+def test_Glottocode_ordering():
+    assert sorted([Glottocode('abcd1235'), Glottocode('abcd1234')])[0] == Glottocode('abcd1234')
+    assert Glottocode('zzzz9999') > Glottocode('abcd1234')
+    assert Glottocode('abcd1234') <= Glottocode('abcd1234')
 
 
 def test_Reference():
@@ -114,6 +120,11 @@ def test_Level(api):
     assert Level.language == api.languoid('abcd1235').level
     with pytest.raises(ValueError):
         Level.get('abcde')
+
+
+def test_Languoid_sorting(api):
+    assert api.languoid('abcd1235') < api.languoid('abcd1236')
+    assert api.languoid('abcd1236') >= api.languoid('abcd1235')
 
 
 def test_factory(tmpdir, api_copy):

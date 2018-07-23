@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 import os
 from collections import defaultdict
+import functools
 
 from clldutils.misc import UnicodeMixin
 from clldutils.path import Path
@@ -21,6 +22,7 @@ __all__ = ['Languoid']
 INFO_FILENAME = 'md.ini'
 
 
+@functools.total_ordering
 class Languoid(UnicodeMixin):
     """
     Info on languoids is encoded in the ini files and in the directory hierarchy.
@@ -84,6 +86,12 @@ class Languoid(UnicodeMixin):
 
     def __eq__(self, other):
         return self.id == other.id
+
+    def __lt__(self, other):
+        """
+        To allow Languoid lists to be sorted, we implement a simple ordering by Glottocode.
+        """
+        return self.id < other.id
 
     def __repr__(self):
         return '<%s %s>' % (self.level.name.capitalize(), self.id)
