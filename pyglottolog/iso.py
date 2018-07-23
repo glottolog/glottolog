@@ -6,6 +6,8 @@ import json
 import itertools
 from datetime import date
 
+from six import text_type
+
 import attr
 from clldutils import iso_639_3
 from csvw import dsv
@@ -63,7 +65,7 @@ class ChangeRequest(object):
     Effective_Date = attr.ib(convert=lambda v: date(*[int(p) for p in v.split('-')]) if v else None)
     Change_Type = attr.ib(
         validator=attr.validators.in_(['Create', 'Merge', 'Retire', 'Split', 'Update', 'NA']))
-    Change_Request_Number = attr.ib()
+    Change_Request_Number = attr.ib(convert=lambda v: text_type(v))
     Region_Group = attr.ib()
     Affected_Identifier = attr.ib()
     Language_Family_Group = attr.ib()

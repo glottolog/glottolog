@@ -1,3 +1,4 @@
+# coding: utf-8
 from __future__ import unicode_literals
 
 import pytest
@@ -70,7 +71,7 @@ bvs	Belgian Sign Language	S		Split into Langue [sfb], and Gebarentaal [vgt]	2007
                   <td class="views-field views-field-nothing" >
             <a href="/code/kre">kre</a>          </td>
                   <td class="views-field views-field-nothing-1" >
-            Panará          </td>
+            Panar          </td>
                   <td class="views-field views-field-field-change-instance-chnge-type" >
             Update          </td>
                   <td class="views-field views-field-field-change-instance-act-status" >

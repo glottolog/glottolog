@@ -1,6 +1,7 @@
 include README.md CHANGES.md RELEASING.md faq.md CONTRIBUTING.md
 include requirements.txt
 include tox.ini
+recursive-include pyglottolog *.js *.html
 recursive-include tests *.py *.txt *.bib *.zip *.sqlite3 *.json *.ini
 recursive-include scripts *.py *.txt
 recursive-include cookbook *.py *.md
