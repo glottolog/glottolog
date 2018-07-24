@@ -5,30 +5,36 @@ import re
 import json
 import itertools
 from datetime import date
+import hashlib
 
 from six import text_type
 
 import attr
 from clldutils import iso_639_3
+from clldutils.path import read_text, write_text
 from csvw import dsv
 
 from .references.bibtex import save
 
-RET_REASON = {  # http://www-01.sil.org/iso639-3/download.asp#retiredDownloads
-    'C': 'change',
-    'D': 'duplicate',
-    'N': 'non-existent',
-    'S': 'split',
-    'M': 'merge',
-}
-
 ISO_CODE_PATTERN = re.compile('[a-z]{3}$')
 
 
-def read_url(path):
+def read_url(path, cache_dir=None, log=None):
     """
     Delegate scraping to clldutils, since nowadays this requires tweaking the user agent as well.
     """
+    if cache_dir:
+        if log:  # pragma: no cover
+            log.debug('retrieving {0} ...'.format(path))
+        fpath = cache_dir / hashlib.md5(path.encode('utf8')).hexdigest()
+        if not fpath.exists():
+            with iso_639_3._open(path) as fp:
+                write_text(fpath, fp.read().decode('utf8'))
+        else:  # pragma: no cover
+            if log:
+                log.debug('... from cache {0}'.format(fpath))
+        return read_text(fpath)
+
     with iso_639_3._open(path) as fp:
         return fp.read().decode('utf8')
 
@@ -38,21 +44,32 @@ def valid_iso_code(instance, attr, value):
         raise ValueError('invalid ISO code in {0}: {1}'.format(attr.name, value))
 
 
+def normalize_whitespace(s):
+    return re.sub('\s+', ' ', s).strip()
+
+
 @attr.s
 class Retirement(object):
+    RET_REASON = {  # http://www-01.sil.org/iso639-3/download.asp#retiredDownloads
+        'C': 'change',
+        'D': 'duplicate',
+        'N': 'non-existent',
+        'S': 'split',
+        'M': 'merge',
+    }
     Id = attr.ib(validator=valid_iso_code)
     Ref_Name = attr.ib()
-    Ret_Reason = attr.ib(convert=lambda v: RET_REASON[v])
+    Ret_Reason = attr.ib(convert=lambda v: Retirement.RET_REASON[v])
     Change_To = attr.ib(
         convert=lambda v: v or None,
         validator=attr.validators.optional(valid_iso_code))
-    Ret_Remedy = attr.ib()
+    Ret_Remedy = attr.ib(convert=normalize_whitespace)
     Effective = attr.ib(convert=lambda v: date(*[int(p) for p in v.split('-')]) if v else None)
     cr = attr.ib(default=None)
 
     @classmethod
-    def iter(cls):
-        content = read_url('sites/iso639-3/files/downloads/iso-639-3_Retirements.tab')
+    def iter(cls, cache_dir=None, log=None):
+        content = read_url('sites/iso639-3/files/downloads/iso-639-3_Retirements.tab', cache_dir=cache_dir, log=log)
         for d in dsv.reader(content.splitlines(), dicts=True, delimiter='\t'):
             yield cls(**d)
 
@@ -60,21 +77,15 @@ class Retirement(object):
 @attr.s
 class ChangeRequest(object):
     Status = attr.ib(
-        validator=attr.validators.in_(['Rejected', 'Adopted', 'Pending', 'Partially Adopted', 'NA']))
+        validator=attr.validators.in_(['Rejected', 'Adopted', 'Pending', 'Partially Adopted']))
     Reference_Name = attr.ib()
     Effective_Date = attr.ib(convert=lambda v: date(*[int(p) for p in v.split('-')]) if v else None)
     Change_Type = attr.ib(
-        validator=attr.validators.in_(['Create', 'Merge', 'Retire', 'Split', 'Update', 'NA']))
-    Change_Request_Number = attr.ib(convert=lambda v: text_type(v))
+        validator=attr.validators.in_(['Create', 'Merge', 'Retire', 'Split', 'Update']))
+    Change_Request_Number = attr.ib(convert=lambda v: text_type(v) if v else None)
     Region_Group = attr.ib()
     Affected_Identifier = attr.ib()
     Language_Family_Group = attr.ib()
-
-    @classmethod
-    def empty(cls):
-        attrs = {f.name: None for f in attr.fields(cls)}
-        attrs.update(Status='NA', Change_Type='NA')
-        return cls(**attrs)
 
     @property
     def url(self):
@@ -90,7 +101,7 @@ class ChangeRequest(object):
             iso_639_3.BASE_URL, self.year, self.Change_Request_Number)
 
     @classmethod
-    def iter(cls, max_year=None):
+    def iter(cls, max_year=None, cache_dir=None, log=None):
         path = "code_changes/change_request_index/data/{0}?" \
                "field_change_request_region_grp_tid=All&field_change_request_lf_group_tid=All&" \
                "field_change_instance_chnge_type_tid=All&field_change_request_act_status_tid=All&" \
@@ -99,7 +110,7 @@ class ChangeRequest(object):
         while year < (max_year or date.today().year):
             while True:
                 i = 0
-                for i, cr in enumerate(list(_iter_tables(read_url(path.format(year, page))))[0]):
+                for i, cr in enumerate(list(_iter_tables(read_url(path.format(year, page), cache_dir=cache_dir, log=log)))[0]):
                     yield cls(**{k.replace(' ', '_'): v for k, v in cr.items()})
                 if i < 99:
                     break
@@ -172,7 +183,7 @@ def _read_table(table):
     d = et.fromstring(table)
     header = [e.text.strip() for e in d.findall('.//th')]
     for tr in d.find('tbody').findall('.//tr'):
-        yield dict(zip(header, [_text(e).strip() for e in tr.findall('.//td')]))
+        yield dict(zip(header, [normalize_whitespace(_text(e)) for e in tr.findall('.//td')]))
 
 
 
@@ -184,29 +195,32 @@ def _iter_tables(html):
         yield _read_table(start + table + end)
 
 
-def code_details(code):
+def code_details(code, cache_dir=None, log=None):
     res = {}
     try:
-        for md in _iter_tables(read_url('code/{0}'.format(code))):
-            res.update(list(md)[0])
+        for md in _iter_tables(read_url('code/{0}'.format(code), cache_dir=cache_dir, log=log)):
+            for row in md:
+                for k, v in row.items():
+                    if not res.get(k):
+                        res[k] = v
     except:
         pass
     return res
 
 
-def get_retirements(scrape_missing_remedies=True, max_year=None):
+def get_retirements(max_year=None, cache_dir=None, log=None):
     # retired iso_codes
-    rets = list(Retirement.iter())
+    rets = list(Retirement.iter(cache_dir=cache_dir, log=log))
 
     # latest adopted change request affecting each iso_code
-    crs = (r for r in ChangeRequest.iter(max_year=max_year) if r.Status == 'Adopted')
+    crs = (r for r in ChangeRequest.iter(max_year=max_year, cache_dir=cache_dir, log=log) if r.Status == 'Adopted')
     crs = sorted(crs, key=lambda r: (r.Affected_Identifier, r.Effective_Date or date.today()))
     crs = itertools.groupby(crs, lambda r: r.Affected_Identifier)
     crs = {id_: list(grp)[-1] for id_, grp in crs}
 
     # left join
     for ret in rets:
-        ret.cr = crs.get(ret.Id, ChangeRequest.empty())
+        ret.cr = crs.get(ret.Id)
 
     # fill Change_To from Ret_Remedy for splits and make it a list for others
     assert all(bool(r.Change_To) == (r.Ret_Reason not in ('split', 'non-existent')) for r in rets)
@@ -218,46 +232,43 @@ def get_retirements(scrape_missing_remedies=True, max_year=None):
         else:
             r.Change_To = [r.Change_To] if r.Change_To else []
 
-    if scrape_missing_remedies:  # get remedies for non-splits
-
-        def get_detail_pages(iso_codes, rebuild=True, cache='iso_detail_pages.json'):
-            if rebuild or not os.path.exists(cache):
-                result = {code: code_details(code) for code in iso_codes}
-                with open(cache, 'w') as f:
-                    json.dump(result, f)
-            with open(cache) as f:
-                return json.load(f)
-
-        iso_codes = [r.Id for r in rets if r.Ret_Reason != 'split']
-        pages = get_detail_pages(iso_codes)
-        for r in rets:
-            if not r.Ret_Remedy and r.Id in pages:
-                r.Ret_Remedy = pages[r.Id].get('Retirement Remedy')
+    for r in rets:
+        if not r.Ret_Remedy:
+            r.Ret_Remedy = code_details(r.Id, cache_dir=cache_dir, log=log).get('Retirement Remedy')
 
     return rets
 
 
 def retirements(api, log):
     fields = [
-        ('Id', 'code'), ('Ref_Name', 'name'),
-        ('CR_Number', 'change_request'), ('Effective', 'effective'),
-        ('Ret_Reason', 'reason'), ('Change_To', 'change_to'),
+        ('Id', 'code'),
+        ('Ref_Name', 'name'),
+        ('Effective', 'effective'),
+        ('Ret_Reason', 'reason'),
+        ('Change_To', 'change_to'),
         ('Ret_Remedy', 'remedy'),
     ]
+    log.info('read languoid info')
     iso2lang = {l.iso: l for l in api.languoids() if l.iso}
-    for r in get_retirements():
+    log.info('retrieve retirement info')
+    cache_dir = api.build_path('iso_639_3_cache')
+    if not cache_dir.exists():
+        cache_dir.mkdir()
+    for r in get_retirements(cache_dir=cache_dir, log=log):
         lang = iso2lang.get(r.Id)
         if lang is None:
             print('--- Missing retired ISO code: {}'.format(r.Id))
-            print(r)
+            #print(r)
             continue
         for iso in r.Change_To:
             if iso not in iso2lang:
                 print('+++ Missing change_to ISO code: {}'.format(iso))
-                print(r)
+                #print(r)
                 #continue
         for f, option in fields:
             lang.cfg.set('iso_retirement', option, getattr(r, f))
+        if r.cr and r.cr.Change_Request_Number:
+            lang.cfg.set('iso_retirement', 'change_request', r.cr.Change_Request_Number)
         lang.write_info()
     """
     [iso_retirement]

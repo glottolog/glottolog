@@ -185,7 +185,7 @@ def copy_benjamins(args, name='benjamins.bib'):
 
 @command()
 def isoretirements(args):  # pragma: no cover
-    """Update iso6393.bib - the file of references for ISO 639-3 change requests."""
+    """Update retirement info in language info files."""
     pyglottolog.iso.retirements(args.repos, args.log)
 
 
