@@ -24,7 +24,7 @@ Merging the BibTeX files
      - Pull the latest changes via FTP 
      - Recreate `benjamins.bib`, running `python to_bib.py`
      - Switch back to `clld/glottolog`
-     - Run `glottolog copy_benjamins PATH/TO/clld/benjamins/benjamins.bib`
+     - Run `glottolog copy_benjamins PATH/TO/benjamins/benjamins.bib`
 4. Run `glottolog bib` to create `build/monster-utf8.bib`
 5. Commit and push all changes to master.
 
