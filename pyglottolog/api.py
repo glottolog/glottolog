@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 import re
 import os
+import contextlib
 from collections import OrderedDict
 
 from clldutils.path import Path, as_posix, walk, git_describe
@@ -41,6 +42,13 @@ class Glottolog(UnicodeMixin):
         if not build_dir.exists():
             build_dir.mkdir()  # pragma: no cover
         return build_dir.joinpath(*comps)
+
+    @contextlib.contextmanager
+    def cache_dir(self, name):
+        d = self.build_path(name)
+        if not d.exists():
+            d.mkdir()
+        yield d
 
     def references_path(self, *comps):
         return self.repos.joinpath('references', *comps)

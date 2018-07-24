@@ -1,8 +1,6 @@
 from __future__ import unicode_literals
 
-import os
 import re
-import json
 import itertools
 from datetime import date
 import hashlib
@@ -17,6 +15,7 @@ from csvw import dsv
 from .references.bibtex import save
 
 ISO_CODE_PATTERN = re.compile('[a-z]{3}$')
+CACHE_DIR = 'iso_639_3_cache'
 
 
 def read_url(path, cache_dir=None, log=None):
@@ -76,12 +75,18 @@ class Retirement(object):
 
 @attr.s
 class ChangeRequest(object):
+    CHANGE_TYPES = {  # map change types to a sort key
+        'Create': 'z',
+        'Merge': 'c',
+        'Retire': 'a',
+        'Split': 'b',
+        'Update': 'y'
+    }
     Status = attr.ib(
         validator=attr.validators.in_(['Rejected', 'Adopted', 'Pending', 'Partially Adopted']))
     Reference_Name = attr.ib()
     Effective_Date = attr.ib(convert=lambda v: date(*[int(p) for p in v.split('-')]) if v else None)
-    Change_Type = attr.ib(
-        validator=attr.validators.in_(['Create', 'Merge', 'Retire', 'Split', 'Update']))
+    Change_Type = attr.ib(validator=attr.validators.in_(list(CHANGE_TYPES.keys())))
     Change_Request_Number = attr.ib(convert=lambda v: text_type(v) if v else None)
     Region_Group = attr.ib()
     Affected_Identifier = attr.ib()
@@ -122,8 +127,8 @@ class ChangeRequest(object):
 def change_request_as_source(id_, rows, ref_ids):
     title = "Change Request Number {0}: ".format(id_)
     title += ", ".join(
-        "{0} {1} [{2}]".format(r.Status, r.Change_Type.lower(), r.Affected_Identifier) for r in rows
-    )
+        "{0} {1} [{2}]".format(r.Status.lower(), r.Change_Type.lower(), r.Affected_Identifier)
+        for r in sorted(rows, key=lambda cr: (ChangeRequest.CHANGE_TYPES[cr.Change_Type], cr.Affected_Identifier)))
     date = None
     for row in rows:
         if date and row.Effective_Date:
@@ -160,11 +165,15 @@ def bibtex(api, log, max_year=None):
     glottolog_ref_ids = bib.glottolog_ref_id_map
 
     entries = []
-    grouped = itertools.groupby(
-        sorted(ChangeRequest.iter(max_year=max_year), key=lambda cr: cr.Change_Request_Number),
-        lambda cr: cr.Change_Request_Number)
-    for id_, rows in grouped:
-        entries.append(change_request_as_source(id_, list(rows), glottolog_ref_ids))
+
+    with api.cache_dir(CACHE_DIR) as cache_dir:
+        grouped = itertools.groupby(
+            sorted(ChangeRequest.iter(max_year=max_year, cache_dir=cache_dir),
+                   key=lambda cr: (cr.Change_Request_Number, cr.Affected_Identifier)),
+            lambda cr: cr.Change_Request_Number)
+        for id_, rows in grouped:
+            entries.append(change_request_as_source(id_, list(rows), glottolog_ref_ids))
+
     save(entries, bib.fname, None)
     log.info('bibtex written to {0}'.format(bib.fname))
     return len(entries)
@@ -251,10 +260,9 @@ def retirements(api, log):
     log.info('read languoid info')
     iso2lang = {l.iso: l for l in api.languoids() if l.iso}
     log.info('retrieve retirement info')
-    cache_dir = api.build_path('iso_639_3_cache')
-    if not cache_dir.exists():
-        cache_dir.mkdir()
-    for r in get_retirements(cache_dir=cache_dir, log=log):
+    with api.cache_dir(CACHE_DIR) as cache_dir:
+        rets = get_retirements(cache_dir=cache_dir, log=log)
+    for r in rets:
         lang = iso2lang.get(r.Id)
         if lang is None:
             print('--- Missing retired ISO code: {}'.format(r.Id))
