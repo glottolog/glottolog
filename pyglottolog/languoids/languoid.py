@@ -223,6 +223,12 @@ class Languoid(UnicodeMixin):
             return {k: self.cfg.getlist('altnames', k) for k in self.cfg['altnames']}
         return {}
 
+    def add_name(self, name, type_='glottolog'):
+        names = self.cfg.getlist('altnames', type_)
+        if name not in names:
+            self.cfg.set('altnames', type_, sorted(names + [name]))
+        print(self.names)
+
     @property
     def identifier(self):
         if 'identifier' in self.cfg:

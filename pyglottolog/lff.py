@@ -114,6 +114,7 @@ def lang2tree(api, log, lang, lineage, out, old_tree):
                     group.level = level
                 if name != group.name:
                     # rename a subgroup!
+                    group.add_name(group.name)
                     group.name = name
             else:
                 group = Languoid.from_name_id_level(api.tree, name, id_, level)
@@ -134,6 +135,7 @@ def lang2tree(api, log, lang, lineage, out, old_tree):
             log.info('{0} from {1} to {2}'.format(old_lang, old_lang.level, lang.level))
             old_lang.level = lang.level
         if old_lang.name != lang.name:
+            old_lang.add_name(old_lang.name)
             old_lang.name = lang.name
         if old_lang.iso != lang.iso:
             old_lang.iso = lang.iso

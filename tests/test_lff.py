@@ -58,7 +58,12 @@ Abkhazian [abkh1244] abk
     lff2tree(api_copy)
     glottocodes = [d.name for d in walk(api_copy.tree, mode='dirs')]
     assert len(glottocodes) == len(set(glottocodes))
-    assert api_copy.languoid('abkh1243').name == 'Abkhaz-Abazzza'
+
+    abkh1243 = api_copy.languoid('abkh1243')
+    # Make sure the new name is picked up ...
+    assert abkh1243.name == 'Abkhaz-Abazzza'
+    # ... and the old one retained as alternative name:
+    assert 'Abkhaz-Abaza' in abkh1243.names['glottolog']
 
     lfftext = _set_lff(api_copy, 'lff.txt', """# -*- coding: utf-8 -*-
 Abkhaz-Adyge [abkh1242]

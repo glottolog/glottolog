@@ -66,6 +66,8 @@ def test_lff(capsys, api_copy, encoding='utf-8'):
     commands.lff2tree(_args(api_copy))
     assert 'git status' in capsys.readouterr()[0]
     assert api_copy.languoid('abcd1236').name == 'Dialect Name'
+    # Old language and dialect names are retained as alternative names:
+    assert 'dialect' in api_copy.languoid('abcd1236').names['glottolog']
 
     commands.tree2lff(_args(api_copy))
     dfftxt = dff.read_text(encoding=encoding)
