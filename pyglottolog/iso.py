@@ -9,7 +9,7 @@ from six import text_type
 
 import attr
 from clldutils import iso_639_3
-from clldutils.path import read_text, write_text
+from clldutils.path import read_text, write_text, Path
 from csvw import dsv
 
 from .references.bibtex import save
@@ -23,6 +23,7 @@ def read_url(path, cache_dir=None, log=None):
     Delegate scraping to clldutils, since nowadays this requires tweaking the user agent as well.
     """
     if cache_dir:
+        cache_dir = Path(cache_dir)
         if log:  # pragma: no cover
             log.debug('retrieving {0} ...'.format(path))
         fpath = cache_dir / hashlib.md5(path.encode('utf8')).hexdigest()
@@ -119,7 +120,7 @@ class ChangeRequest(object):
                     yield cls(**{k.replace(' ', '_'): v for k, v in cr.items()})
                 if i < 99:
                     break
-                page += 1
+                page += 1  # pragma: no cover
             year += 1
             page = 0
 
@@ -131,10 +132,11 @@ def change_request_as_source(id_, rows, ref_ids):
         for r in sorted(rows, key=lambda cr: (ChangeRequest.CHANGE_TYPES[cr.Change_Type], cr.Affected_Identifier)))
     date = None
     for row in rows:
-        if date and row.Effective_Date:
-            assert date == row.Effective_Date
-        else:
-            date = row.Effective_Date
+        if row.Effective_Date:
+            if date:
+                assert date == row.Effective_Date  # pragma: no cover
+            else:
+                date = row.Effective_Date
     if date:
         title += ' ({0})'.format(date.isoformat())
     fields = {
@@ -248,7 +250,7 @@ def get_retirements(max_year=None, cache_dir=None, log=None):
     return rets
 
 
-def retirements(api, log):
+def retirements(api, log, max_year=None):
     fields = [
         ('Id', 'code'),
         ('Ref_Name', 'name'),
@@ -261,7 +263,7 @@ def retirements(api, log):
     iso2lang = {l.iso: l for l in api.languoids() if l.iso}
     log.info('retrieve retirement info')
     with api.cache_dir(CACHE_DIR) as cache_dir:
-        rets = get_retirements(cache_dir=cache_dir, log=log)
+        rets = get_retirements(cache_dir=cache_dir, log=log, max_year=max_year)
     for r in rets:
         lang = iso2lang.get(r.Id)
         if lang is None:

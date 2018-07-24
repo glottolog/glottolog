@@ -157,12 +157,6 @@ def bibfiles_db(args):
 
 
 @command()
-def isobib(args):  # pragma: no cover
-    """Update iso6393.bib - the file of references for ISO 639-3 change requests."""
-    pyglottolog.iso.bibtex(args.repos, args.log)
-
-
-@command()
 def copy_benjamins(args, name='benjamins.bib'):
     """
     glottolog copy_benjamins /path/to/benjamins/benjamins.bib
@@ -181,6 +175,12 @@ def copy_benjamins(args, name='benjamins.bib'):
         newbib[entry.key] = (entry.type, entry.fields)
     args.repos.bibfiles[name].save(newbib)
     print('{0} new entries'.format(new))
+
+
+@command()
+def isobib(args):  # pragma: no cover
+    """Update iso6393.bib - the file of references for ISO 639-3 change requests."""
+    pyglottolog.iso.bibtex(args.repos, args.log)
 
 
 @command()
