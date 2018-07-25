@@ -71,3 +71,12 @@ Releasing `pyglottolog`
   git push origin
   git push --tags
   ```
+- Increment version number and append `.dev0` to the version number for the new development cycle:
+  - `pyglottolog/__init__.py`
+  - `setup.py`
+
+- Commit/push the version change:
+  ```shell
+  git commit -a -m "bump version for development"
+  git push origin
+  ```
