@@ -19,6 +19,7 @@ Merging the BibTeX files
 
 3. Update automatically created files:
    - `iso6393.bib`: Run `glottolog isobib`
+   - `evobib.bib`: Run `glottolog evobib`
    - `benjamins.bib`:
      - Switch to the clone of `clld/benjamins`
      - Pull the latest changes via FTP 

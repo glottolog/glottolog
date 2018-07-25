@@ -117,13 +117,6 @@ def test_bibfiles_db(api_copy):
     commands.bibfiles_db(_args(api_copy))
 
 
-def test_copy_benjamins(api_copy, references_path, capsys):
-    commands.copy_benjamins(
-        _args(api_copy, str(references_path / 'bibtex' / 'a.bib')), name='a.bib')
-    out, _ = capsys.readouterr()
-    assert '1 new' in out
-
-
 def test_check(capsys, api_copy):
     commands.check(_args(api_copy, 'refs'))
 

@@ -133,14 +133,18 @@ class BibFile(UnicodeMixin):
             e.key: e.fields['glottolog_ref_id'] for e in self.iterentries()
             if 'glottolog_ref_id' in e.fields}
 
-    def update(self, fname):
-        entries = collections.OrderedDict()
+    def update(self, fname, log=None):
+        entries, new = collections.OrderedDict(), 0
         ref_id_map = self.glottolog_ref_id_map
         for key, (type_, fields) in bibtex.iterentries(fname, self.encoding):
             if key in ref_id_map and 'glottolog_ref_id' not in fields:
                 fields['glottolog_ref_id'] = ref_id_map[key]
+            else:
+                new += 1
             entries[key] = (type_, fields)
         self.save(entries)
+        if log:
+            log.info('{0} new entries'.format(new))
 
     def load(self, preserve_order=None):
         """Return entries as bibkey -> (entrytype, fields) dict."""

@@ -22,6 +22,7 @@ from . import fts
 from . import lff
 from .monster import compile
 from .references import BibFile
+from .references import evobib
 from .util import message, sprint
 
 
@@ -131,17 +132,9 @@ def iso2codes(args):
             writer.writerow([iso, ';'.join([gc] + list(gcs))])
 
 
-#@command()
-#def evobib(args):
-    # - remove timestamp
-    # - remove owner
-    # - usera -> title_english
-    # - userb -> title_chinese???
-    # - remove {} in title
-    # - remove texisms: \emph \hana \'{o} \url  ``''
-    # - replace http://wold.livingsources.org by http://wold.clld.org
-    # - expand crossref: pull in all fields from referenced item
-    #args.repos.bibfiles['evobib.bib'].visit(lambda e: e)
+@command('evobib')
+def _evobib(args):
+    evobib.download(args.repos.bibfiles['evobib.bib'], args.log)
 
 
 @command()
@@ -157,24 +150,11 @@ def bibfiles_db(args):
 
 
 @command()
-def copy_benjamins(args, name='benjamins.bib'):
+def copy_benjamins(args, name='benjamins.bib'):  # pragma: no cover
     """
     glottolog copy_benjamins /path/to/benjamins/benjamins.bib
     """
-    # read new bib from benjamins repos
-    # read current bib in clld/glottolog, extracting glottolog_ref_id by bibtex key map
-    # merge glottolog_ref_id into new bib
-    # write to clld/glottolog
-    key2id = args.repos.bibfiles[name].glottolog_ref_id_map
-    newbib, new = OrderedDict(), 0
-    for entry in BibFile(Path(args.args[0])).iterentries():
-        if entry.key in key2id:
-            entry.fields['glottolog_ref_id'] = key2id[entry.key]
-        else:
-            new += 1
-        newbib[entry.key] = (entry.type, entry.fields)
-    args.repos.bibfiles[name].save(newbib)
-    print('{0} new entries'.format(new))
+    args.repos.bibfiles[name].update(args.args[0], log=args.log)
 
 
 @command()
