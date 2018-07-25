@@ -13,11 +13,11 @@ BASE_URL = "http://www.endangeredlanguages.com"
 STORE = 'endangeredlanguages.json'
 
 
-def read_store(fname):
+def read_store(fname):  # pragma: no cover
     return jsonlib.load(fname) if fname.exists() else {}
 
 
-def store(details_, fname):
+def store(details_, fname):  # pragma: no cover
     db = read_store(fname)
     if not details_:
         return db
@@ -33,11 +33,12 @@ def store(details_, fname):
     return db
 
 
-def get_soup(path):
+def get_soup(path):  # pragma: no cover
+    print('... fetch {0}'.format(path))
     return bs(requests.get(BASE_URL + path).content, "html5lib")
 
 
-def details(path):
+def details(path):  # pragma: no cover
     soup = get_soup(path)
     if not soup.find('h2'):
         return
@@ -56,17 +57,18 @@ def details(path):
     return res
 
 
-def scrape(api, update=False):
+def scrape(api, update=False):  # pragma: no cover
     store_path = api.repos.joinpath('links', STORE)
     db = read_store(store_path)
     lang_url = re.compile('/lang/(?P<id>[0-9]+)$')
     done = set()
     for a in get_soup('/lang/region').find_all('a', href=True):
-        if a['href'].startswith('/lang/country/') and a['href'] not in done:
-            for a in get_soup(a['href']).find_all('a', href=True):
-                match = lang_url.match(a['href'])
+        if a['href'].startswith('/lang/country/') and (a['href'] not in done):
+            for _a in get_soup(a['href']).find_all('a', href=True):
+                match = lang_url.match(_a['href'])
                 if match:
                     lid = match.group('id')
                     if lid not in db or update:
-                        db = store(details(a['href']), store_path)
+                        db = store(details(_a['href']), store_path)
             done.add(a['href'])
+            print(len(done))
