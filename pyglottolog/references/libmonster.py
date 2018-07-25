@@ -11,6 +11,7 @@ from collections import defaultdict
 from itertools import groupby
 from operator import itemgetter
 
+from tqdm import tqdm
 from clldutils.dsv import UnicodeWriter
 
 from ..util import unique, Trigger
