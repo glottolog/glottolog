@@ -21,6 +21,8 @@ into a single reference database for each release/edition.
 
 ## The python client library `pyglottolog`
 
+[![Build Status](https://travis-ci.org/clld/glottolog.svg?branch=master)](https://travis-ci.org/clld/glottolog)
+
 The data in this repository can be conveniently accessed via a command line interface
 and a python API, both implemented in the python package `pyglottolog`, which is distributed
 as part of this repository.
