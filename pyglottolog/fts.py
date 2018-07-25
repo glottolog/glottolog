@@ -8,6 +8,7 @@ from whoosh.fields import Schema, TEXT, KEYWORD, ID, NUMERIC
 from whoosh.analysis import StemmingAnalyzer
 from whoosh.qparser import QueryParser, GtLtPlugin
 from whoosh.highlight import Formatter, get_text
+from tqdm import tqdm
 
 from clldutils.path import rmtree, as_unicode
 from clldutils.misc import slug
@@ -92,7 +93,7 @@ def search_langs(repos, q, limit=1000, **kw):
 
 def build_langs_index(api, log):
     writer = get_langs_index(api, recreate=True).writer()
-    for lang in api.languoids():
+    for lang in tqdm(api.languoids()):
         writer.add_document(
             id=lang.id,
             name=lang.name,
@@ -147,7 +148,7 @@ def build_index(api, log):
     writer = get_index(api, recreate=True).writer()
     for bibfile in api.bibfiles:
         log.info('indexing {0}'.format(bibfile))
-        for e in bibfile.iterentries():
+        for e in tqdm(bibfile.iterentries(), leave=False):
             author = e.fields.get('author', '')
             if author:
                 author = slug(author.split()[0])

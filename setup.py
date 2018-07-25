@@ -22,6 +22,7 @@ setup(
         'six>=1.9',
         'clldutils>=2.2.0',
         'sqlalchemy',
+        'tqdm',
         'pybtex>=0.20',
         'latexcodec',
         'unidecode',
