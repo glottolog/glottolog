@@ -78,9 +78,9 @@ class Glottolog(UnicodeMixin):
 
         if ISO_CODE_PATTERN.match(id_):
             for d in walk(self.tree, mode='dirs'):
-                l = languoids.Languoid.from_dir(d)
-                if l.iso_code == id_:
-                    return l
+                l_ = languoids.Languoid.from_dir(d)
+                if l_.iso_code == id_:
+                    return l_
         else:
             for d in walk(self.tree, mode='dirs'):
                 if d.name == id_:

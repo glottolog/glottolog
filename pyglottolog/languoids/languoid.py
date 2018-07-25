@@ -63,8 +63,8 @@ class Languoid(UnicodeMixin):
                 break
 
             if id_ not in nodes:
-                l = Languoid.from_dir(parent, nodes=nodes)
-                nodes[id_] = (l.name, l.id, l.level)
+                l_ = Languoid.from_dir(parent, nodes=nodes)
+                nodes[id_] = (l_.name, l_.id, l_.level)
             lineage.append(nodes[id_])
 
         res = cls(cfg, list(reversed(lineage)), directory=directory)
@@ -114,7 +114,8 @@ class Languoid(UnicodeMixin):
 
     def newick_node(self, nodes=None):
         label = '{0} [{1}]'.format(
-            self.name.replace(',', '/').replace('(', '{').replace(')', '}').replace("'", "''"), self.id)
+            self.name.replace(',', '/').replace('(', '{').replace(')', '}').replace("'", "''"),
+            self.id)
         if self.iso:
             label += '[%s]' % self.iso
         if self.level == Level.language:

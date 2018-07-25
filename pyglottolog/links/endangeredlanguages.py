@@ -4,7 +4,7 @@ import re
 from collections import OrderedDict
 
 import requests
-from bs4 import BeautifulSoup as bs
+from bs4 import BeautifulSoup
 
 from clldutils.misc import nfilter
 from clldutils import jsonlib
@@ -35,7 +35,7 @@ def store(details_, fname):  # pragma: no cover
 
 def get_soup(path):  # pragma: no cover
     print('... fetch {0}'.format(path))
-    return bs(requests.get(BASE_URL + path).content, "html5lib")
+    return BeautifulSoup(requests.get(BASE_URL + path).content, "html5lib")
 
 
 def details(path):  # pragma: no cover

@@ -15,7 +15,7 @@ from six.moves import map
 
 import sqlalchemy as sa
 import sqlalchemy.orm
-import sqlalchemy.ext.declarative
+import sqlalchemy.ext.declarative  # noqa: F401
 from clldutils import path, dsv, jsonlib
 
 from . import bibtex
@@ -97,7 +97,8 @@ class Database(object):
 
     def to_csvfile(self, filename, encoding='utf-8', dialect='excel'):
         """Write a CSV file with one row for each entry in each bibfile."""
-        select_rows = sa.select([
+        select_rows = sa.select(
+            [
                 File.name.label('filename'), Entry.bibkey, Entry.hash,
                 sa.cast(Entry.id, sa.Text).label('id'),
             ]).select_from(sa.join(File, Entry))\
@@ -127,7 +128,8 @@ class Database(object):
         select_files = sa.select([File.pk, File.name])\
             .where(sa.exists().where(Entry.file_pk == File.pk).where(changed))\
             .order_by(File.name)
-        select_changed = sa.select([
+        select_changed = sa.select(
+            [
                 Entry.bibkey,
                 sa.cast(Entry.refid, sa.Text).label('refid'),
                 sa.cast(Entry.id, sa.Text).label('id'),
@@ -160,7 +162,8 @@ class Database(object):
     def __iter__(self, chunksize=100):
         assert Entry.allid(self.engine)
         assert Entry.onetoone(self.engine)
-        select_values = sa.select([
+        select_values = sa.select(
+            [
                 Entry.id, Entry.hash, Value.field, Value.value, File.name, Entry.bibkey,
             ]).select_from(sa.join(Entry, File).join(Value))\
             .where(sa.between(Entry.id, sa.bindparam('first'), sa.bindparam('last')))\
@@ -220,9 +223,11 @@ class Database(object):
 
     @staticmethod
     def _entrygrp(bind, key, get_field=operator.itemgetter(0)):
-        select_values = sa.select([
+        select_values = sa.select(
+            [
                 Value.field, Value.value, File.name, Entry.bibkey
-            ], bind=bind).select_from(sa.join(Entry, File).join(Value))\
+            ],
+            bind=bind).select_from(sa.join(Entry, File).join(Value))\
             .where((Entry.refid if isinstance(key, int) else Entry.hash) == key)\
             .order_by(Value.field, File.priority.desc(), File.name, Entry.bibkey)
         grouped = itertools.groupby(select_values.execute(), get_field)
@@ -233,7 +238,8 @@ class Database(object):
 
     def show_splits(self):
         other = sa.orm.aliased(Entry)
-        select_entries = sa.select([
+        select_entries = sa.select(
+            [
                 Entry.refid, Entry.hash, File.name.label('filename'), Entry.bibkey,
             ]).select_from(sa.join(Entry, File))\
             .order_by(Entry.refid, Entry.hash, File.name, Entry.bibkey)\
@@ -250,7 +256,8 @@ class Database(object):
 
     def show_merges(self):
         other = sa.orm.aliased(Entry)
-        select_entries = sa.select([
+        select_entries = sa.select(
+            [
                 Entry.hash, Entry.refid, File.name.label('filename'), Entry.bibkey,
             ]).select_from(sa.join(Entry, File))\
             .order_by(Entry.hash, Entry.refid.desc(), File.name, Entry.bibkey)\
@@ -281,7 +288,8 @@ class Database(object):
 
     def show_identified(self):
         other = sa.orm.aliased(Entry)
-        select_entries = sa.select([
+        select_entries = sa.select(
+            [
                 Entry.hash, Entry.refid, File.name.label('filename'), Entry.bibkey,
             ]).select_from(sa.join(Entry, File))\
             .order_by(Entry.hash, Entry.refid != sa.null(), Entry.refid, File.name, Entry.bibkey)\
@@ -291,7 +299,8 @@ class Database(object):
 
     def show_combined(self):
         other = sa.orm.aliased(Entry)
-        select_entries = sa.select([
+        select_entries = sa.select(
+            [
                 Entry.hash, File.name.label('filename'), Entry.bibkey,
             ]).select_from(sa.join(Entry, File))\
             .order_by(Entry.hash, File.name, Entry.bibkey)\
@@ -338,10 +347,14 @@ class Entry(Model):
     pk = sa.Column(sa.Integer, primary_key=True)
     file_pk = sa.Column(sa.ForeignKey('file.pk'), nullable=False)
     bibkey = sa.Column(sa.Text, nullable=False)
-    refid = sa.Column(sa.Integer, index=True)   # old glottolog_ref_id from bibfiles (previous hash groupings)
-    hash = sa.Column(sa.Text, index=True)       # current groupings, m:n with refid (splits/merges)
-    srefid = sa.Column(sa.Integer, index=True)  # split-resolved refid (every srefid maps to exactly one hash)
-    id = sa.Column(sa.Integer, index=True)      # new glottolog_ref_id save to bibfiles (current hash groupings)
+    # old glottolog_ref_id from bibfiles (previous hash groupings)
+    refid = sa.Column(sa.Integer, index=True)
+    # current groupings, m:n with refid (splits/merges):
+    hash = sa.Column(sa.Text, index=True)
+    # split-resolved refid (every srefid maps to exactly one hash):
+    srefid = sa.Column(sa.Integer, index=True)
+    # new glottolog_ref_id save to bibfiles (current hash groupings):
+    id = sa.Column(sa.Integer, index=True)
 
     __table_args__ = (
         sa.UniqueConstraint(file_pk, bibkey),
@@ -373,39 +386,47 @@ class Entry(Model):
 
     @classmethod
     def hashstats(cls, bind, out=print):
-        select_total = sa.select([
+        select_total = sa.select(
+            [
                 sa.func.count(cls.hash.distinct()).label('distinct'),
                 sa.func.count(cls.hash).label('total'),
-            ], bind=bind)
+            ],
+            bind=bind)
         tmpl = '%(distinct)d\tdistinct keyids (from %(total)d total)'
         out(tmpl % select_total.execute().first())
 
-        sq1 = sa.select([
+        sq1 = sa.select(
+            [
                 File.name.label('filename'),
                 sa.func.count(cls.hash.distinct()).label('distinct'),
                 sa.func.count(cls.hash).label('total'),
             ]).select_from(sa.join(cls, File))\
             .group_by(cls.file_pk).alias()
         other = sa.orm.aliased(cls)
-        sq2 = sa.select([
+        sq2 = sa.select(
+            [
                 File.name.label('filename'),
                 sa.func.count(cls.hash.distinct()).label('unique'),
             ]).select_from(sa.join(cls, File))\
-            .where(~sa.exists()
+            .where(
+                ~sa.exists()
                 .where(other.hash == cls.hash)
                 .where(other.file_pk != cls.file_pk))\
             .group_by(cls.file_pk).alias()
-        select_files = sa.select([
+        select_files = sa.select(
+            [
                 sa.func.coalesce(sq2.c.unique, 0).label('unique'),
                 sq1.c.filename, sq1.c.distinct, sq1.c.total,
-            ], bind=bind)\
+            ],
+            bind=bind)\
             .select_from(sq1.outerjoin(sq2, sq1.c.filename == sq2.c.filename))\
             .order_by(sq1.c.filename)
         tmpl = '%(unique)d\t%(filename)s (from %(distinct)d distinct of %(total)d total)'
         out('\n'.join(tmpl % r for r in select_files.execute()))
 
         select_multiple = sa.select([sa.func.count()], bind=bind)\
-            .select_from(sa.select([1])
+            .select_from(
+                sa.select([1])
                 .select_from(cls)
                 .group_by(cls.hash)
                 .having(sa.func.count(cls.file_pk.distinct()) > 1))
@@ -549,9 +570,7 @@ def assign_ids(conn, verbose=False):
     select_split = sa.select([Entry.refid, Entry.hash, File.name, Entry.bibkey], bind=conn)\
         .select_from(sa.join(Entry, File))\
         .order_by(Entry.refid, Entry.hash, File.name, Entry.bibkey)\
-        .where(sa.exists()
-            .where(other.refid == Entry.refid)
-            .where(other.hash != Entry.hash))
+        .where(sa.exists().where(other.refid == Entry.refid).where(other.hash != Entry.hash))
     update_split = sa.update(Entry, bind=conn)\
         .where(Entry.refid == sa.bindparam('eq_refid'))\
         .where(Entry.hash != sa.bindparam('ne_hash'))\
@@ -573,9 +592,12 @@ def assign_ids(conn, verbose=False):
             print('%d: %d separated from %s\n' % (refid, separated, new))
     print('%d splitted' % nsplit)
 
-    nosplits = sa.select([~sa.exists().select_from(Entry).where(sa.exists()
-        .where(other.srefid == Entry.srefid)
-        .where(other.hash != Entry.hash))], bind=conn)
+    nosplits = sa.select(
+        [
+            ~sa.exists().select_from(Entry)
+            .where(sa.exists().where(other.srefid == Entry.srefid).where(other.hash != Entry.hash))
+        ],
+        bind=conn)
     assert nosplits.scalar()
 
     # resolve merges: id = srefid of the most similar srefid group
@@ -583,9 +605,7 @@ def assign_ids(conn, verbose=False):
     select_merge = sa.select([Entry.hash, Entry.srefid, File.name, Entry.bibkey], bind=conn)\
         .select_from(sa.join(Entry, File))\
         .order_by(Entry.hash, Entry.srefid.desc(), File.name, Entry.bibkey)\
-        .where(sa.exists()
-            .where(other.hash == Entry.hash)
-            .where(other.srefid != Entry.srefid))
+        .where(sa.exists().where(other.hash == Entry.hash).where(other.srefid != Entry.srefid))
     update_merge = sa.update(Entry, bind=conn)\
         .where(Entry.hash == sa.bindparam('eq_hash'))\
         .where(Entry.srefid != sa.bindparam('ne_srefid'))\
@@ -614,18 +634,22 @@ def assign_ids(conn, verbose=False):
         .values(id=Entry.srefid)
     print('%d unchanged' % update_unchanged.execute().rowcount)
 
-    nomerges = sa.select([~sa.exists().select_from(Entry).where(sa.exists()
-        .where(other.hash == Entry.hash)
-        .where(other.id != Entry.id))], bind=conn)
+    nomerges = sa.select(
+        [
+            ~sa.exists().select_from(Entry)
+            .where(sa.exists().where(other.hash == Entry.hash).where(other.id != Entry.id))],
+        bind=conn)
     assert nomerges.scalar()
 
     # identified
     update_identified = sa.update(Entry, bind=conn)\
         .where(Entry.refid == sa.null())\
-        .where(sa.exists()
+        .where(
+            sa.exists()
             .where(other.hash == Entry.hash)
             .where(other.id != sa.null()))\
-        .values(id=sa.select([other.id]).where(other.hash == Entry.hash).where(other.id != sa.null()))
+        .values(
+            id=sa.select([other.id]).where(other.hash == Entry.hash).where(other.id != sa.null()))
     print('%d identified (new/separated)' % update_identified.execute().rowcount)
 
     # assign new ids to hash groups of separated/new entries

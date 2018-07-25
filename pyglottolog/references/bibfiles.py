@@ -155,7 +155,11 @@ class BibFile(UnicodeMixin):
     def save(self, entries):
         """Write bibkey -> (entrytype, fields) map to file."""
         bibtex.save(
-            entries, filename=self.fname, sortkey=self.sortkey, encoding=self.encoding, normalize=self.normalize)
+            entries,
+            filename=self.fname,
+            sortkey=self.sortkey,
+            encoding=self.encoding,
+            normalize=self.normalize)
 
     def __unicode__(self):
         return '<%s %s>' % (self.__class__.__name__, self.fname.name)

@@ -4,6 +4,7 @@ import re
 import itertools
 from datetime import date
 import hashlib
+from xml.etree import ElementTree
 
 from six import text_type
 
@@ -69,7 +70,10 @@ class Retirement(object):
 
     @classmethod
     def iter(cls, cache_dir=None, log=None):
-        content = read_url('sites/iso639-3/files/downloads/iso-639-3_Retirements.tab', cache_dir=cache_dir, log=log)
+        content = read_url(
+            'sites/iso639-3/files/downloads/iso-639-3_Retirements.tab',
+            cache_dir=cache_dir,
+            log=log)
         for d in dsv.reader(content.splitlines(), dicts=True, delimiter='\t'):
             yield cls(**d)
 
@@ -116,7 +120,9 @@ class ChangeRequest(object):
         while year < (max_year or date.today().year):
             while True:
                 i = 0
-                for i, cr in enumerate(list(_iter_tables(read_url(path.format(year, page), cache_dir=cache_dir, log=log)))[0]):
+                for i, cr in enumerate(
+                        list(_iter_tables(
+                            read_url(path.format(year, page), cache_dir=cache_dir, log=log)))[0]):
                     yield cls(**{k.replace(' ', '_'): v for k, v in cr.items()})
                 if i < 99:
                     break
@@ -129,7 +135,9 @@ def change_request_as_source(id_, rows, ref_ids):
     title = "Change Request Number {0}: ".format(id_)
     title += ", ".join(
         "{0} {1} [{2}]".format(r.Status.lower(), r.Change_Type.lower(), r.Affected_Identifier)
-        for r in sorted(rows, key=lambda cr: (ChangeRequest.CHANGE_TYPES[cr.Change_Type], cr.Affected_Identifier)))
+        for r in sorted(
+            rows,
+            key=lambda cr: (ChangeRequest.CHANGE_TYPES[cr.Change_Type], cr.Affected_Identifier)))
     date = None
     for row in rows:
         if row.Effective_Date:
@@ -189,13 +197,10 @@ def _read_table(table):
             return _text(e.find('a'))
         return e.text or ''
 
-    from xml.etree import ElementTree as et
-
-    d = et.fromstring(table)
+    d = ElementTree.fromstring(table)
     header = [e.text.strip() for e in d.findall('.//th')]
     for tr in d.find('tbody').findall('.//tr'):
         yield dict(zip(header, [normalize_whitespace(_text(e)) for e in tr.findall('.//td')]))
-
 
 
 def _iter_tables(html):
@@ -214,7 +219,7 @@ def code_details(code, cache_dir=None, log=None):
                 for k, v in row.items():
                     if not res.get(k):
                         res[k] = v
-    except:
+    except:  # noqa: E722
         pass
     return res
 
@@ -224,7 +229,9 @@ def get_retirements(max_year=None, cache_dir=None, log=None):
     rets = list(Retirement.iter(cache_dir=cache_dir, log=log))
 
     # latest adopted change request affecting each iso_code
-    crs = (r for r in ChangeRequest.iter(max_year=max_year, cache_dir=cache_dir, log=log) if r.Status == 'Adopted')
+    crs = (
+        r for r in ChangeRequest.iter(max_year=max_year, cache_dir=cache_dir, log=log)
+        if r.Status == 'Adopted')
     crs = sorted(crs, key=lambda r: (r.Affected_Identifier, r.Effective_Date or date.today()))
     crs = itertools.groupby(crs, lambda r: r.Affected_Identifier)
     crs = {id_: list(grp)[-1] for id_, grp in crs}
@@ -268,13 +275,10 @@ def retirements(api, log, max_year=None):
         lang = iso2lang.get(r.Id)
         if lang is None:
             print('--- Missing retired ISO code: {}'.format(r.Id))
-            #print(r)
             continue
         for iso in r.Change_To:
             if iso not in iso2lang:
                 print('+++ Missing change_to ISO code: {}'.format(iso))
-                #print(r)
-                #continue
         for f, option in fields:
             lang.cfg.set('iso_retirement', option, getattr(r, f))
         if r.cr and r.cr.Change_Request_Number:

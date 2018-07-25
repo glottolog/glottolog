@@ -1,6 +1,6 @@
 # coding: utf8
 from __future__ import unicode_literals, print_function, division
-from collections import defaultdict, Counter, OrderedDict
+from collections import defaultdict, Counter
 from itertools import chain
 import os
 import sys
@@ -21,7 +21,6 @@ from .languoids import Languoid, Level, Reference
 from . import fts
 from . import lff
 from .monster import compile
-from .references import BibFile
 from .references import evobib
 from .util import message, sprint
 
@@ -94,7 +93,10 @@ def htmlmap(args, min_langs_for_legend_item=10):
     write_text(
         html,
         rendered_template(
-            'htmlmap.html', version=git_describe(args.repos.repos), jsname=jsname, nlangs=len(langs)))
+            'htmlmap.html',
+            version=git_describe(args.repos.repos),
+            jsname=jsname,
+            nlangs=len(langs)))
     print(html.resolve().as_uri())
 
 
@@ -420,7 +422,8 @@ def check(args):
 
         if lang.hid is not None:
             if lang.hid in hid:
-                error(lang.hid,
+                error(
+                    lang.hid,
                     'duplicate hid\n{0}\n{1}'.format(languoids[hid[lang.hid]].dir, lang.dir))
             else:
                 hid[lang.hid] = lang.id

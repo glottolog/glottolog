@@ -27,14 +27,14 @@ Merging the BibTeX files
      - Switch back to `clld/glottolog`
      - Run `glottolog copy_benjamins PATH/TO/benjamins/benjamins.bib`
 4. Run `glottolog bib` to create `build/monster-utf8.bib`
-5. Commit and push all changes to master.
-
+5. Run `git tag -a v<version> -m "release <version>"`
+6. Commit and push all changes to master.
 
 Releasing
 ---------
 
-6. Draft a new release
-7. Add DOI badge from ZENODO as soon as it becomes available.
+7. Draft a new release
+8. Add DOI badge from ZENODO as soon as it becomes available.
 
 
 Releasing `pyglottolog`

@@ -30,11 +30,15 @@ def load(filename, preserve_order=False, encoding=None):
     return cls(iterentries(filename, encoding))
 
 
+def identity(x):
+    return x
+
+
 def iterentries_from_text(text, encoding='utf-8'):
     if PY2:
-        py2_decode = lambda text: text.decode(encoding)
+        py2_decode = lambda text: text.decode(encoding)  # noqa: E731
     else:  # pragma: no cover
-        py2_decode = lambda text: text
+        py2_decode = identity
         if hasattr(text, 'read'):
             text = text.read()
         if not isinstance(text, text_type):
@@ -122,7 +126,7 @@ def dump(entries, fd, sortkey=None, normalize='NFC'):
     if normalize:
         normalize = functools.partial(unicodedata.normalize, normalize)
     else:  # pragma: no cover
-        normalize = lambda x: x
+        normalize = identity
     fd.write(u'# -*- coding: utf-8 -*-\n')
     for bibkey, (entrytype, fields) in items:
         fd.write(u'@%s{%s' % (entrytype, bibkey))
