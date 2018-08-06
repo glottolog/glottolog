@@ -13,6 +13,12 @@ glottolog check
 ```
 making sure there are no `ÈRROR`s
 
+Also run
+```
+glottolog index
+```
+and commit up-to-date languoid index pages.
+
 
 Merging the BibTeX files
 ------------------------
