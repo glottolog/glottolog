@@ -6,6 +6,14 @@ Notable changes between releases of the Glottolog data.
 ## [Unreleased]
 
 
+## [3.3.1] - 2018-08-06
+
+- fixed issue https://github.com/clld/glottolog/issues/240 whereby English was
+  listed as nearly extinct language.
+- fixed issue https://github.com/clld/glottolog/issues/239 whereby languoid index
+  files were not in sync with the classification tree.
+
+
 ## [3.3] - 2018-07-25
 
 See https://github.com/clld/glottolog/pulls?q=is%3Apr+is%3Amerged for a list of

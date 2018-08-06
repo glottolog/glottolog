@@ -41,8 +41,14 @@ Merging the BibTeX files
 Releasing
 ---------
 
-9. Draft a new release
-10. Add DOI badge from ZENODO as soon as it becomes available.
+9. Add release notes to `CHANGES.md`
+10. Draft a new release running
+```
+git commit -a -m"release <version>"
+git tag -a v<version> -m "release <version>"
+```
+and have it picked up by ZENODO by turning the tag into a "proper" release on GitHub.
+11. Add DOI badge from ZENODO as soon as it becomes available.
 
 
 Releasing `pyglottolog`
