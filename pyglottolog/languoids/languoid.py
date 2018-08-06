@@ -228,7 +228,6 @@ class Languoid(UnicodeMixin):
         names = self.cfg.getlist('altnames', type_)
         if name not in names:
             self.cfg.set('altnames', type_, sorted(names + [name]))
-        print(self.names)
 
     @property
     def identifier(self):
