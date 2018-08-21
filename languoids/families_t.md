@@ -43,6 +43,7 @@
 - [Tangale-Kwami-Kupto [tang1378]](tree/afro1255/chad1250/west2785/west2714/west2799/west2715/tang1366/tang1367/tang1378/md.ini)
 - [Tangalic [tang1366]](tree/afro1255/chad1250/west2785/west2714/west2799/west2715/tang1366/md.ini)
 - [Tangkhul-Maring [tang1335]](tree/sino1245/kuki1245/naga1409/tang1335/md.ini)
+- [Tangkhulic [sino1246]](tree/sino1245/kuki1245/naga1409/tang1335/sino1246/md.ini)
 - [Tangkic [tang1340]](tree/tang1340/md.ini)
 - [Tangko-Nakai [tang1376]](tree/nucl1709/cent2116/awyu1265/okok1235/okkk1242/tang1376/md.ini)
 - [Tangsa [tang1379]](tree/sino1245/brah1260/kony1246/kony1249/tang1379/md.ini)

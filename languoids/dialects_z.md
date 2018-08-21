@@ -9,6 +9,7 @@
 - [Zagundzi [zagu1235]](tree/indo1319/indo1320/indo1321/indo1322/roma1329/vlax1238/zagu1235/md.ini)
 - [Zainal [zain1238]](tree/indo1319/indo1320/iran1269/sout3157/midd1352/mode1259/fars1254/fars1255/east2745/aima1241/zain1238/md.ini)
 - [Zakataly [zaka1239]](tree/nakh1245/dagh1238/avar1255/avar1256/zaka1239/md.ini)
+- [Zakhchin [zakh1248]](tree/mong1329/oira1260/oira1264/oira1261/kalm1243/oira1262/zakh1248/md.ini)
 - [Zakho (Lishana Deni) [zakh1247]](tree/afro1255/semi1276/west2786/cent2236/nort3165/aram1259/east2680/cent2217/nort3241/nort3242/lish1247/zakh1247/md.ini)
 - [Zakho [zakh1242]](tree/indo1319/indo1320/iran1269/cent2317/cent2318/nort3177/laki1246/kurd1259/nort2641/zakh1242/md.ini)
 - [Zaki [zaki1238]](tree/cent2225/moru1252/cent2043/lugb1240/zaki1238/md.ini)

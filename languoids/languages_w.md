@@ -293,7 +293,7 @@
 - [Wubuy [nung1290][nuy]](tree/gunw1250/gunw1253/wubu1239/nung1290/md.ini)
 - [Wuding-Luquan Yi [wudi1238][ywq]](tree/sino1245/burm1265/lolo1265/lolo1267/nili1235/sout3212/niso1234/nucl1739/nasu1236/nesu1234/nasu1237/wudi1238/md.ini)
 - [Wudu [wudu1238][wud]](tree/atla1278/volt1241/kwav1236/gbee1241/east2711/wudu1238/md.ini)
-- [Wulguru [wulg1239]](tree/pama1250/nyaw1248/wulg1239/md.ini)
+- [Wulguru [wulg1239][qgu]](tree/pama1250/nyaw1248/wulg1239/md.ini)
 - [Wuliwuli [wuli1242][wlu]](tree/pama1250/sout3135/nort3154/waka1283/west2808/wuli1242/md.ini)
 - [Wulna [wuln1239][wux]](tree/limi1242/wuln1239/md.ini)
 - [Wulwulam [wulw1234]](tree/gunw1250/west2432/warr1259/unun9891/wulw1234/md.ini)

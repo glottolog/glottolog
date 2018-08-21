@@ -146,7 +146,7 @@
 - [Upper Southwest Paman [uppe1456]](tree/pama1250/pama1251/sout3141/uppe1456/md.ini)
 - [Upriver Riverine Phula [upri1239]](tree/sino1245/burm1265/lolo1265/lolo1267/nili1235/sout3212/rive1256/upri1239/md.ini)
 - [Upsteam Qiang [upst1234]](tree/sino1245/burm1265/naqi1236/qian1263/qian1264/upst1234/md.ini)
-- [Uradhic [urad1238]](tree/pama1250/pama1251/nort2758/urad1238/md.ini)
+- [Uradhic [urad1238]](tree/pama1250/pama1251/nort2758/guda1246/nort3278/urad1238/md.ini)
 - [Uralic [ural1272]](tree/ural1272/md.ini)
 - [Urigina-Danaru [urig1241]](tree/nucl1709/mada1298/raic1241/peka1243/urig1241/md.ini)
 - [Urninganggic [urni1238]](tree/giim1238/urni1238/md.ini)

@@ -1,4 +1,5 @@
 - [Yaben-Bilakura [yabe1256]](tree/nucl1709/mada1298/croi1234/numu1240/yabe1256/md.ini)
+- [Yadhaykenu-Angkamuthi [yadh1238]](tree/pama1250/pama1251/nort2758/guda1246/nort3278/urad1238/yadh1238/md.ini)
 - [Yaganon [yaga1258]](tree/nucl1709/mada1298/raic1241/yaga1258/md.ini)
 - [Yaka-Suku [yaka1278]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/kong1295/kong1296/yaka1278/md.ini)
 - [Yalandyic [yala1261]](tree/pama1250/yimi1234/yala1261/md.ini)

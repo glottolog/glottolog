@@ -8,7 +8,7 @@
 - [Ubi [ubii1238][ubi]](tree/afro1255/chad1250/east2632/east2633/east2710/ubii1238/md.ini)
 - [Ubir [ubir1237][ubr]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/west2818/papu1253/nucl1744/nort2848/aret1241/arei1235/ubir1237/md.ini)
 - [Ubykh [ubyk1235][uby]](tree/abkh1242/ubyk1235/md.ini)
-- [Ucayali-Yurúa Ashéninka [ucay1237][cpb]](tree/araw1281/sout3131/prea1240/asha1244/asha1241/asha1242/ashe1274/ucay1237/md.ini)
+- [Ucayali-Yurúa Ashéninka [ucay1237][cpb]](tree/araw1281/sout3131/prea1240/asha1244/asha1241/asha1242/ashe1271/ucay1237/md.ini)
 - [Uda [udaa1238][uda]](tree/atla1278/volt1241/benu1247/delt1251/obol1242/enwa1244/udaa1238/md.ini)
 - [Udi [udii1243][udi]](tree/nakh1245/dagh1238/lezg1248/nucl1321/east2790/udia1235/udii1243/md.ini)
 - [Udihe [udih1248][ude]](tree/tung1282/east2366/cent2235/udih1248/md.ini)

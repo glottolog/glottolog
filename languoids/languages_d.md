@@ -29,7 +29,7 @@
 - [Dakka [dakk1238][dkk]](tree/aust1307/mala1545/sout2923/nort2894/pitu1237/dakk1238/md.ini)
 - [Dakota [dako1258][dak]](tree/siou1252/core1249/miss1254/dako1257/siou1253/dako1258/md.ini)
 - [Dakpakha [dakp1242][dka]](tree/sino1245/bodi1256/bodi1257/tsha1246/east1469/main1269/dakp1241/dakp1242/md.ini)
-- [Dalecarlian [dale1238]](tree/indo1319/germ1287/nort3152/nort3160/nort3266/east2780/dale1238/md.ini)
+- [Dalecarlian [dale1238][qer]](tree/indo1319/germ1287/nort3152/nort3160/nort3266/east2780/dale1238/md.ini)
 - [Dalmatian [dalm1243][dlm]](tree/indo1319/ital1284/lati1262/lati1263/impe1234/roma1334/ital1285/ital1286/dalm1244/dalm1243/md.ini)
 - [Daloa Bété [dalo1238][bev]](tree/atla1278/volt1241/krua1234/east2415/bete1265/west2489/dalo1238/md.ini)
 - [Dama (Cameroon) [dama1267][dmm]](tree/atla1278/volt1241/nort3149/came1255/mbum1257/nort2773/dama1266/dama1267/md.ini)

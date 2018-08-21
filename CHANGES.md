@@ -6,6 +6,12 @@ Notable changes between releases of the Glottolog data.
 ## [Unreleased]
 
 
+## [3.3.2] - 2018-08-22
+
+- fixed Tangkhulic misspecification
+- fixed classification of North Paman
+
+
 ## [3.3.1] - 2018-08-06
 
 - fixed issue https://github.com/clld/glottolog/issues/240 whereby English was

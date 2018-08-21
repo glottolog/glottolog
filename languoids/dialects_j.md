@@ -154,6 +154,7 @@
 - [Jugan [juga1234]](tree/ural1272/khan1279/east2774/surg1248/juga1234/md.ini)
 - [Jui [juii1238]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/wide1239/narr1282/mbam1249/nkaa1239/nkam1238/mfum1239/cent2313/mfum1238/juii1238/md.ini)
 - [Jumu [jumu1239]](tree/atla1278/volt1241/benu1247/defo1239/yoru1244/edek1238/edea1234/east2738/sout3186/nucl1747/lucu1239/yoru1245/jumu1239/md.ini)
+- [Jungarian Oirat [jung1241]](tree/mong1329/oira1260/oira1264/oira1261/kalm1243/jung1241/md.ini)
 - [Junguru [jung1239]](tree/atla1278/volt1241/nort3149/came1255/uban1244/band1341/cent2021/cent2022/band1345/jung1239/md.ini)
 - [Juruá-Jutaí [juru1257]](tree/araw1282/madi1262/madi1263/culi1244/juru1257/md.ini)
 - [Jwira [jwir1242]](tree/atla1278/volt1241/kwav1236/nyoa1234/poto1254/tano1248/cent2262/biaa1238/sout2779/jwir1243/jwir1241/jwir1242/md.ini)

@@ -165,7 +165,6 @@
 - [Sinhalaic [sinh1247]](tree/indo1319/indo1320/indo1321/sinh1245/sinh1247/md.ini)
 - [Sinitic [sini1245]](tree/sino1245/sini1245/md.ini)
 - [Sino-Tibetan [sino1245]](tree/sino1245/md.ini)
-- [Sino-Tibetan, Kuki-Chin-Naga, Naga, Tangkhul-Maring, Tangkhulic [sino1246]](tree/sino1246/md.ini)
 - [Siona-Secoya [sion1248]](tree/tuca1253/west2784/west2647/core1261/sion1248/md.ini)
 - [Siouan [siou1252]](tree/siou1252/md.ini)
 - [Sioux [siou1253]](tree/siou1252/core1249/miss1254/dako1257/siou1253/md.ini)

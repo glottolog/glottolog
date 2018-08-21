@@ -106,7 +106,6 @@
 - [Kalispel-Pend d'Oreille [kali1308][fla]](tree/sali1255/inte1241/sout1559/kali1307/kali1308/md.ini)
 - [Kalkoti [kalk1245][xka]](tree/indo1319/indo1320/indo1321/indo1324/shin1270/west2860/palu1255/kalk1245/md.ini)
 - [Kalkutung [kalk1246][ktg]](tree/pama1250/galg1238/kalk1246/md.ini)
-- [Kalmyk [kalm1243][xal]](tree/mong1329/oira1260/oira1264/oira1261/kalm1243/md.ini)
 - [Kalo Finnish Romani [kalo1256][rmf]](tree/indo1319/indo1320/indo1321/indo1322/roma1329/roma1330/nort3197/kalo1256/md.ini)
 - [Kalou [kalo1262][ywa]](tree/sepi1257/sepi1256/mayo1278/yimi1235/kalo1262/md.ini)
 - [Kaluli [kalu1248][bco]](tree/bosa1245/bosa1246/kalu1249/kalu1248/md.ini)

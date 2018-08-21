@@ -14,7 +14,7 @@
 - [East Tarangan [east2465][tre]](tree/aust1307/mala1545/cent2237/cent2245/aruu1241/east2465/md.ini)
 - [East Uvean [wall1257][wls]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/cent2060/east2445/poly1242/nucl1485/east2758/wall1257/md.ini)
 - [East Yugur [east2337][yuy]](tree/mong1329/sout2705/east2337/md.ini)
-- [East-Central Tangkhul Naga [tang1336][nmf]](tree/sino1246/tang1336/md.ini)
+- [East-Central Tangkhul Naga [tang1336][nmf]](tree/sino1245/kuki1245/naga1409/tang1335/sino1246/tang1336/md.ini)
 - [Eastern Abenaki [east2544][aaq]](tree/algi1248/algo1256/east2700/east2544/md.ini)
 - [Eastern Acipa [east2403][acp]](tree/atla1278/volt1241/benu1247/kain1275/cent2242/shir1273/kamu1261/kamu1262/rogo1239/saga1266/east2403/md.ini)
 - [Eastern Angkuic [east2776]](tree/aust1305/khas1273/pala1352/east2331/angk1246/east2776/md.ini)
