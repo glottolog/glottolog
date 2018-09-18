@@ -80,8 +80,9 @@ class BibFile(UnicodeMixin):
     encoding = attr.ib(default='utf-8')
     normalize = attr.ib(default='NFC')
     sortkey = attr.ib(
-        default=None, convert=lambda s: None if s is None or s.lower() == 'none' else s)
-    priority = attr.ib(default=0, convert=int)
+        default=None,
+        converter=lambda s: None if s is None or s.lower() == 'none' else s)
+    priority = attr.ib(default=0, converter=int)
     url = attr.ib(default=None)
 
     @property

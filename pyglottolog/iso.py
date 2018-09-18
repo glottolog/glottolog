@@ -60,12 +60,12 @@ class Retirement(object):
     }
     Id = attr.ib(validator=valid_iso_code)
     Ref_Name = attr.ib()
-    Ret_Reason = attr.ib(convert=lambda v: Retirement.RET_REASON[v])
+    Ret_Reason = attr.ib(converter=lambda v: Retirement.RET_REASON[v])
     Change_To = attr.ib(
-        convert=lambda v: v or None,
+        converter=lambda v: v or None,
         validator=attr.validators.optional(valid_iso_code))
-    Ret_Remedy = attr.ib(convert=normalize_whitespace)
-    Effective = attr.ib(convert=lambda v: date(*[int(p) for p in v.split('-')]) if v else None)
+    Ret_Remedy = attr.ib(converter=normalize_whitespace)
+    Effective = attr.ib(converter=lambda v: date(*[int(p) for p in v.split('-')]) if v else None)
     cr = attr.ib(default=None)
 
     @classmethod
@@ -90,9 +90,10 @@ class ChangeRequest(object):
     Status = attr.ib(
         validator=attr.validators.in_(['Rejected', 'Adopted', 'Pending', 'Partially Adopted']))
     Reference_Name = attr.ib()
-    Effective_Date = attr.ib(convert=lambda v: date(*[int(p) for p in v.split('-')]) if v else None)
+    Effective_Date = attr.ib(
+        converter=lambda v: date(*[int(p) for p in v.split('-')]) if v else None)
     Change_Type = attr.ib(validator=attr.validators.in_(list(CHANGE_TYPES.keys())))
-    Change_Request_Number = attr.ib(convert=lambda v: text_type(v) if v else None)
+    Change_Request_Number = attr.ib(converter=lambda v: text_type(v) if v else None)
     Region_Group = attr.ib()
     Affected_Identifier = attr.ib()
     Language_Family_Group = attr.ib()

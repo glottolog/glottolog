@@ -214,9 +214,9 @@ class Macroarea(DeclEnum):
 @attr.s
 class ClassificationComment(object):
     sub = attr.ib(default=None)
-    subrefs = attr.ib(default=attr.Factory(list), convert=Reference.from_list)
+    subrefs = attr.ib(default=attr.Factory(list), converter=Reference.from_list)
     family = attr.ib(default=None)
-    familyrefs = attr.ib(default=attr.Factory(list), convert=Reference.from_list)
+    familyrefs = attr.ib(default=attr.Factory(list), converter=Reference.from_list)
 
     def check(self, lang, keys, log):
         for attrib in ['sub', 'family']:
@@ -241,7 +241,7 @@ class ISORetirement(object):
     reason = attr.ib(default=None)
     change_to = attr.ib(default=attr.Factory(list))
     remedy = attr.ib(default=None)
-    comment = attr.ib(convert=lambda s: s.replace('\n.', '\n') if s else s, default=None)
+    comment = attr.ib(converter=lambda s: s.replace('\n.', '\n') if s else s, default=None)
 
     def asdict(self):
         return attr.asdict(self)
@@ -290,7 +290,7 @@ class EthnologueComment(UnicodeMixin):
     #   spurious and in which Ethnologue (as below) that is/was
     # - "missing" meaning the comment is to explain why the languoid in question is
     #   missing (as a language entry) and in which Ethnologue (as below) that is/was
-    comment_type = attr.ib(validator=valid_comment_type, convert=lambda s: s.lower())
+    comment_type = attr.ib(validator=valid_comment_type, converter=lambda s: s.lower())
 
     # There's the "ethnologue_versions" field which says which Ethnologue version(s)
     # from E16-E19 the comment pertains to, joined by /:s. E.g. E16/E17. In the case of
@@ -302,7 +302,7 @@ class EthnologueComment(UnicodeMixin):
     ethnologue_versions = attr.ib(
         default='',
         validator=valid_ethnologue_versions,
-        convert=lambda s: s.replace('693', '639').split('/'))
+        converter=lambda s: s.replace('693', '639').split('/'))
     comment = attr.ib(default=None, validator=valid_comment)
 
     def check(self, lang, keys, log):
