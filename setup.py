@@ -27,7 +27,7 @@ setup(
         'latexcodec',
         'unidecode',
         'whoosh',
-        'attrs',
+        'attrs>=18.1',
         'pycountry>=17.01.08',
         'termcolor',
         'newick',
