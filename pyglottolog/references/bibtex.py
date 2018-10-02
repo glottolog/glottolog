@@ -83,9 +83,8 @@ class Name(collections.namedtuple('Name', 'prelast last given lineage')):
     @classmethod
     def from_string(cls, name):
         person = Person(name)
-        prelast, last, first, middle, lineage = (
-            ' '.join(getattr(person, part)())
-            for part in ('prelast', 'last', 'first', 'middle', 'lineage'))
+        ntypes = ('prelast_names', 'last_names', 'first_names', 'middle_names', 'lineage_names')
+        prelast, last, first, middle, lineage = (' '.join(getattr(person, part)) for part in ntypes)
         given = ' '.join(n for n in (first, middle) if n)
         return cls(prelast, last, given, lineage)
 
