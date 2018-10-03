@@ -40,6 +40,8 @@ def test_newick_tree(api):
         "('isolate [isol1234]-l-':1)'isolate [isol1234]-l-':1;",
         "(('dialect [abcd1236]':1)'language [abcd1235][abc]-l-':1)'family [abcd1234][aaa]':1;"
     }
+    assert api.newick_tree(start='abcd1235', template='{id}') == \
+        "(abcd1236:1)abcd1235:1"
 
 
 def test_hhtypes(api):

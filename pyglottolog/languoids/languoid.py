@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 import os
 from collections import defaultdict
-import functools
+from functools import total_ordering
 
 from clldutils.misc import UnicodeMixin
 from clldutils.path import Path
@@ -21,8 +21,10 @@ __all__ = ['Languoid']
 
 INFO_FILENAME = 'md.ini'
 
+NEWICK_TEMPLATE = '{name} [{id}]{iso}{level}'
 
-@functools.total_ordering
+
+@total_ordering
 class Languoid(UnicodeMixin):
     """
     Info on languoids is encoded in the ini files and in the directory hierarchy.
@@ -112,18 +114,17 @@ class Languoid(UnicodeMixin):
             return type_(res)
         return res
 
-    def newick_node(self, nodes=None):
-        label = '{0} [{1}]'.format(
-            self.name.replace(',', '/').replace('(', '{').replace(')', '}').replace("'", "''"),
-            self.id)
-        if self.iso:
-            label += '[%s]' % self.iso
-        if self.level == Level.language:
-            label += '-l-'
-        n = Node(name="'{0}'".format(label), length='1')
+    def newick_node(self, nodes=None, template=NEWICK_TEMPLATE):
+        label = template.format(
+            name=self.name.replace(',', '/').replace('(', '{').replace(')', '}').replace("'", "''"),
+            id=self.id,
+            iso='[%s]' % self.iso if self.iso else '',
+            level='-l-' if self.level == Level.language else ''
+        )
+        n = Node(name="'%s'" % label if ' ' in label else label, length='1')
         children = self.children if nodes is None else self.children_from_nodemap(nodes)
         for nn in sorted(children, key=lambda nn: nn.name):
-            n.add_descendant(nn.newick_node(nodes=nodes))
+            n.add_descendant(nn.newick_node(nodes=nodes, template=template))
         return n
 
     def write_info(self, outdir=None):
