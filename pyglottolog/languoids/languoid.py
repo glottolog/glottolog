@@ -81,6 +81,24 @@ class Languoid(UnicodeMixin):
             setattr(res, k, v)
         return res
 
+    _format_specs = {
+        'newick_name': (
+            lambda l: l.name.replace(
+                ',', '/').replace('(', '{').replace(')', '}').replace("'", "''"),
+            "Languoid name with special newick characters replaced"),
+        'newick_level': (
+            lambda l: '-l-' if l.level == Level.language else '',
+            "Languoid level in case of languages"),
+        'newick_iso': (
+            lambda l: '[{0}]'.format(l.iso) if l.iso else '',
+            "Bracketed ISO code or nothing"),
+    }
+
+    def __format__(self, format_spec):
+        if format_spec in self._format_specs:
+            return self._format_specs[format_spec][0](self)
+        return object.__format__(self, format_spec)
+
     def __hash__(self):
         return id(self)
 
@@ -112,18 +130,12 @@ class Languoid(UnicodeMixin):
             return type_(res)
         return res
 
-    def newick_node(self, nodes=None):
-        label = '{0} [{1}]'.format(
-            self.name.replace(',', '/').replace('(', '{').replace(')', '}').replace("'", "''"),
-            self.id)
-        if self.iso:
-            label += '[%s]' % self.iso
-        if self.level == Level.language:
-            label += '-l-'
-        n = Node(name="'{0}'".format(label), length='1')
+    def newick_node(self, nodes=None, template=None):
+        template = template or "'{l:newick_name} [{l.id}]{l:newick_iso}{l:newick_level}'"
+        n = Node(name=template.format(l=self), length='1')
         children = self.children if nodes is None else self.children_from_nodemap(nodes)
         for nn in sorted(children, key=lambda nn: nn.name):
-            n.add_descendant(nn.newick_node(nodes=nodes))
+            n.add_descendant(nn.newick_node(nodes=nodes, template=template))
         return n
 
     def write_info(self, outdir=None):

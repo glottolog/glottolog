@@ -5,6 +5,7 @@ from itertools import chain
 import os
 import sys
 import re
+import argparse
 import subprocess
 from json import dumps
 from string import Template
@@ -288,13 +289,25 @@ def tree(args):
     args.repos.ascii_tree(start, maxlevel=maxlevel)
 
 
-@command()
-def newick(args):
-    """Print the classification tree starting at a specific languoid in Newick format.
+@command(usage="""
+Print the classification tree starting at a specific languoid in Newick format.
 
-    glottolog newick <GLOTTOCODE>|<ISO-CODE> [MAXLEVEL]
-    """
-    sprint(args.repos.newick_tree(args.args[0] if args.args else None))
+    glottolog newick [--template="{{l.id}}"] <GLOTTOCODE>|<ISO-CODE>
+
+The --template option can be used to control the node labels in the Newick string.
+Values for this option must be valid python format strings expecting a single
+template variable `l` which points to the Languoid instance.
+In addition to Languoid attributes and properties specified as "{{l.<attr>}}",
+e.g. "{{l.id}}" for the Glottocode of a Languoid, the following custom format specs
+can be used:
+{0}""".format(
+    '\n'.join('    l:{0}\t{1[1]}'.format(k, v) for k, v in Languoid._format_specs.items())))
+def newick(args):
+    parser = argparse.ArgumentParser(prog='newick')
+    parser.add_argument('root', help='root node')
+    parser.add_argument('--template', help='node label template', default=None)
+    xargs = parser.parse_args(args.args)
+    sprint(args.repos.newick_tree(xargs.root, template=xargs.template))
 
 
 @command()

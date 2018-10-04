@@ -117,14 +117,14 @@ class Glottolog(UnicodeMixin):
     def ascii_tree(self, start, maxlevel=None):
         _ascii_node(self.languoid(start), 0, True, maxlevel, '')
 
-    def newick_tree(self, start=None):
+    def newick_tree(self, start=None, template=None):
         if start:
-            return self.languoid(start).newick_node().newick
+            return self.languoid(start).newick_node(template=template).newick
         nodes = OrderedDict((l.id, l) for l in self.languoids())
         trees = []
         for lang in nodes.values():
             if not lang.lineage and not lang.category.startswith('Pseudo '):
-                ns = lang.newick_node(nodes=nodes).newick
+                ns = lang.newick_node(nodes=nodes, template=template).newick
                 if lang.level == models.Level.language:
                     # an isolate: we wrap it in a pseudo-family with the same name and ID.
                     ns = '({0}){0}'.format(ns)

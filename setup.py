@@ -20,7 +20,7 @@ setup(
     },
     install_requires=[
         'six>=1.9',
-        'clldutils>=2.5.0',
+        'clldutils>=2.5.2',
         'sqlalchemy',
         'tqdm',
         'pybtex>=0.20',
