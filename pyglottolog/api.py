@@ -119,7 +119,7 @@ class Glottolog(UnicodeMixin):
 
     def newick_tree(self, start=None, template=None):
         if start:
-            return self.languoid(start).newick_node(template=template).newick
+            return self.languoid(start).newick_node(template=template).newick + ';'
         nodes = OrderedDict((l.id, l) for l in self.languoids())
         trees = []
         for lang in nodes.values():

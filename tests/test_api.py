@@ -35,8 +35,8 @@ def test_languoids(api):
 
 def test_newick_tree(api):
     assert api.newick_tree(start='abcd1235') == \
-           "('dialect [abcd1236]':1)'language [abcd1235][abc]-l-':1"
-    assert api.newick_tree(start='abcd1235', template='{l.id}') == "(abcd1236:1)abcd1235:1"
+           "('dialect [abcd1236]':1)'language [abcd1235][abc]-l-':1;"
+    assert api.newick_tree(start='abcd1235', template='{l.id}') == "(abcd1236:1)abcd1235:1;"
     assert set(api.newick_tree().split('\n')) == {
         "('isolate [isol1234]-l-':1)'isolate [isol1234]-l-':1;",
         "(('dialect [abcd1236]':1)'language [abcd1235][abc]-l-':1)'family [abcd1234][aaa]':1;"
