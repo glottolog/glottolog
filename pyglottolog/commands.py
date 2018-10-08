@@ -292,7 +292,7 @@ def tree(args):
 @command(usage="""
 Print the classification tree starting at a specific languoid in Newick format.
 
-    glottolog newick [--template="{{l.id}}"] <GLOTTOCODE>|<ISO-CODE>
+    glottolog newick [--template="{{l.id}}"] [<GLOTTOCODE>|<ISO-CODE>]
 
 The --template option can be used to control the node labels in the Newick string.
 Values for this option must be valid python format strings expecting a single
@@ -304,7 +304,7 @@ can be used:
     '\n'.join('    l:{0}\t{1[1]}'.format(k, v) for k, v in Languoid._format_specs.items())))
 def newick(args):
     parser = argparse.ArgumentParser(prog='newick')
-    parser.add_argument('root', help='root node')
+    parser.add_argument('root', nargs='?', default=None, help='root node')
     parser.add_argument('--template', help='node label template', default=None)
     xargs = parser.parse_args(args.args)
     sprint(args.repos.newick_tree(xargs.root, template=xargs.template))
