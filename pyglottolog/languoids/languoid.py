@@ -93,6 +93,7 @@ class Languoid(UnicodeMixin):
             lambda l: '[{0}]'.format(l.iso) if l.iso else '',
             "Bracketed ISO code or nothing"),
     }
+    _newick_default_template = "'{l:newick_name} [{l.id}]{l:newick_iso}{l:newick_level}'"
 
     def __format__(self, format_spec):
         if format_spec in self._format_specs:
@@ -131,7 +132,7 @@ class Languoid(UnicodeMixin):
         return res
 
     def newick_node(self, nodes=None, template=None):
-        template = template or "'{l:newick_name} [{l.id}]{l:newick_iso}{l:newick_level}'"
+        template = template or self._newick_default_template
         n = Node(name=template.format(l=self), length='1')
         children = self.children if nodes is None else self.children_from_nodemap(nodes)
         for nn in sorted(children, key=lambda nn: nn.name):

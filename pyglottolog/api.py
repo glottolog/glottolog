@@ -118,6 +118,7 @@ class Glottolog(UnicodeMixin):
         _ascii_node(self.languoid(start), 0, True, maxlevel, '')
 
     def newick_tree(self, start=None, template=None):
+        template = template or languoids.Languoid._newick_default_template
         if start:
             return self.languoid(start).newick_node(template=template).newick + ';'
         nodes = OrderedDict((l.id, l) for l in self.languoids())
@@ -126,8 +127,10 @@ class Glottolog(UnicodeMixin):
             if not lang.lineage and not lang.category.startswith('Pseudo '):
                 ns = lang.newick_node(nodes=nodes, template=template).newick
                 if lang.level == models.Level.language:
-                    # an isolate: we wrap it in a pseudo-family with the same name and ID.
-                    ns = '({0}){0}'.format(ns)
+                    # An isolate: we wrap it in a pseudo-family with the same name and ID.
+                    fam = languoids.Languoid.from_name_id_level(
+                        lang.dir.parent, lang.name, lang.id, 'family')
+                    ns = '({0}){1}:1'.format(ns, template.format(l=fam))
                 trees.append('{0};'.format(ns))
         return '\n'.join(trees)
 

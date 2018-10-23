@@ -75,7 +75,7 @@ def test_lff(capsys, api_copy, encoding='utf-8'):
 
 def test_index(api_copy):
     commands.index(_args(api_copy))
-    assert len(list(api_copy.repos.joinpath('languoids').glob('*.md'))) == 7
+    assert len(list(api_copy.repos.joinpath('languoids').glob('*.md'))) == 8
 
 
 def test_tree(capsys, api):
@@ -125,7 +125,7 @@ def test_check(capsys, api_copy):
     assert 'family' in capsys.readouterr()[0]
     msgs = [a[0] for a, _ in args.log.error.call_args_list]
     assert all('unregistered glottocode' in m for m in msgs)
-    assert len(msgs) == 4
+    assert len(msgs) == 5
 
     copytree(
         api_copy.tree / 'abcd1234' / 'abcd1235',
@@ -135,14 +135,14 @@ def test_check(capsys, api_copy):
     commands.check(args)
     msgs = [a[0] for a, _ in args.log.error.call_args_list]
     assert any('duplicate glottocode' in m for m in msgs)
-    assert len(msgs) == 6
+    assert len(msgs) == 7
 
     (api_copy.tree / 'abcd1235').rename(api_copy.tree / 'abcd1237')
     args = _args(api_copy)
     commands.check(args)
     msgs = [a[0] for a, _ in args.log.error.call_args_list]
     assert any('duplicate hid' in m for m in msgs)
-    assert len(msgs) == 8
+    assert len(msgs) == 9
 
 
 def test_monster(capsys, api_copy):
