@@ -125,6 +125,7 @@ def export(metadata=Model.metadata, engine=engine, encoding='utf-8'):
             if not PY2:
                 data = data.encode(encoding)
             z.writestr('%s.csv' % table.name, data)
+    return filename
 
 
 def _csv_io():
@@ -147,9 +148,9 @@ def _csv_write(f, encoding, header, rows):
         writer.writerow([h.encode(encoding) for h in header])
         for r in rows:
             writer.writerow([unicode(col).encode(encoding) if col else col for col in r])
-        return
-    writer.writerow(header)
-    writer.writerows(rows)
+    else:
+        writer.writerow(header)
+        writer.writerows(rows)
 
 
 def print_rows(query, format_=None, engine=engine, verbose=False):
