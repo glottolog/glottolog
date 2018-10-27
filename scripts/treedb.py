@@ -925,6 +925,13 @@ def export_db():
     return _backend.export()
 
 
+def write_csv(query=None, filename='treedb.csv', encoding='utf-8'):
+    """Write get_query() example query (or given query) to CSV file."""
+    if query is None:
+        query = get_query()
+    _backend.write_csv(query, filename, encoding=encoding)
+
+
 if __name__ == '__main__':
     load()
 
