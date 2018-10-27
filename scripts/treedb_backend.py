@@ -153,14 +153,6 @@ def _csv_write(f, encoding, header, rows):
         writer.writerows(rows)
 
 
-def write_csv(query, filename, encoding='utf-8', engine=engine, verbose=False):
-    if verbose:
-        print(query)
-    rows = engine.execute(query)
-    with _csv_open(filename, 'w', encoding) as f:
-        _csv_write(f, encoding, header=rows.keys(), rows=rows)
-
-
 def print_rows(query, format_=None, engine=engine, verbose=False):
     if verbose:
         print(query)

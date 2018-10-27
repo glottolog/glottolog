@@ -811,7 +811,7 @@ def docformat(func):
 
 @check
 @docformat
-def valid_glottocode(session, pattern='^[a-z0-9]{4}\d{4}$'):
+def valid_glottocode(session, pattern='^[a-z][a-z0-9]{3}[1-9]\d{3}$'):
     """Glottocodes match %(pattern)r."""
     return session.query(Languoid).order_by('id')\
         .filter(~Languoid.id.op('REGEXP')(pattern))
@@ -921,21 +921,12 @@ def write_csv(query=None, filename='treedb.csv', encoding='utf-8'):
 
 
 def export_db():
-    """Dump .sqlite file to a ZIP file with one CSV per table, return filename."""
+    """Dump .sqlite file to a ZIP file with one CVS per table, return filename."""
     return _backend.export()
-
-
-def write_csv(query=None, filename='treedb.csv', encoding='utf-8'):
-    """Write get_query() example query (or given query) to CSV file."""
-    if query is None:
-        query = get_query()
-    _backend.write_csv(query, filename, encoding=encoding)
 
 
 if __name__ == '__main__':
     load()
-
-    # usage examples
     print(next(iterlanguoids()))
 
     _backend.print_rows(sa.select([Languoid]).order_by(Languoid.id).limit(5))
@@ -946,7 +937,7 @@ if __name__ == '__main__':
 
     print(next(iterdescendants(parent_level='top', child_level='language')))
 
-    query = get_query()  # big example query containing 'everything'
+    query = get_query()
 
     try:
         import pandas
@@ -956,8 +947,4 @@ if __name__ == '__main__':
         df = _backend.pd_read_sql(query, index_col='id')
         df.info()
 
-    # run sanity checks
     check()
-
-    #export_db()
-    #write_csv()
