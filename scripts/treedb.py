@@ -811,7 +811,7 @@ def docformat(func):
 
 @check
 @docformat
-def valid_glottocode(session, pattern='^[a-z][a-z0-9]{3}[1-9]\d{3}$'):
+def valid_glottocode(session, pattern='^[a-z0-9]{4}\d{4}$'):
     """Glottocodes match %(pattern)r."""
     return session.query(Languoid).order_by('id')\
         .filter(~Languoid.id.op('REGEXP')(pattern))
