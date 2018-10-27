@@ -906,6 +906,11 @@ def bookkeeping_no_children(session):
         .filter(Languoid.children.any())
 
 
+def export_db():
+    """Dump .sqlite file to a ZIP file with one CVS per table, return filename."""
+    return _backend.export()
+
+
 if __name__ == '__main__':
     load()
     print(next(iterlanguoids()))
