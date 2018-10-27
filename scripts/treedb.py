@@ -249,13 +249,32 @@ class Languoid(_backend.Model):
         return tree_1.union_all(tree_2)
 
     @classmethod
-    def path(cls, label='path', delimiter='/', include_self=True, bottomup=False):
-        tree = cls.tree(include_self=include_self, with_steps=True, with_terminal=False)
+    def path(cls, label='path', delimiter='/', include_self=True, bottomup=False, _tree=None):
+        tree = _tree
+        if tree is None:
+            tree = cls.tree(include_self=include_self, with_steps=True, with_terminal=False)
         squery = sa.select([tree.c.parent_id.label('path_part')])\
             .where(tree.c.child_id == cls.id).correlate(cls)\
             .order_by(tree.c.steps if bottomup else tree.c.steps.desc())
-        path = sa.func.group_concat(squery.c.path_part, delimiter).label('path')
+        path = sa.func.group_concat(squery.c.path_part, delimiter)
         return sa.select([path]).label(label)
+
+    @classmethod
+    def path_family_language(cls, path_label='path', path_delimiter='/', include_self=True, bottomup=False,
+                             family_label='family', language_label='language'):
+        tree = cls.tree(include_self=include_self, with_steps=True, with_terminal=True)
+        path = cls.path(label=path_label, delimiter=path_delimiter, bottomup=bottomup, _tree=tree)
+        family = sa.select([tree.c.parent_id])\
+            .where(tree.c.child_id == cls.id).correlate(cls)\
+            .where(tree.c.steps > 0).where(tree.c.terminal == True)
+        ancestor = sa.orm.aliased(Languoid)
+        language = sa.select([tree.c.parent_id])\
+            .where(tree.c.child_id == cls.id).correlate(cls)\
+            .where(cls.level == DIALECT)\
+            .where(sa.exists()
+                .where(ancestor.id == tree.c.parent_id)
+                .where(ancestor.level == LANGUAGE))
+        return path, family.label(family_label), language.label(language_label)
 
 
 class Macroarea(_backend.Model):
@@ -662,8 +681,11 @@ def get_query():
     ltrig, itrig = (sa.orm.aliased(Trigger) for _ in range(2))
     subc, famc = (sa.orm.aliased(ClassificationComment) for _ in range(2))
     subr, famr = (sa.orm.aliased(ClassificationRef) for _ in range(2))
+    path, family, language = Languoid.path_family_language()
     return sa.select([
-            Languoid.path(label='path'),
+            path,
+            family.label('family_id'),
+            language.label('language_id'),
             Languoid,
             sa.select([sa.func.group_concat(languoid_macroarea.c.macroarea_name, ', ')])
                 .where(languoid_macroarea.c.languoid_id == Languoid.id)
