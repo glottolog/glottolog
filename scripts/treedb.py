@@ -920,6 +920,11 @@ def write_csv(query=None, filename='treedb.csv', encoding='utf-8'):
     _backend.write_csv(query, filename, encoding=encoding)
 
 
+def export_db():
+    """Dump .sqlite file to a ZIP file with one CVS per table, return filename."""
+    return _backend.export()
+
+
 if __name__ == '__main__':
     load()
 
