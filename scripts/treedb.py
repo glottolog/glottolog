@@ -921,7 +921,7 @@ def write_csv(query=None, filename='treedb.csv', encoding='utf-8'):
 
 
 def export_db():
-    """Dump .sqlite file to a ZIP file with one CVS per table, return filename."""
+    """Dump .sqlite file to a ZIP file with one CSV per table, return filename."""
     return _backend.export()
 
 
