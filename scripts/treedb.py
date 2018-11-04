@@ -907,7 +907,7 @@ def bookkeeping_no_children(session):
 
 
 def export_db():
-    """Dump .sqlite file to a ZIP file with one CVS per table, return filename."""
+    """Dump .sqlite file to a ZIP file with one CSV per table, return filename."""
     return _backend.export()
 
 
@@ -944,3 +944,6 @@ if __name__ == '__main__':
 
     # run sanity checks
     check()
+
+    #export_db()
+    #write_csv()
