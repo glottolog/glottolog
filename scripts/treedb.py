@@ -905,11 +905,13 @@ def bookkeeping_no_children(session):
         .filter(Languoid.parent.has(name=BOOKKEEPING))\
         .filter(Languoid.children.any())
 
-
 def export_db():
     """Dump .sqlite file to a ZIP file with one CSV per table, return filename."""
-    return _backend.export()
+        df = _backend.pd_read_sql(query, index_col='id')
+        df.info()
 
+    # run sanity checks
+    check()
 
 def write_csv(query=None, filename='treedb.csv', encoding='utf-8'):
     """Write get_query() example query (or given query) to CSV file."""
