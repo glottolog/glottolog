@@ -905,7 +905,6 @@ def bookkeeping_no_children(session):
         .filter(Languoid.parent.has(name=BOOKKEEPING))\
         .filter(Languoid.children.any())
 
-
 def export_db():
     """Dump .sqlite file to a ZIP file with one CSV per table, return filename."""
     return _backend.export()
