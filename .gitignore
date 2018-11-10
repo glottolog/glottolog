@@ -44,6 +44,7 @@ iso639-3
 /.venv/
 
 /*.sqlite3
+/scripts/.venv/
 /scripts/*.sqlite3
 /scripts/*.csv
 /scripts/*.zip

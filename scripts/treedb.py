@@ -1,5 +1,43 @@
 # treedb.py - load languoids/tree/**/md.ini into sqlite3
 
+"""Example session
+
+$ python -m venv .venv
+$ source .venv/bin/activate
+$ pip install -r treedb-requirements.txt
+
+$ python
+>>> import treedb
+>>> next(treedb.iterlanguoids())
+{'id': 'abin1243', ...
+
+>>> treedb.load()
+...
+
+>>> treedb.check()
+...
+
+>>> treedb.export_db()
+'treedb.zip'
+
+>>> treedb.write_csv()
+
+>>> treedb.load(rebuild=True)
+...
+
+>>> import sqlalchemy as sa
+>>> treedb.write_csv(sa.select([treedb.Languoid]), filename='languoids.csv')
+
+>>> engine = treedb._backend.engine
+>>> sa.select([treedb.Languoid], bind=engine).execute().first()
+('abin1243', 'language', 'Abinomn', None, 'bsa', 'bsa', -2.92281, 138.891)
+
+>>> session = treedb._backend.Session()
+>>> session.query(treedb.Languoid).first()
+<Languoid id='abin1243' level='language' name='Abinomn' hid='bsa' iso639_3='bsa'>
+>>> session.close()
+"""
+
 from __future__ import unicode_literals
 
 import re
