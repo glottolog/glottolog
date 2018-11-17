@@ -84,7 +84,7 @@ def load(load_func, rebuild=False, engine=engine):
         if rebuild:
             dbfile.unlink()
         else:
-            return
+            return dbfile
 
     def get_output(args, encoding='ascii'):
         if platform.system() == 'Windows':
@@ -111,6 +111,7 @@ def load(load_func, rebuild=False, engine=engine):
         sa.insert(Dataset, bind=conn).execute(infos)
         load_func(conn.execution_options(compiled_cache={}))
     print(time.time() - start)
+    return dbfile
 
 
 def export(metadata=Model.metadata, engine=engine, encoding='utf-8'):
@@ -159,6 +160,7 @@ def write_csv(query, filename, encoding='utf-8', engine=engine, verbose=False):
     rows = engine.execute(query)
     with _csv_open(filename, 'w', encoding) as f:
         _csv_write(f, encoding, header=rows.keys(), rows=rows)
+    return filename
 
 
 def print_rows(query, format_=None, engine=engine, verbose=False):
@@ -171,8 +173,3 @@ def print_rows(query, format_=None, engine=engine, verbose=False):
     else:
         for r in rows:
             print(format_.format(**r))
-
-
-def pd_read_sql(query, engine=engine, **kwargs):
-    import pandas as pd
-    return pd.read_sql_query(query, engine, **kwargs)

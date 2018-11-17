@@ -2,17 +2,18 @@
 
 """Example session
 
-$ python -m venv .venv
-$ source .venv/bin/activate
+$ python -m venv .venv  # PY3
+$ source .venv/bin/activate  # Windows: $ .venv/Scripts/activate.bat
 $ pip install -r treedb-requirements.txt
 
 $ python
 >>> import treedb
 >>> next(treedb.iterlanguoids())
-{'id': 'abin1243', ...
+{'id': 'abin1243', 'parent_id': None, 'level': 'language', ...
 
 >>> treedb.load()
 ...
+'treedb.sqlite3'
 
 >>> treedb.check()
 ...
@@ -21,18 +22,19 @@ $ python
 'treedb.zip'
 
 >>> treedb.write_csv()
+'treedb.csv'
 
 >>> treedb.load(rebuild=True)
 ...
+'treedb.sqlite3'
 
 >>> import sqlalchemy as sa
 >>> treedb.write_csv(sa.select([treedb.Languoid]), filename='languoids.csv')
 
->>> engine = treedb._backend.engine
->>> sa.select([treedb.Languoid], bind=engine).execute().first()
+>>> sa.select([treedb.Languoid], bind=treedb.engine).execute().first()
 ('abin1243', 'language', 'Abinomn', None, 'bsa', 'bsa', -2.92281, 138.891)
 
->>> session = treedb._backend.Session()
+>>> session = treedb.Session()
 >>> session.query(treedb.Languoid).first()
 <Languoid id='abin1243' level='language' name='Abinomn' hid='bsa' iso639_3='bsa'>
 >>> session.close()
@@ -46,7 +48,7 @@ import datetime
 import operator
 import itertools
 
-from treedb_backend import iteritems
+from treedb_backend import engine, Session, iteritems
 
 import sqlalchemy as sa
 import sqlalchemy.orm
@@ -114,6 +116,7 @@ ISORETIREMENT_REASON = {'split', 'merge', 'duplicate', 'non-existent', 'change'}
 
 
 def iterlanguoids(root=_files.ROOT):
+    """Yield dicts from languoids/tree/**/md.ini files."""
     def getlines(cfg, section, option):
         if not cfg.has_option(section, option):
             return []
@@ -132,9 +135,9 @@ def iterlanguoids(root=_files.ROOT):
         return _match(name).groups()
 
     def splitsource(s, pattern=re.compile(
-        "\*\*(?P<bibfile>[a-z0-9\-_]+):(?P<bibkey>[a-zA-Z.?\-;*'/()\[\]!_:0-9\u2014]+?)\*\*"
-        "(:(?P<pages>[0-9\-f]+))?"
-        '(<trigger "(?P<trigger>[^\"]+)">)?')):
+        r"\*\*(?P<bibfile>[a-z0-9\-_]+):(?P<bibkey>[a-zA-Z.?\-;*'/()\[\]!_:0-9\u2014]+?)\*\*"
+        r"(:(?P<pages>[0-9\-f]+))?"
+        r'(<trigger "(?P<trigger>[^\"]+)">)?')):
         return pattern.match(s).groupdict()
 
     def splitaltname(s, pattern=re.compile(
@@ -299,7 +302,7 @@ class Languoid(_backend.Model):
 
     @classmethod
     def path_family_language(cls, path_label='path', path_delimiter='/', include_self=True, bottomup=False,
-                             family_label='family', language_label='language'):
+                             family_label='family_id', language_label='language_id'):
         tree = cls.tree(include_self=include_self, with_steps=True, with_terminal=True)
         path = cls.path(label=path_label, delimiter=path_delimiter, bottomup=bottomup, _tree=tree)
         family = sa.select([tree.c.parent_id])\
@@ -576,7 +579,9 @@ class IsoRetirementChangeTo(_backend.Model):
 
 
 def load(root=_files.ROOT, with_values=True, rebuild=False):
-    _backend.load(make_loader(root, with_values), rebuild=rebuild)
+    """Load languoids/tree/**/md.ini into SQLite3 db, return filename.""" 
+    dbfile = _backend.load(make_loader(root, with_values), rebuild=rebuild)
+    return str(dbfile)
 
 
 def make_loader(root, with_values):
@@ -670,7 +675,7 @@ def _load(conn, root):
                 insert_irct(languoid_id=lid, code=c, ord=i)
 
 
-def iterdescendants(parent_level=None, child_level=None, bind=_backend.engine):
+def iterdescendants(parent_level=None, child_level=None, bind=engine):
     """Yield pairs of (parent id, sorted list of their descendant ids)."""
     # TODO: implement ancestors/descendants as sa.orm.relationship()
     # see https://bitbucket.org/zzzeek/sqlalchemy/issues/4165
@@ -704,6 +709,7 @@ def iterdescendants(parent_level=None, child_level=None, bind=_backend.engine):
 
 
 def get_query():
+    """Return example sqlalchemy core query."""
     def get_cols(model, label='%s', ignore='id'):
         cols = model.__table__.columns
         if ignore:
@@ -721,9 +727,9 @@ def get_query():
     subr, famr = (sa.orm.aliased(ClassificationRef) for _ in range(2))
     path, family, language = Languoid.path_family_language()
     return sa.select([
-            path,
+            path.label('path'),
             family.label('family_id'),
-            language.label('language_id'),
+            language.label('dialect_language_id'),
             Languoid,
             sa.select([sa.func.group_concat(languoid_macroarea.c.macroarea_name, ', ')])
                 .where(languoid_macroarea.c.languoid_id == Languoid.id)
@@ -785,6 +791,7 @@ def get_query():
 
 
 def check(func=None):
+    """Run consistency/sanity checks on database."""
     if func is not None:
         try:
             check.registered.append(func)
@@ -792,7 +799,7 @@ def check(func=None):
             check.registered = [func]
         return func
     for func in check.registered:
-        session = _backend.Session()
+        session = Session()
         ns = {'invalid_query': staticmethod(func), '__doc__': func.__doc__}
         check_cls = type(str('%sCheck' % func.__name__), (Check,), ns)
         check_inst = check_cls(session)
@@ -849,7 +856,7 @@ def docformat(func):
 
 @check
 @docformat
-def valid_glottocode(session, pattern='^[a-z0-9]{4}\d{4}$'):
+def valid_glottocode(session, pattern=r'^[a-z0-9]{4}\d{4}$'):
     """Glottocodes match %(pattern)r."""
     return session.query(Languoid).order_by('id')\
         .filter(~Languoid.id.op('REGEXP')(pattern))
@@ -857,7 +864,7 @@ def valid_glottocode(session, pattern='^[a-z0-9]{4}\d{4}$'):
 
 @check
 @docformat
-def valid_iso639_3(session, pattern='^[a-z]{3}$'):
+def valid_iso639_3(session, pattern=r'^[a-z]{3}$'):
     """Iso codes match %(pattern)r."""
     return session.query(Languoid).order_by('id')\
         .filter(~Languoid.iso639_3.op('REGEXP')(pattern))
@@ -865,7 +872,7 @@ def valid_iso639_3(session, pattern='^[a-z]{3}$'):
 
 @check
 @docformat
-def valid_hid(session, pattern='^(?:[a-z]{3}|NOCODE_[A-Z][a-zA-Z0-9-]+)$'):
+def valid_hid(session, pattern=r'^(?:[a-z]{3}|NOCODE_[A-Z][a-zA-Z0-9-]+)$'):
     """Hids match %(pattern)r."""
     return session.query(Languoid).order_by('id')\
         .filter(~Languoid.hid.op('REGEXP')(pattern))
@@ -943,23 +950,24 @@ def bookkeeping_no_children(session):
         .filter(Languoid.parent.has(name=BOOKKEEPING))\
         .filter(Languoid.children.any())
 
+
 def export_db():
     """Dump .sqlite file to a ZIP file with one CSV per table, return filename."""
     return _backend.export()
 
 
 def write_csv(query=None, filename='treedb.csv', encoding='utf-8'):
-    """Write get_query() example query (or given query) to CSV file."""
+    """Write get_query() example query (or given query) to CSV, return filename."""
     if query is None:
         query = get_query()
-    _backend.write_csv(query, filename, encoding=encoding)
+    return _backend.write_csv(query, filename, encoding=encoding)
 
 
 if __name__ == '__main__':
-    load()
-
     # usage examples
     print(next(iterlanguoids()))
+
+    load()
 
     _backend.print_rows(sa.select([Languoid]).order_by(Languoid.id).limit(5))
 
@@ -972,11 +980,11 @@ if __name__ == '__main__':
     query = get_query()  # big example query containing 'everything'
 
     try:
-        import pandas
+        import pandas as pd
     except ImportError:
         pass
     else:
-        df = _backend.pd_read_sql(query, index_col='id')
+        df = pd.read_sql_query(query, engine, index_col='id')
         df.info()
 
     # run sanity checks
