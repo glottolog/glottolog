@@ -23,7 +23,7 @@ setup(
         'clldutils>=2.5.2',
         'sqlalchemy',
         'tqdm',
-        'pybtex>=0.20',
+        'pybtex==0.21',
         'latexcodec',
         'unidecode',
         'whoosh',
