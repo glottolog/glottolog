@@ -9,7 +9,7 @@ import unicodedata
 
 from six import PY2, text_type
 
-from pybtex.database.input.bibtex import BibTeXEntryIterator, Parser, UndefinedMacro
+from pybtex.database.input.bibtex import LowLevelParser, Parser, UndefinedMacro
 from pybtex.scanner import PybtexSyntaxError
 from pybtex.exceptions import PybtexError
 from pybtex.textutils import whitespace_re
@@ -35,15 +35,12 @@ def identity(x):
 
 
 def iterentries_from_text(text, encoding='utf-8'):
-    if PY2:
-        py2_decode = lambda text: text.decode(encoding)  # noqa: E731
-    else:  # pragma: no cover
-        py2_decode = identity
-        if hasattr(text, 'read'):
-            text = text.read()
-        if not isinstance(text, text_type):
-            text = text.decode(encoding)
-    for entrytype, (bibkey, fields) in BibTeXEntryIterator(text):
+    py2_decode = identity
+    if hasattr(text, 'read'):
+        text = text.read(-1)
+    if not isinstance(text, text_type):
+        text = text.decode(encoding)
+    for entrytype, (bibkey, fields) in LowLevelParser(text):
         fields = {
             py2_decode(name).lower():
                 whitespace_re.sub(' ', py2_decode(''.join(values)).strip())
@@ -166,7 +163,7 @@ def check(filename, encoding=None):
 
 
 class CheckParser(Parser):
-    """Unline BibTeXEntryIterator also parses names, macros, etc."""
+    """Unline LowLevelParser also parses names, macros, etc."""
 
     def __init__(self, *args, **kwargs):
         super(CheckParser, self).__init__(*args, **kwargs)
