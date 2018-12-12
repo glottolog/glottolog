@@ -28,7 +28,7 @@ setup(
         'unidecode',
         'whoosh',
         'attrs>=18.1',
-        'pycountry>=17.01.08',
+        'pycountry>=18.12.8',
         'termcolor',
         'newick',
         'markdown',
