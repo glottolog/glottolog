@@ -165,7 +165,8 @@ class Country(UnicodeMixin):
     def from_name(cls, name):
         try:
             res = pycountry.countries.get(name=name)
-            return cls(id=res.alpha_2, name=res.name)
+            if res:
+                return cls(id=res.alpha_2, name=res.name)
         except KeyError:
             pass
 
@@ -173,7 +174,8 @@ class Country(UnicodeMixin):
     def from_id(cls, id_):
         try:
             res = pycountry.countries.get(alpha_2=id_)
-            return cls(id=res.alpha_2, name=res.name)
+            if res:
+                return cls(id=res.alpha_2, name=res.name)
         except KeyError:
             pass
 
