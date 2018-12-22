@@ -281,10 +281,10 @@ class Languoid(_backend.Model):
             .select_from(tree_1.join(parent, parent.id == tree_1.c.parent_id))\
             .where(parent.parent_id != None)
         if with_steps:
-            tree_2.append_column(tree_1.c.steps + 1)
+            tree_2.append_column((tree_1.c.steps + 1).label('steps'))
         if with_terminal:
             gparent = sa.orm.aliased(Languoid, name='grandparent')
-            tree_2.append_column(gparent.parent_id == None)
+            tree_2.append_column((gparent.parent_id == None).label('terminal'))
             tree_2 = tree_2.select_from(tree_2.froms[-1]
                 .outerjoin(gparent, gparent.id == parent.parent_id))
         return tree_1.union_all(tree_2)
