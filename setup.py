@@ -37,7 +37,7 @@ setup(
     ],
     extras_require={
         'dev': ['tox>=2.9', 'flake8', 'pep8-naming', 'wheel', 'twine'],
-        'test': ['mock>=2', 'pytest>=3.3', 'pytest-mock', 'pytest-cov'],
+        'test': ['mock>=2', 'pytest>=3.6', 'pytest-mock', 'pytest-cov'],
     },
     long_description='',
     classifiers=[
