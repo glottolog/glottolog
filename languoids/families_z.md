@@ -17,7 +17,6 @@
 - [Zenatic [zena1250]](tree/afro1255/berb1260/zena1250/md.ini)
 - [Zhongyuan [zhon1236]](tree/sino1245/sini1245/clas1255/midd1354/nort3155/mand1471/zhon1236/md.ini)
 - [Zigua-Nguu [zigu1243]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/nort3203/nort3209/ruvu1235/west2846/seut1234/zigu1243/md.ini)
-- [Zigulaic [zigu1244]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/nort3203/nort3209/ruvu1235/west2846/seut1234/zigu1243/zigu1244/md.ini)
 - [Zoe-Emerillon [zoee1241]](tree/tupi1275/mawe1252/awet1245/tupi1276/tupi1281/waya1271/zoee1241/md.ini)
 - [Zoque [zoqu1261]](tree/mixe1284/zoqu1261/md.ini)
 - [Zulu based pidgin [zulu1250]](tree/pidg1258/zulu1250/md.ini)

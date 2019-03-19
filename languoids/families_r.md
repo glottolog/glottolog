@@ -11,6 +11,7 @@
 - [Rara-Sara Bakati' [rara1236]](tree/aust1307/mala1545/land1261/beny1238/baka1275/rara1236/md.ini)
 - [Rasawa-Saponi [rasa1242]](tree/lake1255/farw1236/rasa1242/md.ini)
 - [Rashad [rash1249]](tree/rash1249/md.ini)
+- [Raute-Rawat [raut1240]](tree/sino1245/raji1239/raut1240/md.ini)
 - [Ravulic [ravu1238]](tree/drav1251/sout3133/sout3138/tami1291/tami1292/tami1293/tami1294/tami1297/tami1298/mala1541/ravu1238/md.ini)
 - [Rawo-Main Serra [rawo1243]](tree/skoo1245/skou1238/serr1253/rawo1243/md.ini)
 - [Red Tai [redt1235]](tree/taik1256/kamt1241/beta1258/daic1237/cent2251/wenm1239/sapa1255/sout3184/sout2743/redt1235/md.ini)

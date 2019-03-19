@@ -58,7 +58,7 @@
 - [Yirram [djam1254]](tree/mirn1241/djam1254/md.ini)
 - [Yoke-Pauwi [yoke1239]](tree/aust1307/mala1545/cent2237/east2712/sout2850/sout3229/lowe1409/yoke1239/md.ini)
 - [Yokutsan [yoku1255]](tree/yoku1255/md.ini)
-- [Yolmo-Kagate [yolm1234]](tree/sino1245/bodi1256/bodi1257/oldm1245/tibe1276/sout3216/kyir1235/yolm1234/md.ini)
+- [Yolmo-Kagate [yolm1234]](tree/sino1245/bodi1256/bodi1257/oldm1245/tibe1276/late1253/cent2346/sout3216/kyir1235/yolm1234/md.ini)
 - [Yom-Nawdm [yomn1239]](tree/atla1278/volt1241/nort3149/gura1261/cent2243/nort2777/bwam1248/otiv1239/nucl1743/gurm1247/gurm1248/yomn1239/md.ini)
 - [Yombe-Vili [bant1296]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/kong1295/kong1296/kiko1234/core1256/west2874/bant1296/md.ini)
 - [Yongnan-Yongbei [yong1274]](tree/taik1256/kamt1241/beta1258/daic1237/nort3180/yong1274/md.ini)

@@ -1,5 +1,5 @@
 - [JSLic [jsli1234]](tree/sign1238/deaf1237/jsli1234/md.ini)
-- [Jaad [jaad1234]](tree/atla1278/nort3146/nort3148/tend1240/jaad1234/md.ini)
+- [Jaad [jaad1234]](tree/atla1278/nort3146/jaad1234/md.ini)
 - [Jabuti [jabu1249]](tree/nucl1710/jabu1249/md.ini)
 - [Jaku-Gubi [jaku1245]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/jara1262/nige1254/jaku1245/md.ini)
 - [Jala [jala1236]](tree/gunw1250/gunw1253/east2701/jala1236/md.ini)
