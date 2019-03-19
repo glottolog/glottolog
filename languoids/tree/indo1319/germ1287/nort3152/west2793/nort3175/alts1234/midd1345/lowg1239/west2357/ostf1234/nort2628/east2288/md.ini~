@@ -1,0 +1,77 @@
+# -*- coding: utf-8 -*-
+[core]
+name = East Frisian Low Saxon
+hid = frs
+level = dialect
+latitude = 52.9713
+longitude = 7.73549
+macroareas = 
+	Eurasia
+countries = 
+	Germany (DE)
+
+[sources]
+glottolog = 
+
+[altnames]
+wals = 
+	Frisian
+	Frisian (Eastern)
+wals other = 
+	Frisian (Saterland)
+ruhlen (1987) = 
+	Frisian, East
+	not specified
+moseley & asher (1994) = 
+	Frisian
+multitree = 
+	Friesisch
+	Frisian
+	Frisian (Eastern)
+	Frisian, Eastern
+	Ostfriesisch
+	Saterlandic Frisian
+	Seeltersk Frisian
+lexvo = 
+	Aastfräisk [stq]
+	East Frisian Low Saxon [en]
+	Eastern Frisian [en]
+	Eastfrysk [fy]
+	Oostfreesch Platt [nds]
+	Oostfreisk Nederduutsk [nds]
+	Oostfries Nedersaksisch [nl]
+	Orientfrislanda platgermana lingvo [eo]
+	Ostfriesisches Platt [de]
+	frison oriental [fr]
+hhbib_lgcode = 
+	East Frisian dialect of Low German
+	Frisian-Eastern
+glottolog = 
+	Eastern Frisian
+
+[triggers]
+lgcode = 
+	plattdeutsch
+	ostfriesischen
+	saterfriesische
+	ostfriesisches
+	kontinentalwestgermanischen
+	saterfriesisches
+	ostfriesische
+	friesischen
+
+[identifier]
+wals = fri;fea
+multitree = frs
+
+[classification]
+sub = **hh:v:Niebaum:Ostfriesisch-Groningische**
+subrefs = 
+	**hh:v:Niebaum:Ostfriesisch-Groningische**
+
+[endangerment]
+status = threatened
+source = UNESCO
+date = 2017-08-19T22:02:46
+comment = Low Saxon (383-act, drt, frs, gos, nds, sdz, stl, twd, vel, wep) = Vulnerable
+
