@@ -27,7 +27,6 @@
 - [Forest Kivu [fore1272]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/nort3203/grea1289/west2842/kivu1239/fore1272/md.ini)
 - [Forrest River [forr1234]](tree/worr1236/nort2751/forr1234/md.ini)
 - [Fox [foxx1245]](tree/algi1248/algo1256/east2765/foxx1245/md.ini)
-- [Franconian [fran1268]](tree/indo1319/germ1287/nort3152/west2793/fran1268/md.ini)
 - [Francoprovencalic [fran1269]](tree/indo1319/ital1284/lati1262/lati1263/impe1234/roma1334/ital1285/west2813/shif1234/nort3208/gall1280/oila1234/fran1269/md.ini)
 - [French based pidgin [fren1279]](tree/pidg1258/fren1279/md.ini)
 - [French-Cree [fren1278]](tree/mixe1287/fren1278/md.ini)

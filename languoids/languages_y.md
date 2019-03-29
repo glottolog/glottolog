@@ -167,7 +167,6 @@
 - [Yoidik [yoid1240][ydk]](tree/nucl1709/mada1298/croi1234/mabu1247/hans1243/remp1242/yoid1240/md.ini)
 - [Yoke [yoke1238][yki]](tree/aust1307/mala1545/cent2237/east2712/sout2850/sout3229/lowe1409/yoke1239/yoke1238/md.ini)
 - [Yokohama Pidgin [yoko1234]](tree/pidg1258/japa1257/yoko1234/md.ini)
-- [Yola [yola1237][yol]](tree/book1242/yola1237/md.ini)
 - [Yolngu Sign Language [yoln1234][ygs]](tree/sign1238/vill1244/yoln1234/md.ini)
 - [Yoloxochitl Mixtec [yolo1241][xty]](tree/otom1299/east2557/amuz1253/mixt1422/mixt1423/mixt1427/guer1245/yolo1241/md.ini)
 - [Yom [yomm1242][pil]](tree/atla1278/volt1241/nort3149/gura1261/cent2243/nort2777/bwam1248/otiv1239/nucl1743/gurm1247/gurm1248/yomn1239/yomm1242/md.ini)

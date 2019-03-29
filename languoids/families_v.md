@@ -14,7 +14,7 @@
 - [Vietic [viet1250]](tree/aust1305/viet1250/md.ini)
 - [Vieux Mongo [vieu1234]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/grea1286/kela1261/tsin1240/vieu1234/md.ini)
 - [Village Sign Language [vill1244]](tree/sign1238/vill1244/md.ini)
-- [Vincent-Grenadian Creole [vinc1244]](tree/indo1319/germ1287/nort3152/west2793/nort3175/angl1264/angl1265/merc1242/macr1271/guin1259/cari1284/east2759/vinc1244/md.ini)
+- [Vincent-Grenadian Creole [vinc1244]](tree/indo1319/germ1287/nort3152/west2793/nort3175/angl1264/angl1265/late1254/merc1242/macr1271/guin1259/cari1284/east2759/vinc1244/md.ini)
 - [Vitiaz linkage [viti1243]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/west2818/nort3206/nger1241/viti1243/md.ini)
 - [Voh-Kone [vohk1234]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/sout3173/newc1243/nort3211/vohk1234/md.ini)
 - [Volta-Congo [volt1241]](tree/atla1278/volt1241/md.ini)

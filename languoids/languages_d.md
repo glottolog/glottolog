@@ -251,7 +251,7 @@
 - [Dusun Malang [dusu1269][duq]](tree/aust1307/mala1545/basa1291/grea1283/dusu1269/md.ini)
 - [Dusun Witu [dusu1267][duw]](tree/aust1307/mala1545/basa1291/grea1283/sout2919/dusu1267/md.ini)
 - [Dutch Sign Language [dutc1253][dse]](tree/sign1238/deaf1237/lsfi1234/dutc1259/dutc1253/md.ini)
-- [Dutch [dutc1256][nld]](tree/indo1319/germ1287/nort3152/west2793/fran1268/wese1235/macr1270/midd1347/mode1257/dutc1256/md.ini)
+- [Dutch [dutc1256][nld]](tree/indo1319/germ1287/nort3152/west2793/macr1270/midd1347/mode1257/glob1241/dutc1256/md.ini)
 - [Duungooma [duun1242][dux]](tree/mand1469/west2780/samo1308/duun1243/duun1244/samo1309/duun1245/duun1242/md.ini)
 - [Duupa [duup1238][dae]](tree/atla1278/volt1241/nort3149/came1255/samb1322/samb1323/sout3238/diic1235/duup1238/md.ini)
 - [Duvle [duvl1242][duv]](tree/lake1255/tari1255/duvl1242/md.ini)

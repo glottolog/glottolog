@@ -18,7 +18,7 @@
 - [Cariban (Unattested) [cari1285]](tree/unat1236/cari1285/md.ini)
 - [Cariban [cari1283]](tree/cari1283/md.ini)
 - [Caribbean Arawakan [cari1281]](tree/araw1281/nort2990/cari1281/md.ini)
-- [Caribbean English Creole [cari1284]](tree/indo1319/germ1287/nort3152/west2793/nort3175/angl1264/angl1265/merc1242/macr1271/guin1259/cari1284/md.ini)
+- [Caribbean English Creole [cari1284]](tree/indo1319/germ1287/nort3152/west2793/nort3175/angl1264/angl1265/late1254/merc1242/macr1271/guin1259/cari1284/md.ini)
 - [Carolinean Outlier Polynesian [nort3235]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/cent2060/east2445/poly1242/nucl1485/nort3246/nort3235/md.ini)
 - [Caspian [casp1236]](tree/indo1319/indo1320/iran1269/cent2317/cent2318/nort3177/casp1236/md.ini)
 - [Castilic [cast1243]](tree/indo1319/ital1284/lati1262/lati1263/impe1234/roma1334/ital1285/west2813/shif1234/sout3183/west2838/cast1243/md.ini)

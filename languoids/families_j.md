@@ -3,7 +3,7 @@
 - [Jabuti [jabu1249]](tree/nucl1710/jabu1249/md.ini)
 - [Jaku-Gubi [jaku1245]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/jara1262/nige1254/jaku1245/md.ini)
 - [Jala [jala1236]](tree/gunw1250/gunw1253/east2701/jala1236/md.ini)
-- [Jamaicanic [jama1264]](tree/indo1319/germ1287/nort3152/west2793/nort3175/angl1264/angl1265/merc1242/macr1271/guin1259/cari1284/west2854/jama1264/md.ini)
+- [Jamaicanic [jama1264]](tree/indo1319/germ1287/nort3152/west2793/nort3175/angl1264/angl1265/late1254/merc1242/macr1271/guin1259/cari1284/west2854/jama1264/md.ini)
 - [Japan-Taiwan Japanese [japa1258]](tree/japo1237/japa1256/japa1258/md.ini)
 - [Japanese based [japa1257]](tree/pidg1258/japa1257/md.ini)
 - [Japanesic [japa1256]](tree/japo1237/japa1256/md.ini)

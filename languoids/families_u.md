@@ -140,6 +140,8 @@
 - [Upper Arun [uppe1412]](tree/sino1245/hima1249/maha1306/kira1253/east2719/uppe1412/md.ini)
 - [Upper Cross [uppe1418]](tree/atla1278/volt1241/benu1247/delt1251/uppe1418/md.ini)
 - [Upper Dudhkosi [uppe1413]](tree/sino1245/hima1249/maha1306/kira1253/west2424/uppe1413/md.ini)
+- [Upper Franconian [uppe1464]](tree/indo1319/germ1287/nort3152/west2793/high1289/high1286/midd1349/mode1258/uppe1464/md.ini)
+- [Upper German [high1286]](tree/indo1319/germ1287/nort3152/west2793/high1289/high1286/md.ini)
 - [Upper Guinea Portuguese [uppe1458]](tree/indo1319/ital1284/lati1262/lati1263/impe1234/roma1334/ital1285/west2813/shif1234/sout3183/west2838/gali1263/macr1272/uppe1458/md.ini)
 - [Upper Kinabatangan-Lobu [uppe1426]](tree/aust1307/mala1545/nort3253/sout3154/grea1293/pait1248/uppe1426/md.ini)
 - [Upper Markham [uppe1423]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/west2818/nort3206/huon1245/mark1257/uppe1423/md.ini)

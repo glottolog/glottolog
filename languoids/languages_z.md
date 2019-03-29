@@ -24,7 +24,7 @@
 - [Zazao [zaza1245][jaj]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/west2818/meso1253/newi1242/stge1234/nort3225/sant1458/cent2063/zaza1247/zaza1245/md.ini)
 - [Zbu [zbua1234]](tree/sino1245/burm1265/naqi1236/qian1263/rgya1241/core1262/jiar1240/zbua1234/md.ini)
 - [Zeem [zeem1242][zua]](tree/afro1255/chad1250/west2785/west2790/west2800/sout3162/sout3170/zeem1242/md.ini)
-- [Zeeuws [zeeu1238][zea]](tree/indo1319/germ1287/nort3152/west2793/fran1268/wese1235/macr1270/midd1347/mode1257/zeeu1238/md.ini)
+- [Zeeuws [zeeu1238][zea]](tree/indo1319/germ1287/nort3152/west2793/macr1270/midd1347/mode1257/sout3292/zeeu1238/md.ini)
 - [Zemba [zemb1238][dhm]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/njil1234/sout3233/kune1234/cimb1239/here1252/zemb1238/md.ini)
 - [Zeme Naga [zeme1240][nzm]](tree/sino1245/kuki1245/naga1409/zeme1241/nucl1313/zeme1240/md.ini)
 - [Zenag [zena1237][zeg]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/west2818/nort3206/huon1245/sout2878/buan1245/mume1239/zena1237/md.ini)
