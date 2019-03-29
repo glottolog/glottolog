@@ -2,6 +2,12 @@
 Releasing clld/glottolog
 ========================
 
+0. Make sure 
+   - you have the latest ISO 639-3 code tables from 
+     https://iso639-3.sil.org/code_tables/download_tables
+     put into `build/`,
+   - run `glottolog isoretirements`
+   - and commited and pushed the changes.
 1. Check out `master` and pull the latest changes:
 ```
 git checkout master
@@ -52,47 +58,3 @@ git push --tags origin
 9. Create a "proper" release on GitHub and have it picked up by ZENODO.
 10. Add DOI badge from ZENODO as soon as it becomes available.
 
-
-Releasing `pyglottolog`
------------------------
-
-- Make sure the tests pass:
-  ```
-  tox -r
-  ```
-- Make sure flake8 passes:
-  ```
-  flake8 pyglottolog
-  ```
-- Change version to the new version number in
-  - `setup.py`
-  - `pyglottolog/__init__.py`
-- Bump version number:
-  ```
-  git commit -a -m "release pyglottolog <version>"
-  ```
-- Create a release tag:
-  ```
-  git tag -a pyglottolog-<version> -m "first version to be released on pypi"
-  ```
-- Release to PyPI:
-  ```
-  git checkout tags/v$1
-  rm dist/*
-  python setup.py sdist bdist_wheel
-  twine upload dist/*
-  ```
-- Push to github:
-  ```
-  git push origin
-  git push --tags
-  ```
-- Increment version number and append `.dev0` to the version number for the new development cycle:
-  - `pyglottolog/__init__.py`
-  - `setup.py`
-
-- Commit/push the version change:
-  ```shell
-  git commit -a -m "bump version for development"
-  git push origin
-  ```
