@@ -1,0 +1,33 @@
+{
+    "keywords": [
+        "linguistics"
+    ],
+    "title": "clld/glottolog: Glottolog database 3.4",
+    "communities": [
+        {
+            "identifier": "clld"
+        }
+    ],
+    "license": {
+        "id": "CC-BY-4.0"
+    },
+    "description": "<p>Hammarstr&ouml;m, Harald &amp; Forkel, Robert &amp; Haspelmath, Martin. 2019.\nGlottolog 3.4.\nJena: Max Planck Institute for the Science of Human History.\n(Available online at <a href=\"https://glottolog.org\">https://glottolog.org</a>)</p>",
+    "access_right": "open",
+    "upload_type": "dataset",
+    "creators": [
+        {
+            "affiliation": "University Uppsala",
+            "name": "Harald Hammarstr\u00f6m"
+        },
+        {
+            "affiliation": "Max Planck Institute for the Science of Human History",
+            "name": "Robert Forkel",
+            "orcid": "0000-0003-1081-086X"
+        },
+        {
+            "affiliation": "Max Planck Institute for the Science of Human History",
+            "name": "Martin Haspelmath",
+            "orcid": "0000-0003-2100-8493"
+        }
+    ]
+}

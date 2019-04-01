@@ -47,6 +47,7 @@ Releasing
 6. Add release notes to `CHANGES.md` and `CONTRIBUTORS.md`
 7. Draft a new release running
 ```
+glottolog --repos=. release
 git commit -a -m"release <version>"
 git tag -a v<version> -m "release <version>"
 ```
