@@ -339,7 +339,7 @@
 - [Douna [doun1238]](tree/atla1278/volt1241/nort3149/gura1261/cent2243/sout3164/kirm1250/turk1306/doun1238/md.ini)
 - [Dourbeye [dour1238]](tree/atla1278/volt1241/unun9902/adam1254/nort2770/dour1238/md.ini)
 - [Douroun [dour1242]](tree/afro1255/chad1250/bium1280/nort3156/marg1267/mofu1249/mofu1250/nort3046/dour1242/md.ini)
-- [Downward Southern Qiang [down1240]](tree/sino1245/burm1265/naqi1236/qian1263/qian1264/sout2728/down1240/md.ini)
+- [Downward-e Southern Qiang [down1240]](tree/sino1245/burm1265/naqi1236/qian1263/qian1264/sout2728/down1240/md.ini)
 - [Dras [dras1242]](tree/indo1319/indo1320/indo1321/indo1324/shin1270/shin1264/asto1242/dras1242/md.ini)
 - [Drehet [dreh1238]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/admi1239/east2459/manu1262/west2533/west2849/kheh1237/dreh1238/md.ini)
 - [Drents [dren1238][drt]](tree/indo1319/germ1287/nort3152/west2793/nort3175/alts1234/midd1345/lowg1239/west2357/west2356/dren1238/md.ini)

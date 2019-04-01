@@ -802,6 +802,7 @@
 - [Bugombe [bugo1238]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/abab1240/oldb1234/komo1265/bila1258/bhel1238/bugo1238/md.ini)
 - [Bugudum [bugu1248]](tree/afro1255/chad1250/masa1323/nort3157/masa1324/masa1322/bugu1248/md.ini)
 - [Bugumbe [bugu1247]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/nort3203/grea1289/east2750/nyan1318/nort3227/kuri1259/bugu1247/md.ini)
+- [Buhar [buha1234]](tree/atla1278/volt1241/benu1247/benu1248/west2801/ninz1247/mada1282/buha1234/md.ini)
 - [Buhi [buhi1243][ubl]](tree/aust1307/mala1545/grea1284/cent2246/biko1240/inla1266/alba1269/buhi1243/md.ini)
 - [Buinaksk [buin1246]](tree/turk1311/comm1245/kipc1239/west1472/kumy1244/buin1246/md.ini)
 - [Buji [buji1242]](tree/atla1278/volt1241/benu1247/kain1275/cent2242/basa1288/east2404/josa1234/nort3210/nort3215/boze1240/jere1244/buji1242/md.ini)

@@ -25,6 +25,7 @@
 - [Jampea [jamp1237]](tree/aust1307/mala1545/basa1291/grea1283/sama1302/sulu1242/born1254/indo1317/jamp1237/md.ini)
 - [Jamral [jamr1238]](tree/indo1319/indo1320/indo1321/indo1322/subc1234/bhil1254/malv1243/jamr1238/md.ini)
 - [Jamshidi [jams1238]](tree/indo1319/indo1320/iran1269/sout3157/midd1352/mode1259/fars1254/fars1255/east2745/aima1241/jams1238/md.ini)
+- [Janda [jand1249]](tree/atla1278/volt1241/benu1247/benu1248/west2801/ninz1247/numa1252/jand1249/md.ini)
 - [Jandai [jand1248][jan]](tree/pama1250/east2770/yaga1256/jand1248/md.ini)
 - [Jander [jand1247]](tree/atla1278/nort3146/wolo1248/wolo1247/nucl1347/jand1247/md.ini)
 - [Janera [jane1236]](tree/tuca1253/east2698/west2789/sout3006/bara1380/jane1236/md.ini)

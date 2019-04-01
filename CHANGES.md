@@ -3,7 +3,10 @@
 Notable changes between releases of the Glottolog data.
 
 
-## [Unreleased]
+## [3.4] - 2019-04-02
+
+See https://github.com/clld/glottolog/pulls?q=is%3Apr+is%3Amerged for a list of
+accepted changes.
 
 
 ## [3.3.2] - 2018-08-22

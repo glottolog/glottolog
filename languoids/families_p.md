@@ -123,7 +123,7 @@
 - [Poqom [poco1241]](tree/maya1287/core1254/quic1274/grea1276/poco1241/md.ini)
 - [Port Sandwich-Axamb-Avok [port1295]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/nort3195/cent2269/mala1539/east2753/cent2315/sout3239/port1295/md.ini)
 - [Port Vato-Dakaka [port1293]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/nort3195/cent2269/ambr1240/port1292/port1293/md.ini)
-- [Portuguese based [port1294]](tree/pidg1258/port1294/md.ini)
+- [Portuguese-based pidgin [port1294]](tree/pidg1258/port1294/md.ini)
 - [Potou [poto1250]](tree/atla1278/volt1241/kwav1236/nyoa1234/poto1254/poto1250/md.ini)
 - [Potou-Tano [poto1254]](tree/atla1278/volt1241/kwav1236/nyoa1234/poto1254/md.ini)
 - [Pouye-Karawa [pouy1239]](tree/sepi1257/ramm1241/pouy1239/md.ini)

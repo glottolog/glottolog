@@ -407,7 +407,6 @@
 - [Sinicahua Mixtec [sini1243][xti]](tree/otom1299/east2557/amuz1253/mixt1422/mixt1423/mixt1427/west2824/sini1243/md.ini)
 - [Sinicized Miao [hmon1331][hmz]](tree/hmon1336/hmon1337/nucl1714/nucl1720/west2803/grea1295/chua1248/firs1234/hmon1331/md.ini)
 - [Sininkere [sini1242][skq]](tree/mand1469/west2780/samo1308/soni1257/soni1258/sini1242/md.ini)
-- [Sinsauru [sins1241][snz]](tree/nucl1709/mada1298/raic1241/evap1240/asas1241/sins1241/md.ini)
 - [Sinte Romani [sint1235][rmo]](tree/indo1319/indo1320/indo1321/indo1322/roma1329/roma1330/nort3197/sint1235/md.ini)
 - [Sinyar [siny1243][sys]](tree/cent2225/sara1341/siny1243/md.ini)
 - [Sio [sioo1240][xsi]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/west2818/nort3206/nger1241/viti1243/sioo1240/md.ini)

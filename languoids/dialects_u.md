@@ -97,6 +97,7 @@
 - [Ungameha [unga1254]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/wide1239/narr1282/mbam1249/bami1239/ndan1241/unga1254/md.ini)
 - [Unggaranggu [ungg1244][xun]](tree/worr1236/west2435/umii1235/ungg1244/md.ini)
 - [Unguja [ungu1238]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/nort3203/nort3209/coas1317/saba1282/swah1254/momb1256/swah1253/ungu1238/md.ini)
+- [Ungwar Zaria [ungw1234]](tree/atla1278/volt1241/benu1247/benu1248/west2801/ninz1247/mada1282/ungw1234/md.ini)
 - [Unhun [unhu1238]](tree/araw1281/nort2990/inla1264/japu1236/nucl1764/bani1258/bani1259/curr1243/unhu1238/md.ini)
 - [Unogboko [unog1238]](tree/atla1278/volt1241/benu1247/akpe1249/edoi1239/sout2805/isok1239/unog1238/md.ini)
 - [Untib [unti1238]](tree/nakh1245/dagh1238/avar1255/avar1256/unti1238/md.ini)

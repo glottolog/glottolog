@@ -611,6 +611,7 @@
 - [Kotia-Adivasi Oriya-Desiya [adiv1239][ort]](tree/indo1319/indo1320/indo1321/indo1323/oriy1254/macr1269/adiv1239/md.ini)
 - [Kotiria [guan1269][gvc]](tree/tuca1253/east2698/east2702/east2708/wana1272/guan1269/md.ini)
 - [Kott-Assan [kott1239][zko]](tree/yeni1252/sout2751/kott1239/md.ini)
+- [Kou [sins1241][snz]](tree/nucl1709/mada1298/raic1241/evap1240/sins1241/md.ini)
 - [Kouya [kouy1238][kyf]](tree/atla1278/volt1241/krua1234/east2415/bete1265/east2416/kouy1238/md.ini)
 - [Kovai [kova1243][kqb]](tree/nucl1709/fini1244/huon1246/east2705/kova1243/md.ini)
 - [Kove [kove1237][kvc]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/west2818/nort3206/nger1241/nger1240/east2772/kali1298/kove1237/md.ini)

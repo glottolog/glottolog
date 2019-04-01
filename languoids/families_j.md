@@ -5,7 +5,7 @@
 - [Jala [jala1236]](tree/gunw1250/gunw1253/east2701/jala1236/md.ini)
 - [Jamaicanic [jama1264]](tree/indo1319/germ1287/nort3152/west2793/nort3175/angl1264/angl1265/late1254/merc1242/macr1271/guin1259/cari1284/west2854/jama1264/md.ini)
 - [Japan-Taiwan Japanese [japa1258]](tree/japo1237/japa1256/japa1258/md.ini)
-- [Japanese based [japa1257]](tree/pidg1258/japa1257/md.ini)
+- [Japanese-based pidgin [japa1257]](tree/pidg1258/japa1257/md.ini)
 - [Japanesic [japa1256]](tree/japo1237/japa1256/md.ini)
 - [Japonic [japo1237]](tree/japo1237/md.ini)
 - [Japura-Colombia [japu1236]](tree/araw1281/nort2990/inla1264/japu1236/md.ini)

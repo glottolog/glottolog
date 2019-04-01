@@ -417,7 +417,6 @@
 - [As [asss1237][asz]](tree/aust1307/mala1545/cent2237/east2712/sout2850/sout3229/raja1255/asss1237/md.ini)
 - [Asabano [suar1238][seo]](tree/suar1238/md.ini)
 - [Asaro'o [asar1240][mtv]](tree/nucl1709/fini1244/fini1245/waru1269/nucl1777/mole1240/asar1240/md.ini)
-- [Asas [asas1240][asd]](tree/nucl1709/mada1298/raic1241/evap1240/asas1241/asas1240/md.ini)
 - [Ashe [ashe1269][ahs]](tree/atla1278/volt1241/benu1247/benu1248/west2801/nort3184/koro1301/ashe1269/md.ini)
 - [Ashkun [ashk1246][ask]](tree/indo1319/indo1320/nuri1243/sout3243/ashk1246/md.ini)
 - [Asho Chin [asho1236][csh]](tree/sino1245/kuki1245/kuki1246/peri1260/sout3160/asho1237/asho1236/md.ini)
