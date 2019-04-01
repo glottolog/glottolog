@@ -241,7 +241,6 @@
 - [Mantra [mant1268]](tree/aust1307/mala1545/mala1536/nort3170/mala1538/nucl1733/sing1270/temu1239/mant1268/md.ini)
 - [Manu [manu1264]](tree/mong1343/yaul1241/manu1264/md.ini)
 - [Manua [manu1259]](tree/aust1307/mala1545/cent2237/cent2245/timo1260/mamb1306/manu1259/md.ini)
-- [Manuche [manu1254]](tree/indo1319/indo1320/indo1321/indo1322/roma1329/roma1330/nort3197/sint1235/manu1254/md.ini)
 - [Manyallaluk Mayali [naia1238]](tree/gunw1250/marn1242/cent2231/gunw1252/naia1238/md.ini)
 - [Manyarring [many1257]](tree/pama1250/yuul1239/west2440/djin1253/many1257/md.ini)
 - [Manyjilyjara [many1256]](tree/pama1250/dese1234/wati1241/mart1257/warn1245/mart1256/many1256/md.ini)

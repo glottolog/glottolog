@@ -106,6 +106,7 @@
 - [Rigbo [rigb1238]](tree/cent2225/moru1252/sout2827/sout2828/rigb1238/md.ini)
 - [Rigolet Inuktitut [rigo1234]](tree/eski1264/eski1265/inui1246/east2534/queb1249/nuna1235/rigo1234/md.ini)
 - [Rihu'a [rihu1237]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/sout2853/mala1485/mala1540/sanc1243/faga1239/rihu1237/md.ini)
+- [Rija [rija1234]](tree/atla1278/volt1241/benu1247/benu1248/west2801/ninz1247/mada1282/rija1234/md.ini)
 - [Rikvani [rikv1238]](tree/nakh1245/dagh1238/avar1255/andi1254/andi1255/rikv1238/md.ini)
 - [Rimatara [rima1237]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/cent2060/east2445/poly1242/nucl1485/nort3246/solo1260/cent2298/east2449/cent2062/tahi1244/aust1304/rima1237/md.ini)
 - [Rindre [rind1238]](tree/atla1278/volt1241/benu1247/benu1248/west2801/ninz1247/nung1292/rind1238/md.ini)

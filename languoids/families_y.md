@@ -50,7 +50,7 @@
 - [Yiddish [yidd1255][yid]](tree/indo1319/germ1287/nort3152/west2793/high1289/fran1268/east2832/yidd1255/md.ini)
 - [Yidgha-Munja [yidg1239]](tree/indo1319/indo1320/iran1269/yidg1239/md.ini)
 - [Yidinic [yidi1249]](tree/pama1250/yimi1234/yidi1249/md.ini)
-- [Yimas based pidgin [yima1247]](tree/pidg1258/yima1247/md.ini)
+- [Yimas-based pidgin [yima1247]](tree/pidg1258/yima1247/md.ini)
 - [Yimchingric [yimc1239]](tree/sino1245/kuki1245/naga1409/anga1312/aoic1235/yimc1239/md.ini)
 - [Yimidhirr-Yalanji-Yidinic [yimi1234]](tree/pama1250/yimi1234/md.ini)
 - [Yimin-Bel [yimi1235]](tree/sepi1257/sepi1256/mayo1278/yimi1235/md.ini)

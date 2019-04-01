@@ -108,7 +108,7 @@
 - [Katuic [katu1271]](tree/aust1305/katu1271/md.ini)
 - [Katukinan [katu1274]](tree/katu1274/md.ini)
 - [Kaukombaran [kauk1240]](tree/nucl1709/mada1298/croi1234/mugi1234/kauk1240/md.ini)
-- [Kaurna based [kaur1273]](tree/pidg1258/kaur1273/md.ini)
+- [Kaurna-based pidgin [kaur1273]](tree/pidg1258/kaur1273/md.ini)
 - [Kauru [kaur1268]](tree/atla1278/volt1241/benu1247/kain1275/cent2242/basa1288/east2404/josa1234/kaur1268/md.ini)
 - [Kawahiwa Meridionais [kawa1293]](tree/tupi1275/mawe1252/awet1245/tupi1276/tupi1280/kawa1293/md.ini)
 - [Kawahiwa Setentrionais [kawa1292]](tree/tupi1275/mawe1252/awet1245/tupi1276/tupi1280/kawa1292/md.ini)

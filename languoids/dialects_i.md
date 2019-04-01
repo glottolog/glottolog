@@ -149,7 +149,7 @@
 - [Intha [inth1239]](tree/sino1245/burm1265/lolo1265/burm1266/sout3159/inth1238/inth1239/md.ini)
 - [Inuinnaqtun [copp1244]](tree/eski1264/eski1265/inui1246/west2618/copp1244/md.ini)
 - [Inuvaken [inuv1238]](tree/pano1259/pano1256/main1279/pano1257/head1239/amah1246/inuv1238/md.ini)
-- [Inward Southern Qiang [inwa1234]](tree/sino1245/burm1265/naqi1236/qian1263/qian1264/sout2728/inwa1234/md.ini)
+- [Inward-ji Southern Qiang [inwa1234]](tree/sino1245/burm1265/naqi1236/qian1263/qian1264/sout2728/inwa1234/md.ini)
 - [Inxokvari [inxo1238]](tree/nakh1245/dagh1238/avar1255/tsez1239/west2429/khva1239/inxo1238/md.ini)
 - [Inyanga [inya1238]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/nyan1317/nyan1304/inya1238/md.ini)
 - [Io [iooo1234]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/temo1244/reef1242/natu1250/natu1246/iooo1234/md.ini)
