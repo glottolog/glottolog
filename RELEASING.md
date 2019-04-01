@@ -44,7 +44,7 @@ Merging the BibTeX files
 Releasing
 ---------
 
-6. Add release notes to `CHANGES.md`
+6. Add release notes to `CHANGES.md` and `CONTRIBUTORS.md`
 7. Draft a new release running
 ```
 git commit -a -m"release <version>"
