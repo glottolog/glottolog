@@ -6,6 +6,13 @@ also provides an alternative way to access Glottolog's data locally, and possibl
 even locally customized by [forking](https://help.github.com/articles/fork-a-repo/) clld/glottolog.
 
 
+## How-to cite
+
+Only released versions of the Glottolog data should be cited. These releases are
+archived with and available from ZENODO at
+https://doi.org/10.5281/zenodo.596479
+
+
 ## Languoids
 
 Data about Glottolog languoids (languages, dialects or sub-groups, aka families) is stored in text files (one per languoid)

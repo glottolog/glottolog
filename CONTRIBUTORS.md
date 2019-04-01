@@ -17,4 +17,3 @@ Version | Year | Editors
 2.1 | 2013 | Sebastian Nordhoff & Harald Hammarström & Robert Forkel & Martin Haspelmath
 2.0 | 2013 | Sebastian Nordhoff & Harald Hammarström & Robert Forkel & Martin Haspelmath
 1.0 | 2012 | Sebastian Nordhoff & Harald Hammarström & Martin Haspelmath
-
