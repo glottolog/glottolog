@@ -194,6 +194,7 @@
 - [Tungak-Nalik [tung1294]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/west2818/meso1253/newi1242/tung1294/md.ini)
 - [Tungusic [tung1282]](tree/tung1282/md.ini)
 - [Tuparic [tupa1251]](tree/tupi1275/tupa1251/md.ini)
+- [Tupe [tupe1234]](tree/ayma1253/tupe1234/md.ini)
 - [Tupi-Guarani Subgroup I [tupi1277]](tree/tupi1275/mawe1252/awet1245/tupi1276/sout3271/tupi1277/md.ini)
 - [Tupi-Guarani Subgroup I.A [tupi1282]](tree/tupi1275/mawe1252/awet1245/tupi1276/sout3271/tupi1277/tupi1282/md.ini)
 - [Tupi-Guarani Subgroup I.B [tupi1283]](tree/tupi1275/mawe1252/awet1245/tupi1276/sout3271/tupi1277/tupi1283/md.ini)

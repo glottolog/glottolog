@@ -48,7 +48,7 @@
 - [Ulba [ulba1238]](tree/heib1242/west2502/west2503/moro1285/ulba1238/md.ini)
 - [Ulkulu [ulku1238]](tree/pama1250/pama1251/alay1234/kunj1248/kunj1245/ulku1238/md.ini)
 - [Ulster English [ulst1241]](tree/indo1319/germ1287/nort3152/west2793/nort3175/angl1264/angl1265/late1254/merc1242/macr1271/stan1293/iris1255/ulst1241/md.ini)
-- [Ulster [ulst1239]](tree/indo1319/germ1287/nort3152/west2793/nort3175/angl1264/angl1265/late1254/scot1243/ulst1239/md.ini)
+- [Ulster [ulst1239]](tree/indo1319/germ1287/nort3152/west2793/nort3175/angl1264/angl1265/late1254/scot1243/mids1245/ulst1239/md.ini)
 - [Ulu (Jambi Malay) [uluu1245]](tree/aust1307/mala1545/mala1536/nort3170/mala1538/nucl1733/indo1326/jamb1236/uluu1245/md.ini)
 - [Ulu (Kerinci) [uluu1246]](tree/aust1307/mala1545/mala1536/nort3170/mala1538/nucl1733/keri1250/uluu1246/md.ini)
 - [Ulu Ai [ulua1242]](tree/aust1307/mala1545/mala1536/nort3170/mala1538/nucl1733/iban1263/iban1264/ulua1242/md.ini)

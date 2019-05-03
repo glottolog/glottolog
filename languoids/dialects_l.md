@@ -208,7 +208,7 @@
 - [Lemyo [lemy1239]](tree/sino1245/kuki1245/kuki1246/peri1260/sout3160/asho1237/asho1236/lemy1239/md.ini)
 - [Len (Mambila) [lenm1234]](tree/atla1278/volt1241/benu1247/bant1294/nort3168/mamb1309/niza1234/konj1251/mamb1310/mamb1311/mamb1312/nige1255/lenm1234/md.ini)
 - [Lengue [leng1257]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/sout3180/chop1242/chop1243/leng1257/md.ini)
-- [Lenkaran [lenk1246]](tree/turk1311/comm1245/oghu1243/nucl1769/west2406/azer1255/mode1262/nort2697/lenk1246/md.ini)
+- [Lenkaran [lenk1246]](tree/turk1311/comm1245/oghu1243/nucl1769/west2406/azer1255/mode1262/nort2697/east2839/lenk1246/md.ini)
 - [Lenkoran [lenk1245]](tree/indo1319/indo1320/iran1269/cent2317/cent2318/nort3177/tati1243/tati1244/cent2265/taly1247/nort2639/lenk1245/md.ini)
 - [Lentex [lent1241]](tree/kart1248/svan1243/lent1241/md.ini)
 - [Leon [leon1252]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/nort3195/nort3205/torr1262/leme1240/vera1241/leon1252/md.ini)

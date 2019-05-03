@@ -27,7 +27,7 @@
 - [Japanese [nucl1643][jpn]](tree/japo1237/japa1256/japa1258/nucl1643/md.ini)
 - [Japhug [japh1234]](tree/sino1245/burm1265/naqi1236/qian1263/rgya1241/core1262/jiar1240/japh1234/md.ini)
 - [Japrería [japr1238][jru]](tree/cari1283/yukp1242/yukp1243/japr1238/md.ini)
-- [Jaqaru [jaqa1244][jqr]](tree/ayma1253/jaqa1244/md.ini)
+- [Jaqaru [jaqa1244][jqr]](tree/ayma1253/tupe1234/jaqa1244/md.ini)
 - [Jara [jara1274][jaf]](tree/afro1255/chad1250/bium1280/sout3145/bium1275/west2707/jara1274/md.ini)
 - [Jarai [jara1266][jra]](tree/aust1307/mala1545/mala1536/nort3170/cham1327/cham1330/high1280/rade1241/jara1266/md.ini)
 - [Jarawa (India) [jara1245][anq]](tree/jara1244/jara1245/md.ini)

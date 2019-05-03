@@ -119,7 +119,7 @@
 - [Yelong [yelo1242]](tree/sino1245/burm1265/naqi1236/qian1263/rgya1241/horp1241/guan1266/yelo1242/md.ini)
 - [Yembana [yemb1245]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/bant1295/yaun1239/bulu1251/yemb1245/md.ini)
 - [Yengono [yeng1244]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/bant1295/yaun1239/bulu1251/yeng1244/md.ini)
-- [Yerevan [yere1242]](tree/turk1311/comm1245/oghu1243/nucl1769/west2406/azer1255/mode1262/nort2697/yere1242/md.ini)
+- [Yerevan [yere1242]](tree/turk1311/comm1245/oghu1243/nucl1769/west2406/azer1255/mode1262/nort2697/sout3306/yere1242/md.ini)
 - [Yergyuch [yerg1242]](tree/nakh1245/dagh1238/lezg1248/nucl1321/sout2753/budu1248/yerg1242/md.ini)
 - [Yergyudzh [yerg1243]](tree/nakh1245/dagh1238/lezg1248/nucl1321/sout2753/kryt1240/yerg1243/md.ini)
 - [Yeri Waali [yeri1239]](tree/atla1278/volt1241/nort3149/gura1261/cent2243/nort2777/bwam1248/otiv1239/nucl1743/gurm1247/west2461/nucl1748/nort3234/safa1246/daga1276/cent2291/sout3209/wali1263/yeri1239/md.ini)

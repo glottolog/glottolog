@@ -586,6 +586,7 @@
 - [Mixtepec Zapotec [mixt1426][zpm]](tree/otom1299/east2557/popo1292/zapo1436/zapo1437/nucl1765/core1259/sout3003/mixt1428/mixt1426/md.ini)
 - [Miya [miya1266][mkf]](tree/afro1255/chad1250/west2785/west2790/west2712/warj1254/miya1266/md.ini)
 - [Miyako [miya1259][mvi]](tree/japo1237/ryuk1243/ryuk1244/miya1259/md.ini)
+- [Miyakubo Sign Language [miya1268]](tree/sign1238/vill1244/miya1268/md.ini)
 - [Miyobe [miyo1238][soy]](tree/atla1278/volt1241/nort3149/gura1261/cent2243/nort2777/bwam1248/otiv1239/nucl1743/unun9904/miyo1238/md.ini)
 - [Mizo [lush1249][lus]](tree/sino1245/kuki1245/kuki1246/cent2330/cent2005/mizo1244/lush1249/md.ini)
 - [Mlabri [mlab1235][mra]](tree/aust1305/khmu1236/mlab1235/md.ini)

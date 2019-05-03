@@ -65,7 +65,7 @@
 - [Gandua [gand1257]](tree/atla1278/volt1241/benu1247/bant1294/nort3168/mamb1309/niza1234/konj1251/mamb1310/vuti1235/vute1246/wawa1246/gand1257/md.ini)
 - [Gangadi [gang1264]](tree/indo1319/indo1320/indo1321/indo1310/cent1977/garh1243/gang1264/md.ini)
 - [Gangapari [gang1265]](tree/indo1319/indo1320/indo1321/indo1322/subc1234/east2726/awad1243/gang1265/md.ini)
-- [Ganja [ganj1240]](tree/turk1311/comm1245/oghu1243/nucl1769/west2406/azer1255/mode1262/nort2697/ganj1240/md.ini)
+- [Ganja [ganj1240]](tree/turk1311/comm1245/oghu1243/nucl1769/west2406/azer1255/mode1262/nort2697/west2924/cent2356/ganj1240/md.ini)
 - [Ganjule [ganj1241]](tree/gong1255/omet1238/east2423/kach1284/ganj1241/md.ini)
 - [Gankui [gank1239]](tree/tung1282/nort3147/west2427/oroq1238/gank1239/md.ini)
 - [Ganoqa [gano1234]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/west2818/meso1253/newi1242/stge1234/nort3225/newg1239/west2857/simb1260/ghan1246/ghan1242/gano1234/md.ini)

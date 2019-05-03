@@ -157,7 +157,7 @@
 - [Orange River Afrikaans [oran1263]](tree/indo1319/germ1287/nort3152/west2793/macr1270/midd1347/mode1257/glob1241/afri1273/afri1274/oran1263/md.ini)
 - [Oraon [orao1238]](tree/drav1251/nort2698/kuru1300/kuru1301/kuru1302/orao1238/md.ini)
 - [Ordos [ordo1245]](tree/mong1329/oira1260/oira1264/khal1273/mong1331/peri1253/ordo1245/md.ini)
-- [Ordubad [ordu1239]](tree/turk1311/comm1245/oghu1243/nucl1769/west2406/azer1255/mode1262/nort2697/ordu1239/md.ini)
+- [Ordubad [ordu1239]](tree/turk1311/comm1245/oghu1243/nucl1769/west2406/azer1255/mode1262/nort2697/sout3306/ordu1239/md.ini)
 - [Ore [oree1239]](tree/indo1319/germ1287/nort3152/nort3160/nort3266/east2780/dale1238/oste1242/ovan1234/mora1274/oree1239/md.ini)
 - [Oredezhi [ored1238]](tree/ural1272/finn1317/coas1319/neva1234/nort3282/lado1234/ingr1248/ored1238/md.ini)
 - [Oren [oren1238]](tree/daga1274/maiw1251/oren1238/md.ini)
