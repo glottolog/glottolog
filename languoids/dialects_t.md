@@ -295,7 +295,7 @@
 - [Tepter [tept1239]](tree/turk1311/comm1245/kipc1239/nort2696/tata1255/tept1239/md.ini)
 - [Ter [terr1239]](tree/atla1278/volt1241/nort3149/gura1261/tusi1238/nort2787/terr1239/md.ini)
 - [Terego [tere1275]](tree/cent2225/moru1252/cent2043/lugb1240/tere1275/md.ini)
-- [Terekeme [tere1273]](tree/turk1311/comm1245/oghu1243/nucl1769/west2406/azer1255/mode1262/nort2697/tere1273/md.ini)
+- [Terekeme [tere1273]](tree/turk1311/comm1245/oghu1243/nucl1769/west2406/azer1255/mode1262/nort2697/sout3306/tere1273/md.ini)
 - [Terekongo [tere1274]](tree/atla1278/volt1241/nort3149/gura1261/cent2243/nort2777/bwam1248/bwam1247/bomu1247/dwem1238/tere1274/md.ini)
 - [Terena [tere1281]](tree/araw1281/sout3131/boli1260/tere1279/tere1281/md.ini)
 - [Tergawar [terg1238]](tree/afro1255/semi1276/west2786/cent2236/nort3165/aram1259/east2680/cent2217/nort3241/assy1241/cent2218/terg1238/md.ini)

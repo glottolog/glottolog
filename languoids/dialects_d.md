@@ -160,7 +160,7 @@
 - [Deokhuri [deok1238]](tree/indo1319/indo1320/indo1321/biha1245/thar1284/east2316/dang1277/dang1260/deok1238/md.ini)
 - [Deple [depl1238]](tree/atla1278/volt1241/krua1234/east2415/bakw1242/bakw1243/depl1238/md.ini)
 - [Derawali [dera1244]](tree/indo1319/indo1320/indo1321/indo1324/sind1278/lahn1241/sira1271/sera1259/dera1244/md.ini)
-- [Derbend Azerbaijani [derb1245]](tree/turk1311/comm1245/oghu1243/nucl1769/west2406/azer1255/mode1262/nort2697/derb1245/md.ini)
+- [Derbend Azerbaijani [derb1245]](tree/turk1311/comm1245/oghu1243/nucl1769/west2406/azer1255/mode1262/nort2697/east2839/derb1245/md.ini)
 - [Derbend [derb1244]](tree/indo1319/indo1320/iran1269/sout3157/midd1352/mode1259/fars1254/cauc1242/jude1256/derb1244/md.ini)
 - [Dere [dere1242]](tree/atla1278/volt1241/benu1247/delt1251/ogon1240/east2401/goka1239/dere1242/md.ini)
 - [Derebai [dere1243]](tree/mail1249/mail1248/dere1243/md.ini)

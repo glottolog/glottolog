@@ -301,7 +301,6 @@
 - [Kazakh [kaza1248][kaz]](tree/turk1311/comm1245/kipc1239/sout2701/kaza1248/md.ini)
 - [Kazukuru [kazu1245][kzk]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/west2818/meso1253/newi1242/stge1234/nort3225/newg1239/kazu1245/md.ini)
 - [Kazym-Berezover-Suryskarer Khanty [khan1273][kca]](tree/ural1272/khan1279/west2866/nort3264/khan1273/md.ini)
-- [Ke'o [keoo1238][xxk]](tree/aust1307/mala1545/cent2237/cent2245/flor1240/flor1241/ngad1265/ngad1266/ende1245/nage1238/keoo1238/md.ini)
 - [Keak [keak1239][keh]](tree/nduu1242/nucl1642/sawo1235/sawo1234/keak1239/md.ini)
 - [Keapara [keap1239][khz]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/west2818/papu1253/peri1258/cent2070/sina1272/hula1245/keap1239/md.ini)
 - [Kedah Malay [keda1251][meo]](tree/aust1307/mala1545/mala1536/nort3170/mala1538/nucl1733/sing1270/keda1251/md.ini)
@@ -818,4 +817,5 @@
 - [Kánchá [kunj1246][pep]](tree/more1255/more1256/tond1250/wara1293/kunj1246/md.ini)
 - [Kâte [kate1253][kmg]](tree/nucl1709/fini1244/huon1246/east2705/kate1254/kate1253/md.ini)
 - [Kélé [kele1257][keb]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/bant1295/kele1260/kele1262/kele1264/kele1257/md.ini)
+- [Kéo [keoo1238][xxk]](tree/aust1307/mala1545/cent2237/cent2245/flor1240/flor1241/ngad1265/ngad1266/ende1245/nage1238/keoo1238/md.ini)
 - [Kölsch [kols1241][ksh]](tree/indo1319/germ1287/nort3152/west2793/high1289/fran1268/high1287/midd1319/ripu1236/kols1241/md.ini)

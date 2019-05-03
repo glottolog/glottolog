@@ -58,6 +58,7 @@
 - [Forest Nenets [fore1274]](tree/ural1272/samo1298/enet1251/nene1251/fore1274/md.ini)
 - [Francais Tirailleur [fran1267]](tree/pidg1258/fren1279/fran1267/md.ini)
 - [Francisco León Zoque [fran1266][zos]](tree/mixe1284/zoqu1261/chia1261/fran1266/md.ini)
+- [French Harbour Sign Language [fren1280]](tree/sign1238/vill1244/fren1280/md.ini)
 - [French Sign Language [fren1243][fsl]](tree/sign1238/deaf1237/lsfi1234/fren1243/md.ini)
 - [French [stan1290][fra]](tree/indo1319/ital1284/lati1262/lati1263/impe1234/roma1334/ital1285/west2813/shif1234/nort3208/gall1280/oila1234/cent2283/macr1273/glob1239/stan1290/md.ini)
 - [Friulian [friu1240][fur]](tree/indo1319/ital1284/lati1262/lati1263/impe1234/roma1334/ital1285/west2813/shif1234/nort3208/gall1280/friu1240/md.ini)

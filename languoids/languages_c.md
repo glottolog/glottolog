@@ -77,6 +77,7 @@
 - [Catuquinaru-Bach [catu1242]](tree/uncl1493/catu1242/md.ini)
 - [Cauca [cauc1241][cca]](tree/book1242/cauc1241/md.ini)
 - [Cauho [cauh1234]](tree/sino1245/burm1265/lolo1265/lolo1267/hani1249/biso1244/biso1241/uncl1502/cauh1234/md.ini)
+- [Cauqui [cauq1239]](tree/ayma1253/tupe1234/cauq1239/md.ini)
 - [Cavineña [cavi1250][cav]](tree/pano1259/taca1255/cavi1250/md.ini)
 - [Cayubaba [cayu1262][cyb]](tree/cayu1262/md.ini)
 - [Cayuga [cayu1261][cay]](tree/iroq1247/nort2947/cayu1261/md.ini)

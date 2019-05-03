@@ -29,7 +29,7 @@
 - [Zanu [zanu1238]](tree/atla1278/volt1241/nort3149/came1255/samb1322/samb1323/nort3259/vere1249/vere1250/koma1266/zanu1238/md.ini)
 - [Zaore [zaor1238]](tree/atla1278/volt1241/nort3149/gura1261/cent2243/nort2777/bwam1248/otiv1239/nucl1743/gurm1247/west2461/nucl1748/nort3234/moss1237/moss1238/moss1236/zaor1238/md.ini)
 - [Zapotitlán Tablas [zapo1435]](tree/otom1299/west2783/tlap1252/subt1249/meph1234/acat1239/zapo1435/md.ini)
-- [Zaqatala (Turkic) [zaqa1241]](tree/turk1311/comm1245/oghu1243/nucl1769/west2406/azer1255/mode1262/nort2697/zaqa1241/md.ini)
+- [Zaqatala (Turkic) [zaqa1241]](tree/turk1311/comm1245/oghu1243/nucl1769/west2406/azer1255/mode1262/nort2697/nort3322/zaqa1241/md.ini)
 - [Zaqatala [zaqa1242]](tree/nakh1245/dagh1238/avar1255/avar1256/zaqa1242/md.ini)
 - [Zara [zara1248]](tree/mand1469/west2780/samo1308/duun1243/bobo1253/sout2840/zara1248/md.ini)
 - [Zarama [zara1246]](tree/atla1278/volt1241/benu1247/akpe1249/edoi1239/delt1252/dege1249/enge1239/zara1246/md.ini)

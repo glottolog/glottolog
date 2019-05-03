@@ -139,7 +139,7 @@
 - [Air [airr1238]](tree/song1307/nort2822/nort2823/tagd1238/airr1238/md.ini)
 - [Aird Hills [aird1238]](tree/kibi1239/aird1238/md.ini)
 - [Airmadidi [airm1241]](tree/aust1307/mala1545/mina1272/nort2886/nort2887/tons1240/airm1241/md.ini)
-- [Airym [airy1239]](tree/turk1311/comm1245/oghu1243/nucl1769/west2406/azer1255/mode1262/nort2697/airy1239/md.ini)
+- [Airym [airy1239]](tree/turk1311/comm1245/oghu1243/nucl1769/west2406/azer1255/mode1262/nort2697/west2924/airy1239/md.ini)
 - [Aita [aita1238]](tree/nort2933/roto1248/roto1249/aita1238/md.ini)
 - [Aitutaki [aitu1237]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/cent2060/east2445/poly1242/nucl1485/nort3246/solo1260/cent2298/east2449/cent2062/mang1433/raro1241/aitu1237/md.ini)
 - [Aiyangar [aiya1239]](tree/drav1251/sout3133/sout3138/tami1291/tami1292/tami1293/tami1294/tami1297/tami1298/tami1299/tami1300/tami1289/aiya1239/md.ini)

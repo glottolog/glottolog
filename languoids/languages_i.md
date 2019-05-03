@@ -83,7 +83,6 @@
 - [India Lyngam [lyng1241][lyg]](tree/aust1305/khas1273/khas1268/khas1274/lyng1240/lyng1241/md.ini)
 - [Indian Sign Language [indi1237][ins]](tree/sign1238/deaf1237/indo1331/indo1332/indi1237/md.ini)
 - [Indo-Aryan Kinnauri [hari1246][kjo]](tree/indo1319/indo1320/indo1321/indo1310/hima1250/nucl1728/hari1246/md.ini)
-- [Indo-Portuguese [indo1318][idb]](tree/book1242/indo1318/md.ini)
 - [Indonesian Bajau [indo1317][bdl]](tree/aust1307/mala1545/basa1291/grea1283/sama1302/sulu1242/born1254/indo1317/md.ini)
 - [Indonesian [indo1316][ind]](tree/aust1307/mala1545/mala1536/nort3170/mala1538/nucl1733/indo1326/indo1316/md.ini)
 - [Indri [indr1247][idr]](tree/atla1278/volt1241/nort3149/came1255/uban1244/sere1265/sere1262/sere1266/indr1246/indr1247/md.ini)

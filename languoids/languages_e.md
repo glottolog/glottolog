@@ -53,7 +53,6 @@
 - [Eastern Mnong [east2333][mng]](tree/aust1305/bahn1264/sout2690/mnon1258/mnon1259/east2333/md.ini)
 - [Eastern Muria [east2340][emu]](tree/drav1251/sout3133/sout3139/gond1265/sout3234/gene1245/muri1262/east2340/md.ini)
 - [Eastern Newari [east2773]](tree/sino1245/hima1249/maha1306/newa1245/newa1247/east2773/md.ini)
-- [Eastern Ngad'a [east2464][nea]](tree/book1242/east2464/md.ini)
 - [Eastern Nisu [east2349][nos]](tree/sino1245/burm1265/lolo1265/lolo1267/nili1235/sout3212/niso1234/nisu1237/nisu1238/nort2717/east2349/md.ini)
 - [Eastern Ojibwa [east2542][ojg]](tree/algi1248/algo1256/east2765/ojib1240/ojib1241/nucl1723/cent2252/east2542/md.ini)
 - [Eastern Oromo [east2652][hae]](tree/afro1255/cush1243/east2699/lowl1267/sout3055/main1283/nucl1701/nucl1736/cent2302/sout3218/east2652/md.ini)

@@ -301,6 +301,7 @@
 - [Bera [bera1259][brf]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/abab1240/oldb1234/komo1265/bera1259/md.ini)
 - [Berakou [bera1261][bxv]](tree/cent2225/sara1341/sbbo1237/nucl1719/sara1349/bagi1248/moro1296/naba1258/bera1261/md.ini)
 - [Berau Malay [bera1262][bve]](tree/aust1307/mala1545/mala1536/nort3170/mala1538/nucl1733/born1255/sout3190/east2755/banj1240/bera1266/bera1262/md.ini)
+- [Berbey Sign Language [berb1261]](tree/sign1238/fami1234/berb1261/md.ini)
 - [Berbice Creole Dutch [berb1259][brc]](tree/indo1319/germ1287/nort3152/west2793/macr1270/midd1347/mode1257/glob1241/dutc1257/berb1259/md.ini)
 - [Beria [zagh1240][zag]](tree/saha1256/east2432/zagh1240/md.ini)
 - [Berik [beri1254][bkl]](tree/toro1256/tora1268/beri1254/md.ini)

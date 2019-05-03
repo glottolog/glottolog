@@ -23,6 +23,10 @@ Also run
 ```
 glottolog index
 ```
+and
+```
+glottolog update_sources
+```
 and commit up-to-date languoid index pages.
 
 
