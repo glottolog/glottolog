@@ -3,29 +3,19 @@
 
 ## Language endangerment data
 
-Glottolog contains data about language endangerment drawn (and merged) from various sources:
+Glottolog contains data about language endangerment drawn (and merged) from various sources listed in [`config/aes_sources.ini`](config/aes_sources.ini).
 
-- [ElCat](http://endangeredlanguages.com/):
-
-> Catalogue of Endangered Languages. 2015. The University of Hawaii at Manoa and Eastern Michigan University. http://www.endangeredlanguages.com
-
-  Almost all information in the Catalogue of Endangered Languages includes a citation of the original source which provided this data (e.g. journal article, book, personal communication, etc.). You can find citation information at the top of the "Language Information by Source" box on each language page; if you wish to reproduce data such as speaker numbers, you may cite the original source provided there. 
-
-- The [UNESCO Atlas of the World's Languages in Danger](http://www.unesco.org/languages-atlas/):
-
-> Moseley, Christopher (ed.). 2010. Atlas of the World’s Languages in Danger, 3rd edn. Paris, UNESCO Publishing. Online version: http://www.unesco.org/culture/en/endangeredlanguages/atlas
-
-- [Ethnologue, 20th edition](https://www.ethnologue.com/ethnoblog/gary-simons/welcome-20th-edition)
-
-- Glottolog's own assessment.
-
-The actual source of each individual language's endangerment status is given in the
-`[endangerment]` section of the info file.
+Almost all information in the Catalogue of Endangered Languages (one of our sources)
+includes a citation of the original source which provided this data (e.g.
+journal article, book, personal communication, etc.). You can find citation
+information at the top of the "Language Information by Source" box on each
+language page; if you wish to reproduce data such as speaker numbers, you may
+cite the original source provided there.
 
 <a id="aes-mapping"> </a>
 
 Source data has been merged using the following mapping between the endangerment categories in the source databases,
-resulting in what we call *the Agglomerated Endangerment Scale (AES)*:
+resulting in what we call [*the Agglomerated Endangerment Scale (AES)*](config/aes_status.ini):
 
 
 UNESCO       | LES-ELCat  | EGIDS           | AES
@@ -52,7 +42,7 @@ attributed to the language in Glottolog would indicate a location
 compatible with the coordinate given in Glottolog. The actual sources
 for the coordinates in Glottolog are varied and include both
 individual points submitted by various users and ourselves as well as
-databases such as [WALS](http://wals.info), [ASJP](http://asjp.clld.org) and 
+databases such as [WALS](https://wals.info), [ASJP](https://asjp.clld.org) and 
 human reading of Ethnologue maps. As
 such the coordinates in Glottolog are not a substitute for a full and
 well-founded source in language locations (or variant names). For
