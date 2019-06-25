@@ -33,12 +33,13 @@ class Fields(object):
         ('core', 'macroareas'): True,
         ('core', 'countries'): True,
         ('core', 'name_comment'): False,
-        ('core', 'links'): False,
         # FIXME: core hapaxes
         ('core', 'comment'): False,
         ('core', 'location'): False,
         ('core', 'name_pronunciation'): False,
         ('core', 'speakers'): False,
+
+        ('core', 'links'): True,
 
         ('sources', None): True,
 

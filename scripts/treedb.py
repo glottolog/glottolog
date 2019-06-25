@@ -160,6 +160,7 @@ def iterlanguoids(root=_files.ROOT):
             'longitude': cfg.getfloat('core', 'longitude', fallback=None),
             'macroareas': getlines(cfg, 'core', 'macroareas'),
             'countries': [splitcountry(c) for c in getlines(cfg, 'core', 'countries')],
+            'links': getlines(cfg, 'core', 'links'),
         }
         if cfg.has_section('sources'):
             item['sources'] = {provider: [splitsource(p) for p in getlines(cfg, 'sources', provider)]
@@ -238,6 +239,7 @@ class Languoid(_backend.Model):
     countries = sa.orm.relationship('Country', secondary='languoid_country', order_by='Country.id',
                                     back_populates='languoids')
 
+    links = sa.orm.relationship('Link', back_populates='languoid', order_by='Source.ord')
     sources = sa.orm.relationship('Source', back_populates='languoid', order_by='[Source.provider, Source.ord]')
     altnames = sa.orm.relationship('Altname', back_populates='languoid', order_by='[Altname.provider, Altname.ord]')
     triggers = sa.orm.relationship('Trigger', back_populates='languoid', order_by='[Trigger.field, Trigger.ord]')
@@ -353,6 +355,21 @@ class Country(_backend.Model):
 languoid_country = sa.Table('languoid_country', _backend.Model.metadata,
     sa.Column('languoid_id', sa.ForeignKey('languoid.id'), primary_key=True),
     sa.Column('country_id', sa.ForeignKey('country.id'), primary_key=True))
+
+
+class Link(_backend.Model):
+
+    __tablename__ = 'link'
+
+    languoid_id = sa.Column(sa.ForeignKey('languoid.id'), primary_key=True)
+    ord = sa.Column(sa.Integer, sa.CheckConstraint('ord >= 1'), primary_key=True)
+    markdown = sa.Column(sa.Text, sa.CheckConstraint("markdown != ''"), nullable=False)
+
+    languoid = sa.orm.relationship('Languoid', innerjoin=True, back_populates='links')
+    
+    def __repr__(self):
+        return '<%s languoid_id=%r ord=%r markdown=%r>' % (self.__class__.__name__,
+            self.languoid_id, self.ord, self.markdown)
 
 
 class Source(_backend.Model):
@@ -607,6 +624,7 @@ def _load(conn, root):
     insert_country = sa.insert(Country, bind=conn).execute
     lang_country = languoid_country.insert(bind=conn).execute
 
+    insert_link = sa.insert(Link, bind=conn).execute
     insert_source = sa.insert(Source, bind=conn).execute
     insert_altname = sa.insert(Altname, bind=conn).execute
     insert_trigger = sa.insert(Trigger, bind=conn).execute
@@ -625,6 +643,7 @@ def _load(conn, root):
         macroareas = l.pop('macroareas')
         countries = l.pop('countries')
 
+        links = l.pop('links', None)
         sources = l.pop('sources', None)
         altnames = l.pop('altnames', None)
         triggers = l.pop('triggers', None)
@@ -641,6 +660,9 @@ def _load(conn, root):
             if not has_country(id=cc):
                 insert_country(id=cc, name=name)
             lang_country(languoid_id=lid, country_id=cc)
+        if links is not None:
+            for i, markdown in enumerate(links, 1):
+                insert_link(languoid_id=lid, ord=i, markdown=markdown)
         if sources is not None:
             for provider, data in iteritems(sources):
                 for i, s in enumerate(data, 1):
@@ -740,6 +762,10 @@ def get_query():
                 .where(languoid_country.c.languoid_id == Languoid.id)
                 .order_by(Country.id)
                 .label('countries'),
+            sa.select([sa.func.group_concat(Link.markdown, ', ')])
+                .where(Link.languoid_id == Languoid.id)
+                .order_by(Link.ord)
+                .label('links'),
             sa.select([sa.func.group_concat(Source.printf(), ', ')])
                 .where(Source.languoid_id == Languoid.id)
                 .where(Source.provider == 'glottolog')
