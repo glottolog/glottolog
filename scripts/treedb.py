@@ -84,7 +84,7 @@ SOURCE_PROVIDER = {'glottolog'}
 ALTNAME_PROVIDER = {
     'multitree', 'lexvo', 'hhbib_lgcode',
     'wals', 'wals other', 'moseley & asher (1994)', 'ruhlen (1987)',
-    'glottolog', 'ethnologue',
+    'glottolog', 'ethnologue', 'elcat',
 }
 
 TRIGGER_FIELD = {'lgcode', 'inlg'}
