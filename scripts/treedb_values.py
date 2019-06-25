@@ -33,6 +33,7 @@ class Fields(object):
         ('core', 'macroareas'): True,
         ('core', 'countries'): True,
         ('core', 'name_comment'): False,
+        ('core', 'links'): False,
         # FIXME: core hapaxes
         ('core', 'comment'): False,
         ('core', 'location'): False,
