@@ -3,6 +3,15 @@
 Notable changes between releases of the Glottolog data.
 
 
+## [UNRELEASED]
+
+- Languoid INI files may now contain a section [links], providing links
+  to related resources on the web, e.g. the corresponding page at ElCat.
+- To improve the documentation of the data, we have included machine-readable
+  metadata in the `config` directory, providing controlled vocabularies - e.g.
+  for AES status - stored in INI files.
+
+
 ## [3.4] - 2019-04-02
 
 See https://github.com/clld/glottolog/pulls?q=is%3Apr+is%3Amerged for a list of

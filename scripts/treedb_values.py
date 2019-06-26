@@ -39,6 +39,8 @@ class Fields(object):
         ('core', 'name_pronunciation'): False,
         ('core', 'speakers'): False,
 
+        ('core', 'links'): True,
+
         ('sources', None): True,
 
         ('altnames', None): True,
