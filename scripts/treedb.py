@@ -79,12 +79,14 @@ MACROAREA = {
     'Australia', 'Papunesia',
 }
 
+LINK_SCHEME = {'https', 'http'}
+
 SOURCE_PROVIDER = {'glottolog'}
 
 ALTNAME_PROVIDER = {
     'multitree', 'lexvo', 'hhbib_lgcode',
     'wals', 'wals other', 'moseley & asher (1994)', 'ruhlen (1987)',
-    'glottolog', 'ethnologue',
+    'glottolog', 'ethnologue', 'elcat',
 }
 
 TRIGGER_FIELD = {'lgcode', 'inlg'}
@@ -134,16 +136,31 @@ def iterlanguoids(root=_files.ROOT):
     def splitcountry(name, _match=re.compile(r'(.+) \(([^)]+)\)$').match):
         return _match(name).groups()
 
-    def splitsource(s, pattern=re.compile(
+    def splitlink(markdown, _match=re.compile(
+            r'\[(?P<title>[^]]+)\]\((?P<url>[^)]+)\)$').match):
+        ma = _match(markdown)
+        if ma is not None:
+            title, url = ma.groups()
+        else:
+            title = None
+            url  =  markdown
+        scheme, sep, _ = url.partition('://')
+        if sep:
+            scheme = scheme.lower()
+        else:
+            scheme = None
+        return  {'url': url, 'title': title, 'scheme': scheme}
+
+    def splitsource(s, _match=re.compile(
         r"\*\*(?P<bibfile>[a-z0-9\-_]+):(?P<bibkey>[a-zA-Z.?\-;*'/()\[\]!_:0-9\u2014]+?)\*\*"
         r"(:(?P<pages>[0-9\-f]+))?"
-        r'(<trigger "(?P<trigger>[^\"]+)">)?')):
-        return pattern.match(s).groupdict()
+        r'(<trigger "(?P<trigger>[^\"]+)">)?').match):
+        return _match(s).groupdict()
 
-    def splitaltname(s, pattern=re.compile(
+    def splitaltname(s, _match=re.compile(
         r'(?P<name>[^[]+)'
-        r'(?: \[(?P<lang>[a-z]{2,3})\])?$'), parse_fail='!'):
-        ma = pattern.match(s)
+        r'(?: \[(?P<lang>[a-z]{2,3})\])?$').match, parse_fail='!'):
+        ma = _match(s)
         if ma is None:
             return {'name': s, 'lang': parse_fail}
         return ma.groupdict('')
@@ -160,6 +177,7 @@ def iterlanguoids(root=_files.ROOT):
             'longitude': cfg.getfloat('core', 'longitude', fallback=None),
             'macroareas': getlines(cfg, 'core', 'macroareas'),
             'countries': [splitcountry(c) for c in getlines(cfg, 'core', 'countries')],
+            'links': [splitlink(c) for c in getlines(cfg, 'core', 'links')],
         }
         if cfg.has_section('sources'):
             item['sources'] = {provider: [splitsource(p) for p in getlines(cfg, 'sources', provider)]
@@ -238,6 +256,7 @@ class Languoid(_backend.Model):
     countries = sa.orm.relationship('Country', secondary='languoid_country', order_by='Country.id',
                                     back_populates='languoids')
 
+    links = sa.orm.relationship('Link', back_populates='languoid', order_by='Source.ord')
     sources = sa.orm.relationship('Source', back_populates='languoid', order_by='[Source.provider, Source.ord]')
     altnames = sa.orm.relationship('Altname', back_populates='languoid', order_by='[Altname.provider, Altname.ord]')
     triggers = sa.orm.relationship('Trigger', back_populates='languoid', order_by='[Trigger.field, Trigger.ord]')
@@ -353,6 +372,31 @@ class Country(_backend.Model):
 languoid_country = sa.Table('languoid_country', _backend.Model.metadata,
     sa.Column('languoid_id', sa.ForeignKey('languoid.id'), primary_key=True),
     sa.Column('country_id', sa.ForeignKey('country.id'), primary_key=True))
+
+
+class Link(_backend.Model):
+
+    __tablename__ = 'link'
+
+    languoid_id = sa.Column(sa.ForeignKey('languoid.id'), primary_key=True)
+    ord = sa.Column(sa.Integer, sa.CheckConstraint('ord >= 1'), primary_key=True)
+    url = sa.Column(sa.Text, sa.CheckConstraint("url != ''"), nullable=False)
+    title = sa.Column(sa.Text, sa.CheckConstraint("title != ''"))
+    scheme = sa.Column(sa.Text, sa.Enum(*sorted(LINK_SCHEME)))
+
+    languoid = sa.orm.relationship('Languoid', innerjoin=True, back_populates='links')
+    
+    def __repr__(self):
+        return '<%s languoid_id=%r ord=%r url=%r title=%r scheme=%r>' % (
+            self.__class__.__name__,
+            self.languoid_id, self.ord, self.url, self.title, self.scheme)
+
+    @classmethod
+    def printf(cls):
+        return sa.case([
+            (sa.and_(cls.title != None),
+                 sa.func.printf('(%s)[%s]', cls.title,  cls.url)),
+            ], else_=cls.url)
 
 
 class Source(_backend.Model):
@@ -607,6 +651,7 @@ def _load(conn, root):
     insert_country = sa.insert(Country, bind=conn).execute
     lang_country = languoid_country.insert(bind=conn).execute
 
+    insert_link = sa.insert(Link, bind=conn).execute
     insert_source = sa.insert(Source, bind=conn).execute
     insert_altname = sa.insert(Altname, bind=conn).execute
     insert_trigger = sa.insert(Trigger, bind=conn).execute
@@ -625,6 +670,7 @@ def _load(conn, root):
         macroareas = l.pop('macroareas')
         countries = l.pop('countries')
 
+        links = l.pop('links', None)
         sources = l.pop('sources', None)
         altnames = l.pop('altnames', None)
         triggers = l.pop('triggers', None)
@@ -641,6 +687,9 @@ def _load(conn, root):
             if not has_country(id=cc):
                 insert_country(id=cc, name=name)
             lang_country(languoid_id=lid, country_id=cc)
+        if links is not None:
+            for i, link in enumerate(links, 1):
+                insert_link(languoid_id=lid, ord=i, **link)
         if sources is not None:
             for provider, data in iteritems(sources):
                 for i, s in enumerate(data, 1):
@@ -740,6 +789,10 @@ def get_query():
                 .where(languoid_country.c.languoid_id == Languoid.id)
                 .order_by(Country.id)
                 .label('countries'),
+            sa.select([sa.func.group_concat(Link.printf(), ', ')])
+                .where(Link.languoid_id == Languoid.id)
+                .order_by(Link.ord)
+                .label('links'),
             sa.select([sa.func.group_concat(Source.printf(), ', ')])
                 .where(Source.languoid_id == Languoid.id)
                 .where(Source.provider == 'glottolog')
