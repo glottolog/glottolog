@@ -1,12 +1,12 @@
 
-Releasing clld/glottolog
-========================
+Releasing glottolog/glottolog
+=============================
 
 0. Make sure 
    - you have the latest ISO 639-3 code tables from 
      https://iso639-3.sil.org/code_tables/download_tables
      put into `build/`,
-   - run `glottolog isoretirements`
+   - run `glottolog --repos . isoretirements`
    - and commited and pushed the changes.
 1. Check out `master` and pull the latest changes:
 ```
