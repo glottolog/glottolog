@@ -32,15 +32,15 @@ Merging the BibTeX files
 ------------------------
 
 3. Update automatically created files:
-   - `iso6393.bib`: Run `glottolog isobib`
-   - `evobib.bib`: Run `glottolog evobib`
+   - `iso6393.bib`: Run `glottolog --repos . isobib`
+   - `evobib.bib`: Run `glottolog --repos . evobib`
    - `benjamins.bib`:
-     - Switch to the clone of `clld/benjamins`
+     - Switch to the clone of `glottolog/benjamins`
      - Pull the latest changes via FTP 
      - Recreate `benjamins.bib`, running `python to_bib.py`
-     - Switch back to `clld/glottolog`
-     - Run `glottolog copy_benjamins PATH/TO/benjamins/benjamins.bib`
-4. Run `glottolog bib` to create `build/monster-utf8.bib`
+     - Switch back to `glottolog/glottolog`
+     - Run `glottolog --repos . copy_benjamins PATH/TO/benjamins/benjamins.bib`
+4. Run `glottolog --repos . bib` to create `build/monster-utf8.bib`
 5. Add the release to CHANGES.md
 
 Releasing
@@ -52,12 +52,21 @@ Releasing
 glottolog --repos=. release
 git commit -a -m"release <version>"
 git tag -a v<version> -m "release <version>"
+glottolog --repos=. cldf ../glottolog-cldf
 ```
 8. Push all changes to origin running
-```bash
-git push origin
-git push --tags origin
-```
+   ```bash
+   git push origin
+   git push --tags origin
+   ```
+   and
+   ```bash
+   cd ../glottolog-cldf
+   cd commit -a -m"release <release>"
+   git tag -a v<version> -m "release <version>"
+   git push origin
+   git push --tags origin
+   ```
 9. Create a "proper" release on GitHub and have it picked up by ZENODO.
 10. Add DOI badge from ZENODO as soon as it becomes available.
 
