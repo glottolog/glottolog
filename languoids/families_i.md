@@ -2,7 +2,6 @@
 - [Iatmulic [sawo1234]](tree/nduu1242/nucl1642/sawo1235/sawo1234/md.ini)
 - [Ibanagic [iban1268]](tree/aust1307/mala1545/nort3238/caga1241/iban1268/md.ini)
 - [Ibanic [iban1263]](tree/aust1307/mala1545/mala1536/nort3170/mala1538/nucl1733/iban1263/md.ini)
-- [Iberian-Romani [iber1252]](tree/mixe1287/iber1252/md.ini)
 - [Ibuoro-Nkari [ibuo1241]](tree/atla1278/volt1241/benu1247/delt1251/obol1242/cent2253/ibuo1241/md.ini)
 - [Icelandic-Faroese [icel1246]](tree/indo1319/germ1287/nort3152/nort3160/west2805/icel1246/md.ini)
 - [Icelandic-based pidgin [icel1249]](tree/pidg1258/icel1249/md.ini)

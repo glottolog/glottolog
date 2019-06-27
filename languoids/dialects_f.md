@@ -60,7 +60,6 @@
 - [Fililwa [fili1243]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/tumb1253/tumb1252/tumb1250/fili1243/md.ini)
 - [Finanga [fina1241]](tree/mand1469/west2780/mand1431/cent2047/mand1432/mand1433/mand1434/mand1435/east2425/mani1303/maho1249/fina1241/md.ini)
 - [Fingallian [fing1234]](tree/indo1319/germ1287/nort3152/west2793/nort3175/angl1264/angl1265/late1254/merc1242/macr1271/stan1293/iris1255/sout3298/east2834/fing1234/md.ini)
-- [Fiorentino Antico [fior1236]](tree/indo1319/ital1284/lati1262/lati1263/impe1234/roma1334/ital1285/ital1286/ital1287/ital1282/fior1236/md.ini)
 - [Fiorentino [fior1235]](tree/indo1319/ital1284/lati1262/lati1263/impe1234/roma1334/ital1285/ital1286/ital1287/ital1282/fior1235/md.ini)
 - [Firia [firi1238]](tree/mand1469/west2780/mand1431/cent2047/susu1249/yalu1240/firi1238/md.ini)
 - [Firozkohi [firo1239]](tree/indo1319/indo1320/iran1269/sout3157/midd1352/mode1259/fars1254/fars1255/east2745/aima1241/firo1239/md.ini)

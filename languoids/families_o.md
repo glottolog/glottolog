@@ -46,7 +46,6 @@
 - [Orokaivic [orok1268]](tree/nucl1709/bina1276/bina1279/nucl1603/sout2934/orok1268/md.ini)
 - [Oromoid [nucl1701]](tree/afro1255/cush1243/east2699/lowl1267/sout3055/main1283/nucl1701/md.ini)
 - [Osage-Kansa [osag1244]](tree/siou1252/core1249/miss1254/dheg1241/osag1244/md.ini)
-- [Oscan-Umbrian [osca1246]](tree/indo1319/ital1284/sabe1249/osca1246/md.ini)
 - [Oshima [oshi1235]](tree/japo1237/ryuk1243/nort3255/amam1245/nucl1644/oshi1235/md.ini)
 - [Osse [osse1244]](tree/atla1278/volt1241/benu1247/akpe1249/edoi1239/nort3183/osse1244/md.ini)
 - [Ossetic [osse1245]](tree/indo1319/indo1320/iran1269/cent2317/sogd1247/osse1245/md.ini)

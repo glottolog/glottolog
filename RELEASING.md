@@ -2,33 +2,31 @@
 Releasing glottolog/glottolog
 =============================
 
-0. Make sure 
-   - you have the latest ISO 639-3 code tables from 
-     https://iso639-3.sil.org/code_tables/download_tables
-     put into `build/`,
-   - run `glottolog --repos . isoretirements`
-   - and commited and pushed the changes.
+0. Make sure you have the latest ISO 639-3 code tables from 
+   https://iso639-3.sil.org/code_tables/download_tables
+   put into `build/`,
 1. Check out `master` and pull the latest changes:
-```
-git checkout master
-git pull origin master
-```
+   ```
+   git checkout master
+   git pull origin master
+   ```
 2. Check the tree and references running
-```
-glottolog check
-```
-making sure there are no `ÈRROR`s
+   ```
+   glottolog --repos . check
+   ```
+   making sure there are no `ÈRROR`s
 
-Also run
-```
-glottolog index
-```
-and
-```
-glottolog update_sources
-```
-and commit up-to-date languoid index pages.
+   Also run
+   ```
+   glottolog --repos . index
+   ```
+   and
+   ```
+   glottolog --repos . update_sources
+   ```
+   and commit up-to-date languoid index pages.
 
+   Run `glottolog --repos . isoretirements` and commit and push the changes.
 
 Merging the BibTeX files
 ------------------------
