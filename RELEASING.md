@@ -40,21 +40,20 @@ Merging the BibTeX files
      - Recreate `benjamins.bib`, running `python to_bib.py`
      - Switch back to `glottolog/glottolog`
      - Run `glottolog --repos . copy_benjamins PATH/TO/benjamins/benjamins.bib`
-4. Run `glottolog --repos . bib` to create `build/monster-utf8.bib`
-5. Add the release to CHANGES.md
+4. Run `glottolog --repos . bib` to create `build/monster-utf8.bib` - about 20mins
 
 Releasing
 ---------
 
-6. Add release notes to `CHANGES.md` and `CONTRIBUTORS.md`
-7. Draft a new release running
-```
-glottolog --repos=. release
-git commit -a -m"release <version>"
-git tag -a v<version> -m "release <version>"
-glottolog --repos=. cldf ../glottolog-cldf
-```
-8. Push all changes to origin running
+5. Add release notes to `CHANGES.md` and `CONTRIBUTORS.md`
+6. Draft a new release running
+   ```bash
+   glottolog --repos=. release
+   git commit -a -m"release <version>"
+   git tag -a v<version> -m "release <version>"
+   glottolog --repos=. cldf ../glottolog-cldf
+   ```
+7. Push all changes to origin running
    ```bash
    git push origin
    git push --tags origin
@@ -67,6 +66,5 @@ glottolog --repos=. cldf ../glottolog-cldf
    git push origin
    git push --tags origin
    ```
-9. Create a "proper" release on GitHub and have it picked up by ZENODO.
-10. Add DOI badge from ZENODO as soon as it becomes available.
-
+8. Create a "proper" release on GitHub and have it picked up by ZENODO.
+9. Add DOI badge from ZENODO as soon as it becomes available.
