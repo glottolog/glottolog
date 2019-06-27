@@ -1,4 +1,0 @@
-configparser; python_version < "3"
-pathlib2; python_version < "3.5"
-scandir; python_version < "3.5"
-sqlalchemy>=1.0.14
