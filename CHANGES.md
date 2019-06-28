@@ -5,11 +5,18 @@ Notable changes between releases of the Glottolog data.
 
 ## [UNRELEASED]
 
+
+## [4.0] - 2019-06-28
+
 - Languoid INI files may now contain a section [links], providing links
   to related resources on the web, e.g. the corresponding page at ElCat.
 - To improve the documentation of the data, we have included machine-readable
   metadata in the `config` directory, providing controlled vocabularies - e.g.
   for AES status - stored in INI files.
+- Glottolog data releases are now supplemented by a CLDF dataset
+  (see https://github.com/glottolog/glottolog-cldf)
+  for better accessibility - in particular of the languoid data, which is 
+  organized as CLDF parameters, e.g. coding AES and MED for languages.
 
 
 ## [3.4] - 2019-04-02

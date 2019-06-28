@@ -51,7 +51,7 @@ Releasing
    glottolog --repos=. release
    git commit -a -m"release <version>"
    git tag -a v<version> -m "release <version>"
-   glottolog --repos=. cldf ../glottolog-cldf
+   glottolog --repos=. cldf ../glottolog-cldf/cldf
    ```
 7. Push all changes to origin running
    ```bash
