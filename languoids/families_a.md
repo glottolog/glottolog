@@ -150,7 +150,7 @@
 - [Asmat [asma1257]](tree/nucl1709/cent2116/asma1256/asma1257/md.ini)
 - [Asmat-Awyu-Ok [cent2116]](tree/nucl1709/cent2116/md.ini)
 - [Asmat-Kamoro [asma1256]](tree/nucl1709/cent2116/asma1256/md.ini)
-- [Assam Tai [assa1264]](tree/taik1256/kamt1241/beta1258/daic1237/cent2251/wenm1239/sapa1255/sout3184/sout2743/shan1276/assa1264/md.ini)
+- [Assam Tai [assa1264]](tree/taik1256/kamt1241/daic1237/cent2251/wenm1239/sapa1255/sout3184/sout2743/shan1276/assa1264/md.ini)
 - [Assamese-based pidgin [assa1271]](tree/pidg1258/assa1271/md.ini)
 - [Asturo-Leonese [astu1244]](tree/indo1319/ital1284/lati1262/lati1263/impe1234/roma1334/ital1285/west2813/shif1234/sout3183/west2838/astu1244/md.ini)
 - [Asuric [asur1255]](tree/aust1305/mund1335/nort3151/kher1245/mund1336/asur1255/md.ini)
