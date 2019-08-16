@@ -32,7 +32,7 @@
 - [Xiuyi [xiuy1238]](tree/sino1245/sini1245/clas1255/midd1354/wuhu1234/huiz1242/xiuy1238/md.ini)
 - [Xochapa Mixtec [xoch1238]](tree/otom1299/east2557/amuz1253/mixt1422/mixt1423/mixt1427/guer1245/alco1235/xoch1238/md.ini)
 - [Xonga [xong1238]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/sout3180/ngun1275/tswa1254/tson1249/xong1238/md.ini)
-- [Xopa [xopa1238]](tree/kart1248/geor1252/zann1245/lazz1240/xopa1238/md.ini)
+- [Xopa [xopa1238]](tree/kart1248/geor1252/zann1245/lazz1240/sena1260/xopa1238/md.ini)
 - [Xoraxane [zagu1235]](tree/indo1319/indo1320/indo1321/indo1322/roma1329/vlax1238/sout2658/dzam1241/zagu1235/md.ini)
 - [Xoshnaw [xosh1238]](tree/indo1319/indo1320/iran1269/cent2317/cent2318/nort3177/laki1246/kurd1259/cent1972/xosh1238/md.ini)
 - [Xuanzhou [xuan1238]](tree/sino1245/sini1245/clas1255/midd1354/wuhu1234/wuch1236/xuan1238/md.ini)

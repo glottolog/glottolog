@@ -13,6 +13,7 @@
 - [Dakoid [dako1256]](tree/atla1278/volt1241/benu1247/bant1294/nort3168/dako1256/md.ini)
 - [Dakotan [dako1257]](tree/siou1252/core1249/miss1254/dako1257/md.ini)
 - [Dakpa-Dzala [dakp1241]](tree/sino1245/bodi1256/bodi1257/tsha1246/east1469/main1269/dakp1241/md.ini)
+- [Dallman [dall1240]](tree/nucl1709/fini1244/huon1246/west2795/crom1234/dall1240/md.ini)
 - [Dalmatian Romance [dalm1244]](tree/indo1319/ital1284/lati1262/lati1263/impe1234/roma1334/ital1285/ital1286/dalm1244/md.ini)
 - [Dama-Galke [dama1266]](tree/atla1278/volt1241/nort3149/came1255/mbum1257/nort2773/dama1266/md.ini)
 - [Damu-Tangam [damu1237]](tree/sino1245/macr1268/tani1259/prew1234/damu1237/md.ini)

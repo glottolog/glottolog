@@ -124,6 +124,7 @@
 - [Gudang-Northeast Paman [guda1246]](tree/pama1250/pama1251/nort2758/guda1246/md.ini)
 - [Gude-Jimi-Zizilivakan [gude1248]](tree/afro1255/chad1250/bium1280/sout3145/bium1271/gude1247/gude1248/md.ini)
 - [Gudeic [gude1247]](tree/afro1255/chad1250/bium1280/sout3145/bium1271/gude1247/md.ini)
+- [Gudufic [gudu1253]](tree/afro1255/chad1250/bium1280/nort3156/marg1267/mand1472/dghw1240/gudu1253/md.ini)
 - [Guebie-Lakota Dida [gueb1239]](tree/atla1278/volt1241/krua1234/east2415/dida1244/dida1245/gueb1239/md.ini)
 - [Guere [guer1240]](tree/atla1278/volt1241/krua1234/west2485/weea1234/guer1244/guer1240/md.ini)
 - [Guere-Krahn [guer1244]](tree/atla1278/volt1241/krua1234/west2485/weea1234/guer1244/md.ini)

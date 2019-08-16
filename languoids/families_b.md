@@ -31,6 +31,7 @@
 - [Baka-Beli [moro1282]](tree/cent2225/sara1341/moro1282/md.ini)
 - [Baka-Gundi [baka1271]](tree/atla1278/volt1241/nort3149/came1255/uban1244/sere1265/ngba1291/ngba1292/west2836/baka1271/md.ini)
 - [Bakati' [baka1275]](tree/aust1307/mala1545/land1261/beny1238/baka1275/md.ini)
+- [Bakhtiari-Southern Lori [bakh1252]](tree/indo1319/indo1320/iran1269/sout3157/midd1352/mode1259/luri1257/luri1252/bakh1252/md.ini)
 - [Baki-Bierebo [baki1243]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/nort3195/cent2269/epie1239/epii1237/baki1243/md.ini)
 - [Bakor [bako1254]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/ekoi1237/ekoi1236/ejag1240/bako1254/md.ini)
 - [Bakor-Ejagham [ejag1240]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/ekoi1237/ekoi1236/ejag1240/md.ini)

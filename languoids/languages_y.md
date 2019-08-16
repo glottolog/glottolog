@@ -2,6 +2,7 @@
 - [Yabarana [yaba1248][yar]](tree/cari1283/vene1261/mapo1244/mapo1245/yaba1248/md.ini)
 - [Yabaâna [yaba1249][ybn]](tree/araw1281/nort2990/inla1264/alto1250/yaba1249/md.ini)
 - [Yabem [yabe1254][jae]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/west2818/nort3206/huon1245/nort2858/yabe1254/md.ini)
+- [Yaben (Konda) [kond1303][knd]](tree/kond1302/kond1303/md.ini)
 - [Yaben [yabe1255][ybm]](tree/nucl1709/mada1298/croi1234/numu1240/yabe1256/yabe1255/md.ini)
 - [Yabong [yabo1240][ybo]](tree/nucl1709/mada1298/raic1241/yaga1258/yabo1240/md.ini)
 - [Yace [yace1238][ekr]](tree/atla1278/volt1241/benu1247/idom1262/yaty1238/yace1238/md.ini)

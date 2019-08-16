@@ -191,6 +191,7 @@
 - [Western Penan-Sebop [west2562]](tree/aust1307/mala1545/nort3253/nort3171/keny1280/lowl1270/west2875/pena1271/west2562/md.ini)
 - [Western Periphery Nahuatl [west2825]](tree/utoa1244/sout3136/cora1261/azte1234/west2809/west2814/west2825/md.ini)
 - [Western Periphery-North Guerrero Nahuatl [west2814]](tree/utoa1244/sout3136/cora1261/azte1234/west2809/west2814/md.ini)
+- [Western Phla-Phera [west2934]](tree/atla1278/volt1241/kwav1236/gbee1241/east2711/west2934/md.ini)
 - [Western Plains Austronesian [west2572]](tree/aust1307/west2572/md.ini)
 - [Western Plains Dogon [west2508]](tree/dogo1299/plai1257/west2508/md.ini)
 - [Western Rajasthani [west2831]](tree/indo1319/indo1320/indo1321/indo1322/subc1234/guja1255/raja1256/west2831/md.ini)

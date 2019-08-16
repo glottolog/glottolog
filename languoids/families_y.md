@@ -4,6 +4,7 @@
 - [Yaka-Suku [yaka1278]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/kong1295/kong1296/yaka1278/md.ini)
 - [Yalandyic [yala1261]](tree/pama1250/yimi1234/yala1261/md.ini)
 - [Yalic [yali1257]](tree/nucl1709/dani1287/ngal1299/yali1257/md.ini)
+- [Yam [more1255]](tree/more1255/md.ini)
 - [Yambasa (A.60) [yamb1256]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/mbam1252/yamb1256/md.ini)
 - [Yamdena-Onin [yamd1241]](tree/aust1307/mala1545/cent2237/cent2245/keit1238/yamd1241/md.ini)
 - [Yami-Itbayat [yami1257]](tree/aust1307/mala1545/bata1315/yami1257/md.ini)

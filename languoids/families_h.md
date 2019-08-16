@@ -77,6 +77,7 @@
 - [Hunde-Havu [hund1240]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/nort3203/grea1289/west2842/kivu1239/fore1272/hund1240/md.ini)
 - [Hunter-Hastings [hunt1235]](tree/pama1250/sout3135/news1235/yuin1243/kuri1270/hunt1235/md.ini)
 - [Huon Gulf [huon1245]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/west2818/nort3206/huon1245/md.ini)
+- [Huon Tip [huon1247]](tree/nucl1709/fini1244/huon1246/east2705/tran1296/huon1247/md.ini)
 - [Huon [huon1246]](tree/nucl1709/fini1244/huon1246/md.ini)
 - [Hup-Yuhup [hupy1235]](tree/nada1235/east2549/hupy1235/md.ini)
 - [Hurro-Urartian [hurr1239]](tree/hurr1239/md.ini)
