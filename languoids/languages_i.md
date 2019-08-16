@@ -125,6 +125,7 @@
 - [Irigwe [irig1241][iri]](tree/atla1278/volt1241/benu1247/benu1248/benu1249/sout3163/irig1241/md.ini)
 - [Irish Sign Language [iris1235][isg]](tree/sign1238/deaf1237/lsfi1234/iris1235/md.ini)
 - [Irish [iris1253][gle]](tree/indo1319/celt1248/nucl1715/tgbc1234/insu1254/goid1240/mode1265/iris1253/md.ini)
+- [Iron Ossetian [iron1242][oss]](tree/indo1319/indo1320/iran1269/cent2317/sogd1247/osse1245/osse1243/iron1242/md.ini)
 - [Irula of the Nilgiri [irul1243][iru]](tree/drav1251/sout3133/sout3138/tami1291/tami1292/tami1293/tami1294/irul1245/irul1243/md.ini)
 - [Irántxe-Münkü [iran1263][irn]](tree/iran1263/md.ini)
 - [Isabi [isab1240][isa]](tree/nucl1709/kain1273/goro1272/unun9977/isab1240/md.ini)

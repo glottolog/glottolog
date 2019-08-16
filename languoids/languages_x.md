@@ -31,5 +31,5 @@
 - [Xokleng [xokl1240][xok]](tree/nucl1710/jeee1236/jeme1246/kain1270/xokl1240/md.ini)
 - [Xukurú [xuku1239][xoo]](tree/xuku1239/md.ini)
 - [Xuzhang Lalo [xuzh1234]](tree/sino1245/burm1265/lolo1265/lolo1267/nili1235/liso1234/nucl1734/lisu1252/lalu1234/lalo1240/grea1292/xuzh1234/md.ini)
-- [Xwela Gbe [xwel1235][xwe]](tree/atla1278/volt1241/kwav1236/gbee1241/east2711/xwel1235/md.ini)
+- [Xwela Gbe [xwel1235][xwe]](tree/atla1278/volt1241/kwav1236/gbee1241/east2711/west2934/xwel1235/md.ini)
 - [Xârâcùù [xara1244][ane]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/sout3173/newc1243/main1286/sout3313/mids1246/xara1244/md.ini)

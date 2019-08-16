@@ -13,6 +13,7 @@
 - [Rashad [rash1249]](tree/rash1249/md.ini)
 - [Raute-Rawat [raut1240]](tree/sino1245/raji1239/raut1240/md.ini)
 - [Ravulic [ravu1238]](tree/drav1251/sout3133/sout3138/tami1291/tami1292/tami1293/tami1294/tami1297/tami1298/mala1541/ravu1238/md.ini)
+- [Rawlinson [rawl1234]](tree/nucl1709/fini1244/huon1246/west2795/rawl1234/md.ini)
 - [Rawo-Main Serra [rawo1243]](tree/skoo1245/skou1238/serr1253/rawo1243/md.ini)
 - [Red Tai [redt1235]](tree/taik1256/kamt1241/daic1237/cent2251/wenm1239/sapa1255/sout3184/sout2743/redt1235/md.ini)
 - [Reefs-Santa Cruz [reef1242]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/temo1244/reef1242/md.ini)

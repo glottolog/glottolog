@@ -52,7 +52,7 @@
 - [Iquito-Arabela [iqui1244]](tree/zapa1251/iqui1244/md.ini)
 - [Iranian [iran1269]](tree/indo1319/indo1320/iran1269/md.ini)
 - [Iraqwoid [iraq1240]](tree/afro1255/cush1243/sout3054/west2720/nort3164/iraq1240/md.ini)
-- [Irish-undocumented [iris1254]](tree/mixe1287/iris1254/md.ini)
+- [Irish-English [iris1254]](tree/spee1234/iris1254/md.ini)
 - [Iroquoian [iroq1247]](tree/iroq1247/md.ini)
 - [Irula-Muduga [irul1245]](tree/drav1251/sout3133/sout3138/tami1291/tami1292/tami1293/tami1294/irul1245/md.ini)
 - [Island Carib-Garifuna [isla1279]](tree/araw1281/nort2990/cari1281/isla1279/md.ini)
