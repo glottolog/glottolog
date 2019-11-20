@@ -18,11 +18,7 @@ Releasing glottolog/glottolog
 
    Also run
    ```shell script
-   glottolog-admin langindex
-   glottolog-admin updatesources
-   glottolog-admin updatemetadata
-   glottolog-admin updatelinks
-   glottolog-admin isoretirements
+   glottolog-admin update
    ```
    and commit and push the changes.
 
