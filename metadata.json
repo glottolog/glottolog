@@ -1,0 +1,23 @@
+{
+  "@context": [
+    "http://www.w3.org/ns/csvw",
+    {
+      "@language": "en"
+    }
+  ],
+  "dc:title": "Glottolog",
+  "dc:description": "Comprehensive reference information for the world's languages, especially the lesser known languages",
+  "dc:publisher": {
+    "http://xmlns.com/foaf/0.1/name": "Max Planck Institute for the Science of Human History",
+    "dc:Location": "Jena",
+    "http://xmlns.com/foaf/0.1/homepage": "https://www.shh.mpg.de",
+    "http://xmlns.com/foaf/0.1/mbox": "glottolog@shh.mpg.de"
+  },
+  "dc:license": {
+    "url": "https://creativecommons.org/licenses/by/4.0/",
+    "icon": "cc-by.png",
+    "name": "Creative Commons Attribution 4.0 International License"
+  },
+  "dcat:accessURL": "https://glottolog.org"
+}
+
