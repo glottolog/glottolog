@@ -40178,5 +40178,541 @@
     {
         "replacement": 563396,
         "id": 97311
+    },
+    {
+        "replacement": 8990,
+        "id": 46301
+    },
+    {
+        "replacement": 8990,
+        "id": 46301
+    },
+    {
+        "replacement": 8990,
+        "id": 46301
+    },
+    {
+        "replacement": 8990,
+        "id": 46301
+    },
+    {
+        "replacement": 20460,
+        "id": 49509
+    },
+    {
+        "replacement": 20460,
+        "id": 49509
+    },
+    {
+        "replacement": 25731,
+        "id": 66305
+    },
+    {
+        "replacement": 25731,
+        "id": 310147
+    },
+    {
+        "replacement": 30784,
+        "id": 12639
+    },
+    {
+        "replacement": 35513,
+        "id": 17992
+    },
+    {
+        "replacement": 39678,
+        "id": 79410
+    },
+    {
+        "replacement": 42374,
+        "id": 134670
+    },
+    {
+        "replacement": 42374,
+        "id": 134670
+    },
+    {
+        "replacement": 58319,
+        "id": 560205
+    },
+    {
+        "replacement": 64918,
+        "id": 561252
+    },
+    {
+        "replacement": 78551,
+        "id": 309210
+    },
+    {
+        "replacement": 84099,
+        "id": 562980
+    },
+    {
+        "replacement": 84099,
+        "id": 562980
+    },
+    {
+        "replacement": 84717,
+        "id": 85653
+    },
+    {
+        "replacement": 84717,
+        "id": 85653
+    },
+    {
+        "replacement": 84717,
+        "id": 85653
+    },
+    {
+        "replacement": 92353,
+        "id": 105428
+    },
+    {
+        "replacement": 103789,
+        "id": 421473
+    },
+    {
+        "replacement": 107475,
+        "id": 107480
+    },
+    {
+        "replacement": 107475,
+        "id": 107480
+    },
+    {
+        "replacement": 116816,
+        "id": 83464
+    },
+    {
+        "replacement": 121948,
+        "id": 518405
+    },
+    {
+        "replacement": 122957,
+        "id": 145706
+    },
+    {
+        "replacement": 122957,
+        "id": 145706
+    },
+    {
+        "replacement": 146419,
+        "id": 475304
+    },
+    {
+        "replacement": 150234,
+        "id": 153397
+    },
+    {
+        "replacement": 150234,
+        "id": 153397
+    },
+    {
+        "replacement": 156439,
+        "id": 94971
+    },
+    {
+        "replacement": 156439,
+        "id": 94971
+    },
+    {
+        "replacement": 156439,
+        "id": 94971
+    },
+    {
+        "replacement": 163697,
+        "id": 562350
+    },
+    {
+        "replacement": 178546,
+        "id": 476448
+    },
+    {
+        "replacement": 300002,
+        "id": 124363
+    },
+    {
+        "replacement": 305503,
+        "id": 119106
+    },
+    {
+        "replacement": 318683,
+        "id": 77288
+    },
+    {
+        "replacement": 326237,
+        "id": 555582
+    },
+    {
+        "replacement": 326237,
+        "id": 555582
+    },
+    {
+        "replacement": 470554,
+        "id": 55054
+    },
+    {
+        "replacement": 478105,
+        "id": 560727
+    },
+    {
+        "replacement": 509701,
+        "id": 72141
+    },
+    {
+        "replacement": 563513,
+        "id": 54354
+    },
+    {
+        "replacement": 563515,
+        "id": 66605
+    },
+    {
+        "replacement": 563518,
+        "id": 108283
+    },
+    {
+        "replacement": 563617,
+        "id": 95961
+    },
+    {
+        "replacement": 563720,
+        "id": 326118
+    },
+    {
+        "replacement": 563725,
+        "id": 152940
+    },
+    {
+        "replacement": 563846,
+        "id": 27649
+    },
+    {
+        "replacement": 563858,
+        "id": 468484
+    },
+    {
+        "replacement": 563983,
+        "id": 72078
+    },
+    {
+        "replacement": 564065,
+        "id": 45816
+    },
+    {
+        "replacement": 564097,
+        "id": 129096
+    },
+    {
+        "replacement": 564220,
+        "id": 126023
+    },
+    {
+        "replacement": 564220,
+        "id": 126023
+    },
+    {
+        "replacement": 564220,
+        "id": 126023
+    },
+    {
+        "replacement": 564220,
+        "id": 126023
+    },
+    {
+        "replacement": 564272,
+        "id": 29070
+    },
+    {
+        "replacement": 564273,
+        "id": 35115
+    },
+    {
+        "replacement": 564274,
+        "id": 137715
+    },
+    {
+        "replacement": 564459,
+        "id": 40505
+    },
+    {
+        "replacement": 564465,
+        "id": 135921
+    },
+    {
+        "replacement": 564491,
+        "id": 146419
+    },
+    {
+        "replacement": 564491,
+        "id": 146419
+    },
+    {
+        "replacement": 564505,
+        "id": 310933
+    },
+    {
+        "replacement": 564668,
+        "id": 561710
+    },
+    {
+        "replacement": 564668,
+        "id": 145065
+    },
+    {
+        "replacement": 564668,
+        "id": 561710
+    },
+    {
+        "replacement": 564781,
+        "id": 44249
+    },
+    {
+        "replacement": 564854,
+        "id": 161233
+    },
+    {
+        "replacement": 564854,
+        "id": 161233
+    },
+    {
+        "replacement": 564854,
+        "id": 161233
+    },
+    {
+        "replacement": 564916,
+        "id": 146944
+    },
+    {
+        "replacement": 564916,
+        "id": 146944
+    },
+    {
+        "replacement": 564918,
+        "id": 39855
+    },
+    {
+        "replacement": 564932,
+        "id": 12508
+    },
+    {
+        "replacement": 564932,
+        "id": 12508
+    },
+    {
+        "replacement": 564985,
+        "id": 432305
+    },
+    {
+        "replacement": 565033,
+        "id": 54471
+    },
+    {
+        "replacement": 565050,
+        "id": 97190
+    },
+    {
+        "replacement": 565075,
+        "id": 155894
+    },
+    {
+        "replacement": 565266,
+        "id": 37017
+    },
+    {
+        "replacement": 565367,
+        "id": 95241
+    },
+    {
+        "replacement": 565455,
+        "id": 17894
+    },
+    {
+        "replacement": 565532,
+        "id": 69182
+    },
+    {
+        "replacement": 565672,
+        "id": 30243
+    },
+    {
+        "replacement": 565700,
+        "id": 120449
+    },
+    {
+        "replacement": 565712,
+        "id": 562284
+    },
+    {
+        "replacement": 565712,
+        "id": 43453
+    },
+    {
+        "replacement": 565920,
+        "id": 126518
+    },
+    {
+        "replacement": 565921,
+        "id": 64988
+    },
+    {
+        "replacement": 565976,
+        "id": 16373
+    },
+    {
+        "replacement": 566001,
+        "id": 31957
+    },
+    {
+        "replacement": 566001,
+        "id": 31957
+    },
+    {
+        "replacement": 566133,
+        "id": 44865
+    },
+    {
+        "replacement": 566133,
+        "id": 562487
+    },
+    {
+        "replacement": 566137,
+        "id": 66218
+    },
+    {
+        "replacement": 566285,
+        "id": 128350
+    },
+    {
+        "replacement": 566305,
+        "id": 556749
+    },
+    {
+        "replacement": 566358,
+        "id": 11691
+    },
+    {
+        "replacement": 566461,
+        "id": 122255
+    },
+    {
+        "replacement": 566642,
+        "id": 82541
+    },
+    {
+        "replacement": 566703,
+        "id": 88441
+    },
+    {
+        "replacement": 566773,
+        "id": 96257
+    },
+    {
+        "replacement": 566773,
+        "id": 562835
+    },
+    {
+        "replacement": 566783,
+        "id": 42374
+    },
+    {
+        "replacement": 566789,
+        "id": 35875
+    },
+    {
+        "replacement": 566940,
+        "id": 121514
+    },
+    {
+        "replacement": 566960,
+        "id": 135360
+    },
+    {
+        "replacement": 566960,
+        "id": 562921
+    },
+    {
+        "replacement": 566968,
+        "id": 66717
+    },
+    {
+        "replacement": 566968,
+        "id": 66717
+    },
+    {
+        "replacement": 567050,
+        "id": 74386
+    },
+    {
+        "replacement": 567126,
+        "id": 58964
+    },
+    {
+        "replacement": 567129,
+        "id": 86826
+    },
+    {
+        "replacement": 567229,
+        "id": 80352
+    },
+    {
+        "replacement": 567229,
+        "id": 563075
+    },
+    {
+        "replacement": 567442,
+        "id": 71253
+    },
+    {
+        "replacement": 567542,
+        "id": 146163
+    },
+    {
+        "replacement": 567557,
+        "id": 120092
+    },
+    {
+        "replacement": 567567,
+        "id": 35218
+    },
+    {
+        "replacement": 567632,
+        "id": 150310
+    },
+    {
+        "replacement": 567689,
+        "id": 563303
+    },
+    {
+        "replacement": 567689,
+        "id": 89543
+    },
+    {
+        "replacement": 567689,
+        "id": 563303
+    },
+    {
+        "replacement": 567689,
+        "id": 563303
+    },
+    {
+        "replacement": 567689,
+        "id": 563303
+    },
+    {
+        "replacement": 567855,
+        "id": 15658
+    },
+    {
+        "replacement": 567856,
+        "id": 100763
+    },
+    {
+        "replacement": 567879,
+        "id": 97311
+    },
+    {
+        "replacement": 567888,
+        "id": 66243
     }
 ]
