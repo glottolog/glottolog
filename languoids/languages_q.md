@@ -10,6 +10,7 @@
 - [Quebec Sign Language [queb1245][fcs]](tree/sign1238/deaf1237/lsfi1234/asli1244/queb1245/md.ini)
 - [Quechan [quec1382][yum]](tree/coch1271/yuma1250/gene1244/rive1260/quec1382/md.ini)
 - [Queensland Kanaka English [quee1234]](tree/pidg1258/engl1287/quee1234/md.ini)
+- [Quenya [quen1234][qya]](tree/arti1236/quen1234/md.ini)
 - [Quepos [quep1238]](tree/uncl1493/quep1238/md.ini)
 - [Querandi [quer1237]](tree/uncl1493/quer1237/md.ini)
 - [Querétaro Otomi [quer1236][otq]](tree/otom1299/west2783/otop1241/otop1242/otom1297/otom1300/nort3201/quer1236/md.ini)

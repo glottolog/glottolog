@@ -31,6 +31,7 @@
 - [Fannai [fann1238]](tree/sino1245/kuki1245/kuki1246/cent2330/cent2005/mizo1244/lush1249/fann1238/md.ini)
 - [Fante [fant1241][fat]](tree/atla1278/volt1241/kwav1236/nyoa1234/poto1254/tano1248/cent2262/akan1251/akan1250/fant1241/md.ini)
 - [Fantera [fant1242]](tree/atla1278/volt1241/nort3149/senu1239/sout3153/nafa1258/fant1242/md.ini)
+- [Far Western Minufiyya [farw1237]](tree/afro1255/semi1276/west2786/cent2236/arab1394/arab1395/egyp1251/egyp1254/egyp1253/west2938/farw1237/md.ini)
 - [Faranga [fara1237]](tree/maba1274/maba1275/maba1276/nucl1441/kend1253/fara1237/md.ini)
 - [Fare [fare1242]](tree/cent2225/memb1239/mang1425/lese1245/lese1243/fare1242/md.ini)
 - [Fassano [fass1244]](tree/indo1319/ital1284/lati1262/lati1263/impe1234/roma1334/ital1285/west2813/shif1234/nort3208/gall1280/ladi1250/fass1244/md.ini)

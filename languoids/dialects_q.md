@@ -25,7 +25,6 @@
 - [Qinlian [qinl1235]](tree/sino1245/sini1245/clas1255/midd1354/yuep1234/yuec1235/qinl1235/md.ini)
 - [Qiong-Lei [qion1239]](tree/sino1245/sini1245/minn1248/coas1318/minn1241/qion1239/md.ini)
 - [Qiongshan [qion1238]](tree/taik1256/kamt1241/daic1237/nort3326/bese1244/beic1239/ling1262/qion1238/md.ini)
-- [Qiqiha'er [qiqi1238]](tree/mong1329/daur1238/qiqi1238/md.ini)
 - [Qomul [qomu1235]](tree/turk1311/comm1245/karl1243/uygh1241/uygh1240/uigh1243/uigh1240/cent1994/qomu1235/md.ini)
 - [Qonaqkend [qona1238]](tree/indo1319/indo1320/iran1269/sout3157/midd1352/mode1259/fars1254/cauc1242/musl1236/qona1238/md.ini)
 - [Quan Chet [quan1241]](tree/hmon1336/mien1242/mien1243/iumi1238/quan1241/md.ini)
