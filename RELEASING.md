@@ -12,35 +12,29 @@ Releasing glottolog/glottolog
    ```
 2. Check the tree and references running
    ```
-   glottolog --repos . check
+   glottolog-admin check
    ```
    making sure there are no `ÈRROR`s
 
    Also run
+   ```shell script
+   glottolog-admin update
    ```
-   glottolog --repos . index
-   ```
-   and
-   ```
-   glottolog --repos . update_sources
-   ```
-   and commit up-to-date languoid index pages.
-
-   Run `glottolog --repos . isoretirements` and commit and push the changes.
+   and commit and push the changes.
 
 Merging the BibTeX files
 ------------------------
 
 3. Update automatically created files:
-   - `iso6393.bib`: Run `glottolog --repos . isobib`
-   - `evobib.bib`: Run `glottolog --repos . evobib`
+   - `iso6393.bib`: Run `glottolog-admin isobib`
+   - `evobib.bib`: Run `glottolog-admin evobib`
    - `benjamins.bib`:
      - Switch to the clone of `glottolog/benjamins`
      - Pull the latest changes via FTP 
      - Recreate `benjamins.bib`, running `python to_bib.py`
      - Switch back to `glottolog/glottolog`
-     - Run `glottolog --repos . copy_benjamins PATH/TO/benjamins/benjamins.bib`
-4. Run `glottolog --repos . bib` to create `build/monster-utf8.bib` - about 20mins
+     - Run `glottolog-admin benjaminsbib PATH/TO/benjamins/benjamins.bib`
+4. Run `glottolog-admin bib` to create `build/monster-utf8.bib` - about 20mins
 
 Releasing
 ---------
@@ -48,7 +42,7 @@ Releasing
 5. Add release notes to `CHANGES.md` and `CONTRIBUTORS.md`
 6. Draft a new release running
    ```bash
-   glottolog --repos=. release
+   glottolog-admin release
    git commit -a -m"release <version>"
    git tag -a v<version> -m "release <version>"
    glottolog --repos=. cldf ../glottolog-cldf/cldf

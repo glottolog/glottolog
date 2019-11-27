@@ -13,7 +13,6 @@
 - [Xi'an Mandarin [xian1253]](tree/sino1245/sini1245/clas1255/midd1354/nort3155/mand1471/mand1415/huab1238/xian1253/md.ini)
 - [Xiamen [xiam1236]](tree/sino1245/sini1245/minn1248/coas1318/minn1241/hokk1242/xiam1236/md.ini)
 - [Xiandao [xian1249][xia]](tree/sino1245/burm1265/lolo1265/burm1266/nort2720/high1273/acha1252/acha1249/xian1249/md.ini)
-- [Xianggang [xian1255]](tree/sino1245/sini1245/clas1255/midd1354/yuep1234/yuec1235/yueh1236/cant1236/xian1255/md.ini)
 - [Xiangtan [xian1254]](tree/sino1245/sini1245/clas1255/midd1354/xian1251/luos1238/xian1254/md.ini)
 - [Xiangyun [xian1250]](tree/sino1245/macr1275/caij1235/baic1239/sout3254/sout2730/xian1250/md.ini)
 - [Xianyou [xian1252]](tree/sino1245/sini1245/minn1248/coas1318/puxi1243/xian1252/md.ini)

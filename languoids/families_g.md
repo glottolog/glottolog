@@ -61,7 +61,6 @@
 - [Global German [glob1243]](tree/indo1319/germ1287/nort3152/west2793/high1289/high1286/midd1349/mode1258/uppe1464/glob1243/md.ini)
 - [Global South Bavarian [glob1242]](tree/indo1319/germ1287/nort3152/west2793/high1289/high1286/midd1349/mode1258/baye1239/glob1242/md.ini)
 - [Goam [goam1234]](tree/lowe1437/ramu1234/goam1234/md.ini)
-- [Goemai-Chakato [goem1241]](tree/afro1255/chad1250/west2785/west2714/west2799/west2717/anga1311/goem1241/md.ini)
 - [Goemaic [anga1311]](tree/afro1255/chad1250/west2785/west2714/west2799/west2717/anga1311/md.ini)
 - [Gogodalic [gogo1264]](tree/suki1244/gogo1264/md.ini)
 - [Goidelic [goid1240]](tree/indo1319/celt1248/nucl1715/tgbc1234/insu1254/goid1240/md.ini)

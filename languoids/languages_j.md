@@ -6,6 +6,7 @@
 - [Jahanka [jaha1245][jad]](tree/mand1469/west2780/mand1431/cent2047/mand1432/mand1433/mand1434/mand1435/west2499/xaso1239/jaha1245/md.ini)
 - [Jakalteko, Western [jaka1246][jai]](tree/book1242/jaka1246/md.ini)
 - [Jakartan Sign Language [indo1291][inl]](tree/sign1238/deaf1237/lsfi1234/asli1244/mala1548/indo1333/indo1291/md.ini)
+- [Jakato [chak1275]](tree/afro1255/chad1250/west2785/west2714/west2799/west2717/kofy1243/panc1248/chak1275/md.ini)
 - [Jakun [jaku1244][jak]](tree/aust1307/mala1545/mala1536/nort3170/mala1538/nucl1733/sing1270/jaku1244/md.ini)
 - [Jalaa [cent2045][cet]](tree/cent2045/md.ini)
 - [Jalapa De Díaz Mazatec [jala1237][maj]](tree/otom1299/east2557/popo1292/popo1293/maza1295/maza1308/jala1237/md.ini)
