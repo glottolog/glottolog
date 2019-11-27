@@ -6,6 +6,13 @@ Notable changes between releases of the Glottolog data.
 ## [UNRELEASED]
 
 
+## [4.1] - 2019-11-27
+
+- Added GeoJSON files for macroareas
+- See https://github.com/clld/glottolog/pulls?q=is%3Apr+is%3Amerged for a list of
+accepted changes.
+
+
 ## [4.0] - 2019-06-28
 
 - Languoid INI files may now contain a section [links], providing links
