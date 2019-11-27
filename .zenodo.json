@@ -1,32 +1,32 @@
 {
-    "creators": [
-        {
-            "affiliation": "University Uppsala",
-            "name": "Harald Hammarstr\u00f6m"
-        },
-        {
-            "affiliation": "Max Planck Institute for the Science of Human History",
-            "name": "Robert Forkel",
-            "orcid": "0000-0003-1081-086X"
-        },
-        {
-            "affiliation": "Max Planck Institute for the Science of Human History",
-            "name": "Martin Haspelmath",
-            "orcid": "0000-0003-2100-8493"
-        }
-    ],
-    "license": {
-        "id": "CC-BY-4.0"
-    },
-    "keywords": [
-        "linguistics"
-    ],
     "access_right": "open",
-    "title": "glottolog/glottolog: Glottolog database 4.0",
-    "description": "<p>Hammarstr&ouml;m, Harald &amp; Forkel, Robert &amp; Haspelmath, Martin. 2019. Glottolog 4.0. Jena: Max Planck Institute for the Science of Human History. (Available online at <a href=\"https://glottolog.org\">https://glottolog.org</a>)</p>",
     "communities": [
         {
             "identifier": "clld"
         }
-    ]
+    ],
+    "description": "<p>Hammarstr&ouml;m, Harald &amp; Forkel, Robert &amp; Haspelmath, Martin. 2019. Glottolog 4.1. Jena: Max Planck Institute for the Science of Human History. (Available online at <a href=\"https://glottolog.org\">https://glottolog.org</a>)</p>",
+    "keywords": [
+        "linguistics"
+    ],
+    "creators": [
+        {
+            "name": "Harald Hammarstr\u00f6m",
+            "affiliation": "University Uppsala"
+        },
+        {
+            "orcid": "0000-0003-1081-086X",
+            "name": "Robert Forkel",
+            "affiliation": "Max Planck Institute for the Science of Human History"
+        },
+        {
+            "orcid": "0000-0003-2100-8493",
+            "name": "Martin Haspelmath",
+            "affiliation": "Max Planck Institute for the Science of Human History"
+        }
+    ],
+    "title": "glottolog/glottolog: Glottolog database 4.1",
+    "license": {
+        "id": "CC-BY-4.0"
+    }
 }
