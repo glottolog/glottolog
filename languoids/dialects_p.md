@@ -319,6 +319,7 @@
 - [Polo [polo1241]](tree/sino1245/burm1265/lolo1265/burm1266/nort2720/high1273/zaiw1241/polo1241/md.ini)
 - [Pologozom [polo1246]](tree/afro1255/chad1250/bium1280/sout3145/bium1274/daba1262/nucl1683/polo1246/md.ini)
 - [Pomak [poma1238]](tree/indo1319/balt1263/slav1255/sout3147/east2269/mace1252/bulg1262/east2814/rupp1234/poma1238/md.ini)
+- [Pomor [pomo1249]](tree/indo1319/balt1263/slav1255/east1426/russ1263/nort2597/pomo1249/md.ini)
 - [Ponapean [pona1249]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/micr1243/micr1244/cent2276/west2844/pona1247/pona1248/pohn1238/pona1249/md.ini)
 - [Ponca [ponc1241]](tree/siou1252/core1249/miss1254/dheg1241/omah1247/ponc1241/md.ini)
 - [Pondo [pond1249]](tree/atla1278/volt1241/nort3149/came1255/mbum1257/cent2020/kara1477/kare1351/pana1293/pond1249/md.ini)
