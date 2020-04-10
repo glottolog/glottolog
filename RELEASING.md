@@ -28,6 +28,7 @@ Merging the BibTeX files
 3. Update automatically created files:
    - `iso6393.bib`: Run `glottolog-admin isobib`
    - `evobib.bib`: Run `glottolog-admin evobib`
+   - `dplace.bib`: Run `glottolog-admin dplacebib`
    - `benjamins.bib`:
      - Switch to the clone of `glottolog/benjamins`
      - Pull the latest changes via FTP 
