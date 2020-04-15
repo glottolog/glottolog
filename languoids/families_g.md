@@ -73,7 +73,6 @@
 - [Goroka [goro1272]](tree/nucl1709/kain1273/goro1272/md.ini)
 - [Gorontalic [goro1273]](tree/aust1307/mala1545/grea1284/goro1257/goro1273/md.ini)
 - [Gorontalo-Mongondow [goro1257]](tree/aust1307/mala1545/grea1284/goro1257/md.ini)
-- [Goula-Melfi [goul1243]](tree/atla1278/volt1241/nort3149/buak1234/adam1257/goul1243/md.ini)
 - [Goulaic [goul1244]](tree/atla1278/volt1241/nort3149/buak1234/adam1257/goul1243/goul1244/md.ini)
 - [Gourmantche-Moba [gour1248]](tree/atla1278/volt1241/nort3149/gura1261/cent2243/nort2777/bwam1248/otiv1239/nucl1743/gurm1247/gurm1248/gurm1249/gurm1250/gour1248/md.ini)
 - [Graeco-Phrygian [grae1234]](tree/indo1319/grae1234/md.ini)

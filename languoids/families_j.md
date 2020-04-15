@@ -25,6 +25,8 @@
 - [Jen [jenn1241]](tree/atla1278/volt1241/nort3149/gura1261/cent2243/waja1258/bikw1235/jenn1241/md.ini)
 - [Jeri [jeri1241]](tree/mand1469/west2780/mand1431/cent2047/mand1432/jogo1241/jeri1241/md.ini)
 - [Jeru-Kora [jeru1239]](tree/grea1241/nort3276/nort2678/jeru1239/md.ini)
+- [Jibu-Wase [jibu1240]](tree/atla1278/volt1241/benu1247/juku1257/cent2241/juku1258/juku1259/jibu1240/md.ini)
+- [Jibuic [jibu1241]](tree/atla1278/volt1241/benu1247/juku1257/cent2241/juku1258/juku1259/jibu1240/jibu1241/md.ini)
 - [Jicaquean [jica1245]](tree/jica1245/md.ini)
 - [Jilic [jili1243]](tree/atla1278/volt1241/benu1247/benu1248/alum1249/jili1242/jili1243/md.ini)
 - [Jilic-Eggonic [jili1242]](tree/atla1278/volt1241/benu1247/benu1248/alum1249/jili1242/md.ini)
