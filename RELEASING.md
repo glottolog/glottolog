@@ -45,7 +45,7 @@ Releasing
 5. Add release notes to `CHANGES.md` and `CONTRIBUTORS.md`
 6. Draft a new release running
    ```bash
-   glottolog-admin release
+   glottolog-admin release <version>
    git commit -a -m"release <version>"
    git tag -a v<version> -m "release <version>"
    glottolog --repos=. cldf ../glottolog-cldf/cldf
