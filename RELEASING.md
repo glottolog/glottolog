@@ -27,7 +27,9 @@ Merging the BibTeX files
 
 3. Update automatically created files:
    - `iso6393.bib`: Run `glottolog-admin isobib`
-   - `evobib.bib`: Run `glottolog-admin evobib`
+   - `evobib.bib`:
+     - download the latest version from https://doi.org/10.5281/zenodo.1181952
+     - Run `glottolog-admin evobib`
    - `dplace.bib`: Run `glottolog-admin dplacebib`
    - `benjamins.bib`:
      - Switch to the clone of `glottolog/benjamins`
@@ -43,7 +45,7 @@ Releasing
 5. Add release notes to `CHANGES.md` and `CONTRIBUTORS.md`
 6. Draft a new release running
    ```bash
-   glottolog-admin release
+   glottolog-admin release <version>
    git commit -a -m"release <version>"
    git tag -a v<version> -m "release <version>"
    glottolog --repos=. cldf ../glottolog-cldf/cldf

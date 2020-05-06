@@ -6,6 +6,20 @@ Notable changes between releases of the Glottolog data.
 ## [UNRELEASED]
 
 
+## [4.2.1] - 2020-04-16
+
+- Re-inserted double quotes marking pejorative alternative names from ElCat
+- Fully re-activate Sebastian Bank as editor
+
+
+## [4.2] - 2020-04-16
+
+- Added D-PLACE bibliography
+- Added timespan attributes for extinct languages
+- See https://github.com/clld/glottolog/pulls?q=is%3Apr+is%3Amerged for a list of
+accepted changes.
+
+
 ## [4.1] - 2019-11-27
 
 - Added GeoJSON files for macroareas

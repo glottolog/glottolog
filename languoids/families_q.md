@@ -1,4 +1,3 @@
-- [Qazvinic [qazv1240]](tree/indo1319/indo1320/iran1269/cent2317/cent2318/nort3177/tati1243/tati1244/unun9881/qazv1240/md.ini)
 - [Qeltu [qelt1235]](tree/afro1255/semi1276/west2786/cent2236/arab1394/arab1395/east2729/qelt1235/md.ini)
 - [Qiang [qian1264]](tree/sino1245/burm1265/naqi1236/qian1263/qian1264/md.ini)
 - [Qiangic [qian1263]](tree/sino1245/burm1265/naqi1236/qian1263/md.ini)
