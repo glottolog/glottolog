@@ -27,6 +27,7 @@ Merging the BibTeX files
 
 3. Update automatically created files:
    - `iso6393.bib`: Run `glottolog-admin isobib`
+   - `elp.bib`: Run `glottolog-admin elpbib`
    - `evobib.bib`:
      - download the latest version from https://doi.org/10.5281/zenodo.1181952
      - Run `glottolog-admin evobib`
