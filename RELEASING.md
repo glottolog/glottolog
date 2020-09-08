@@ -66,3 +66,21 @@ Releasing
    ```
 8. Create a "proper" release on GitHub and have it picked up by ZENODO.
 9. Add DOI badge from ZENODO as soon as it becomes available.
+
+
+Checking a pull request
+=======================
+
+1. Update the `master` branch and store languoid stats:
+   ```
+   git checkout master
+   git pull origin
+   glottolog-admin writelanguoidstats
+   ```
+2. Check out the PR branch and run the checks:
+   ```
+   git checkout <BRANCH>
+   glottolog-admin check --old-languoids
+   ```
+3. If necessary, run `glottolog-admin updatesources` and continue with 2.
+

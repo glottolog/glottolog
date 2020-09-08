@@ -1,0 +1,14 @@
+# -*- coding: utf-8 -*-
+[core]
+name = Interslavic zonal constructed language
+level = language
+hid = NOCODE_Interslavic-Zonal
+macroareas = 
+	Eurasia
+longitude = 17.44454
+latitude = 49.07835
+
+[altnames]
+hhbib_lgcode = 
+	Interslavic Zonal Constructed Language
+
