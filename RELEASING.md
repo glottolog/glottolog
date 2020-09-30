@@ -84,3 +84,22 @@ Checking a pull request
    ```
 3. If necessary, run `glottolog-admin updatesources` and continue with 2.
 
+
+Troubleshooting
+===============
+
+If `glottolog-admin bib` fails at
+```python
+  File "/home/forkel/venvs/glottolog/pyglottolog/src/pyglottolog/references/bibfiles_db.py", line 559, in assign_ids
+    assert Entry.allhash(conn)
+AssertionError
+```
+check the bad entries in `build/bibfiles.sqlite3`:
+```sql
+sqlite> select * from entry where hash is null;
+292775|21|hw:Nigam:Andhra-Pradesh||||
+```
+
+This can be due to malformed BibTeX entries - and correspondingly must
+be fixed in the BibTeX before re-running `glottolog-admin bib --rebuild`.
+
