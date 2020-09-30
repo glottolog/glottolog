@@ -30,7 +30,7 @@ Merging the BibTeX files
    - `elp.bib`: Run `glottolog-admin elpbib`
    - `evobib.bib`:
      - download the latest version from https://doi.org/10.5281/zenodo.1181952
-     - Run `glottolog-admin evobib`
+     - Run `glottolog-admin evobib evobib-converted.bib`
    - `dplace.bib`: Run `glottolog-admin dplacebib`
    - `benjamins.bib`:
      - Switch to the clone of `glottolog/benjamins`
