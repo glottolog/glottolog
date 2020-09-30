@@ -6,6 +6,13 @@ Notable changes between releases of the Glottolog data.
 ## [UNRELEASED]
 
 
+## [4.3] - 2020-10-01
+
+- Added ELPublishing bibliography
+- See https://github.com/glottolog/glottolog/pulls?q=is%3Apr+is%3Amerged for a list of
+accepted changes.
+
+
 ## [4.2.1] - 2020-04-16
 
 - Re-inserted double quotes marking pejorative alternative names from ElCat
@@ -16,7 +23,7 @@ Notable changes between releases of the Glottolog data.
 
 - Added D-PLACE bibliography
 - Added timespan attributes for extinct languages
-- See https://github.com/clld/glottolog/pulls?q=is%3Apr+is%3Amerged for a list of
+- See https://github.com/glottolog/glottolog/pulls?q=is%3Apr+is%3Amerged for a list of
 accepted changes.
 
 
@@ -24,7 +31,7 @@ accepted changes.
 
 - Added GeoJSON files for macroareas
 - Added more links to other language resources
-- See https://github.com/clld/glottolog/pulls?q=is%3Apr+is%3Amerged for a list of
+- See https://github.com/glottolog/glottolog/pulls?q=is%3Apr+is%3Amerged for a list of
 accepted changes.
 
 
@@ -43,7 +50,7 @@ accepted changes.
 
 ## [3.4] - 2019-04-02
 
-See https://github.com/clld/glottolog/pulls?q=is%3Apr+is%3Amerged for a list of
+See https://github.com/glottolog/glottolog/pulls?q=is%3Apr+is%3Amerged for a list of
 accepted changes.
 
 
@@ -63,13 +70,13 @@ accepted changes.
 
 ## [3.3] - 2018-07-25
 
-See https://github.com/clld/glottolog/pulls?q=is%3Apr+is%3Amerged for a list of
+See https://github.com/glottolog/glottolog/pulls?q=is%3Apr+is%3Amerged for a list of
 accepted changes.
 
 
 ## [3.2] - 2018-01-25
 
-See https://github.com/clld/glottolog/pulls?q=is%3Apr+is%3Amerged for a list of
+See https://github.com/glottolog/glottolog/pulls?q=is%3Apr+is%3Amerged for a list of
 accepted changes.
 
 
@@ -85,12 +92,12 @@ Two new bibliographies have been contributed:
 ### Classification
 
 Many changes small and not-so-small. For details refer to the individual
-[pull requests](https://github.com/clld/glottolog/pulls?q=is%3Apr+is%3Aclosed)
+[pull requests](https://github.com/glottolog/glottolog/pulls?q=is%3Apr+is%3Aclosed)
 
 
 ### Other
 
-[Aggregated/merged data on language endangerment](https://github.com/clld/glottolog/pulls?q=is%3Apr+is%3Aclosed) 
+[Aggregated/merged data on language endangerment](https://github.com/glottolog/glottolog/pulls?q=is%3Apr+is%3Aclosed) 
 has been added in `[endangerment]` sections of languoid's info files.
 See [SOURCES.md](SOURCES.md) for details about the sources.
 

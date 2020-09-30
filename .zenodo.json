@@ -1,35 +1,36 @@
 {
-    "title": "glottolog/glottolog: Glottolog database 4.2.1",
-    "access_right": "open",
-    "license": {
-        "id": "CC-BY-4.0"
-    },
     "keywords": [
         "linguistics"
     ],
-    "description": "<p>Hammarstr&ouml;m, Harald &amp; Forkel, Robert &amp; Haspelmath, Martin &amp; Bank, Sebastian. 2020. Glottolog 4.2.1. Jena: Max Planck Institute for the Science of Human History. (Available online at <a href=\"https://glottolog.org\">https://glottolog.org</a>)</p>",
+    "access_right": "open",
+    "communities": [
+        {
+            "identifier": "clld"
+        }
+    ],
+    "description": "<p>Hammarstr&ouml;m, Harald &amp; Forkel, Robert &amp; Haspelmath, Martin &amp; Bank, Sebastian. 2020. Glottolog 4.3. Jena: Max Planck Institute for the Science of Human History. (Available online at <a href=\"https://glottolog.org\">https://glottolog.org</a>)</p>",
+    "title": "glottolog/glottolog: Glottolog database 4.3",
+    "license": {
+        "id": "CC-BY-4.0"
+    },
     "creators": [
         {
             "affiliation": "University Uppsala",
             "name": "Harald Hammarstr\u00f6m"
         },
         {
-            "orcid": "0000-0003-1081-086X",
             "affiliation": "Max Planck Institute for the Science of Human History",
+            "orcid": "0000-0003-1081-086X",
             "name": "Robert Forkel"
         },
         {
-            "orcid": "0000-0003-2100-8493",
             "affiliation": "Max Planck Institute for the Science of Human History",
+            "orcid": "0000-0003-2100-8493",
             "name": "Martin Haspelmath"
         },
         {
+            "orcid": "0000-0002-2676-6296",
             "name": "Sebastian Bank"
-        }
-    ],
-    "communities": [
-        {
-            "identifier": "clld"
         }
     ]
 }
