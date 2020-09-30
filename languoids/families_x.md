@@ -1,3 +1,4 @@
+- [Xaray [pare1273]](tree/araw1281/cent2226/pare1273/md.ini)
 - [Xasonka [xaso1239]](tree/mand1469/west2780/mand1431/cent2047/mand1432/mand1433/mand1434/mand1435/west2499/xaso1239/md.ini)
 - [Xinca Shared Grammatical Traits [xinc1244]](tree/xinc1237/xinc1244/md.ini)
 - [Xincan [xinc1237]](tree/xinc1237/md.ini)
