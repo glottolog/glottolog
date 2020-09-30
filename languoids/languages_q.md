@@ -21,7 +21,7 @@
 - [Quignam [quig1235]](tree/uncl1493/quig1235/md.ini)
 - [Quileute [quil1240][qui]](tree/chim1311/quil1240/md.ini)
 - [Quillacinga [quil1251]](tree/uncl1493/quil1251/md.ini)
-- [Quinault [quin1251][qun]](tree/sali1255/tsam1241/coas1311/quin1251/md.ini)
+- [Quinault [quin1251][qun]](tree/sali1255/coas1325/tsam1241/coas1311/quin1251/md.ini)
 - [Quinigua [quin1252]](tree/uncl1493/quin1252/md.ini)
 - [Quinqui [quin1236][quq]](tree/uncl1493/quin1236/md.ini)
 - [Quioquitani-Quieri Zapotec [quio1241][ztq]](tree/otom1299/east2557/popo1292/zapo1436/zapo1437/nucl1765/core1259/cent2146/sout3003/mixt1428/quio1241/md.ini)
