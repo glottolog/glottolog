@@ -21,6 +21,12 @@ Releasing glottolog/glottolog
    ```shell script
    glottolog-admin update
    ```
+   and make sure the data can be loaded into treedb:
+   ```
+   workon treedb
+   cd treedb
+   python -c "import treedb; treedb.load(); treedb.write_csv()"
+   ```
    and commit and push the changes.
 
 Merging the BibTeX files
@@ -67,7 +73,7 @@ Releasing
    and
    ```bash
    cd ../glottolog-cldf
-   cd commit -a -m"release <release>"
+   git commit -a -m"release <release>"
    git tag -a v<version> -m "release <version>"
    git push origin
    git push --tags origin
