@@ -25,6 +25,9 @@ lib64
 # Installer logs
 pip-log.txt
 
+#mac os
+*.DS_Store
+
 # Unit test / coverage reports
 /cover/
 /htmlcov/
