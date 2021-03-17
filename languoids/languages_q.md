@@ -17,7 +17,7 @@
 - [Querétaro Otomi [quer1236][otq]](tree/otom1299/west2783/otop1241/otop1242/otom1297/otom1300/nort3201/quer1236/md.ini)
 - [Quetzaltepec Mixe [quet1239][pxm]](tree/book1242/quet1239/md.ini)
 - [Queyu [quey1238][qvy]](tree/sino1245/burm1265/naqi1236/qian1263/quey1238/md.ini)
-- [Quiavicuzas Zapotec [quia1235][zpj]](tree/otom1299/east2557/popo1292/zapo1436/zapo1437/nucl1765/core1259/cent2146/tran1297/quia1235/md.ini)
+- [Quiavicuzas Zapotec [quia1235][zpj]](tree/otom1299/east2557/popo1292/zapo1436/zapo1437/nucl1765/core1259/cent2146/tran1297/nort3370/quia1235/md.ini)
 - [Quignam [quig1235]](tree/uncl1493/quig1235/md.ini)
 - [Quileute [quil1240][qui]](tree/chim1311/quil1240/md.ini)
 - [Quillacinga [quil1251]](tree/uncl1493/quil1251/md.ini)
