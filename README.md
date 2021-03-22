@@ -30,7 +30,7 @@ into a single reference database for each release/edition.
 ## Metadata
 
 Metadata - e.g. [controlled vocabularies](https://en.wikipedia.org/wiki/Controlled_vocabulary) for some of the languoid data - are stored as
-INI files in the `config` subdirectory.
+INI files in the [`config`](config/) subdirectory.
 
 
 ## Accessing data programmatically
