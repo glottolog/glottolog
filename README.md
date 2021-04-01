@@ -20,6 +20,8 @@ formatted as [INI files](https://en.wikipedia.org/wiki/INI_file)
 in the `languoids/tree` subdirectory.
 The directory tree mirrors the Glottolog classification of languages.
 
+A copy of all glottolog's data is saved a `glottolog-languages.csv`.
+
 
 ## References
 
