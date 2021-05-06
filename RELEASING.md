@@ -23,7 +23,6 @@ Releasing glottolog/glottolog
    ```
    and make sure the data can be loaded into treedb:
    ```
-   workon treedb
    cd treedb
    python -c "import treedb; treedb.load(); treedb.write_csv()"
    ```
