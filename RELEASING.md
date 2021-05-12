@@ -40,7 +40,7 @@
   ```
 - Update automatically created BibTeX files:
   - `iso6393.bib`: Run `glottolog-admin isobib`
-  - `elp.bib`: Run `glottolog-admin elpbib`
+  - `elpub.bib`: Run `glottolog-admin elpubbib`
   - `evobib.bib`:
     - download the latest version from https://doi.org/10.5281/zenodo.1181952
     - Run `glottolog-admin evobib evobib-converted.bib`

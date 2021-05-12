@@ -8,7 +8,8 @@ Notable changes between releases of the Glottolog data.
 
 ## [4.4] - 2021-05-14
 
-See https://github.com/glottolog/glottolog/pulls?q=is%3Apr+is%3Amerged for a list of
+- Renamed provider "elp" to "elpub", see https://github.com/glottolog/glottolog/issues/674
+- See https://github.com/glottolog/glottolog/pulls?q=is%3Apr+is%3Amerged for a list of
 accepted changes.
 
 
