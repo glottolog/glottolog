@@ -1,88 +1,99 @@
 
-Releasing glottolog/glottolog
-=============================
-
-0. Make sure you have the latest ISO 639-3 code tables from 
-   https://iso639-3.sil.org/code_tables/download_tables
-   put into `build/`,
-1. Check out `master`, pull the latest changes then switch to a new release branch:
-   ```
-   git checkout master
-   git pull origin master
-   git checkout -b release-<version>
-   ```
-2. Check the tree and references running
-   ```
-   glottolog-admin check
-   ```
-   making sure there are no `ÈRROR`s
-
-   Also run
-   ```shell script
-   glottolog-admin update
-   ```
-   and make sure the data can be loaded into treedb:
-   ```
-   cd treedb
-   python -c "import treedb; treedb.load(); treedb.write_csv()"
-   ```
-   and commit and push the changes.
-
-Merging the BibTeX files
-------------------------
-
-3. Update automatically created files:
-   - `iso6393.bib`: Run `glottolog-admin isobib`
-   - `elp.bib`: Run `glottolog-admin elpbib`
-   - `evobib.bib`:
-     - download the latest version from https://doi.org/10.5281/zenodo.1181952
-     - Run `glottolog-admin evobib evobib-converted.bib`
-   - `dplace.bib`: Run `glottolog-admin dplacebib`
-   - `benjamins.bib`:
-     - Switch to the clone of `glottolog/benjamins`
-     - Pull the latest changes via FTP 
-     - Recreate `benjamins.bib`, running `python to_bib.py`
-     - Switch back to `glottolog/glottolog`
-     - Run `glottolog-admin benjaminsbib PATH/TO/benjamins/benjamins.bib`
-4. Run `glottolog-admin bib` to create `build/monster-utf8.bib` - about 20mins
-
-Releasing
----------
-
-5. Add release notes to `CHANGES.md` and `CONTRIBUTORS.md`
-6. Draft a new release and push it online for review:
-   ```bash
-   glottolog-admin release <version>
-   git commit -a -m"release <version>"
-   git push origin release-<version>
-   ```
-7. Upon approval:
-   ```
-   git checkout master
-   git pull origin
-   git branch -d release-<version>
-   git tag -a v<version> -m "release <version>"
-   glottolog --repos=. cldf ../glottolog-cldf/cldf
-   ```
-8. Push all changes to origin running
-   ```bash
-   git push origin
-   git push --tags origin
-   ```
-   and
-   ```bash
-   cd ../glottolog-cldf
-   git commit -a -m"release <release>"
-   git tag -a v<version> -m "release <version>"
-   git push origin
-   git push --tags origin
-   ```
-9. Create a "proper" release on GitHub and have it picked up by ZENODO.
-10. Add DOI badge from ZENODO as soon as it becomes available.
+# Releasing glottolog/glottolog
 
 
-Checking a pull request
-=======================
+## Preparations
+
+- Make sure you have the latest ISO 639-3 code tables from 
+  https://iso639-3.sil.org/code_tables/download_tables
+  put into `build/`,
+- Check out `master`, pull the latest changes:
+  ```shell
+  git checkout master
+  git pull origin master
+   ```
+- Check the tree and references running
+  ```
+  glottolog-admin check
+  ```
+  making sure there are no `ÈRROR`s
+
+
+## Creating the release PR
+
+- Check out a new branch:
+  ```shell
+  git checkout -b release-<version>
+  ```
+- Update 
+  - `CHANGES.md`
+  - `CONTRIBUTORS.md`
+  - `config/publication.ini` adding a proper version number
+- Run
+  ```shell
+  glottolog-admin update
+  ```
+  and make sure the data can be loaded into treedb:
+  ```shell
+  cd treedb
+  python -c "import treedb; treedb.load(); treedb.write_csv()"
+  ```
+- Update automatically created BibTeX files:
+  - `iso6393.bib`: Run `glottolog-admin isobib`
+  - `elp.bib`: Run `glottolog-admin elpbib`
+  - `evobib.bib`:
+    - download the latest version from https://doi.org/10.5281/zenodo.1181952
+    - Run `glottolog-admin evobib evobib-converted.bib`
+  - `dplace.bib`: Run `glottolog-admin dplacebib`
+  - `benjamins.bib`:
+    - Switch to the clone of `glottolog/benjamins`
+    - Pull the latest changes via FTP 
+    - Recreate `benjamins.bib`, running `python to_bib.py`
+    - Switch back to `glottolog/glottolog`
+    - Run `glottolog-admin benjaminsbib PATH/TO/benjamins/benjamins.bib`
+- Run `glottolog-admin bib` to create `build/monster-utf8.bib` - about 20mins
+- Run
+  ```shell
+  glottolog-admin release
+  git commit -a -m"release <version>"
+  git push origin release-<version>
+  ```
+- Create a corresponding PR on GitHub
+
+
+## Releasing
+
+Upon approval of the PR:
+
+- Merge the release PR into master
+  ```shell
+  gh pr checkout <#>
+  gh pr review
+  gh pr merge
+  git pull origin
+  git tag -a v<version> -m "release <version>"
+  ```
+- Push the tag to origin:
+  ```shell
+  git push --tags origin
+  ```
+- Create corresponding release of glottolog-cldf: 
+  ```shell
+  cd ../glottolog-cldf
+  cldfench makecldf --with-cldfreadme --with-zenodo --glottolog-version v<version> cldfbench_glottolog.py
+  git commit -a -m"release <release>"
+  git tag -a v<version> -m "release <version>"
+  git push origin
+  git push --tags origin
+  ```
+- Re-set the version number to dev mode, by incrementing and adding `.dev0`:
+  - `config/publication.ini`
+- Create "proper" releases on GitHub and have it picked up by ZENODO.
+- Add DOI badges from ZENODO as soon as they become available.
+- Close fixed issues.
+
+
+# Checking a pull request
 
 1. Update the `master` branch and store languoid stats:
    ```
@@ -98,8 +109,7 @@ Checking a pull request
 3. If necessary, run `glottolog-admin updatesources` and continue with 2.
 
 
-Troubleshooting
-===============
+## Troubleshooting
 
 If `glottolog-admin bib` fails at
 ```python
