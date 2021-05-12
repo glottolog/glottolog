@@ -89,7 +89,7 @@
 - [Tepehua [tepe1243]](tree/toto1251/tepe1243/md.ini)
 - [Tepehuan [tepe1281]](tree/utoa1244/sout3136/tepi1240/tepe1281/md.ini)
 - [Tepiman [tepi1240]](tree/utoa1244/sout3136/tepi1240/md.ini)
-- [Tepo-Plapo [tepo1241]](tree/atla1278/volt1241/krua1234/west2485/greb1257/ivor1240/tepo1241/md.ini)
+- [Tepo-Plapo [tepo1241]](tree/krua1234/west2485/greb1257/ivor1240/tepo1241/md.ini)
 - [Tequistlatecan [tequ1244]](tree/tequ1244/md.ini)
 - [Teraic [bium1275]](tree/afro1255/chad1250/bium1280/sout3145/bium1275/md.ini)
 - [Ternate-Zamboanga-Cavite [tern1253]](tree/indo1319/clas1257/ital1284/lati1262/lati1263/impe1234/roma1334/ital1285/west2813/shif1234/sout3183/west2838/cast1243/sout3200/tern1253/md.ini)

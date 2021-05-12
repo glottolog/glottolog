@@ -6,7 +6,7 @@
 - [Quechua II [quec1388]](tree/quec1387/quec1388/md.ini)
 - [Quechua IIB [quec1384]](tree/quec1387/quec1388/quec1384/md.ini)
 - [Quechua IIC [quec1389]](tree/quec1387/quec1388/quec1389/md.ini)
-- [Quechua-Puquina [quec1390]](tree/mixe1287/quec1390/md.ini)
+- [Quechua-Puquina [quec1390]](tree/spee1234/quec1390/md.ini)
 - [Quechuan [quec1387]](tree/quec1387/md.ini)
 - [Quiche-Achi [quic1275]](tree/maya1287/core1254/quic1274/grea1276/core1251/quic1275/md.ini)
 - [Quichean-Mamean [quic1274]](tree/maya1287/core1254/quic1274/md.ini)

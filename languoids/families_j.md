@@ -38,7 +38,6 @@
 - [Jingpho-Luish [jing1259]](tree/sino1245/brah1260/jing1259/md.ini)
 - [Jino [jino1236]](tree/sino1245/burm1265/lolo1265/lolo1267/hani1249/jino1236/md.ini)
 - [Jiongnai-Ho Ne [jion1235]](tree/hmon1336/hmon1337/nucl1714/jion1235/md.ini)
-- [Jodi-Saliban [jodi1234]](tree/jodi1234/md.ini)
 - [Jogo [jogo1242]](tree/mand1469/west2780/mand1431/cent2047/mand1432/jogo1241/jogo1242/md.ini)
 - [Jogo-Jeri [jogo1241]](tree/mand1469/west2780/mand1431/cent2047/mand1432/jogo1241/md.ini)
 - [Jola [jola1264]](tree/atla1278/nort3146/cent2230/bakk1238/jool1234/jola1264/md.ini)

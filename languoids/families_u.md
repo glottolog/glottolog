@@ -55,7 +55,7 @@
 - [Unclassified Dravidian [unun9890]](tree/drav1251/unun9890/md.ini)
 - [Unclassified East Cushitic [unun9873]](tree/afro1255/cush1243/east2699/unun9873/md.ini)
 - [Unclassified Eastern Beboid [uncl1497]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/bebo1243/east2730/uncl1497/md.ini)
-- [Unclassified Eastern Kru [unun9909]](tree/atla1278/volt1241/krua1234/east2415/unun9909/md.ini)
+- [Unclassified Eastern Kru [unun9909]](tree/krua1234/east2415/unun9909/md.ini)
 - [Unclassified Eastern Nyulnyulan [unun9988]](tree/nyul1248/east2381/unun9988/md.ini)
 - [Unclassified First Vernacular Hmong [unun9990]](tree/hmon1336/hmon1337/nucl1714/nucl1720/west2803/grea1295/chua1248/firs1234/unun9990/md.ini)
 - [Unclassified Gauda-Banga [uncl1515]](tree/indo1319/clas1257/indo1320/indo1321/indo1323/oriy1254/gaud1237/gaud1238/uncl1515/md.ini)

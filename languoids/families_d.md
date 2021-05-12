@@ -55,7 +55,7 @@
 - [Dhuwal-Dhuwala [dhuw1248]](tree/pama1250/yuul1239/sout3142/sout3149/dhuw1248/md.ini)
 - [Dibo-Kami [dibo1250]](tree/atla1278/volt1241/benu1247/ebir1244/nupe1252/nupo1239/dibo1249/dibo1250/md.ini)
 - [Dibo-Kupa [dibo1249]](tree/atla1278/volt1241/benu1247/ebir1244/nupe1252/nupo1239/dibo1249/md.ini)
-- [Dida [dida1245]](tree/atla1278/volt1241/krua1234/east2415/dida1244/dida1245/md.ini)
+- [Dida [dida1245]](tree/krua1234/east2415/dida1244/dida1245/md.ini)
 - [Didinga-Longarim [didi1257]](tree/surm1244/sout2836/sout2838/didi1256/didi1257/md.ini)
 - [Didinga-Murle [didi1256]](tree/surm1244/sout2836/sout2838/didi1256/md.ini)
 - [Diegueno [dieg1234]](tree/coch1271/yuma1250/gene1244/delt1253/dieg1234/md.ini)
