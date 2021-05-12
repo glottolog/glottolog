@@ -9,10 +9,10 @@
   "dc:title": "Glottolog",
   "dc:description": "Comprehensive reference information for the world's languages, especially the lesser known languages",
   "dc:publisher": {
-    "http://xmlns.com/foaf/0.1/name": "Max Planck Institute for the Science of Human History",
-    "dc:Location": "Jena",
-    "http://xmlns.com/foaf/0.1/homepage": "https://shh.mpg.de",
-    "http://xmlns.com/foaf/0.1/mbox": "glottolog@shh.mpg.de"
+    "http://xmlns.com/foaf/0.1/name": "Max Planck Institute for Evolutionary Anthropology",
+    "dc:Location": "Leipzig",
+    "http://xmlns.com/foaf/0.1/homepage": "https://www.eva.mpg.de",
+    "http://xmlns.com/foaf/0.1/mbox": "glottolog@eva.mpg.de"
   },
   "dc:license": {
     "name": "Creative Commons Attribution 4.0 International License",
