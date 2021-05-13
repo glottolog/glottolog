@@ -35,8 +35,9 @@
   ```
   and make sure the data can be loaded into treedb:
   ```shell
-  cd treedb
+  cd ../treedb
   python -c "import treedb; treedb.load(); treedb.write_csv()"
+  cd ../glottolog
   ```
 - Update automatically created BibTeX files:
   - `iso6393.bib`: Run `glottolog-admin isobib`
