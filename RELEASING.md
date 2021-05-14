@@ -81,7 +81,9 @@ Upon approval of the PR:
 - Create corresponding release of glottolog-cldf: 
   ```shell
   cd ../glottolog-cldf
-  cldfench makecldf --with-cldfreadme --with-zenodo --glottolog-version v<version> cldfbench_glottolog.py
+  cldfbench makecldf --with-cldfreadme --with-zenodo --glottolog-version v<version> cldfbench_glottolog.py
+  cldfbench readme cldfbench_glottolog.py
+  pytest
   git commit -a -m"release <release>"
   git tag -a v<version> -m "release <version>"
   git push origin
