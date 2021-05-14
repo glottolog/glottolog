@@ -54,7 +54,7 @@
 - [Vasjugan Khanty [vasj1234]](tree/ural1272/khan1279/east2774/fare1244/vasj1234/md.ini)
 - [Vasui [vasu1237]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/west2818/meso1253/newi1242/stge1234/nort3225/neha1246/nucl1750/buka1262/sapo1252/tinp1238/tinp1237/vasu1237/md.ini)
 - [Vasyugan Selkup [vasy1234]](tree/ural1272/samo1298/kama1376/selk1253/kety1234/kety1235/cent2328/vasy1234/md.ini)
-- [Vata [vata1239]](tree/atla1278/volt1241/krua1234/east2415/dida1244/dida1245/gueb1239/lako1244/vata1239/md.ini)
+- [Vata [vata1239]](tree/krua1234/east2415/dida1244/dida1245/gueb1239/lako1244/vata1239/md.ini)
 - [Vaudois [vaud1238]](tree/indo1319/clas1257/ital1284/lati1262/lati1263/impe1234/roma1334/ital1285/west2813/shif1234/nort3208/gall1280/oila1234/fran1269/fran1260/vaud1238/md.ini)
 - [Vaupés Cacua [vaup1239]](tree/kaku1242/cacu1241/vaup1239/md.ini)
 - [Vavoehpoa' [vavo1237]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/west2818/meso1253/newi1242/stge1234/nort3225/neha1246/nucl1750/buka1262/sapo1252/tinp1238/tinp1237/vavo1237/md.ini)

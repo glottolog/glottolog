@@ -6,6 +6,13 @@ Notable changes between releases of the Glottolog data.
 ## [UNRELEASED]
 
 
+## [4.4] - 2021-05-14
+
+- Renamed provider "elp" to "elpub", see https://github.com/glottolog/glottolog/issues/674
+- See https://github.com/glottolog/glottolog/pulls?q=is%3Apr+is%3Amerged for a list of
+accepted changes.
+
+
 ## [4.3] - 2020-10-01
 
 - Added ELPublishing bibliography

@@ -145,7 +145,7 @@
 - [Horom [horo1245][hoe]](tree/atla1278/volt1241/benu1247/benu1248/sout2800/horo1248/horo1245/md.ini)
 - [Horuru [horu1241][hrr]](tree/book1242/horu1241/md.ini)
 - [Hote [hote1245][hot]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/west2818/nort3206/huon1245/sout2878/hote1244/hote1245/md.ini)
-- [Hoti [yuwa1244][yau]](tree/jodi1234/yuwa1244/md.ini)
+- [Hoti [yuwa1244][yau]](tree/yuwa1244/md.ini)
 - [Hoti of East Seram [hoti1237][hti]](tree/aust1307/mala1545/cent2237/cent2245/cent2254/east2466/east2741/seti1249/hoti1237/md.ini)
 - [Hottentot Dutch [hott1234]](tree/pidg1258/dutc1258/hott1234/md.ini)
 - [Hoxa [hoxa1234]](tree/uncl1493/hoxa1234/md.ini)

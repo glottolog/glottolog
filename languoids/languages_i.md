@@ -154,7 +154,7 @@
 - [Isthmus-Mecayapan Nahuatl [isth1242][nhx]](tree/utoa1244/sout3136/cora1261/azte1234/east2720/isth1245/isth1242/md.ini)
 - [Isthmus-Pajapan Nahuatl [isth1241][nhp]](tree/utoa1244/sout3136/cora1261/azte1234/east2720/isth1245/isth1241/md.ini)
 - [Istriot [istr1244][ist]](tree/indo1319/clas1257/ital1284/lati1262/lati1263/impe1234/roma1334/ital1285/ital1286/dalm1244/istr1244/md.ini)
-- [Istro Romanian [istr1245][ruo]](tree/indo1319/clas1257/ital1284/lati1262/lati1263/impe1234/roma1334/east2714/macr1262/nort3361/istr1245/md.ini)
+- [Istro Romanian [istr1245][ruo]](tree/indo1319/clas1257/ital1284/lati1262/lati1263/impe1234/roma1334/east2714/nort3361/istr1245/md.ini)
 - [Isu (Fako Division) [isuf1235][szv]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/bant1295/sawa1251/dual1244/kole1239/isuf1235/md.ini)
 - [Isu (Menchum Division) [isum1240][isu]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/wide1239/narr1282/ring1243/cent2385/west2835/aghe1240/isum1240/md.ini)
 - [Italian Sign Language [ital1275][ise]](tree/sign1238/deaf1237/lsfi1234/ital1288/ital1275/md.ini)

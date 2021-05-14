@@ -1,36 +1,37 @@
 {
+    "title": "glottolog/glottolog: Glottolog database 4.4",
+    "description": "<p>Hammarstr&ouml;m, Harald &amp; Forkel, Robert &amp; Haspelmath, Martin &amp; Bank, Sebastian. 2021. Glottolog 4.4. Leipzig: Max Planck Institute for Evolutionary Anthropology. (Available online at <a href=\"https://glottolog.org\">https://glottolog.org</a>)</p>",
+    "license": {
+        "id": "CC-BY-4.0"
+    },
     "keywords": [
         "linguistics"
     ],
-    "access_right": "open",
     "communities": [
         {
             "identifier": "clld"
         }
     ],
-    "description": "<p>Hammarstr&ouml;m, Harald &amp; Forkel, Robert &amp; Haspelmath, Martin &amp; Bank, Sebastian. 2020. Glottolog 4.3. Jena: Max Planck Institute for the Science of Human History. (Available online at <a href=\"https://glottolog.org\">https://glottolog.org</a>)</p>",
-    "title": "glottolog/glottolog: Glottolog database 4.3",
-    "license": {
-        "id": "CC-BY-4.0"
-    },
     "creators": [
         {
-            "affiliation": "University Uppsala",
-            "name": "Harald Hammarstr\u00f6m"
+            "name": "Harald Hammarstr\u00f6m",
+            "affiliation": "University Uppsala"
         },
         {
-            "affiliation": "Max Planck Institute for the Science of Human History",
-            "orcid": "0000-0003-1081-086X",
-            "name": "Robert Forkel"
+            "name": "Robert Forkel",
+            "affiliation": "Max Planck Institute for Evolutionary Anthropology",
+            "orcid": "0000-0003-1081-086X"
         },
         {
-            "affiliation": "Max Planck Institute for the Science of Human History",
-            "orcid": "0000-0003-2100-8493",
-            "name": "Martin Haspelmath"
+            "name": "Martin Haspelmath",
+            "affiliation": "Max Planck Institute for Evolutionary Anthropology",
+            "orcid": "0000-0003-2100-8493"
         },
         {
-            "orcid": "0000-0002-2676-6296",
-            "name": "Sebastian Bank"
+            "name": "Sebastian Bank",
+            "orcid": "0000-0002-2676-6296"
         }
-    ]
+    ],
+    "access_right": "open",
+    "upload_type": "dataset"
 }

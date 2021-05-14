@@ -88,7 +88,7 @@
 - [Romam [roma1331][rmx]](tree/aust1305/bahn1264/nort3150/lama1291/roma1331/md.ini)
 - [Romanian Pidgin Arabic [roma1333]](tree/pidg1258/arab1397/roma1333/md.ini)
 - [Romanian Sign Language [roma1324][rms]](tree/sign1238/deaf1237/lsfi1234/cent2306/roma1324/md.ini)
-- [Romanian [roma1327][ron]](tree/indo1319/clas1257/ital1284/lati1262/lati1263/impe1234/roma1334/east2714/macr1262/nort3361/east2865/roma1327/md.ini)
+- [Romanian [roma1327][ron]](tree/indo1319/clas1257/ital1284/lati1262/lati1263/impe1234/roma1334/east2714/nort3361/east2865/roma1327/md.ini)
 - [Romano-Greek [roma1240][rge]](tree/indo1319/clas1257/grae1234/gree1276/east2798/koin1234/mode1266/nucl1783/roma1240/md.ini)
 - [Romano-Serbian [roma1241][rsb]](tree/mixe1287/serb1269/roma1241/md.ini)
 - [Romanova [roma1338][rmv]](tree/arti1236/roma1338/md.ini)

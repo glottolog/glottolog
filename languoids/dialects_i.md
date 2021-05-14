@@ -82,7 +82,7 @@
 - [Ikot Ekpene [ikot1238]](tree/atla1278/volt1241/benu1247/delt1251/obol1242/cent2253/efik1244/anaa1238/ikot1238/md.ini)
 - [Ikpesa [ikpe1244]](tree/atla1278/volt1241/benu1247/akpe1249/edoi1239/nort3183/sout3171/okpa1238/west2472/ikpe1244/md.ini)
 - [Ikponu [ikpo1239]](tree/atla1278/volt1241/kwav1236/kato1245/kpos1239/ikpo1238/ikpo1239/md.ini)
-- [Ikumbure [ikum1241]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/nyan1317/nyan1304/ikum1241/md.ini)
+- [Ikumbure [ikum1241][okc]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/nyan1317/nyan1304/ikum1241/md.ini)
 - [Ikumtale [ikum1242]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/ekoi1237/mbee1249/ikum1242/md.ini)
 - [Ikun [ikun1240]](tree/atla1278/volt1241/benu1247/delt1251/uppe1418/cent2027/nort2790/ubag1244/ubag1245/ikun1240/md.ini)
 - [Ikuna [ikun1241]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/nort3203/sout3185/bena1273/bena1262/ikun1241/md.ini)
