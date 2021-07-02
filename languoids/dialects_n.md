@@ -225,6 +225,7 @@
 - [Neuchatelais [neuc1243]](tree/indo1319/clas1257/ital1284/lati1262/lati1263/impe1234/roma1334/ital1285/west2813/shif1234/nort3208/gall1280/oila1234/fran1269/fran1260/neuc1243/md.ini)
 - [New Busa [newb1246]](tree/mand1469/east2697/bisa1265/samo1302/busa1252/boko1265/busa1253/newb1246/md.ini)
 - [New Mexican English [nmex1505]](tree/indo1319/clas1257/germ1287/nort3152/west2793/nort3175/angl1264/angl1265/late1254/merc1242/macr1271/stan1293/nort3314/west2920/nmex1505/)
+- [New Mexican Spanish [numx1575]](tree/indo1319/clas1257/ital1284/lati1262/lati1263/impe1234/roma1334/ital1285/west2813/shif1234/sout3183/west2838/cast1243/stan1288/amer1254/numx1575/md.ini)
 - [New Shtokavian [news1236]](tree/indo1319/clas1257/balt1263/slav1255/sout3147/west2804/sout1528/shto1241/news1236/md.ini)
 - [New York City English [newy1234]](tree/indo1319/clas1257/germ1287/nort3152/west2793/nort3175/angl1264/angl1265/late1254/merc1242/macr1271/stan1293/nort3314/newy1234/md.ini)
 - [New Zealand English [newz1240]](tree/indo1319/clas1257/germ1287/nort3152/west2793/nort3175/angl1264/angl1265/late1254/merc1242/macr1271/stan1293/newz1240/md.ini)
