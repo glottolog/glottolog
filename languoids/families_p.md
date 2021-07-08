@@ -90,6 +90,7 @@
 - [Phupa-Phuza [phup1238]](tree/sino1245/burm1265/lolo1265/lolo1267/nili1235/sout3212/rive1256/down1239/phup1238/md.ini)
 - [Phupha-Alugu [phup1236]](tree/sino1245/burm1265/lolo1265/lolo1267/nili1235/sout3212/rive1256/down1239/phup1236/md.ini)
 - [Piapoco-Achagua [piap1247]](tree/araw1281/japu1236/nucl1764/nort3362/piap1247/md.ini)
+- [Piapung-Koenoem [piap1250]](tree/afro1255/chad1250/west2785/west2714/west2799/west2717/anga1311/tali1264/piap1250/md.ini)
 - [Piawi [piaw1238]](tree/piaw1238/md.ini)
 - [Pidgin Sign Language [pidg1253]](tree/sign1238/pidg1253/md.ini)
 - [Pidgin [pidg1258]](tree/pidg1258/md.ini)

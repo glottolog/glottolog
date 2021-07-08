@@ -343,6 +343,7 @@
 - [Aneuk Jamee [aneu1237]](tree/aust1307/mala1545/mala1536/nort3170/mala1538/nucl1806/nort3388/keri1253/mina1280/mina1268/aneu1237/md.ini)
 - [Anexo [anex1238]](tree/atla1278/volt1241/kwav1236/gbee1241/west2802/genn1243/anex1238/md.ini)
 - [Angevin [ange1244]](tree/indo1319/clas1257/ital1284/lati1262/lati1263/impe1234/roma1334/ital1285/west2813/shif1234/nort3208/gall1280/oila1234/cent2283/macr1273/glob1239/stan1290/ange1244/md.ini)
+- [Angidin [angi1241]](tree/nakh1245/dagh1238/avar1255/andi1254/bagv1240/tind1238/angi1241/md.ini)
 - [Angkiyakmin [angk1247]](tree/nucl1709/cent2116/awyu1265/okok1235/okkk1242/moun1253/faiw1243/angk1247/md.ini)
 - [Anglat Agta [angl1263]](tree/aust1307/mala1545/grea1284/umir1236/angl1263/md.ini)
 - [Anglian [angl1267]](tree/indo1319/clas1257/germ1287/nort3152/west2793/nort3175/angl1264/angl1265/olde1238/angl1267/md.ini)

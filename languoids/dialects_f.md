@@ -23,7 +23,7 @@
 - [Fali-Tinguelin [fali1264]](tree/atla1278/volt1241/unun9902/adam1254/sout2782/fali1264/md.ini)
 - [Falkland Islands English [falk1236]](tree/indo1319/clas1257/germ1287/nort3152/west2793/nort3175/angl1264/angl1265/late1254/merc1242/macr1271/stan1293/sout3281/sout3282/sout3284/falk1236/md.ini)
 - [Fama-Teis-Kua [fama1238]](tree/kadu1256/cent2229/east2424/kron1241/fama1238/md.ini)
-- [Fan-Foron-Heikpang [fanf1238]](tree/atla1278/volt1241/benu1247/benu1248/bero1241/iten1244/bero1242/fanf1238/md.ini)
+- [Fan-Ropp-Rim-Riyom-Heikpang [fanf1238]](tree/atla1278/volt1241/benu1247/benu1248/bero1241/iten1244/bero1242/nucl1809/fanf1238/md.ini)
 - [Fanamaket [make1251][bjp]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/west2818/meso1253/newi1242/stge1234/tang1348/make1251/md.ini)
 - [Fang [fang1247]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/bant1295/basa1292/yaun1239/fang1246/fang1247/md.ini)
 - [Fangatau [fang1249]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/cent2060/east2445/poly1242/nucl1485/nort3246/solo1260/cent2298/east2449/cent2062/tuam1242/fang1249/md.ini)

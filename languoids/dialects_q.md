@@ -21,7 +21,7 @@
 - [Qianzhong [qian1266]](tree/taik1256/kamt1241/daic1238/daic1237/nort3326/nort3180/nort3189/bouy1240/qian1266/md.ini)
 - [Qiaotou [qiao1234]](tree/taik1256/kamt1241/daic1238/beic1239/ling1270/ling1262/qiao1234/md.ini)
 - [Qide [qide1238]](tree/sino1245/sini1245/clas1255/midd1354/wuhu1234/huiz1242/qide1238/md.ini)
-- [Qiliqiao [qili1234]](tree/sino1245/macr1275/caij1235/baic1239/sout3254/sout2730/dali1242/qili1234/md.ini)
+- [Qiliqiao [qili1234]](tree/sino1245/macr1275/baic1239/sout3254/sout2730/dali1242/qili1234/md.ini)
 - [Qingdao Mandarin [qing1240]](tree/sino1245/sini1245/clas1255/midd1354/nort3155/mand1471/mand1415/qing1240/md.ini)
 - [Qinghua Pumi [qing1238]](tree/sino1245/burm1265/naqi1236/qian1263/pumi1242/sout2729/west2926/qing1238/md.ini)
 - [Qingliu [qing1239]](tree/sino1245/sini1245/clas1255/midd1354/hakk1236/ting1250/qing1239/md.ini)

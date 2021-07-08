@@ -1,5 +1,6 @@
 - [P'yong'ando [pyon1239]](tree/kore1284/kore1280/hamg1239/pyon1239/md.ini)
 - [Pa Kembaloh [pake1237]](tree/aust1307/mala1545/nort3253/nort3171/kela1257/lund1271/pake1237/md.ini)
+- [Pa' Dalan [pada1263]](tree/aust1307/mala1545/nort3253/nort3171/kela1257/saba1265/pada1263/md.ini)
 - [Pa'an [paan1239]](tree/sino1245/kare1337/peri1254/pwoo1239/east2341/pwoe1235/paan1239/md.ini)
 - [Pa'da Kona [pada1260]](tree/aust1307/mala1545/cent2237/cent2245/timo1259/west2545/rote1234/east2858/cent2375/term1237/pada1260/md.ini)
 - [Pa'da [pada1259]](tree/aust1307/mala1545/cent2237/cent2245/timo1259/west2545/rote1234/east2858/cent2375/term1237/pada1259/md.ini)

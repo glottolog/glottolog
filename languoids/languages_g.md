@@ -125,7 +125,7 @@
 - [Gey [geya1234][guv]](tree/book1242/geya1234/md.ini)
 - [Gha-mu [smal1236][sfm]](tree/hmon1336/hmon1337/nucl1714/nucl1720/west2803/grea1295/chua1248/smal1236/md.ini)
 - [Ghadames [ghad1239][gha]](tree/afro1255/berb1260/ghad1239/md.ini)
-- [Ghanaian Pidgin English [ghan1244][gpe]](tree/indo1319/clas1257/germ1287/nort3152/west2793/nort3175/angl1264/angl1265/late1254/merc1242/macr1271/guin1259/west2851/ghan1244/md.ini)
+- [Ghanaian Pidgin English [ghan1244][gpe]](tree/indo1319/clas1257/germ1287/nort3152/west2793/nort3175/angl1264/angl1265/late1254/merc1242/macr1271/guin1259/west2851/coas1331/ghan1244/md.ini)
 - [Ghanaian Sign Language [ghan1235][gse]](tree/sign1238/deaf1237/lsfi1234/asli1244/ghan1235/md.ini)
 - [Ghandruk Sign Language [ghan1245][gds]](tree/sign1238/vill1244/ghan1245/md.ini)
 - [Ghanongga [ghan1242][ghn]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/west2818/meso1253/newi1242/stge1234/nort3225/newg1239/west2857/simb1260/ghan1246/ghan1242/md.ini)
