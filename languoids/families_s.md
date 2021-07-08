@@ -271,7 +271,7 @@
 - [South West Bird's Head [sout1499]](tree/west1493/sout1499/md.ini)
 - [South West Greater Barito [sout2921]](tree/aust1307/mala1545/basa1291/grea1283/sout2921/md.ini)
 - [South West-Central Malagasic [sout3346]](tree/aust1307/mala1545/basa1291/grea1283/sout2919/mala1537/sout3174/sout3346/md.ini)
-- [South-Central Bai [sout3254]](tree/sino1245/macr1275/caij1235/baic1239/sout3254/md.ini)
+- [South-Central Bai [sout3254]](tree/sino1245/macr1275/baic1239/sout3254/md.ini)
 - [South-Central Benue-Congo Plateau [sout3163]](tree/atla1278/volt1241/benu1247/benu1248/benu1249/sout3163/md.ini)
 - [South-Central Cordilleran [sout3211]](tree/aust1307/mala1545/nort3238/meso1254/sout3211/md.ini)
 - [South-Central Nasioi [sout3363]](tree/sout2948/nasi1247/nasi1248/sout3363/md.ini)

@@ -22,7 +22,7 @@
 - [Bahuanaic [bahu1238]](tree/araw1281/negr1239/bahu1238/md.ini)
 - [Bai-Viri [baiv1238]](tree/atla1278/volt1241/nort3149/came1255/uban1244/sere1262/sere1266/sere1263/baiv1238/md.ini)
 - [Baibai-Fas [baib1250]](tree/baib1250/md.ini)
-- [Baic [baic1239]](tree/sino1245/macr1275/caij1235/baic1239/md.ini)
+- [Baic [baic1239]](tree/sino1245/macr1275/baic1239/md.ini)
 - [Baining [bain1263]](tree/bain1263/md.ini)
 - [Bainounk [bain1264]](tree/atla1278/nort3146/wolo1248/east2703/bain1264/md.ini)
 - [Bairisch [baye1239]](tree/indo1319/clas1257/germ1287/nort3152/west2793/high1289/high1286/midd1349/mode1258/baye1239/md.ini)

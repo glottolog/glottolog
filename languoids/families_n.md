@@ -114,7 +114,7 @@
 - [Ni-Li-Kazhouish [nili1235]](tree/sino1245/burm1265/lolo1265/lolo1267/nili1235/md.ini)
 - [Nias-Sikule [nias1241]](tree/aust1307/mala1545/nort2829/nucl1463/ment1248/nias1241/md.ini)
 - [Nicobaric [nico1262]](tree/aust1305/nico1262/md.ini)
-- [Nigeria-Cameroon Creole English [nige1258]](tree/indo1319/clas1257/germ1287/nort3152/west2793/nort3175/angl1264/angl1265/late1254/merc1242/macr1271/guin1259/west2851/nige1258/md.ini)
+- [Nigeria-Cameroon Creole English [nige1258]](tree/indo1319/clas1257/germ1287/nort3152/west2793/nort3175/angl1264/angl1265/late1254/merc1242/macr1271/guin1259/west2851/coas1331/nige1258/md.ini)
 - [Nigerian Jarawan [nige1254]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/mbam1254/jara1262/nige1254/md.ini)
 - [Nigerian Sign [nige1259]](tree/sign1238/deaf1237/lsfi1234/asli1244/nige1259/md.ini)
 - [Nila-Serua [nila1243]](tree/aust1307/mala1545/cent2237/cent2245/timo1259/nort3194/teun1242/nila1243/md.ini)

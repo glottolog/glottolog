@@ -219,7 +219,7 @@
 - [Batek [bate1262][btq]](tree/aust1305/asli1243/cent1987/nort2682/mani1290/menr1235/bate1268/bate1262/md.ini)
 - [Bateri [bate1261][btv]](tree/indo1319/clas1257/indo1320/indo1321/indo1324/kohi1251/indu1240/oute1238/bate1269/bate1261/md.ini)
 - [Bathari [bath1244][bhm]](tree/afro1255/semi1276/west2786/mode1252/hoby1243/west2859/bath1244/md.ini)
-- [Bati (Cameroonh) [bati1251][btc]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/mbam1254/mbam1252/nucl1802/bati1255/bati1251/md.ini)
+- [Bati (Cameroon) [bati1251][btc]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/mbam1254/mbam1252/nucl1802/bati1255/bati1251/md.ini)
 - [Bati (Indonesia) [bati1253][bvt]](tree/aust1307/mala1545/cent2237/cent2245/cent2254/east2466/band1354/gese1239/gese1241/bati1253/md.ini)
 - [Bats [bats1242][bbl]](tree/nakh1245/nakh1246/bats1242/md.ini)
 - [Batu [batu1255][btu]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/tivo1239/nort3192/batu1255/md.ini)

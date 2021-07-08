@@ -90,6 +90,7 @@
 - [Lomongo [lomo1242]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/nort3376/inne1246/vieu1234/mong1351/lomo1242/md.ini)
 - [Lomweic [lomw1242]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/sout3180/soth1250/soth1251/maku1247/maku1279/lomw1242/md.ini)
 - [Longgu-Malaita-Makira [mala1485]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/sout2853/mala1485/md.ini)
+- [Longjia-Luren [long1422]](tree/sino1245/macr1275/tali1265/long1422/md.ini)
 - [Lori [lori1239]](tree/cent2225/sara1341/moro1282/moro1293/lori1239/md.ini)
 - [Lotuxo [lotu1249]](tree/nilo1247/east2418/teso1247/lotu1248/lotu1249/md.ini)
 - [Lotuxo-Maa [lotu1248]](tree/nilo1247/east2418/teso1247/lotu1248/md.ini)
