@@ -33,7 +33,7 @@
 - [Zhaba [zhab1238][zhb]](tree/sino1245/burm1265/naqi1236/qian1263/zhab1238/md.ini)
 - [Zhangzhung [zhan1239][xzh]](tree/sino1245/bodi1256/tibe1275/east2777/cent2311/unun9961/zhan1239/md.ini)
 - [Zhenkang Wa [nucl1290][wbm]](tree/aust1305/khas1273/pala1352/east2331/waic1245/wala1271/waaa1245/nucl1290/md.ini)
-- [Zhire [zhir1238][zhi]](tree/atla1278/volt1241/benu1247/benu1248/west2801/nort3184/hyam1246/zhir1238/md.ini)
+- [Zhire [zhir1238][zhi]](tree/atla1278/volt1241/benu1247/benu1248/west2801/nort3184/hyam1246/zhir1241/zhir1238/md.ini)
 - [Zhoa [zhoa1238][zhw]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/wide1239/narr1282/ring1243/cent2385/west2835/aghe1240/zhoa1238/md.ini)
 - [Zhongu [zhon1235]](tree/sino1245/bodi1256/bodi1257/oldm1245/tibe1276/late1253/east2771/zhon1235/md.ini)
 - [Zia [ziaa1250][zia]](tree/nucl1709/bina1276/bina1279/nort2909/ziaa1250/md.ini)

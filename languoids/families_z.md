@@ -17,6 +17,7 @@
 - [Zemeic [zeme1241]](tree/sino1245/kuki1245/zeme1241/md.ini)
 - [Zenag-Patep [zena1251]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/west2818/nort3206/huon1245/sout2878/buan1245/mume1239/zena1251/md.ini)
 - [Zenatic [zena1250]](tree/afro1255/berb1260/grea1296/zena1250/md.ini)
+- [Zhiric [zhir1241]](tree/atla1278/volt1241/benu1247/benu1248/west2801/nort3184/hyam1246/zhir1241/md.ini)
 - [Zhongyuan [zhon1236]](tree/sino1245/sini1245/clas1255/midd1354/nort3155/mand1471/zhon1236/md.ini)
 - [Zigua-Nguu [zigu1243]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/nort3203/nort3209/ruvu1235/west2846/seut1234/zigu1243/md.ini)
 - [Zoe-Emerillon [zoee1241]](tree/tupi1275/mawe1252/awet1245/tupi1276/tupi1281/waya1271/zoee1241/md.ini)

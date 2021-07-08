@@ -137,7 +137,6 @@
 - [Kefoid [gong1256]](tree/gong1255/gong1256/md.ini)
 - [Kei-Fordata [keif1237]](tree/aust1307/mala1545/cent2237/cent2245/keit1238/keif1237/md.ini)
 - [Kei-Tanimbar [keit1238]](tree/aust1307/mala1545/cent2237/cent2245/keit1238/md.ini)
-- [Kelabitic [kela1260]](tree/aust1307/mala1545/nort3253/nort3171/kela1257/kela1260/md.ini)
 - [Kele-Lombo [kele1265]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/nort3376/inne1246/kele1261/kele1263/kele1265/md.ini)
 - [Kele-Poke [kele1263]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/nort3376/inne1246/kele1261/kele1263/md.ini)
 - [Keleic [kele1261]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/nort3376/inne1246/kele1261/md.ini)

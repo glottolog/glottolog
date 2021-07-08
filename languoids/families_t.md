@@ -1,6 +1,7 @@
 - [TGB Celtic [tgbc1234]](tree/indo1319/clas1257/celt1248/nucl1715/tgbc1234/md.ini)
 - [TT-Group [ttgr1237]](tree/afro1255/semi1276/west2786/ethi1244/sout3078/oute1258/ttgr1237/md.ini)
 - [Ta'oihic [taoi1247]](tree/aust1305/katu1271/taoi1247/md.ini)
+- [Ta-Li [tali1265]](tree/sino1245/macr1275/tali1265/md.ini)
 - [Ta-Ne-Omotic [gong1255]](tree/gong1255/md.ini)
 - [Taa [taaa1242]](tree/tuuu1241/huaa1247/taaa1242/md.ini)
 - [Tabar linkage [taba1270]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/west2818/meso1253/newi1242/taba1270/md.ini)
