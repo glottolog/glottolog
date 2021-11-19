@@ -5,6 +5,8 @@ Notable changes between releases of the Glottolog data.
 
 ## [UNRELEASED]
 
+- Added Pulotu bibliography as refprovider.
+
 
 ## [4.4] - 2021-05-14
 
