@@ -8,7 +8,7 @@
 - [Farsic-Caucasian Tat [fars1254]](tree/indo1319/clas1257/indo1320/iran1269/sout3157/midd1352/mode1259/fars1254/md.ini)
 - [Fataluku-Oirata [fata1246]](tree/timo1261/east2519/east2520/fata1246/md.ini)
 - [Fayu-Kirikiri [fayu1239]](tree/lake1255/tari1255/west2582/fayu1239/md.ini)
-- [Fer-Gula-Koto [ferg1237]](tree/cent2225/sara1341/sbbo1237/nucl1719/ferg1237/md.ini)
+- [Fer-Gula [ferg1237]](tree/cent2225/sara1341/sbbo1237/nucl1719/ferg1237/md.ini)
 - [Feroge-Mangaya [fero1243]](tree/atla1278/volt1241/nort3149/came1255/uban1244/sere1262/fero1243/md.ini)
 - [Fijian-based pidgin [fiji1244]](tree/pidg1258/fiji1244/md.ini)
 - [Finasleigh Pama [fina1240]](tree/pama1250/pama1251/fina1240/md.ini)
