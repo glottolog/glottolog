@@ -114,7 +114,7 @@
 - [Hlai [hlai1239][lic]](tree/taik1256/hlai1238/nucl1241/hlai1239/md.ini)
 - [Hlepho Phowa [hlep1236][yhl]](tree/sino1245/burm1265/lolo1265/lolo1267/nili1235/sout3212/high1272/phow1235/hlep1235/hlep1236/md.ini)
 - [Hlersu [hler1235][hle]](tree/sino1245/burm1265/lolo1265/lolo1267/nili1235/liso1234/lipo1243/unun9959/hler1235/md.ini)
-- [Hmar [hmar1241][hmr]](tree/sino1245/kuki1245/kuki1246/cent2330/cent2005/mizo1244/hmar1240/hmar1241/md.ini)
+- [Hmar [hmar1241][hmr]](tree/sino1245/kuki1245/kuki1246/cent2330/cent2005/mizo1244/hmar1240/hmar1242/hmar1241/md.ini)
 - [Hmong Daw [hmon1333][mww]](tree/hmon1336/hmon1337/nucl1714/nucl1720/west2803/grea1295/chua1248/firs1234/hmon1333/md.ini)
 - [Hmong Don [hmon1263][hmf]](tree/hmon1336/hmon1337/nucl1714/nucl1720/west2803/grea1295/chua1248/firs1234/unun9990/hmon1263/md.ini)
 - [Hmong Dô [hmon1332][hmv]](tree/hmon1336/hmon1337/nucl1714/nucl1720/west2803/grea1295/chua1248/firs1234/unun9990/hmon1332/md.ini)

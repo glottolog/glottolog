@@ -67,7 +67,7 @@
 - [Yangliu [yang1304]](tree/sino1245/burm1265/lolo1265/lolo1267/nili1235/liso1234/nucl1734/lisu1252/lalu1234/lalo1240/yang1304/md.ini)
 - [Yangman [yang1288][jng]](tree/yang1287/yang1288/md.ini)
 - [Yango [yang1289][yng]](tree/atla1278/volt1241/nort3149/came1255/uban1244/ngba1292/west2836/rive1263/monz1253/kpal1242/yang1289/md.ini)
-- [Yangoon Myanmar Sign Language [yang1309][ysm]](tree/sign1238/deaf1237/myan1234/yang1309/md.ini)
+- [Yangon Myanmar Sign Language [yang1309][ysm]](tree/sign1238/deaf1237/myan1234/yang1309/md.ini)
 - [Yangulam [yang1298][ynl]](tree/nucl1709/mada1298/raic1241/nuru1240/yang1298/md.ini)
 - [Yangum Dey [yang1297][yde]](tree/nucl1708/nucl1722/yang1294/yang1303/yang1297/md.ini)
 - [Yangum Gel [yang1295][ygl]](tree/nucl1708/nucl1722/yang1294/yang1303/yang1295/md.ini)

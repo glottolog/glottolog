@@ -38,7 +38,7 @@
 - [Ukwuani-Aboh-Ndoni [ukwu1241][ukw]](tree/atla1278/volt1241/benu1247/igbo1258/igbo1259/ukwu1241/md.ini)
 - [Ulau-Suain [ulau1237][svb]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/west2818/nort3206/scho1242/siau1243/ulau1237/md.ini)
 - [Ulch [ulch1241][ulc]](tree/tung1282/east2366/orok1264/ulch1242/ulch1241/md.ini)
-- [Ulithian [ulit1238][uli]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/micr1243/micr1244/cent2276/west2844/pona1247/truk1243/west2855/ulit1238/md.ini)
+- [Ulithian [ulit1238][uli]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/micr1243/cent2276/west2844/pona1247/truk1243/west2855/ulit1238/md.ini)
 - [Ullatan [ulla1237][ull]](tree/drav1251/sout3133/sout3138/tami1291/tami1292/tami1293/tami1294/tami1297/tami1298/mala1541/ulla1237/md.ini)
 - [Ulterior-Mixe [ulte1235]](tree/mixe1284/mixe1286/oaxa1241/ulte1235/md.ini)
 - [Ulukwumi [uluk1257][ulb]](tree/atla1278/volt1241/benu1247/defo1239/yoru1244/edek1238/edea1234/east2738/sout3186/nucl1747/uluk1257/md.ini)
