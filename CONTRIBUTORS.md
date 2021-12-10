@@ -4,6 +4,7 @@
 
 Version | Year | Editors
 --- | --- | ---
+4.5 | 2021 | Harald Hammarström & Robert Forkel & Martin Haspelmath & Sebastian Bank 
 4.4 | 2021 | Harald Hammarström & Robert Forkel & Martin Haspelmath & Sebastian Bank 
 4.3 | 2020 | Harald Hammarström & Robert Forkel & Martin Haspelmath & Sebastian Bank 
 4.2.1 | 2020 | Harald Hammarström & Robert Forkel & Martin Haspelmath & Sebastian Bank 
