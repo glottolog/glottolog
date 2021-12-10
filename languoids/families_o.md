@@ -19,7 +19,6 @@
 - [Old Bomokandian [oldb1234]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/nort3376/rive1266/ngir1248/ngir1250/ngom1276/abab1240/oldb1234/md.ini)
 - [Old Chiangmai-Bangkok Sign [oldc1250]](tree/sign1238/deaf1237/oldc1249/oldc1250/md.ini)
 - [Old Chiangmai-Bangkok-Haiphong Sign [oldc1249]](tree/sign1238/deaf1237/oldc1249/md.ini)
-- [Old-Modern Burmese [oldm1246]](tree/sino1245/burm1265/lolo1265/burm1266/sout3159/nucl1730/oldm1246/md.ini)
 - [Old-Modern Marathi [oldm1248]](tree/indo1319/clas1257/indo1320/indo1321/indo1325/mara1416/mara1422/oldm1248/md.ini)
 - [Old-Modern Welsh [oldm1247]](tree/indo1319/clas1257/celt1248/nucl1715/tgbc1234/insu1254/bryt1239/oldm1247/md.ini)
 - [Oleran [oler1234]](tree/atla1278/volt1241/benu1247/kain1275/kain1276/uppe1457/oler1234/md.ini)

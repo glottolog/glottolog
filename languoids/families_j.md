@@ -1,3 +1,4 @@
+- [J-Koryakic [jkor1234]](tree/chuk1271/chuk1272/kory1247/jkor1234/md.ini)
 - [JSLic [jsli1234]](tree/sign1238/deaf1237/jsli1234/md.ini)
 - [Jaad [jaad1234]](tree/atla1278/nort3146/jaad1234/md.ini)
 - [Jabuti [jabu1249]](tree/nucl1710/jabu1249/md.ini)

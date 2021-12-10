@@ -1,5 +1,5 @@
 - [DGSic [dgsi1234]](tree/sign1238/deaf1237/dgsi1234/md.ini)
-- [Daai-Muun [daai1235]](tree/sino1245/kuki1245/kuki1246/peri1260/sout3160/choi1241/daai1235/md.ini)
+- [Daai-Nghmoye-Muun-Kaang [daai1235]](tree/sino1245/kuki1245/kuki1246/peri1260/sout3160/choi1241/daai1235/md.ini)
 - [Daats'iin-Southern Gumuz [daat1235]](tree/gumu1250/daat1235/md.ini)
 - [Daba-Mazagway-Kola [daba1262]](tree/afro1255/chad1250/bium1280/sout3145/bium1274/daba1262/md.ini)
 - [Dabaic [bium1274]](tree/afro1255/chad1250/bium1280/sout3145/bium1274/md.ini)
