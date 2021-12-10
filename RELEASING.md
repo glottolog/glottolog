@@ -36,6 +36,7 @@
   and make sure the data can be loaded into treedb:
   ```shell
   cd ../treedb
+  git pull origin
   python -c "import treedb; treedb.load(); treedb.write_csv()"
   cd ../glottolog
   ```
