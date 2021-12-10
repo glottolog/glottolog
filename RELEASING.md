@@ -82,6 +82,7 @@ Upon approval of the PR:
 - Create corresponding release of glottolog-cldf: 
   ```shell
   cd ../glottolog-cldf
+  vi CHANGELOG.md
   cldfbench makecldf --with-cldfreadme --with-zenodo --glottolog-version v<version> cldfbench_glottolog.py
   cldfbench readme cldfbench_glottolog.py
   pytest
