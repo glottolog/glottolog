@@ -53,6 +53,7 @@
     - Recreate `benjamins.bib`, running `python to_bib.py`
     - Switch back to `glottolog/glottolog`
     - Run `glottolog-admin benjaminsbib PATH/TO/benjamins/benjamins.bib`
+  - FIXME: recreate ldh.bib!
 - Run `glottolog-admin bib` to create `build/monster-utf8.bib` - about 20mins
 - Run
   ```shell
