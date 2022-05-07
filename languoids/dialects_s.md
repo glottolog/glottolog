@@ -286,7 +286,7 @@
 - [Saroa [saro1238]](tree/aust1307/mala1545/cent2237/east2712/ocea1241/west2818/papu1253/peri1258/cent2070/sina1272/sina1266/saro1238/md.ini)
 - [Sarrabense [sarr1244]](tree/indo1319/clas1257/ital1284/lati1262/lati1263/impe1234/roma1334/sout3158/sard1256/sard1257/camp1261/sarr1244/md.ini)
 - [Sart Qalmaq [sart1247]](tree/mong1349/mong1329/oira1260/khal1273/mong1331/kalm1243/sart1247/md.ini)
-- [Sarte [sart1250]](tree/ural1272/finn1317/coas1319/neva1234/cent2329/esto1258/midd1322/sart1250/md.ini)
+- [Saarte [sart1250]](tree/ural1272/finn1317/coas1319/neva1234/cent2329/esto1258/midd1322/sart1250/md.ini)
 - [Sartenais [sart1246]](tree/indo1319/clas1257/ital1284/lati1262/lati1263/impe1234/roma1334/sout3158/sard1256/cors1242/cors1241/sart1246/md.ini)
 - [Sartul [sart1248]](tree/mong1349/mong1329/oira1260/khal1273/mong1331/halh1238/sart1248/md.ini)
 - [Sarwari [sarw1239]](tree/indo1319/clas1257/indo1320/indo1321/indo1322/subc1234/guja1255/raja1256/mewa1253/mewa1249/sarw1239/md.ini)
