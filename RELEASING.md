@@ -53,6 +53,10 @@
     - Recreate `benjamins.bib`, running `python to_bib.py`
     - Switch back to `glottolog/glottolog`
     - Run `glottolog-admin benjaminsbib PATH/TO/benjamins/benjamins.bib`
+  - `langsci.bib`:
+    - Update the `raw_texfiles` repos, see https://github.com/langsci/raw_texfiles#readme
+    - Recreate the merged bib: `linglit mergedbib langsci cldf_datasets/imtvault/raw/langsci/ > langsci.bib`
+    - Run `glottolog-admin langscibib PATH/TO/langsci.bib`
   - FIXME: recreate ldh.bib!
 - Run `glottolog-admin bib` to create `build/monster-utf8.bib` - about 20mins
 - Run
