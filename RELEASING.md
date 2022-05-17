@@ -56,7 +56,7 @@
   - `langsci.bib`:
     - Update the `raw_texfiles` repos, see https://github.com/langsci/raw_texfiles#readme
     - Recreate the merged bib: `linglit mergedbib langsci cldf_datasets/imtvault/raw/langsci/ > langsci.bib`
-    - Run `glottolog-admin langscibib PATH/TO/langsci.bib`
+    - Run `glottolog-admin updatebib langsci PATH/TO/langsci.bib`
   - FIXME: recreate ldh.bib!
 - Run `glottolog-admin bib` to create `build/monster-utf8.bib` - about 20mins
 - Run
