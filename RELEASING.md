@@ -58,6 +58,9 @@
     - Recreate the merged bib: `linglit mergedbib glossa PATH/TO/REPOS > glossa.bib`
     - Update the refprovider: `glottolog-admin updatebib glossa PATH/TO/glossa.bib`
   - FIXME: recreate ldh.bib!
+  - `jocp.bib`:
+    - Sync the Zotero group library and export to BibTeX.
+    - Run `glottolog-admin updatebib jocp PATH/TO/ZOTERO_EXPORT --merge`
 - Run `glottolog-admin bib` to create `build/monster-utf8.bib` - about 20mins
 - Run
   ```shell
