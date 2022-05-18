@@ -53,6 +53,10 @@
     - Recreate `benjamins.bib`, running `python to_bib.py`
     - Switch back to `glottolog/glottolog`
     - Run `glottolog-admin updatebib benjamins PATH/TO/benjamins/benjamins.bib`
+  - `langsci.bib`:
+    - Update the `raw_texfiles` repos, see https://github.com/langsci/raw_texfiles#readme
+    - Recreate the merged bib: `linglit mergedbib langsci cldf_datasets/imtvault/raw/langsci/ > langsci.bib`
+    - Run `glottolog-admin updatebib langsci PATH/TO/langsci.bib`
   - `glossa.bib`:
     - Update the glossa repos via `linglit update glossa PATH/TO/REPOS`
     - Recreate the merged bib: `linglit mergedbib glossa PATH/TO/REPOS > glossa.bib`
