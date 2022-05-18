@@ -45,14 +45,18 @@
   - `elpub.bib`: Run `glottolog-admin elpubbib`
   - `evobib.bib`:
     - download the latest version from https://doi.org/10.5281/zenodo.4071598
-    - Run `glottolog-admin evobib evobib-converted.bib`
-  - `dplace.bib`: Run `glottolog-admin dplacebib`
+    - Run `glottolog-admin updatebib evobib evobib-converted.bib`
+  - `dplace.bib`: Run `glottolog-admin updatebib dplace`
   - `benjamins.bib`:
     - Switch to the clone of `glottolog/benjamins`
     - Pull the latest changes via FTP 
     - Recreate `benjamins.bib`, running `python to_bib.py`
     - Switch back to `glottolog/glottolog`
-    - Run `glottolog-admin benjaminsbib PATH/TO/benjamins/benjamins.bib`
+    - Run `glottolog-admin updatebib benjamins PATH/TO/benjamins/benjamins.bib`
+  - `glossa.bib`:
+    - Update the glossa repos via `linglit update glossa PATH/TO/REPOS`
+    - Recreate the merged bib: `linglit mergedbib glossa PATH/TO/REPOS > glossa.bib`
+    - Update the refprovider: `glottolog-admin updatebib glossa PATH/TO/glossa.bib`
   - FIXME: recreate ldh.bib!
 - Run `glottolog-admin bib` to create `build/monster-utf8.bib` - about 20mins
 - Run
