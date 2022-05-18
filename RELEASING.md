@@ -45,19 +45,26 @@
   - `elpub.bib`: Run `glottolog-admin elpubbib`
   - `evobib.bib`:
     - download the latest version from https://doi.org/10.5281/zenodo.4071598
-    - Run `glottolog-admin evobib evobib-converted.bib`
-  - `dplace.bib`: Run `glottolog-admin dplacebib`
+    - Run `glottolog-admin updatebib evobib evobib-converted.bib`
+  - `dplace.bib`: Run `glottolog-admin updatebib dplace`
   - `benjamins.bib`:
     - Switch to the clone of `glottolog/benjamins`
     - Pull the latest changes via FTP 
     - Recreate `benjamins.bib`, running `python to_bib.py`
     - Switch back to `glottolog/glottolog`
-    - Run `glottolog-admin benjaminsbib PATH/TO/benjamins/benjamins.bib`
+    - Run `glottolog-admin updatebib benjamins PATH/TO/benjamins/benjamins.bib`
   - `langsci.bib`:
     - Update the `raw_texfiles` repos, see https://github.com/langsci/raw_texfiles#readme
     - Recreate the merged bib: `linglit mergedbib langsci cldf_datasets/imtvault/raw/langsci/ > langsci.bib`
     - Run `glottolog-admin updatebib langsci PATH/TO/langsci.bib`
+  - `glossa.bib`:
+    - Update the glossa repos via `linglit update glossa PATH/TO/REPOS`
+    - Recreate the merged bib: `linglit mergedbib glossa PATH/TO/REPOS > glossa.bib`
+    - Update the refprovider: `glottolog-admin updatebib glossa PATH/TO/glossa.bib`
   - FIXME: recreate ldh.bib!
+  - `jocp.bib`:
+    - Sync the Zotero group library and export to BibTeX.
+    - Run `glottolog-admin updatebib jocp PATH/TO/ZOTERO_EXPORT --merge`
 - Run `glottolog-admin bib` to create `build/monster-utf8.bib` - about 20mins
 - Run
   ```shell
