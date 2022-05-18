@@ -61,7 +61,9 @@
     - Update the glossa repos via `linglit update glossa PATH/TO/REPOS`
     - Recreate the merged bib: `linglit mergedbib glossa PATH/TO/REPOS > glossa.bib`
     - Update the refprovider: `glottolog-admin updatebib glossa PATH/TO/glossa.bib`
-  - FIXME: recreate ldh.bib!
+  - `ldh.bib`:
+    - Download and unzip the last released bib from https://ldh.clld.org/download
+    - Run `glottolog-admin updatebib ldh description.bib`
   - `jocp.bib`:
     - Sync the Zotero group library and export to BibTeX.
     - Run `glottolog-admin updatebib jocp PATH/TO/ZOTERO_EXPORT --merge`
