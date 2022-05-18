@@ -8,6 +8,7 @@ Notable changes between releases of the Glottolog data.
 - Added OFDN bibliography as refprovider.
 - Added JOCP refprovider.
 - Added Glossa as refprovider.
+- Updated the langsci refprovider from ~2,000 to now ~50,000 references.
 
 
 ## [4.5] - 2021-12-10
