@@ -45,7 +45,7 @@
   - `elpub.bib`: Run `glottolog-admin elpubbib`
   - `evobib.bib`:
     - download the latest version from https://doi.org/10.5281/zenodo.4071598
-    - Run `glottolog-admin updatebib evobib evobib-converted.bib`
+    - Run `glottolog-admin evobib evobib-converted.bib`
   - `dplace.bib`: Run `glottolog-admin updatebib dplace`
   - `benjamins.bib`:
     - Switch to the clone of `glottolog/benjamins`
