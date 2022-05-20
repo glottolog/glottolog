@@ -8,7 +8,7 @@ even locally customized data by [forking](https://help.github.com/articles/fork-
 
 ## Accessing Glottolog data
 
-- **This repository** is the place where Glottolog data is curated. So it's the right place to open issued about errors you identified
+- **This repository** is the place where Glottolog data is curated. So it's the right place to [open issues](https://github.com/glottolog/glottolog/issues) about errors you identified
   and to [propose changes](CONTRIBUTING.md). A clone of this repository is also the right thing if you need access to **all** of Glottolog's data,
   possibly including older versions and the history of changes. Since the format of the data here is tailored towards maintainability - and
   not towards accessibility - you might want to use the Python package [pyglottolog](https://github.com/glottolog/pyglottolog) to access
