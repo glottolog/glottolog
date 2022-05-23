@@ -34,7 +34,7 @@
 - [Xonga [xong1238]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/sout3180/ngun1275/tswa1254/tson1249/xong1238/md.ini)
 - [Xonj [khon1246]](tree/indo1319/clas1257/indo1320/iran1269/sout3157/midd1352/mode1259/lari1253/khon1246/md.ini)
 - [Xopa [xopa1238]](tree/kart1248/geor1252/zann1245/lazz1240/sena1260/xopa1238/md.ini)
-- [Xoraxane [zagu1235]](tree/indo1319/clas1257/indo1320/indo1321/indo1322/roma1329/vlax1238/sout2658/dzam1241/zagu1235/md.ini)
+- [Xoraxane [zagu1235]](tree/indo1319/clas1257/indo1320/indo1321/midd1375/cont1248/midl1245/shau1239/indo1322/roma1329/vlax1238/sout2658/dzam1241/zagu1235/md.ini)
 - [Xuanzhou [xuan1238]](tree/sino1245/sini1245/clas1255/midd1354/wuhu1234/wuch1236/xuan1238/md.ini)
 - [Xucuru [xucu1234]](tree/xuku1239/xucu1234/md.ini)
 - [Xullari [xull1234]](tree/indo1319/clas1257/indo1320/iran1269/sout3157/midd1352/mode1259/sout2645/xull1234/md.ini)

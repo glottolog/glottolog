@@ -47,7 +47,7 @@
 - [Yenisey Turkic [yeni1251]](tree/turk1311/comm1245/cent2326/sout2693/yeni1256/yeni1251/md.ini)
 - [Yerukula-Korava-Kaikadi [yeru1242]](tree/drav1251/sout3133/sout3138/tami1291/tami1292/tami1293/tami1294/tami1297/tami1298/tami1299/yeru1242/md.ini)
 - [Yiddish [yidd1255][yid]](tree/indo1319/clas1257/germ1287/nort3152/west2793/high1289/fran1268/east2832/yidd1255/md.ini)
-- [Yidgha-Munji [yidg1239]](tree/indo1319/clas1257/indo1320/iran1269/yidg1239/md.ini)
+- [Yidgha-Munji [yidg1239]](tree/indo1319/clas1257/indo1320/iran1269/cent2399/yidg1239/md.ini)
 - [Yidinic [yidi1249]](tree/pama1250/yimi1234/yidi1249/md.ini)
 - [Yimas-based pidgin [yima1247]](tree/pidg1258/yima1247/md.ini)
 - [Yimchingric [yimc1239]](tree/sino1245/kuki1245/anga1312/aoic1235/yimc1239/md.ini)
