@@ -5,6 +5,9 @@ Notable changes between releases of the Glottolog data.
 
 ## [UNRELEASED]
 
+
+## [4.6] - 2022-05-24
+
 - Added OFDN bibliography as refprovider.
 - Added JOCP refprovider.
 - Added Glossa as refprovider.
