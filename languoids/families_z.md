@@ -24,6 +24,7 @@
 - [Zoe-Emerillon [zoee1241]](tree/tupi1275/mawe1252/awet1245/tupi1276/tupi1281/waya1271/zoee1241/md.ini)
 - [Zoque [zoqu1261]](tree/mixe1284/zoqu1261/md.ini)
 - [Zuara-Sened [zuar1239]](tree/afro1255/berb1260/grea1296/zena1250/zuar1239/md.ini)
+- [Zulic [zuli1234]](tree/afro1255/chad1250/west2785/west2790/west2800/sout3162/nort3190/nyam1284/polc1245/zuli1234/md.ini)
 - [Zulu-Sotho [zulu1249]](tree/spee1234/zulu1249/md.ini)
 - [Zulu-Xhosa [zulu1251]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/sout3180/ngun1275/ngun1276/ngun1267/zulu1251/md.ini)
 - [Zulu-based pidgin [zulu1250]](tree/pidg1258/zulu1250/md.ini)
