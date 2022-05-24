@@ -105,6 +105,7 @@ Upon approval of the PR:
   git push origin
   git push --tags origin
   ```
+- Back to `../glottolog`
 - Re-set the version number to dev mode, by incrementing and adding `.dev0`:
   - `config/publication.ini`
 - Create "proper" releases on GitHub and have it picked up by ZENODO.
