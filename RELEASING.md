@@ -93,18 +93,8 @@ Upon approval of the PR:
   ```shell
   git push --tags origin
   ```
-- Create corresponding release of glottolog-cldf: 
-  ```shell
-  cd ../glottolog-cldf
-  vi CHANGELOG.md
-  cldfbench makecldf --with-cldfreadme --with-zenodo --glottolog-version v<version> cldfbench_glottolog.py
-  cldfbench readme cldfbench_glottolog.py
-  pytest
-  git commit -a -m"release <release>"
-  git tag -a v<version> -m "release <version>"
-  git push origin
-  git push --tags origin
-  ```
+- Create corresponding release of glottolog-cldf, see
+  https://github.com/glottolog/glottolog-cldf/blob/master/RELEASING.md 
 - Back to `../glottolog`
 - Re-set the version number to dev mode, by incrementing and adding `.dev0`:
   - `config/publication.ini`
