@@ -1,0 +1,22 @@
+# -*- coding: utf-8 -*-
+[core]
+name = Tangerang
+level = dialect
+links = 
+latitude = -6.2001674
+longitude = 106.4671383
+macroareas = 
+	Papunesia
+countries = 
+	ID
+[sources]
+glottolog = 
+	**bahasa:atmajaya3532*
+	**hh:s:Mulyono:Sunda-Tangerang**
+
+[classification]
+sub = **hh:hv:Pawley:Filipinos** **hh:hv:Ross:Batanic** **hh:hv:Adelaar:Austronesian-Asia-Madagascar**
+subrefs = 
+	**hh:hv:Pawley:Filipinos**
+	**hh:hv:Ross:Batanic**
+	**hh:hv:Adelaar:Austronesian-Asia-Madagascar**
