@@ -36,6 +36,7 @@
   and make sure the data can be loaded into treedb:
   ```shell
   cd ../treedb
+  git checkout master
   git pull origin
   python -c "import treedb; treedb.load(); treedb.write_csv()"
   cd ../glottolog
@@ -67,7 +68,7 @@
   - `jocp.bib`:
     - Sync the Zotero group library and export to BibTeX.
     - Run `glottolog-admin updatebib jocp PATH/TO/ZOTERO_EXPORT --merge`
-- Run `glottolog-admin bib` to create `build/monster-utf8.bib` - about 20mins
+- Run `glottolog-admin bib` to create `build/monster-utf8.bib` - about 30mins
 - Run
   ```shell
   glottolog-admin release
