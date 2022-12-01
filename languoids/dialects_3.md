@@ -1,1 +1,1 @@
-- [3Ad-Tekles [3adt1234]](tree/afro1255/semi1276/west2786/ethi1244/tigr1276/tigr1277/tigr1270/nort3292/3adt1234/md.ini)
+- [3Ad-Tekles [3adt1234]](tree/afro1255/semi1276/west2786/ethi1244/tigr1277/tigr1270/nort3292/3adt1234/md.ini)
