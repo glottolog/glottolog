@@ -3,7 +3,7 @@
 Notable changes between releases of the Glottolog data.
 
 
-## [4.7] - 2022-12-02
+## [4.7] - 2022-12-05
 
 - See https://github.com/glottolog/glottolog/pulls?q=is%3Apr+is%3Amerged for a list of merged PRs and https://github.com/glottolog/glottolog/milestone/8?closed=1 for a list of issues addresses in this release.
 
