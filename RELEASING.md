@@ -44,6 +44,7 @@
 - Update automatically created BibTeX files:
   - `iso6393.bib`: Run `glottolog-admin isobib`
   - `elpub.bib`: Run `glottolog-admin elpubbib`
+  - `grambank.bib`: Run `glottolog-admin grambankbib <URL>` passing the GitHub URL to the latest released version of https://github.com/grambank/grambank/blob/master/cldf/sources.bib
   - `evobib.bib`:
     - download the latest version from https://doi.org/10.5281/zenodo.4071598
     - Run `glottolog-admin evobib evobib-converted.bib`
