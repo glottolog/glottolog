@@ -104,7 +104,7 @@
 - [Judeo-Yemeni Arabic [jude1267][jye]](tree/afro1255/semi1276/west2786/cent2236/arab1394/arab1395/arab1393/jude1277/jude1267/md.ini)
 - [Jukun Takum [juku1254][jbu]](tree/atla1278/volt1241/benu1247/juku1257/cent2241/juku1258/juku1259/jibu1240/jibu1241/juku1254/md.ini)
 - [Julud [julu1237]](tree/katl1246/katl1236/julu1237/md.ini)
-- [Jumana [juma1250]](tree/araw1281/japu1236/japu1237/juma1250/md.ini)
+- [Jumana [juma1250]](tree/araw1281/japu1236/icaa1241/japu1237/juma1250/md.ini)
 - [Jumano [juma1248]](tree/unat1236/juma1248/md.ini)
 - [Jumjum [jumj1238][jum]](tree/nilo1247/west2493/buru1328/maba1272/jumj1238/md.ini)
 - [Jumla Sign Language [juml1239][jus]](tree/sign1238/vill1244/juml1239/md.ini)

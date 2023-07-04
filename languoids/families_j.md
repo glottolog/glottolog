@@ -10,7 +10,7 @@
 - [Japanesic [japa1256]](tree/japo1237/japa1256/md.ini)
 - [Japonic [japo1237]](tree/japo1237/md.ini)
 - [Japura-Colombia [japu1236]](tree/araw1281/japu1236/md.ini)
-- [Japura-Ica [japu1237]](tree/araw1281/japu1236/japu1237/md.ini)
+- [Japura-Ica [japu1237]](tree/araw1281/japu1236/icaa1241/japu1237/md.ini)
 - [Jarawa-Onge [jara1244]](tree/jara1244/md.ini)
 - [Jarawaic [jara1275]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/mbam1254/jara1262/nige1254/jara1275/md.ini)
 - [Jarawan [jara1262]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/mbam1254/jara1262/md.ini)

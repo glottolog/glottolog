@@ -2,6 +2,7 @@
 - [Qahvehkhaneh Sign Language [qahv1234]](tree/sign1238/vill1244/qahv1234/md.ini)
 - [Qaqet [qaqe1238][byx]](tree/bain1263/qaqe1238/md.ini)
 - [Qashqa'i [qash1240][qxq]](tree/turk1311/comm1245/oghu1243/nucl1769/qash1240/md.ini)
+- [Qashqa-Darya Arabic [uzbe1248][auz]](tree/afro1255/semi1276/west2786/cent2236/arab1394/arab1395/east2729/cent2410/xora1234/uzbe1248/md.ini)
 - [Qatabanian [qata1238][xqt]](tree/afro1255/semi1276/west2786/cent2236/sayh1236/qata1238/md.ini)
 - [Qawasqar [qawa1238][alc]](tree/kawe1237/nort1506/qawa1238/md.ini)
 - [Qila Muji [qila1235][ymq]](tree/sino1245/burm1265/lolo1265/lolo1267/nili1235/sout3212/high1272/muji1235/lagh1244/thop1235/core1246/qila1235/md.ini)

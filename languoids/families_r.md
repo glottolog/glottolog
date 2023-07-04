@@ -50,6 +50,7 @@
 - [Rufiji-Ruvuma [rufi1235]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/rufi1235/md.ini)
 - [Rufijic [rufi1236]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/rufi1235/rufi1236/md.ini)
 - [Rukubic [ruku1240]](tree/atla1278/volt1241/benu1247/benu1248/west2801/ninz1247/ruku1240/md.ini)
+- [Rundic [rund1244]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/nort3203/grea1289/west2842/kivu1239/rwan1241/rund1244/md.ini)
 - [Runga-Kibet [rung1257]](tree/maba1274/maba1275/rung1257/md.ini)
 - [Rungus-Mangkaak-Labuk [rung1260]](tree/aust1307/mala1545/nort3253/saba1285/sout3154/grea1293/dusu1277/rung1260/md.ini)
 - [Rural Sign Language [vill1244]](tree/sign1238/vill1244/md.ini)

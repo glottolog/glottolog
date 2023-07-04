@@ -69,7 +69,7 @@
   - `jocp.bib`:
     - Sync the Zotero group library and export to BibTeX.
     - Run `glottolog-admin updatebib jocp PATH/TO/ZOTERO_EXPORT --merge`
-- Run `glottolog-admin bib` to create `build/monster-utf8.bib` - about 30mins
+- Run `glottolog-admin bib` to create `build/monster-utf8.bib` - about 17mins
 - Run
   ```shell
   glottolog-admin release
