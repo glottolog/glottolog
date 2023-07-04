@@ -36,6 +36,7 @@
   and make sure the data can be loaded into treedb:
   ```shell
   cd ../treedb
+  git checkout master
   git pull origin
   python -c "import treedb; treedb.load(); treedb.write_csv()"
   cd ../glottolog
@@ -43,6 +44,7 @@
 - Update automatically created BibTeX files:
   - `iso6393.bib`: Run `glottolog-admin isobib`
   - `elpub.bib`: Run `glottolog-admin elpubbib`
+  - `grambank.bib`: Run `glottolog-admin grambankbib <URL>` passing the GitHub URL to the latest released version of https://github.com/grambank/grambank/blob/master/cldf/sources.bib
   - `evobib.bib`:
     - download the latest version from https://doi.org/10.5281/zenodo.4071598
     - Run `glottolog-admin evobib evobib-converted.bib`
@@ -67,7 +69,7 @@
   - `jocp.bib`:
     - Sync the Zotero group library and export to BibTeX.
     - Run `glottolog-admin updatebib jocp PATH/TO/ZOTERO_EXPORT --merge`
-- Run `glottolog-admin bib` to create `build/monster-utf8.bib` - about 20mins
+- Run `glottolog-admin bib` to create `build/monster-utf8.bib` - about 30mins
 - Run
   ```shell
   glottolog-admin release
