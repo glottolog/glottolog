@@ -38,7 +38,7 @@
   cd ../treedb
   git checkout master
   git pull origin
-  python -c "import treedb; treedb.load(); treedb.write_csv()"
+  ~/venvs/glottolog/bin/python -c "import treedb; treedb.load(); treedb.write_csv()"
   cd ../glottolog
   ```
 - Update automatically created BibTeX files:
