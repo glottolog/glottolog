@@ -2,7 +2,7 @@
 - [Fagani [faga1239][faf]](tree/aust1307/mala1545/east2712/ocea1241/sout2853/mala1485/mala1540/sanc1243/faga1239/md.ini)
 - [Faifi [faif1234][fif]](tree/afro1255/semi1276/west2786/cent2236/sayh1236/mode1270/faif1234/md.ini)
 - [Faire Atta [fair1238][azt]](tree/aust1307/mala1545/nort3238/caga1241/iban1268/atta1244/fair1238/md.ini)
-- [Faiwol [faiw1243][fai]](tree/nucl1709/cent2116/awyu1265/okok1235/okkk1242/moun1253/faiw1243/md.ini)
+- [Faiwol [faiw1243][fai]](tree/nucl1709/cent2116/awyu1265/okok1235/okkk1242/moun1253/divi1235/tifa1246/tifa1247/faiw1245/faiw1243/md.ini)
 - [Fala [fala1241][fax]](tree/indo1319/clas1257/ital1284/lati1262/lati1263/impe1234/roma1334/ital1285/west2813/shif1234/sout3183/west2838/gali1263/fala1241/md.ini)
 - [Falam Chin (Retired) [fala1245][flm]](tree/book1242/fala1245/md.ini)
 - [Falam Chin [fala1243][cfm]](tree/sino1245/kuki1245/kuki1246/cent2330/cent2005/laic1236/fala1242/fala1243/md.ini)

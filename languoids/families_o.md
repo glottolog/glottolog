@@ -40,6 +40,7 @@
 - [Oriya-Gauda-Kamrupa [oriy1254]](tree/indo1319/clas1257/indo1320/indo1321/midd1375/cont1248/indo1323/oriy1254/md.ini)
 - [Orkon-Port Vato-Dakaka [port1292]](tree/aust1307/mala1545/east2712/ocea1241/nort3195/cent2269/ambr1240/port1292/md.ini)
 - [Ormuri-Parachi [ormu1249]](tree/indo1319/clas1257/indo1320/iran1269/ormu1249/md.ini)
+- [Oroch-Udihe [oroc1249]](tree/tung1282/nort3417/cent2235/oroc1249/md.ini)
 - [Orokaivic [orok1268]](tree/nucl1709/bina1276/bina1279/nucl1603/sout2934/orok1268/md.ini)
 - [Oromoid [nucl1701]](tree/afro1255/cush1243/east2699/lowl1267/sout3055/main1283/nucl1701/md.ini)
 - [Osage-Kansa [osag1244]](tree/siou1252/core1249/miss1254/dheg1241/osag1244/md.ini)

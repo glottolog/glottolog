@@ -72,6 +72,10 @@
 - Run `glottolog-admin bib` to create `build/monster-utf8.bib` - about 30mins
 - Run
   ```shell
+  glottolog-admin update
+  ```
+- Run
+  ```shell
   glottolog-admin release
   git commit -a -m"release <version>"
   git push origin release-<version>
