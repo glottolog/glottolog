@@ -7,6 +7,7 @@ Notable changes between releases of the Glottolog data.
 
 - Added Grambank as refprovider.
 - Added ELCat as refprovider.
+- See https://github.com/glottolog/glottolog/milestone/10?closed=1 https://github.com/glottolog/glottolog/milestone/10?closed=1
 
 
 ## [4.7] - 2022-12-05
