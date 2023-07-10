@@ -58,7 +58,7 @@
 - [Leqic [leqi1234]](tree/sino1245/burm1265/lolo1265/burm1266/nort2720/maru1254/leqi1234/md.ini)
 - [Leseic [lese1245]](tree/cent2225/memb1239/mang1425/lese1245/md.ini)
 - [Lesser Antillean French Creole [less1242]](tree/indo1319/clas1257/ital1284/lati1262/lati1263/impe1234/roma1334/ital1285/west2813/shif1234/nort3208/gall1280/oila1234/cent2283/macr1273/circ1240/less1242/md.ini)
-- [Levantine Arabic [leva1239]](tree/afro1255/semi1276/west2786/cent2236/arab1394/arab1395/leva1239/md.ini)
+- [Levantine-Cypriot Arabic [leva1239]](tree/afro1255/semi1276/west2786/cent2236/arab1394/arab1395/leva1239/md.ini)
 - [Levantine-Iraqi Sign [leva1240]](tree/sign1238/deaf1237/arab1398/leva1240/md.ini)
 - [Lezgic [lezg1248]](tree/nakh1245/dagh1238/lezg1248/md.ini)
 - [Liberian Grebo [greb1256][grb]](tree/krua1234/grea1300/west2485/greb1258/greb1257/greb1256/md.ini)

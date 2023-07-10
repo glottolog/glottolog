@@ -3,7 +3,7 @@
 Notable changes between releases of the Glottolog data.
 
 
-## [Unreleased]
+## [4.8] - 2023-07-06
 
 - Added Grambank as refprovider.
 - Added ELCat as refprovider.

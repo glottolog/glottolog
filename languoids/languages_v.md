@@ -55,7 +55,7 @@
 - [Vlax Romani [vlax1238][rmy]](tree/indo1319/clas1257/indo1320/indo1321/midd1375/cont1248/midl1245/shau1239/indo1322/roma1329/vlax1238/md.ini)
 - [Volapük [vola1234][vol]](tree/arti1236/vola1234/md.ini)
 - [Vono [vono1238][kch]](tree/unat1236/atla1280/vono1238/md.ini)
-- [Vori [suru1258][sde]](tree/atla1278/volt1241/benu1247/kain1275/cent2242/basa1288/east2404/josa1234/kaur1268/suru1258/md.ini)
+- [Vori [suru1258][sde]](tree/atla1278/volt1241/benu1247/kain1275/cent2242/basa1288/east2404/josa1234/kaur1268/vori1234/suru1258/md.ini)
 - [Voro [voro1240][vor]](tree/atla1278/volt1241/nort3149/came1255/bena1258/bena1259/yung1254/voro1240/md.ini)
 - [Votic [voti1245][vot]](tree/ural1272/finn1317/coas1319/neva1234/cent2329/voti1245/md.ini)
 - [Vumbu [vumb1238][vum]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/west2968/nzad1235/lwer1234/ding1244/loan1238/klce1234/kiko1235/nucl1804/kiko1234/kamb1321/kila1239/sout3249/west2874/vili1240/lumb1251/ngub1240/sang1341/punu1240/vumb1238/md.ini)

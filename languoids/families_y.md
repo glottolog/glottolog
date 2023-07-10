@@ -77,6 +77,7 @@
 - [Yuman [yuma1250]](tree/coch1271/yuma1250/md.ini)
 - [Yungur-Voro [yung1254]](tree/atla1278/volt1241/nort3149/came1255/bena1258/bena1259/yung1254/md.ini)
 - [Yupik [yupi1267]](tree/eski1264/eski1265/yupi1267/md.ini)
+- [Yupiltepequic [yupi1268]](tree/xinc1237/yupi1268/md.ini)
 - [Yupna [yupn1242]](tree/nucl1709/fini1244/fini1245/yupn1242/md.ini)
 - [Yupua-Siriano-Desano [yupu1234]](tree/tuca1253/east2698/west2789/cube1243/yupu1234/md.ini)
 - [Yuruna [yuru1262]](tree/tupi1275/yuru1262/md.ini)

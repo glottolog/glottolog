@@ -1,4 +1,5 @@
 - [FH-Jola [fhjo1234]](tree/atla1278/nort3146/cent2230/bakk1238/jool1234/jola1264/fhjo1234/md.ini)
+- [Faiwol-Seltaman [faiw1245]](tree/nucl1709/cent2116/awyu1265/okok1235/okkk1242/moun1253/divi1235/tifa1246/tifa1247/faiw1245/md.ini)
 - [Falamic [fala1242]](tree/sino1245/kuki1245/kuki1246/cent2330/cent2005/laic1236/fala1242/md.ini)
 - [Fali-Gude [fali1290]](tree/afro1255/chad1250/bium1280/sout3145/bium1271/gude1247/gude1248/fali1290/md.ini)
 - [Family Sign Language [fami1234]](tree/sign1238/fami1234/md.ini)
