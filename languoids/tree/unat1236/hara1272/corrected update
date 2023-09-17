@@ -2,11 +2,15 @@
 [core]
 name = Harappan
 hid = xiv
-level = language
+level = language 
+latitude = 30.6110 
+longitude = 72.8929
 macroareas = 
 	Eurasia
 countries = 
-	PK
+	PK, IN 
+ links = 
+ 	https://en.wikipedia.org/wiki/Harappan_language
 iso639-3 = xiv
 
 [sources]
