@@ -44,11 +44,9 @@
 - Update automatically created BibTeX files:
   - `iso6393.bib`: Run `glottolog-admin isobib`
   - `elpub.bib`: Run `glottolog-admin elpubbib`
-  - `grambank.bib`: Run `glottolog-admin grambankbib <URL>` passing the GitHub URL to the latest released version of https://github.com/grambank/grambank/blob/master/cldf/sources.bib
   - `evobib.bib`:
     - download the latest version from https://doi.org/10.5281/zenodo.4071598
     - Run `glottolog-admin evobib evobib-converted.bib`
-  - `dplace.bib`: Run `glottolog-admin updatebib dplace`
   - `benjamins.bib`:
     - Switch to the clone of `glottolog/benjamins`
     - Pull the latest changes via FTP 
@@ -63,6 +61,10 @@
     - Update the glossa repos via `linglit update glossa PATH/TO/REPOS`
     - Recreate the merged bib: `linglit mergedbib glossa PATH/TO/REPOS > glossa.bib`
     - Update the refprovider: `glottolog-admin updatebib glossa PATH/TO/glossa.bib`
+  - `cldf.bib`:
+    - Update the cldf repos via `linglit update cldf PATH/TO/REPOS`
+    - Recreate the merged bib: `linglit mergedbib cldf PATH/TO/REPOS > cldf.bib`
+    - Update the refprovider: `glottolog-admin updatebib cldf PATH/TO/cldf.bib`
   - `ldh.bib`:
     - Download and unzip the last released bib from https://ldh.clld.org/download
     - Run `glottolog-admin updatebib ldh description.bib`
