@@ -49,7 +49,7 @@
 - [Zirenkel [zire1244][zrn]](tree/afro1255/chad1250/east2632/east2633/east2709/mubi1247/zire1244/md.ini)
 - [Zizilivakan [zizi1238][ziz]](tree/afro1255/chad1250/bium1280/sout3145/bium1271/gude1247/gude1248/zizi1238/md.ini)
 - [Zlarong [zlar1234]](tree/sino1245/burm1265/naqi1236/qian1263/uncl1511/cham1336/zlar1234/md.ini)
-- [Zo'é [zoee1240][pto]](tree/tupi1275/mawe1252/awet1245/tupi1276/tupi1281/waya1271/zoee1241/zoee1240/md.ini)
+- [Zo'é [zoee1240][pto]](tree/tupi1275/east2909/mawe1252/awet1245/tupi1276/tupi1281/waya1271/zoee1241/zoee1240/md.ini)
 - [Zokhuo [zokh1238][yzk]](tree/sino1245/burm1265/lolo1265/lolo1267/nili1235/sout3212/high1272/phow1235/hlep1235/khlu1235/zokh1238/md.ini)
 - [Zoogocho Zapotec [zoog1238][zpq]](tree/otom1299/east2557/popo1292/zapo1436/zapo1437/nucl1765/core1259/nort2987/cajo1239/zoog1238/md.ini)
 - [Zoroastrian Yazdi [zoro1242][gbz]](tree/indo1319/clas1257/indo1320/iran1269/cent2317/cent2318/nort3177/cent2264/nucl1790/yazd1241/zoro1242/md.ini)
