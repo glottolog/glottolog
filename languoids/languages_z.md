@@ -43,7 +43,7 @@
 - [Zimba [zimb1251][zmb]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/nyan1317/mitu1241/song1314/zimb1251/md.ini)
 - [Zimbabwe Sign Language [zimb1247][zib]](tree/sign1238/deaf1237/zimb1247/md.ini)
 - [Zimbabwean Ndebele [nort2795][nde]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/sout3387/nucl1826/dims1234/ngun1280/ngun1276/nucl1827/ngun1267/swat1244/nort2795/md.ini)
-- [Zinacantec family homesign [zina1239]](tree/sign1238/vill1244/zina1239/md.ini)
+- [Zinacantec family homesign [zina1239]](tree/sign1238/deaf1237/zina1239/md.ini)
 - [Zinza [zinz1238][zin]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/nort3203/grea1289/west2841/zinz1238/md.ini)
 - [Zire [zire1240][sih]](tree/aust1307/mala1545/east2712/ocea1241/sout3173/newc1243/main1286/sout3313/mids1246/zire1240/md.ini)
 - [Zirenkel [zire1244][zrn]](tree/afro1255/chad1250/east2632/east2633/east2709/mubi1247/zire1244/md.ini)

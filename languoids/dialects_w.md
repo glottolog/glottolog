@@ -491,7 +491,6 @@
 - [Wina [wina1241]](tree/afro1255/chad1250/masa1323/nort3157/masa1324/masa1322/cent2188/wina1241/md.ini)
 - [Winatu [wina1237]](tree/aust1307/mala1545/cele1242/kail1255/nort2898/umas1234/umaa1242/wina1237/md.ini)
 - [Windesi [wind1244]](tree/aust1307/mala1545/east2712/sout3229/cend1238/yape1249/cent2277/ansu1238/wand1267/wind1244/md.ini)
-- [Windisch [wind1243]](tree/indo1319/clas1257/balt1263/slav1255/sout3147/west2804/slov1268/wind1243/md.ini)
 - [Wingei [wing1239]](tree/nduu1242/nucl1642/ambu1246/ambu1247/wing1239/md.ini)
 - [Winiktit [wini1246]](tree/nucl1709/cent2116/awyu1265/grea1275/awyu1263/dumu1247/mand1473/mand1444/wini1246/md.ini)
 - [Winisk River Ojibwa [wini1244]](tree/algi1248/algo1256/algo1257/east2765/ojib1240/ojib1241/seve1242/seve1240/bigt1234/wini1244/md.ini)

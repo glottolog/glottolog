@@ -181,7 +181,7 @@
 - [Atta [atta1244]](tree/aust1307/mala1545/nort3238/caga1241/iban1268/atta1244/md.ini)
 - [Au-Olo-Elkei [auol1234]](tree/nucl1708/wape1249/cent2407/wape1250/auol1234/md.ini)
 - [Aua-Gawil [auag1234]](tree/nucl1709/cent2120/hage1248/auag1234/md.ini)
-- [Auslan-PNG Sign [aust1310]](tree/sign1238/deaf1237/bsli1234/banz1243/aust1310/md.ini)
+- [Auslanic [aust1310]](tree/sign1238/deaf1237/bsli1234/banz1243/aust1310/md.ini)
 - [Austroasiatic [aust1305]](tree/aust1305/md.ini)
 - [Austronesian (Unattested) [aust1312]](tree/unat1236/aust1312/md.ini)
 - [Austronesian [aust1307]](tree/aust1307/md.ini)

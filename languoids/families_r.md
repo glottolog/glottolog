@@ -53,7 +53,6 @@
 - [Rundic [rund1244]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/nort3203/grea1289/west2842/kivu1239/rwan1241/rund1244/md.ini)
 - [Runga-Kibet [rung1257]](tree/maba1274/maba1275/rung1257/md.ini)
 - [Rungus-Mangkaak-Labuk [rung1260]](tree/aust1307/mala1545/nort3253/saba1285/sout3154/grea1293/dusu1277/rung1260/md.ini)
-- [Rural Sign Language [vill1244]](tree/sign1238/vill1244/md.ini)
 - [Russian River [russ1266]](tree/pomo1273/russ1265/russ1266/md.ini)
 - [Russian River and Eastern [russ1265]](tree/pomo1273/russ1265/md.ini)
 - [Russian-based pidgin [russ1269]](tree/pidg1258/russ1269/md.ini)

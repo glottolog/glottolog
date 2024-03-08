@@ -2,7 +2,6 @@
 - [Faiwol-Seltaman [faiw1245]](tree/nucl1709/cent2116/awyu1265/okok1235/okkk1242/moun1253/divi1235/tifa1246/tifa1247/faiw1245/md.ini)
 - [Falamic [fala1242]](tree/sino1245/kuki1245/kuki1246/cent2330/cent2005/laic1236/fala1242/md.ini)
 - [Fali-Gude [fali1290]](tree/afro1255/chad1250/bium1280/sout3145/bium1271/gude1247/gude1248/fali1290/md.ini)
-- [Family Sign Language [fami1234]](tree/sign1238/fami1234/md.ini)
 - [Far East Polynesian [fare1245]](tree/aust1307/mala1545/east2712/ocea1241/cent2060/east2445/poly1242/nucl1485/nort3246/solo1260/cent2298/east2449/east2895/fare1245/md.ini)
 - [Far West Lakes Plain [farw1236]](tree/lake1255/farw1236/md.ini)
 - [Farefareic [fraf1239]](tree/atla1278/volt1241/nort3149/gura1261/cent2243/nort2777/bwam1248/otiv1239/nucl1743/gurm1247/west2461/nucl1748/nort3234/moss1237/fraf1239/md.ini)

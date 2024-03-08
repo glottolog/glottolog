@@ -34,7 +34,6 @@
 - [Datagnon-Santa Teresa-Semirara [data1234]](tree/aust1307/mala1545/grea1284/cent2246/bisa1268/west2820/kuya1251/data1234/md.ini)
 - [Dawro-Gofa-Gamo [dawr1235]](tree/gong1255/omet1238/nort3161/cent2046/dawr1235/md.ini)
 - [Dayic [kela1257]](tree/aust1307/mala1545/nort3253/nort3171/kela1257/md.ini)
-- [Deaf Sign Language [deaf1237]](tree/sign1238/deaf1237/md.ini)
 - [Debao-Jingxi-Nung [deba1238]](tree/taik1256/kamt1241/daic1238/daic1237/cent2251/deba1238/md.ini)
 - [Defoid [defo1239]](tree/atla1278/volt1241/benu1247/defo1239/md.ini)
 - [Degema-Engenni [dege1249]](tree/atla1278/volt1241/benu1247/akpe1249/edoi1239/delt1252/dege1249/md.ini)

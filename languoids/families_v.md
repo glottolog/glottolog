@@ -14,6 +14,7 @@
 - [Vidunda-Sagala [vidu1239]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/nort3203/nort3209/ruvu1235/west2846/vidu1239/md.ini)
 - [Viet-Muong [viet1251]](tree/aust1305/viet1250/viet1251/md.ini)
 - [Vietic [viet1250]](tree/aust1305/viet1250/md.ini)
+- [Vietnamese Sign [viet1253]](tree/sign1238/deaf1237/viet1253/md.ini)
 - [Vilic [vili1240]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/west2968/nzad1235/lwer1234/ding1244/loan1238/klce1234/kiko1235/nucl1804/kiko1234/kamb1321/kila1239/sout3249/west2874/vili1240/md.ini)
 - [Vincent-Grenadian Creole [vinc1244]](tree/indo1319/clas1257/germ1287/nort3152/west2793/nort3175/angl1264/angl1265/late1254/merc1242/macr1271/guin1259/cari1284/east2759/vinc1244/md.ini)
 - [Vitiaz linkage [viti1243]](tree/aust1307/mala1545/east2712/ocea1241/west2818/nort3206/nger1241/viti1243/md.ini)
