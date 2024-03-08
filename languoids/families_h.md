@@ -1,4 +1,3 @@
-- [Ha-Hoic [haho1238]](tree/sign1238/deaf1237/csli1234/haho1238/md.ini)
 - [Ha-Ya [haya1251]](tree/sino1245/burm1265/lolo1265/lolo1267/hani1249/biso1244/hani1250/haya1251/md.ini)
 - [Hadiyya-Kambaata [hadi1241]](tree/afro1255/cush1243/east2699/high1285/sida1247/hadi1241/md.ini)
 - [Hadiyyaic [hadi1242]](tree/afro1255/cush1243/east2699/high1285/sida1247/hadi1241/hadi1242/md.ini)
@@ -58,6 +57,7 @@
 - [Hobyot-Western MSA [hoby1243]](tree/afro1255/semi1276/west2786/mode1252/hoby1243/md.ini)
 - [Hokkaido-Kuril Ainu [hokk1250]](tree/ainu1252/hokk1250/md.ini)
 - [Holu (K.10) [holu1246]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/njil1234/nort3257/mbal1259/holu1246/md.ini)
+- [Honduras-Panama Sign [cost1251]](tree/sign1238/deaf1237/lsfi1234/asli1244/cost1251/md.ini)
 - [Hongshui He [hong1247]](tree/taik1256/kamt1241/daic1238/daic1237/nort3326/nort3180/nort3189/hong1247/md.ini)
 - [Horom-Fyem [horo1248]](tree/atla1278/volt1241/benu1247/benu1248/sout2800/horo1248/md.ini)
 - [Horpa [horp1240]](tree/sino1245/burm1265/naqi1236/qian1263/rgya1241/west2973/horp1240/md.ini)

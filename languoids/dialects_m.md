@@ -745,7 +745,7 @@
 - [Mishulundu [mish1242]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/grea1287/east2747/luya1241/mish1242/md.ini)
 - [Misim [misi1244]](tree/aust1307/mala1545/east2712/ocea1241/west2818/nort3206/huon1245/sout2878/hote1244/hote1245/misi1244/md.ini)
 - [Mising [miny1240]](tree/sino1245/macr1268/tani1259/east2361/misi1242/miny1240/md.ini)
-- [Miskolc [misk1242]](tree/sign1238/deaf1237/lsfi1234/cent2306/hung1263/misk1242/md.ini)
+- [Miskolc [misk1242]](tree/sign1238/deaf1237/lsfi1234/cent2306/nucl1839/hung1263/misk1242/md.ini)
 - [Misles [misl1238]](tree/nakh1245/dagh1238/lezg1248/nucl1321/west2428/tsak1249/misl1238/md.ini)
 - [Misman [mism1239]](tree/nucl1709/cent2116/asma1256/asma1257/cent2247/cent2117/mism1239/md.ini)
 - [Missong [miss1255]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/yemn1234/abar1238/miss1255/md.ini)

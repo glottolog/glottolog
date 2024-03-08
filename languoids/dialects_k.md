@@ -390,7 +390,7 @@
 - [Kaytej Auxiliary Sign Language [kayt1240]](tree/sign1238/auxi1235/aust1253/nort3420/kayt1240/md.ini)
 - [Kayung [kayu1242]](tree/aust1307/mala1545/mala1554/mala1538/mala1480/kayu1242/md.ini)
 - [Kazakh-Kirovabad [kaza1249]](tree/indo1319/clas1257/arme1241/east2768/nucl1235/kara1458/kaza1249/md.ini)
-- [Kazakh-Russian Sign Language [kaza1251]](tree/sign1238/deaf1237/russ1270/nucl1824/russ1255/kaza1251/md.ini)
+- [Kazakh-Russian Sign Language [kaza1251]](tree/sign1238/deaf1237/russ1270/nucl1824/cent2419/russ1255/kaza1251/md.ini)
 - [Kazan Tatar [kaza1250]](tree/turk1311/comm1245/kipc1240/kipc1239/nort3424/nort2696/bash1267/tata1255/midd1325/kaza1250/md.ini)
 - [Kazeruni [kaze1234]](tree/indo1319/clas1257/indo1320/iran1269/sout3157/midd1352/mode1259/fars1254/fars1255/west2369/sout3360/fars1256/kaze1234/md.ini)
 - [Kazym Khanty [nort2672]](tree/ural1272/khan1279/nort3264/khan1273/nort2672/md.ini)

@@ -9,7 +9,7 @@
 - [Vai [vaii1241][vai]](tree/mand1469/west2780/mand1431/cent2047/mand1432/mand1433/vaik1238/vaii1241/md.ini)
 - [Vaiphei [vaip1239][vap]](tree/sino1245/kuki1245/kuki1246/peri1260/nort3179/siza1239/gang1271/vaip1239/md.ini)
 - [Vale [vale1250][vae]](tree/cent2225/sara1341/sbbo1237/nucl1719/ndug1243/vale1250/md.ini)
-- [Valencian Sign Language [vale1251][vsv]](tree/sign1238/deaf1237/lsfi1234/cata1287/vale1251/md.ini)
+- [Valencian Sign Language [vale1251][vsv]](tree/sign1238/deaf1237/span1269/nucl1840/vale1251/md.ini)
 - [Valle Nacional Chinantec [vall1253][cvn]](tree/otom1299/west2783/otop1241/chin1484/cent2365/sout3333/chin1485/vall1253/md.ini)
 - [Valley Maidu [vall1252][vmv]](tree/maid1262/vall1252/md.ini)
 - [Valpei [valp1237][vlp]](tree/aust1307/mala1545/east2712/ocea1241/nort3195/nort3205/espi1234/west2956/nort3217/valp1237/md.ini)

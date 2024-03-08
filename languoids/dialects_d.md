@@ -139,7 +139,7 @@
 - [Dea [deaa1242]](tree/anim1240/mari1437/boaz1244/zima1244/deaa1242/md.ini)
 - [Dead Sea-New Testament Aramaic [dead1234]](tree/afro1255/semi1276/west2786/cent2236/nort3165/aram1259/impe1236/midd1367/midd1366/dead1234/md.ini)
 - [Debbarma [debb1238]](tree/sino1245/brah1260/bodo1279/boro1284/dima1253/tipp1238/kokb1239/debb1238/md.ini)
-- [Debrecen [debr1240]](tree/sign1238/deaf1237/lsfi1234/cent2306/hung1263/debr1240/md.ini)
+- [Debrecen [debr1240]](tree/sign1238/deaf1237/lsfi1234/cent2306/nucl1839/hung1263/debr1240/md.ini)
 - [Debri [debr1242]](tree/nubi1251/cent2232/kord1246/west2807/dill1242/debr1242/md.ini)
 - [Deccan Marathi [decc1239][dcc]](tree/indo1319/clas1257/indo1320/indo1321/midd1375/cont1248/indo1325/mara1416/mara1422/oldm1248/mode1268/mara1378/decc1239/md.ini)
 - [Dechang [dech1234]](tree/sino1245/burm1265/lolo1265/lolo1267/nili1235/liso1234/nucl1734/lisu1252/lisu1250/blac1267/dech1234/md.ini)

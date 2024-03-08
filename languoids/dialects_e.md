@@ -248,7 +248,7 @@
 - [Egbedna [egbe1245]](tree/atla1278/volt1241/benu1247/igbo1258/igbo1259/ikwe1242/egbe1245/md.ini)
 - [Egbema (Ijoid) [egbe1244]](tree/ijoi1239/ijoo1239/west2446/izon1238/egbe1244/md.ini)
 - [Egbema [egbe1246]](tree/atla1278/volt1241/benu1247/igbo1258/igbo1259/cent2417/nucl1417/egbe1246/md.ini)
-- [Eger [eger1238]](tree/sign1238/deaf1237/lsfi1234/cent2306/hung1263/eger1238/md.ini)
+- [Eger [eger1238]](tree/sign1238/deaf1237/lsfi1234/cent2306/nucl1839/hung1263/eger1238/md.ini)
 - [Egnih [egni1238]](tree/atla1278/volt1241/benu1247/igbo1258/igbo1259/ogba1241/egni1238/md.ini)
 - [Egongot [egon1237]](tree/aust1307/mala1545/nort3238/meso1254/sout3211/sout2907/ilon1239/egon1237/md.ini)
 - [Ehom [ehom1238]](tree/atla1278/volt1241/benu1247/delt1251/uppe1418/ukpe1249/ehom1238/md.ini)

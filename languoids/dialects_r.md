@@ -242,7 +242,7 @@
 - [Ruri [ruri1238]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/nort3203/grea1289/east2750/sugu1245/kway1241/ruri1238/md.ini)
 - [Rurutu [ruru1237]](tree/aust1307/mala1545/east2712/ocea1241/cent2060/east2445/poly1242/nucl1485/nort3246/solo1260/cent2298/east2449/east2896/sout3383/tahi1244/aust1304/ruru1237/md.ini)
 - [Rushani [rush1239]](tree/indo1319/clas1257/indo1320/iran1269/cent2399/shug1237/shug1253/shug1248/rosh1238/rush1239/md.ini)
-- [Russian Sign Language [russ1271]](tree/sign1238/deaf1237/russ1270/nucl1824/russ1255/russ1271/md.ini)
+- [Russian Sign Language [russ1271]](tree/sign1238/deaf1237/russ1270/nucl1824/cent2419/russ1255/russ1271/md.ini)
 - [Rustaqa [rust1238]](tree/afro1255/semi1276/west2786/cent2236/nort3165/aram1259/impe1236/midd1367/east2680/cent2217/nort3241/tran1290/sout3213/lish1245/east2682/nort3097/rust1238/md.ini)
 - [Rut [rutt1238]](tree/nilo1247/west2493/dink1261/dink1262/nort2815/rutt1238/md.ini)
 - [Rutagwenda [ruta1240]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/nort3203/grea1289/west2841/ruta1242/nort3228/nkor1240/nyor1247/nyor1246/ruta1240/md.ini)

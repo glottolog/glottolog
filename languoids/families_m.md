@@ -225,7 +225,7 @@
 - [Meax [meax1236]](tree/east1459/meax1236/md.ini)
 - [Medio Rio Negro [alto1250]](tree/araw1281/alto1250/md.ini)
 - [Mee-Wodani [meew1234]](tree/nucl1709/pani1259/meew1234/md.ini)
-- [Meemul-Tziij [meem1234]](tree/sign1238/vill1244/meem1234/md.ini)
+- [Meemul-Tziij [meem1234]](tree/sign1238/deaf1237/meem1234/md.ini)
 - [Mehek-Pahi [mehe1244]](tree/sepi1257/sepi1256/mehe1244/md.ini)
 - [Mek [mekk1240]](tree/nucl1709/mekk1240/md.ini)
 - [Mekeo-based pidgin [meke1244]](tree/pidg1258/meke1244/md.ini)

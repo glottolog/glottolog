@@ -3,11 +3,19 @@
 Notable changes between releases of the Glottolog data.
 
 
+## [5.0] - 2024-03-11
+
+- Aggregate all references gathered from CLDF datasets into one refrovider `cldf`.
+  Note that this is the first time some refprovider have been "dropped" (rather
+  replaced).
+- A more principled classification of sign languages.
+- See https://github.com/glottolog/glottolog/milestone/11?closed=1 for a list of issues addressed in this release.
+
 ## [4.8] - 2023-07-06
 
 - Added Grambank as refprovider.
 - Added ELCat as refprovider.
-- See https://github.com/glottolog/glottolog/milestone/10?closed=1 for a list of issues addressed in this release
+- See https://github.com/glottolog/glottolog/milestone/10?closed=1 for a list of issues addressed in this release.
 
 
 ## [4.7] - 2022-12-05

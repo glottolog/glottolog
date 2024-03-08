@@ -882,7 +882,7 @@
 - [Bubu [bubu1234]](tree/cent2225/sara1341/sbbo1237/nucl1719/ferg1237/kara1482/bubu1234/md.ini)
 - [Bucho [buch1237]](tree/aust1307/mala1545/east2712/ocea1241/admi1239/east2459/manu1262/west2533/west2849/liku1245/kheh1237/buch1237/md.ini)
 - [Budai [buda1252]](tree/aust1307/ruka1240/buda1252/md.ini)
-- [Budapest [buda1244]](tree/sign1238/deaf1237/lsfi1234/cent2306/hung1263/buda1244/md.ini)
+- [Budapest [buda1244]](tree/sign1238/deaf1237/lsfi1234/cent2306/nucl1839/hung1263/buda1244/md.ini)
 - [Buddhist Hybrid Sanskrit [budd1234]](tree/indo1319/clas1257/indo1320/indo1321/midd1375/cont1248/midl1245/shau1239/biha1245/pali1273/budd1234/md.ini)
 - [Budigri [budi1248]](tree/atla1278/volt1241/nort3149/gbay1279/gbay1280/gban1259/gban1260/budi1248/md.ini)
 - [Budip [budi1247]](tree/aust1305/bahn1264/west2399/sout2690/mnon1258/stie1250/bulo1242/budi1247/md.ini)

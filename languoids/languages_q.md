@@ -1,5 +1,5 @@
 - [Q'anjob'al [qanj1241][kjb]](tree/maya1287/core1254/west2865/kanj1261/kanj1262/kanj1263/qanj1241/md.ini)
-- [Qahvehkhaneh Sign Language [qahv1234]](tree/sign1238/vill1244/qahv1234/md.ini)
+- [Qahvehkhaneh Sign Language [qahv1234]](tree/sign1238/deaf1237/qahv1234/md.ini)
 - [Qaqet [qaqe1238][byx]](tree/bain1263/qaqe1238/md.ini)
 - [Qashqa'i [qash1240][qxq]](tree/turk1311/comm1245/oghu1243/nucl1769/qash1240/md.ini)
 - [Qashqa-Darya Arabic [uzbe1248][auz]](tree/afro1255/semi1276/west2786/cent2236/arab1394/arab1395/east2729/cent2410/xora1234/uzbe1248/md.ini)
