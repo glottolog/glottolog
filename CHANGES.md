@@ -2,7 +2,15 @@
 
 Notable changes between releases of the Glottolog data.
 
+##
 
+Added GalloSicilian.bib in references/bibtex. Undated references/BIBFILES.ini accordingly.
+Created a new languoid with path (relative to languoid tree)
+
+indo1319/clas1257/ital1284/lati1262/lati1263/impe1234/roma1334/ital1285/west2813/shif1234/nort3208/gall1279/nico1266
+
+concerning the Gallo-Italian variety spoken in Nicosia and Sperlinga (Italy).
+ 
 ## [5.0] - 2024-03-11
 
 - Aggregate all references gathered from CLDF datasets into one refrovider `cldf`.
