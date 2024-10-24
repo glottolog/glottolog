@@ -3,9 +3,14 @@
 Notable changes between releases of the Glottolog data.
 
 
+## [5.1] - 2024-10-25
+
+- See https://github.com/glottolog/glottolog/milestone/12?closed=1 for a list of issues addressed in this release.
+
+
 ## [5.0] - 2024-03-11
 
-- Aggregate all references gathered from CLDF datasets into one refrovider `cldf`.
+- Aggregate all references gathered from CLDF datasets into one refprovider `cldf`.
   Note that this is the first time some refprovider have been "dropped" (rather
   replaced).
 - A more principled classification of sign languages.
