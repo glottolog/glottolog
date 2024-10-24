@@ -1,3 +1,4 @@
+- [R-Koryakic [rkor1234]](tree/chuk1271/chuk1272/rkor1234/md.ini)
 - [RSLic [russ1270]](tree/sign1238/deaf1237/russ1270/md.ini)
 - [Rade-Jarai [rade1241]](tree/aust1307/mala1545/mala1554/cham1327/cham1330/high1280/rade1241/md.ini)
 - [Rai Coast [raic1241]](tree/nucl1709/mada1298/raic1241/md.ini)

@@ -26,6 +26,7 @@
 - [Vazimba [vazi1234]](tree/uncl1493/vazi1234/md.ini)
 - [Veddah [vedd1240][ved]](tree/indo1319/clas1257/indo1320/indo1321/midd1375/sinh1245/sinh1247/vedd1240/md.ini)
 - [Vehes [vehe1237][val]](tree/aust1307/mala1545/east2712/ocea1241/west2818/nort3206/huon1245/sout2878/buan1245/vehe1237/md.ini)
+- [Vejoz [wich1263][wlv]](tree/mata1289/mata1291/wich1261/wich1263/md.ini)
 - [Vemgo-Mabas [vemg1240][vem]](tree/afro1255/chad1250/bium1280/nort3156/lama1287/vemg1240/md.ini)
 - [Venda [vend1245][ven]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/sout3387/nucl1826/vend1245/md.ini)
 - [Venetian [vene1258][vec]](tree/indo1319/clas1257/ital1284/lati1262/lati1263/impe1234/roma1334/ital1285/west2813/shif1234/nort3208/gall1279/vene1258/md.ini)

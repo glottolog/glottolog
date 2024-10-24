@@ -52,6 +52,7 @@
 - [Forak [fora1245][frq]](tree/nucl1709/fini1244/fini1245/waru1269/nucl1777/fora1245/md.ini)
 - [Fordata [ford1242][frd]](tree/aust1307/mala1545/tani1260/keit1238/keif1237/ford1242/md.ini)
 - [Fore [fore1270][for]](tree/nucl1709/kain1273/goro1272/nucl1760/fore1273/fore1270/md.ini)
+- [Forest Chorote [iyow1239][crq]](tree/mata1289/mata1291/chor1274/iyow1239/md.ini)
 - [Forest Enets [fore1265][enf]](tree/ural1272/samo1298/enet1251/enet1250/fore1265/md.ini)
 - [Forest Maninka [fore1268][myq]](tree/book1242/fore1268/md.ini)
 - [Forest Nenets [fore1274]](tree/ural1272/samo1298/enet1251/nene1251/fore1274/md.ini)

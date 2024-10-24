@@ -59,7 +59,7 @@
 - [Zula [zula1235][zla]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/luba1253/luba1254/zula1235/md.ini)
 - [Zulgo-Gemzek [zulg1242][gnd]](tree/afro1255/chad1250/bium1280/nort3156/marg1267/mofu1249/meri1245/zulg1242/md.ini)
 - [Zulu [zulu1248][zul]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/sout3387/nucl1826/dims1234/ngun1280/ngun1276/nucl1827/ngun1267/zulu1248/md.ini)
-- [Zumaya [zuma1239][zuy]](tree/afro1255/chad1250/masa1323/nort3157/masa1324/zuma1239/md.ini)
+- [Zumaya [zuma1239][zuy]](tree/afro1255/chad1250/masa1323/nort3157/uncl1546/zuma1239/md.ini)
 - [Zumbun [zumb1240][jmb]](tree/afro1255/chad1250/west2785/west2790/west2712/nucl1830/zumb1240/md.ini)
 - [Zuni [zuni1245][zun]](tree/zuni1245/md.ini)
 - [Zuojiang Zhuang [zuoj1238][zzj]](tree/taik1256/kamt1241/daic1238/daic1237/nort3326/nort3180/zuoj1238/md.ini)

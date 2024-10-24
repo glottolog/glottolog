@@ -4,6 +4,7 @@
 - [Fali-Gude [fali1290]](tree/afro1255/chad1250/bium1280/sout3145/bium1271/gude1247/gude1248/fali1290/md.ini)
 - [Far East Polynesian [fare1245]](tree/aust1307/mala1545/east2712/ocea1241/cent2060/east2445/poly1242/nucl1485/nort3246/solo1260/cent2298/east2449/east2895/fare1245/md.ini)
 - [Far West Lakes Plain [farw1236]](tree/lake1255/farw1236/md.ini)
+- [Far Western Miao [huam1250]](tree/hmon1336/hmon1337/nucl1714/nucl1720/west2803/grea1295/chua1248/firs1234/huam1250/md.ini)
 - [Farefareic [fraf1239]](tree/atla1278/volt1241/nort3149/gura1261/cent2243/nort2777/bwam1248/otiv1239/nucl1743/gurm1247/west2461/nucl1748/nort3234/moss1237/fraf1239/md.ini)
 - [Farsic [fars1255]](tree/indo1319/clas1257/indo1320/iran1269/sout3157/midd1352/mode1259/fars1254/fars1255/md.ini)
 - [Farsic-Caucasian Tat [fars1254]](tree/indo1319/clas1257/indo1320/iran1269/sout3157/midd1352/mode1259/fars1254/md.ini)
