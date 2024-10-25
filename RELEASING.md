@@ -83,7 +83,11 @@
     ```shell
     glottolog-admin updatebib ldh description.bib
     ```
-- Run `glottolog-admin bib` to create `build/monster-utf8.bib` - about 30mins
+- Run
+  ```shell
+  glottolog-admin bib
+  ```
+  to create `build/monster-utf8.bib` - about 30mins
 - Run
   ```shell
   glottolog-admin update

@@ -114,6 +114,7 @@
 - [Greater Quichean [grea1276]](tree/maya1287/core1254/quic1274/grea1276/md.ini)
 - [Greater Riau-Johoric [sing1270]](tree/aust1307/mala1545/mala1554/mala1538/nucl1806/sing1270/md.ini)
 - [Greater Seram Laut [grea1302]](tree/aust1307/mala1545/grea1302/md.ini)
+- [Greater South Sulawesi [sout2923]](tree/aust1307/mala1545/sout2923/md.ini)
 - [Greater West Rift South Cushitic [grea1305]](tree/afro1255/cush1243/sout3054/grea1305/md.ini)
 - [Greater West Sogeram [grea1297]](tree/nucl1709/mada1298/kala1403/sout3148/soge1235/apal1258/grea1297/md.ini)
 - [Greater Western Kru [grea1300]](tree/krua1234/grea1300/md.ini)

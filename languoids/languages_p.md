@@ -91,7 +91,7 @@
 - [Paniya [pani1256][pcg]](tree/drav1251/sout3133/sout3138/tami1291/tami1292/tami1293/tami1294/tami1297/tami1298/mala1541/ravu1238/pani1256/md.ini)
 - [Pankararé [pank1235][pax]](tree/unat1236/pank1235/md.ini)
 - [Pankararú [pank1250][paz]](tree/pank1250/md.ini)
-- [Pannei [pann1239][pnc]](tree/aust1307/mala1545/sout2923/nort2894/pitu1237/pann1239/md.ini)
+- [Pannei [pann1239][pnc]](tree/aust1307/mala1545/sout2923/sout3413/nort2894/pitu1237/pann1239/md.ini)
 - [Panoan Katukína [pano1254][knt]](tree/pano1259/pano1256/main1279/pano1257/maru1251/pano1254/md.ini)
 - [Panobo [pano1255][pno]](tree/pano1259/pano1256/main1279/pano1257/cham1314/pano1255/md.ini)
 - [Panytyima [pany1241][pnw]](tree/pama1250/sout3134/pilb1234/ngay1241/cent2248/pany1247/pany1241/md.ini)

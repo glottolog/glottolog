@@ -31,7 +31,7 @@
 - [Japrería [japr1238][jru]](tree/cari1283/yukp1242/yukp1243/japr1238/md.ini)
 - [Jaqaru [jaqa1244][jqr]](tree/ayma1253/tupe1234/jaqa1244/md.ini)
 - [Jara [jara1274][jaf]](tree/afro1255/chad1250/bium1280/sout3145/bium1275/west2707/jara1274/md.ini)
-- [Jarai [jara1266][jra]](tree/aust1307/mala1545/mala1554/cham1327/cham1330/high1280/rade1241/jara1266/md.ini)
+- [Jarai [jara1266][jra]](tree/aust1307/mala1545/mala1554/cham1327/cham1330/rade1241/jara1266/md.ini)
 - [Jarawa (India) [jara1245][anq]](tree/jara1244/jara1245/md.ini)
 - [Jarawa (Nigeria) [jara1263][jar]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/jara1262/nige1254/jara1275/jara1263/md.ini)
 - [Jargon Loucheux [jarg1234]](tree/pidg1258/fren1279/slav1256/jarg1234/md.ini)

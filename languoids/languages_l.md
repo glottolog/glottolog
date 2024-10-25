@@ -167,7 +167,7 @@
 - [Lemeting [bela1260][beg]](tree/aust1307/mala1545/nort3253/nort3171/bera1263/cent2094/cent2272/bela1260/md.ini)
 - [Lemio [lemi1243][lei]](tree/nucl1709/mada1298/raic1241/kabe1245/lemi1243/md.ini)
 - [Lemnian [lemn1237][xle]](tree/uncl1493/lemn1237/md.ini)
-- [Lemolang [lemo1243][ley]](tree/aust1307/mala1545/sout2923/lemo1243/md.ini)
+- [Lemolang [lemo1243][ley]](tree/aust1307/mala1545/sout2923/ramp1244/bada1265/lemo1243/md.ini)
 - [Lemoro [lemo1242][ldj]](tree/atla1278/volt1241/benu1247/kain1275/cent2242/basa1288/east2404/josa1234/nort3210/nort3215/chok1248/lemo1244/lemo1242/md.ini)
 - [Len [lenn1234]](tree/more1255/more1256/namb1292/namo1249/lenn1234/md.ini)
 - [Lenakel [lena1238][tnl]](tree/aust1307/mala1545/east2712/ocea1241/sout3173/sout2868/tann1242/nort3218/lena1238/md.ini)

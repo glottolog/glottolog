@@ -82,7 +82,7 @@
 - [Gawar-Bati [gawa1247][gwt]](tree/indo1319/clas1257/indo1320/indo1321/gawa1246/gawa1247/md.ini)
 - [Gawri [kala1373][gwc]](tree/indo1319/clas1257/indo1320/indo1321/midd1375/dard1244/nucl1819/kohi1251/dirs1236/kala1373/md.ini)
 - [Gayil [gayi1237][gyl]](tree/sout2845/ahkk1235/aari1238/gayi1237/md.ini)
-- [Gayo [gayo1244][gay]](tree/aust1307/mala1545/nort2829/gayo1244/md.ini)
+- [Gayo [gayo1244][gay]](tree/aust1307/mala1545/suma1277/gayo1244/md.ini)
 - [Gazic [gazi1243][gzi]](tree/indo1319/clas1257/indo1320/iran1269/cent2317/cent2318/nort3177/cent2264/nucl1790/gazi1243/md.ini)
 - [Gbagyi [gbag1258][gbr]](tree/atla1278/volt1241/benu1247/ebir1244/nupe1252/gbag1256/gbag1258/md.ini)
 - [Gban [gagu1242][ggu]](tree/mand1469/east2697/sout3140/nwab1239/beng1285/gagu1242/md.ini)

@@ -119,7 +119,7 @@
 - [Pithauragarh [pith1234]](tree/sino1245/bodi1256/tibe1275/east2777/pith1234/md.ini)
 - [Piti-Atsam [piti1242]](tree/atla1278/volt1241/benu1247/kain1275/cent2242/basa1288/east2404/piti1242/md.ini)
 - [Pitta-Pitta [pitt1246]](tree/pama1250/karn1253/palk1239/pitt1246/md.ini)
-- [Pitu Ulunna Salu [pitu1237]](tree/aust1307/mala1545/sout2923/nort2894/pitu1237/md.ini)
+- [Pitu Ulunna Salu [pitu1237]](tree/aust1307/mala1545/sout2923/sout3413/nort2894/pitu1237/md.ini)
 - [Plains Creeic [plai1264]](tree/algi1248/algo1256/algo1257/cree1271/cree1272/plai1264/md.ini)
 - [Plains Dogon [plai1257]](tree/dogo1299/plai1257/md.ini)
 - [Plateau Central Kalenjin [plat1260]](tree/nilo1247/sout2830/kale1246/cent2293/plat1260/md.ini)

@@ -98,7 +98,7 @@
 - [Jhangi [jang1253]](tree/indo1319/clas1257/indo1320/indo1321/midd1375/cont1248/indo1324/sind1278/lahn1241/hind1274/sira1271/sera1259/jang1253/md.ini)
 - [Jharawan [jhar1241]](tree/drav1251/nort2698/brah1256/jhar1241/md.ini)
 - [Jharwa [jhar1240]](tree/indo1319/clas1257/indo1320/indo1321/midd1375/cont1248/indo1323/oriy1254/gaud1237/kamt1240/assa1262/assa1263/jhar1240/md.ini)
-- [Jhue [jhue1237]](tree/aust1307/mala1545/mala1554/cham1327/cham1330/high1280/rade1241/jara1266/jhue1237/md.ini)
+- [Jhue [jhue1237]](tree/aust1307/mala1545/mala1554/cham1327/cham1330/rade1241/jara1266/jhue1237/md.ini)
 - [Jhunjhunu-Churu [jhun1238]](tree/indo1319/clas1257/indo1320/indo1321/midd1375/cont1248/midl1245/apab1234/guja1255/raja1256/shek1243/jhun1238/md.ini)
 - [Ji-Cha [jich1238]](tree/sino1245/sini1245/clas1255/midd1354/ganc1239/jich1238/md.ini)
 - [Jialai [jial1234]](tree/taik1256/kamt1241/daic1238/beic1239/ling1270/ling1262/jial1234/md.ini)
