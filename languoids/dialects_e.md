@@ -57,7 +57,6 @@
 - [East Tanna [east2450]](tree/aust1307/mala1545/east2712/ocea1241/sout3173/sout2868/tann1242/nort3218/whit1270/nort2847/east2450/md.ini)
 - [East Tarakiri [east2385]](tree/ijoi1239/ijoo1239/west2446/izon1238/east2385/md.ini)
 - [East Thuringian [east2833]](tree/indo1319/clas1257/germ1287/nort3152/west2793/high1289/fran1268/east2832/uppe1400/thur1252/east2833/md.ini)
-- [East Torricelli [east2498]](tree/nucl1708/komb1276/komb1271/komb1275/torr1259/east2498/md.ini)
 - [East Ukrainian [east2270]](tree/indo1319/clas1257/balt1263/slav1255/east1426/ukra1257/ukra1253/east2270/md.ini)
 - [East Umanakaina [east2523]](tree/daga1274/uman1240/east2523/md.ini)
 - [East Urii [east2505]](tree/nucl1709/fini1244/fini1245/erap1240/urii1240/east2505/md.ini)

@@ -34,7 +34,6 @@
 - [Highland East Cushitic [high1285]](tree/afro1255/cush1243/east2699/high1285/md.ini)
 - [Highland Kenyah [high1288]](tree/aust1307/mala1545/nort3253/nort3171/keny1280/high1288/md.ini)
 - [Highland Phula [high1272]](tree/sino1245/burm1265/lolo1265/lolo1267/nili1235/sout3212/high1272/md.ini)
-- [Highlands Chamic [high1280]](tree/aust1307/mala1545/mala1554/cham1327/cham1330/high1280/md.ini)
 - [Higic [higi1241]](tree/afro1255/chad1250/bium1280/nort3156/higi1241/md.ini)
 - [Hill South Guang [hill1256]](tree/atla1278/volt1241/kwav1236/nyoa1234/poto1254/tano1248/guan1278/sout2781/hill1256/md.ini)
 - [Himachali [hima1250]](tree/indo1319/clas1257/indo1320/indo1321/midd1375/dard1244/hima1250/md.ini)

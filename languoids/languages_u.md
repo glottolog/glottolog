@@ -42,7 +42,7 @@
 - [Ullatan [ulla1237][ull]](tree/drav1251/sout3133/sout3138/tami1291/tami1292/tami1293/tami1294/tami1297/tami1298/mala1541/ulla1237/md.ini)
 - [Ulterior-Mixe [ulte1235]](tree/mixe1284/mixe1286/oaxa1241/ulte1235/md.ini)
 - [Ulukwumi [uluk1257][ulb]](tree/atla1278/volt1241/benu1247/defo1239/yoru1244/edek1238/edea1234/east2738/sout3186/nucl1747/uluk1257/md.ini)
-- [Ulumanda' [ulum1237][ulm]](tree/aust1307/mala1545/sout2923/nort2894/pitu1237/mata1312/ulum1237/md.ini)
+- [Ulumanda' [ulum1237][ulm]](tree/aust1307/mala1545/sout2923/sout3413/nort2894/pitu1237/mata1312/ulum1237/md.ini)
 - [Ulwa (Papua New Guinea) [yaul1241][yla]](tree/kera1258/mong1343/yaul1241/md.ini)
 - [Ulwa [ulwa1239][ulw]](tree/misu1242/suma1272/sumu1234/ulwa1239/md.ini)
 - [Uma [umaa1242][ppk]](tree/aust1307/mala1545/cele1242/kail1255/nort2898/umas1234/umaa1242/md.ini)

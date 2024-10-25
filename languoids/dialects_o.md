@@ -204,6 +204,7 @@
 - [Orma (Kenya) [waat1239]](tree/afro1255/cush1243/east2699/lowl1267/sout3055/main1283/nucl1701/nucl1736/cent2302/cent2303/orma1241/waat1239/md.ini)
 - [Oro Kuku-Oro Raumo [orok1271]](tree/skoo1245/skou1238/lago1243/unii1234/orok1271/md.ini)
 - [Oro Toma [orot1240]](tree/skoo1245/skou1238/lago1243/unii1234/orot1240/md.ini)
+- [Orok (Torricelli) [east2498]](tree/nucl1708/komb1276/komb1271/komb1275/torr1259/east2498/md.ini)
 - [Orom [orom1239]](tree/nilo1247/east2418/teso1247/teso1248/teso1249/orom1239/md.ini)
 - [Oroshor [oros1238]](tree/indo1319/clas1257/indo1320/iran1269/cent2399/shug1237/shug1253/shug1248/bart1243/oros1238/md.ini)
 - [Orotiña [orot1239]](tree/otom1299/west2783/tlap1252/mang1426/moni1237/orot1239/md.ini)

@@ -366,7 +366,7 @@
 - [Dorobe [doro1263]](tree/heib1242/west2502/cent2049/eban1241/otor1240/doro1263/md.ini)
 - [Dorobo (Central Grebo) [doro1261]](tree/krua1234/grea1300/west2485/greb1258/greb1257/greb1256/nort3193/barc1236/gbol1236/cent2041/doro1261/md.ini)
 - [Dorogori [doro1265]](tree/east2503/wipi1242/doro1265/md.ini)
-- [Dorot [doro1264]](tree/aust1307/mala1545/nort2829/gayo1244/doro1264/md.ini)
+- [Dorot [doro1264]](tree/aust1307/mala1545/suma1277/gayo1244/doro1264/md.ini)
 - [Dorset-Somerset [dors1240]](tree/indo1319/clas1257/germ1287/nort3152/west2793/nort3175/angl1264/angl1265/late1254/merc1242/macr1271/stan1293/sout3281/sout3282/sout3284/west2901/dors1240/md.ini)
 - [Dorsha [dors1239]](tree/dizo1235/shek1245/dors1239/md.ini)
 - [Dorunkecha [doru1238]](tree/sino1245/hima1249/maha1306/kira1253/west2424/tilu1238/doru1238/md.ini)

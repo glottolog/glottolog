@@ -1,5 +1,5 @@
 - [Rabha [rabh1238][rah]](tree/sino1245/brah1260/bodo1279/koch1249/rabh1238/md.ini)
-- [Rade [rade1240][rad]](tree/aust1307/mala1545/mala1554/cham1327/cham1330/high1280/rade1241/rade1240/md.ini)
+- [Rade [rade1240][rad]](tree/aust1307/mala1545/mala1554/cham1327/cham1330/rade1241/rade1240/md.ini)
 - [Raetic [raet1238][xrr]](tree/uncl1493/raet1238/md.ini)
 - [Rahambuu [raha1237][raz]](tree/aust1307/mala1545/cele1242/grea1299/east2488/sout2928/bung1268/west2566/west2567/raha1237/md.ini)
 - [Rajah Kabunsuwan Manobo [raja1254][mqk]](tree/aust1307/mala1545/grea1284/mano1276/cent2255/east2778/east2742/east2478/raja1254/md.ini)
