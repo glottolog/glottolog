@@ -55,22 +55,34 @@
     - Run `glottolog-admin updatebib benjamins PATH/TO/benjamins/benjamins.bib`
   - `langsci.bib`:
     - Update the `raw_texfiles` repos, see https://github.com/langsci/raw_texfiles#readme
-    - Recreate the merged bib: `linglit mergedbib langsci cldf_datasets/imtvault/raw/langsci/ > langsci.bib`
-    - Run `glottolog-admin updatebib langsci PATH/TO/langsci.bib`
+    - Recreate the merged bib: `linglit mergedbib langsci ~/projects/cldf-datasets/imtvault/raw/langsci/ > langsci.bib`
+    - Run `glottolog-admin updatebib langsci langsci.bib`
   - `glossa.bib`:
-    - Update the glossa repos via `linglit update glossa PATH/TO/REPOS`
-    - Recreate the merged bib: `linglit mergedbib glossa PATH/TO/REPOS > glossa.bib`
-    - Update the refprovider: `glottolog-admin updatebib glossa PATH/TO/glossa.bib`
+    - Update the glossa repos via
+      ```shell
+      linglit update glossa ~/projects/cldf-datasets/imtvault/raw/glossa
+      ```
+      ```shell
+      linglit mergedbib glossa ~/projects/cldf-datasets/imtvault/raw/glossa > glossa.bib
+      ```
+      ```shell
+      glottolog-admin updatebib glossa glossa.bib
+      ```
   - `cldf.bib`:
-    - Update the cldf repos via `linglit update cldf PATH/TO/REPOS`
-    - Recreate the merged bib: `linglit mergedbib cldf PATH/TO/REPOS > cldf.bib`
-    - Update the refprovider: `glottolog-admin updatebib cldf PATH/TO/cldf.bib`
+      ```shell
+      linglit update cldf ~/projects/cldf-datasets/imtvault/raw/cldf
+      ```
+      ```shell
+      linglit mergedbib cldf ~/projects/cldf-datasets/imtvault/raw/cldf > cldf.bib
+      ```
+      ```shell
+      glottolog-admin updatebib cldf cldf.bib
+      ```
   - `ldh.bib`:
-    - Download and unzip the last released bib from https://ldh.clld.org/download
-    - Run `glottolog-admin updatebib ldh description.bib`
-  - `jocp.bib`:
-    - Sync the Zotero group library and export to BibTeX.
-    - Run `glottolog-admin updatebib jocp PATH/TO/ZOTERO_EXPORT --merge`
+    Download and unzip the last released bib from https://ldh.clld.org/download
+    ```shell
+    glottolog-admin updatebib ldh description.bib
+    ```
 - Run `glottolog-admin bib` to create `build/monster-utf8.bib` - about 30mins
 - Run
   ```shell

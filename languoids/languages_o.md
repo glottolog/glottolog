@@ -25,7 +25,7 @@
 - [Ogbia [ogbi1239][ogb]](tree/atla1278/volt1241/benu1247/delt1251/cent2028/kugb1242/ogbi1239/md.ini)
 - [Ogbogolo [ogbo1242][ogg]](tree/atla1278/volt1241/benu1247/delt1251/cent2028/uncl1542/ogbo1242/md.ini)
 - [Ogbronuagum [ogbr1243][ogu]](tree/atla1278/volt1241/benu1247/delt1251/cent2028/ogbr1243/md.ini)
-- [Ogea [ogea1238][eri]](tree/nucl1709/mada1298/raic1241/nuru1240/ogea1238/md.ini)
+- [Ogea [ogea1238][eri]](tree/nucl1709/mada1298/raic1241/nuru1240/erim1234/ogea1238/md.ini)
 - [Ohendo [song1305][soe]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/nort3376/inne1246/vieu1234/nkut1239/nkut1240/song1311/song1305/md.ini)
 - [Oinam [oina1234]](tree/sino1245/kuki1245/anga1312/anga1286/anga1244/naga1397/poum1236/oina1234/md.ini)
 - [Oirad-Kalmyk-Darkhat [kalm1243][xal]](tree/mong1349/mong1329/oira1260/khal1273/mong1331/kalm1243/md.ini)

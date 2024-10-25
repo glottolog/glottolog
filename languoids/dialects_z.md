@@ -40,6 +40,7 @@
 - [Zaqatala [zaqa1242]](tree/nakh1245/dagh1238/avar1255/avar1256/zaqa1242/md.ini)
 - [Zara [zara1248]](tree/mand1469/west2780/samo1308/duun1243/bobo1253/sout2840/zara1248/md.ini)
 - [Zarama [zara1246]](tree/atla1278/volt1241/benu1247/akpe1249/edoi1239/delt1252/dege1249/enge1239/zara1246/md.ini)
+- [Zarara [njes1238]](tree/saha1256/west2505/kanu1279/kanu1281/east2718/cent2050/njes1238/md.ini)
 - [Zardayana [zard1234]](tree/indo1319/clas1257/indo1320/iran1269/cent2317/cent2318/nort3177/tati1243/gora1267/gura1251/zard1234/md.ini)
 - [Zargari [zarg1238]](tree/indo1319/clas1257/indo1320/indo1321/midd1375/cont1248/midl1245/shau1239/indo1322/roma1329/balk1252/zarg1238/md.ini)
 - [Zaria Fulfulde [zari1243]](tree/atla1278/nort3146/peul1234/fula1264/fula1265/nige1253/zari1243/md.ini)

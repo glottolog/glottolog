@@ -87,6 +87,7 @@
 - [Lohorung-Yamphu [loho1238]](tree/sino1245/hima1249/maha1306/kira1253/east2719/uppe1412/loho1238/md.ini)
 - [Lokoic [loko1252]](tree/atla1278/volt1241/benu1247/delt1251/uppe1418/cent2027/east2400/loko1252/md.ini)
 - [Lolo-Burmese [lolo1265]](tree/sino1245/burm1265/lolo1265/md.ini)
+- [Lolo-Kokola [lolo1269]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/maku1247/chuw1239/lolo1269/md.ini)
 - [Loloish [lolo1267]](tree/sino1245/burm1265/lolo1265/lolo1267/md.ini)
 - [Loma [loma1259]](tree/mand1469/west2780/mand1431/sout2842/mend1263/loma1259/md.ini)
 - [Lomongo [lomo1242]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/nort3376/inne1246/vieu1234/mong1351/lomo1242/md.ini)

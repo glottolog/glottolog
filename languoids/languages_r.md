@@ -80,6 +80,7 @@
 - [Riuk Bekati' [beka1241][bei]](tree/aust1307/mala1545/land1261/beny1238/baka1275/beka1241/md.ini)
 - [Riung [riun1237][riu]](tree/aust1307/mala1545/bima1248/flor1240/flor1241/mang1430/mang1436/riun1237/md.ini)
 - [Riverain Sango [rive1257][snj]](tree/atla1278/volt1241/nort3149/came1255/uban1244/ngba1290/ngba1280/nucl1737/sang1327/rive1257/md.ini)
+- [Riverine Chorote [iyoj1235][crt]](tree/mata1289/mata1291/chor1274/iyoj1235/md.ini)
 - [Rjili [tanj1247][uji]](tree/atla1278/volt1241/benu1247/benu1248/alum1249/jili1242/jili1243/tanj1247/md.ini)
 - [Robambami [agoi1246][ibm]](tree/atla1278/volt1241/benu1247/delt1251/uppe1418/agoi1245/agoi1246/md.ini)
 - [Robinia [robi1235]](tree/coch1271/coch1276/robi1235/md.ini)
