@@ -27,7 +27,7 @@
 - [Fayu [fayu1238][fau]](tree/lake1255/tari1255/west2582/fayu1239/fayu1238/md.ini)
 - [Fe'fe' [fefe1239][fmp]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/wide1239/narr1282/mbam1249/sout3350/bami1239/east2862/fefe1239/md.ini)
 - [Fembe [femb1238][agl]](tree/east2433/femb1238/md.ini)
-- [Feroge [fero1244][fer]](tree/atla1278/volt1241/nort3149/came1255/uban1244/sere1262/fero1243/fero1244/md.ini)
+- [Feroge [fero1244][fer]](tree/atla1278/volt1241/nort3149/came1255/uban1244/uban1245/sere1262/fero1243/fero1244/md.ini)
 - [Fiji Hindi [fiji1242][hif]](tree/indo1319/clas1257/indo1320/indo1321/midd1375/cont1248/midl1245/shau1239/indo1322/west2812/hind1270/fiji1242/md.ini)
 - [Fiji Sign Language [fiji1246]](tree/sign1238/deaf1237/bsli1234/banz1243/aust1310/fiji1246/md.ini)
 - [Fijian [fiji1243][fij]](tree/aust1307/mala1545/east2712/ocea1241/cent2060/east2445/east2446/nucl1823/viwa1234/fiji1243/md.ini)

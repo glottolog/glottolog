@@ -17,6 +17,7 @@
 - [Uduk [uduk1239][udu]](tree/koma1264/opuu1238/twam1235/uduk1239/md.ini)
 - [Ufim [ufim1240][ufi]](tree/nucl1709/fini1244/fini1245/gusa1245/ufim1241/ufim1240/md.ini)
 - [Ugandan Sign Language [ugan1238][ugn]](tree/sign1238/deaf1237/lsfi1234/asli1244/ugan1238/md.ini)
+- [Ugare [mesa1245][iyo]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/tivo1239/mesa1245/md.ini)
 - [Ugaritic [ugar1238][uga]](tree/afro1255/semi1276/west2786/cent2236/nort3165/cana1267/ugar1239/ugar1238/md.ini)
 - [Ughele [ughe1237][uge]](tree/aust1307/mala1545/east2712/ocea1241/west2818/meso1253/newi1242/stge1234/nort3225/newg1239/east2761/ughe1237/md.ini)
 - [Ugong [ugon1239][ugo]](tree/sino1245/burm1265/lolo1265/ugon1239/md.ini)
