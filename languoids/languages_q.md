@@ -9,7 +9,7 @@
 - [Qila Muji [qila1235][ymq]](tree/sino1245/burm1265/lolo1265/lolo1267/nili1235/sout3212/high1272/muji1235/lagh1244/thop1235/core1246/qila1235/md.ini)
 - [Qimant [qima1242][ahg]](tree/afro1255/cush1243/cent2193/nort3158/qima1242/md.ini)
 - [Qiubei Zhuang [qiub1238][zqe]](tree/taik1256/kamt1241/daic1238/daic1237/nort3326/nort3180/nort3189/yeiz1235/qiub1238/md.ini)
-- [Quapaw [quap1242][qua]](tree/siou1252/core1249/miss1254/dheg1241/quap1242/md.ini)
+- [Quapaw [quap1242][qua]](tree/siou1252/miss1254/dheg1241/quap1242/md.ini)
 - [Quebec Sign Language [queb1245][fcs]](tree/sign1238/deaf1237/lsfi1234/asli1244/queb1245/md.ini)
 - [Quechan [quec1382][yum]](tree/coch1271/yuma1250/gene1244/rive1260/quec1382/md.ini)
 - [Queensland Kanaka English [quee1234]](tree/pidg1258/engl1287/quee1234/md.ini)

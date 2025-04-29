@@ -17,6 +17,7 @@
 - [Vame [vame1236][mlr]](tree/afro1255/chad1250/bium1280/hurz1242/vame1236/md.ini)
 - [Vangunu [vang1243][mpr]](tree/aust1307/mala1545/east2712/ocea1241/west2818/meso1253/newi1242/stge1234/nort3225/newg1239/east2761/maro1247/vang1243/md.ini)
 - [Vanimo [vani1248][vam]](tree/skoo1245/skou1238/skou1239/east2892/west2992/vani1248/md.ini)
+- [Vannetais [vann1244]](tree/indo1319/clas1257/celt1248/nucl1715/tgbc1234/insu1254/bryt1239/sout3176/midd1379/bret1245/vann1244/md.ini)
 - [Vanuma [vanu1242][vau]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/nort3376/inne1246/kele1261/kele1263/sopo1239/sole1244/lebo1246/nyal1255/vanu1247/vanu1242/md.ini)
 - [Vao-Vovo [vaoo1237][vao]](tree/aust1307/mala1545/east2712/ocea1241/nort3195/cent2269/mala1539/nort3223/nort3230/boto1250/vaoo1237/md.ini)
 - [Varhadi-Nagpuri [varh1239][vah]](tree/indo1319/clas1257/indo1320/indo1321/midd1375/cont1248/indo1325/mara1416/mara1422/oldm1248/mode1268/varh1239/md.ini)
