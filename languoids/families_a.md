@@ -10,6 +10,7 @@
 - [Abkhaz-Abaza [abkh1243]](tree/abkh1242/abkh1243/md.ini)
 - [Abkhaz-Adyge [abkh1242]](tree/abkh1242/md.ini)
 - [Abo-Barombi [abob1234]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/bant1295/basa1292/basa1283/abob1234/md.ini)
+- [Aborlanic [abor1241]](tree/aust1307/mala1545/grea1284/pala1357/pala1354/nort3185/abor1241/md.ini)
 - [Abua-Odual [abua1243]](tree/atla1278/volt1241/benu1247/delt1251/cent2028/abua1243/md.ini)
 - [Abuic [abui1242]](tree/timo1261/alor1249/nucl1821/alor1250/abui1242/md.ini)
 - [Aceh-Chamic [cham1327]](tree/aust1307/mala1545/mala1554/cham1327/md.ini)

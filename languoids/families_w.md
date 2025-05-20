@@ -262,5 +262,6 @@
 - [Wu-Hui Chinese [wuhu1234]](tree/sino1245/sini1245/clas1255/midd1354/wuhu1234/md.ini)
 - [Wubuy-Anindilyakwa [wubu1239]](tree/gunw1250/east2701/wubu1239/md.ini)
 - [Wuding-Yuanyang Tai [wudi1241]](tree/taik1256/kamt1241/daic1238/daic1237/cent2251/wenm1239/sapa1255/sout3184/sout2743/shan1276/sout2744/wudi1241/md.ini)
+- [Wuic [wuic1234]](tree/sino1245/sini1245/clas1255/midd1354/wuhu1234/wuic1234/md.ini)
 - [Wurbo [wurb1239]](tree/atla1278/volt1241/benu1247/juku1257/cent2241/juku1258/wurb1240/wurb1239/md.ini)
 - [Wurbo-Wannu [wurb1240]](tree/atla1278/volt1241/benu1247/juku1257/cent2241/juku1258/wurb1240/md.ini)

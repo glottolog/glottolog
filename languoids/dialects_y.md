@@ -185,7 +185,7 @@
 - [Yong-Quan [yong1285]](tree/sino1245/sini1245/clas1255/midd1354/xian1251/yong1285/md.ini)
 - [Yongding [yong1284]](tree/sino1245/sini1245/clas1255/midd1354/hakk1236/ting1250/yong1284/md.ini)
 - [Yonghe Qiang [yong1287]](tree/sino1245/burm1265/naqi1236/qian1263/qian1264/upst1234/sout3257/yong1287/md.ini)
-- [Yongjiang [yong1273]](tree/sino1245/sini1245/clas1255/midd1354/wuhu1234/wuch1236/taih1244/nort3273/yong1273/md.ini)
+- [Yongjiang [yong1273]](tree/sino1245/sini1245/clas1255/midd1354/wuhu1234/wuic1234/wuch1236/taih1244/nort3273/yong1273/md.ini)
 - [Yongkuk [yong1272]](tree/sino1245/brah1260/kony1246/kony1249/tang1379/tikh1243/nucl1787/yong1272/md.ini)
 - [Yongning Na [yong1288]](tree/sino1245/burm1265/naqi1236/naic1235/nais1236/yong1270/yong1288/md.ini)
 - [Yongo [yong1279]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/njil1234/nort3257/mbal1259/holu1246/phee1234/mban1264/yong1279/md.ini)

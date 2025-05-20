@@ -373,6 +373,7 @@
 - [North Fali [nort2770][fll]](tree/atla1278/volt1241/unun9902/adam1254/nort2770/md.ini)
 - [North Giziga [nort3047][gis]](tree/afro1255/chad1250/bium1280/nort3156/maro1246/gizi1243/nort3047/md.ini)
 - [North Junín Quechua [nort2980][qvn]](tree/quec1387/quec1386/cent2141/yaru1256/nort2980/md.ini)
+- [North Kamrau [kamb1302][irx]](tree/nucl1709/cent2116/asma1256/saba1280/kamb1324/kamb1302/md.ini)
 - [North Korowai [nort3250][krg]](tree/book1242/nort3250/md.ini)
 - [North Marquesan [nort2845][mrq]](tree/aust1307/mala1545/east2712/ocea1241/cent2060/east2445/poly1242/nucl1485/nort3246/solo1260/cent2298/east2449/east2895/marq1246/nort2845/md.ini)
 - [North Mesopotamian Arabic [nort3142][ayp]](tree/afro1255/semi1276/west2786/cent2236/arab1394/arab1395/east2729/qelt1235/nort3142/md.ini)
