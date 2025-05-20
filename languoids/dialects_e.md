@@ -363,7 +363,7 @@
 - [Eskisehir [eski1263]](tree/turk1311/comm1245/oghu1243/nucl1769/west2406/nucl1301/anat1259/eski1263/md.ini)
 - [Esna–Assuan and South of Luxor–Assuan [esna1234]](tree/afro1255/semi1276/west2786/cent2236/arab1394/arab1395/egyp1251/egyp1254/said1239/uppe1453/esna1234/md.ini)
 - [Espiegle's Bay [espi1235]](tree/aust1307/mala1545/east2712/ocea1241/nort3195/cent2269/mala1539/nort3223/malu1245/espi1235/md.ini)
-- [Essang [essa1237]](tree/aust1307/mala1545/sang1335/nort3174/tala1285/essa1237/md.ini)
+- [Essang [essa1237]](tree/aust1307/mala1545/sang1348/sang1335/nort3174/tala1285/essa1237/md.ini)
 - [Essex [esse1265]](tree/indo1319/clas1257/germ1287/nort3152/west2793/nort3175/angl1264/angl1265/late1254/merc1242/macr1271/stan1293/sout3281/sout3282/sout3285/cent2345/esse1265/md.ini)
 - [Essin [essi1238]](tree/atla1278/nort3146/cent2230/bakk1238/jool1234/jola1264/bayo1262/bayo1255/essi1238/md.ini)
 - [Estracharia [estr1244]](tree/indo1319/clas1257/indo1320/indo1321/midd1375/cont1248/midl1245/shau1239/indo1322/roma1329/roma1330/nort3197/sint1235/sout3309/estr1244/md.ini)

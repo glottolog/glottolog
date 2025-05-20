@@ -108,7 +108,6 @@
 - [Lower Baram [cent2094]](tree/aust1307/mala1545/nort3253/nort3171/bera1263/cent2094/md.ini)
 - [Lower Chinookan [lowe1438]](tree/chin1490/lowe1438/md.ini)
 - [Lower Cross [obol1242]](tree/atla1278/volt1241/benu1247/delt1251/obol1242/md.ini)
-- [Lower Guinea Portuguese [lowe1440]](tree/indo1319/clas1257/ital1284/lati1262/lati1263/impe1234/roma1334/ital1285/west2813/shif1234/sout3183/west2838/gali1263/macr1272/lowe1440/md.ini)
 - [Lower Mamberamo [lowe1409]](tree/aust1307/mala1545/east2712/sout3229/lowe1409/md.ini)
 - [Lower Markham [lowe1411]](tree/aust1307/mala1545/east2712/ocea1241/west2818/nort3206/huon1245/mark1257/lowe1411/md.ini)
 - [Lower Minjim [lowe1462]](tree/nucl1709/mada1298/raic1241/mind1258/lowe1462/md.ini)

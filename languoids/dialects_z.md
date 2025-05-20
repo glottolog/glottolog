@@ -70,7 +70,7 @@
 - [Zhongshan [zhon1239]](tree/sino1245/sini1245/clas1255/midd1354/yuep1234/yuec1235/yueh1236/zhon1239/md.ini)
 - [Zhongukhok [zhon1240]](tree/sino1245/bodi1256/bodi1257/oldm1245/tibe1276/late1253/east2771/zhon1235/zhon1240/md.ini)
 - [Zhoucheng [zhou1234]](tree/sino1245/macr1275/baic1239/sout3254/sout2730/dali1242/zhou1234/md.ini)
-- [Zhoushan [zhou1235]](tree/sino1245/sini1245/clas1255/midd1354/wuhu1234/wuch1236/taih1244/nort3273/yong1273/zhou1235/md.ini)
+- [Zhoushan [zhou1235]](tree/sino1245/sini1245/clas1255/midd1354/wuhu1234/wuic1234/wuch1236/taih1244/nort3273/yong1273/zhou1235/md.ini)
 - [Zhuoni [zhuo1234]](tree/sino1245/bodi1256/bodi1257/oldm1245/tibe1276/late1253/east2771/chon1285/zhuo1234/md.ini)
 - [Zia (United States) [ziaa1251]](tree/kere1287/east1472/ziaa1251/md.ini)
 - [Ziba [ziba1238]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/nort3203/grea1289/west2842/kivu1239/fore1272/shii1238/ziba1238/md.ini)

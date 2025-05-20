@@ -311,7 +311,7 @@
 - [Pila [pila1246]](tree/nucl1709/mada1298/croi1234/grea1298/nort3379/kauk1240/maia1254/pila1246/md.ini)
 - [Pilakoy [pila1247]](tree/koma1264/opuu1238/dana1255/opuu1239/pila1247/md.ini)
 - [Pilaltxw [pila1248]](tree/sali1255/coas1325/cent2129/sout3394/halk1245/upri1241/pila1248/md.ini)
-- [Piling [pili1238]](tree/sino1245/sini1245/clas1255/midd1354/wuhu1234/wuch1236/taih1244/nort3274/pili1238/md.ini)
+- [Piling [pili1238]](tree/sino1245/sini1245/clas1255/midd1354/wuhu1234/wuic1234/wuch1236/taih1244/nort3274/pili1238/md.ini)
 - [Piltapalta [pilt1234]](tree/pama1250/karn1253/palk1239/arab1266/arab1267/pilt1234/md.ini)
 - [Pim [pimm1234]](tree/ural1272/khan1279/east2774/surg1248/pimm1234/md.ini)
 - [Pimuru [pimu1238]](tree/tura1263/tura1264/ikob1240/pimu1238/md.ini)

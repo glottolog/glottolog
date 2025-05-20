@@ -134,7 +134,7 @@
 - [Yessan-Mayo [yess1239][yss]](tree/sepi1257/sepi1256/mayo1278/yess1239/md.ini)
 - [Yetfa [yetf1238][yet]](tree/yetf1238/md.ini)
 - [Yevanic [yeva1238][yej]](tree/indo1319/clas1257/grae1234/gree1276/east2798/cent2404/koin1234/mode1266/nucl1783/yeva1238/md.ini)
-- [Yeyi [yeyi1239][yey]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/yeyi1239/md.ini)
+- [Yeyi [yeyi1239][yey]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/yeyi1239/md.ini)
 - [Yiddish Sign Language [yidd1241][yds]](tree/book1242/yidd1241/md.ini)
 - [Yidgha [yidg1240][ydg]](tree/indo1319/clas1257/indo1320/iran1269/cent2399/yidg1239/yidg1240/md.ini)
 - [Yidiñ [yidi1250][yii]](tree/pama1250/yimi1234/yidi1249/yidi1250/md.ini)

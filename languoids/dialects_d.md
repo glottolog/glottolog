@@ -81,7 +81,7 @@
 - [Dao Lo Gang [daol1242]](tree/hmon1336/mien1242/mien1243/iumi1238/daol1242/md.ini)
 - [Dao Quan Trang [daoq1238]](tree/hmon1336/mien1242/mien1243/kimm1245/daoq1238/md.ini)
 - [Daongdung [daon1242]](tree/aust1307/mala1545/basa1291/grea1283/sama1302/sulu1242/inne1244/bala1311/daon1242/md.ini)
-- [Dapalan [dapa1237]](tree/aust1307/mala1545/sang1335/nort3174/tala1285/dapa1237/md.ini)
+- [Dapalan [dapa1237]](tree/aust1307/mala1545/sang1348/sang1335/nort3174/tala1285/dapa1237/md.ini)
 - [Dapitan [dapi1237]](tree/aust1307/mala1545/grea1284/suba1253/nucl1726/east2769/nort2885/dapi1237/md.ini)
 - [Dapo [dapo1239]](tree/krua1234/grea1300/west2485/greb1258/greb1257/ivor1240/tepo1241/tepo1239/dapo1239/md.ini)
 - [Dapzal [dapz1238]](tree/sino1245/kuki1245/kuki1246/peri1260/nort3179/thad1239/pait1244/dapz1238/md.ini)

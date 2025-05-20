@@ -154,6 +154,7 @@
 - [Guiyang [guiy1235]](tree/hmon1336/hmon1337/nucl1714/nucl1720/west2803/grea1295/guiy1235/md.ini)
 - [Gujarati-Rajasthani [guja1255]](tree/indo1319/clas1257/indo1320/indo1321/midd1375/cont1248/midl1245/apab1234/guja1255/md.ini)
 - [Gujaratic [guja1256]](tree/indo1319/clas1257/indo1320/indo1321/midd1375/cont1248/midl1245/apab1234/guja1255/guja1256/md.ini)
+- [Gulf Guinea Creole Portuguese [lowe1440]](tree/indo1319/clas1257/ital1284/lati1262/lati1263/impe1234/roma1334/ital1285/west2813/shif1234/sout3183/west2838/gali1263/macr1272/lowe1440/md.ini)
 - [Gulf Zoque [gulf1238]](tree/mixe1284/zoqu1261/gulf1238/md.ini)
 - [Gullah [gull1243]](tree/indo1319/clas1257/germ1287/nort3152/west2793/nort3175/angl1264/angl1265/late1254/merc1242/macr1271/guin1259/cari1284/east2759/gull1242/gull1243/md.ini)
 - [Gullah-Nevis-Antigua [gull1242]](tree/indo1319/clas1257/germ1287/nort3152/west2793/nort3175/angl1264/angl1265/late1254/merc1242/macr1271/guin1259/cari1284/east2759/gull1242/md.ini)
