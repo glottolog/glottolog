@@ -297,7 +297,6 @@
 - [Guyanese Creole English [creo1235][gyn]](tree/indo1319/clas1257/germ1287/nort3152/west2793/nort3175/angl1264/angl1265/late1254/merc1242/macr1271/guin1259/cari1284/east2759/barb1266/barb1267/creo1235/md.ini)
 - [Guyani [guya1249][gvy]](tree/pama1250/aran1266/thur1253/core1260/nort2752/guya1249/md.ini)
 - [Gvoko [gvok1239][ngs]](tree/afro1255/chad1250/bium1280/nort3156/marg1267/mand1472/dghw1240/gvok1239/md.ini)
-- [Gwa [gwaa1239][gwb]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/jara1262/nige1254/unun9929/gwaa1239/md.ini)
 - [Gwahatike [gwah1244][dah]](tree/nucl1709/fini1244/fini1245/waru1269/gwah1244/md.ini)
 - [Gwama [kwam1249][kmq]](tree/koma1264/kwam1249/md.ini)
 - [Gwamhi-Wuri [gwam1244][bga]](tree/atla1278/volt1241/benu1247/kain1275/cent2242/duka1247/duka1250/main1281/gwam1244/md.ini)

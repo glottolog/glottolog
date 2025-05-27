@@ -91,7 +91,6 @@
 - [Unclassified Ndonga (R.20) [unun9923]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/njil1234/sout3233/kune1234/cimb1239/ndon1253/unun9923/md.ini)
 - [Unclassified Ngembaic [uncl1529]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/wide1239/narr1282/mbam1249/sout3350/ngem1254/uncl1529/md.ini)
 - [Unclassified Ngendan [unun9928]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/nort3376/rive1266/ngir1248/ngir1250/ngom1276/abab1240/oldb1234/ngbe1239/ngen1255/unun9928/md.ini)
-- [Unclassified Nigerian Jarawan [unun9929]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/jara1262/nige1254/unun9929/md.ini)
 - [Unclassified Nisoid [uncl1517]](tree/sino1245/burm1265/lolo1265/lolo1267/nili1235/sout3212/niso1234/uncl1517/md.ini)
 - [Unclassified North Mara [unun9920]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/nort3203/grea1289/east2750/nyan1318/nort3227/unun9920/md.ini)
 - [Unclassified North Masa [uncl1546]](tree/afro1255/chad1250/masa1323/nort3157/uncl1546/md.ini)

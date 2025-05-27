@@ -95,7 +95,7 @@
 - [Aguaruna [agua1253][agr]](tree/jiva1245/agua1253/md.ini)
 - [Aguna [agun1238][aug]](tree/atla1278/volt1241/kwav1236/gbee1241/west2802/ewei1234/agun1238/md.ini)
 - [Agusan Manobo [agus1235][msm]](tree/aust1307/mala1545/grea1284/mano1276/cent2255/east2778/east2742/east2478/agus1235/md.ini)
-- [Agutaynen [agut1237][agn]](tree/aust1307/mala1545/kala1389/agut1237/md.ini)
+- [Agutaynen [agut1237][agn]](tree/aust1307/mala1545/grea1284/pala1357/kala1389/agut1237/md.ini)
 - [Agwagwune [agwa1247][yay]](tree/atla1278/volt1241/benu1247/delt1251/uppe1418/cent2027/nort2790/ubag1244/kohu1243/agwa1247/md.ini)
 - [Ahanta [ahan1243][aha]](tree/atla1278/volt1241/kwav1236/nyoa1234/poto1254/tano1248/cent2262/biaa1238/sout2779/ahan1243/md.ini)
 - [Ahe [ahea1240][ahe]](tree/book1242/ahea1240/md.ini)

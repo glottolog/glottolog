@@ -103,7 +103,7 @@
 - [Rejang Musi [musi1242]](tree/aust1307/mala1545/reja1240/musi1242/md.ini)
 - [Rek [rekk1238]](tree/nilo1247/west2493/dink1261/dink1262/sout2832/rekk1238/md.ini)
 - [Rekhta [rekh1239]](tree/indo1319/clas1257/indo1320/indo1321/midd1375/cont1248/midl1245/shau1239/indo1322/west2812/hind1270/hind1269/rekh1239/md.ini)
-- [Remboken [remb1251]](tree/aust1307/mala1545/mina1272/nort2886/nort2887/tond1251/remb1251/md.ini)
+- [Remboken [remb1251]](tree/aust1307/mala1545/sang1348/mina1272/nort2886/nort2887/tond1251/remb1251/md.ini)
 - [Rembong [nucl1516]](tree/aust1307/mala1545/bima1248/flor1240/flor1241/mang1430/remb1250/nucl1516/md.ini)
 - [Rengjongmu [reng1254]](tree/sino1245/hima1249/lepc1244/reng1254/md.ini)
 - [Renhe Pumi [renh1234]](tree/sino1245/burm1265/naqi1236/qian1263/pumi1242/sout2729/cent2357/renh1234/md.ini)
