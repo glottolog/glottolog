@@ -83,6 +83,7 @@
 - [Teberan [tebe1251]](tree/tebe1251/md.ini)
 - [Tebu [tebu1238]](tree/saha1256/west2505/tebu1238/md.ini)
 - [Teenic [teen1241]](tree/atla1278/volt1241/nort3149/gura1261/kula1283/teen1241/md.ini)
+- [Tegem [tege1244]](tree/tege1244/md.ini)
 - [Teiwa-Sar [teiw1236]](tree/timo1261/alor1249/nucl1821/west2994/pant1258/teiw1236/md.ini)
 - [Teluguic [telu1265]](tree/drav1251/sout3133/sout3139/telu1265/md.ini)
 - [Tem-Chala [temc1234]](tree/atla1278/volt1241/nort3149/gura1261/cent2243/sout3164/grus1239/east2740/east2397/temc1234/md.ini)

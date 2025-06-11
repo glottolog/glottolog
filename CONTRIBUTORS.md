@@ -4,6 +4,7 @@
 
 Version | Year | Editors
 --- | --- | ---
+5.2.1 | 2025 | Harald Hammarström & Robert Forkel & Martin Haspelmath & Sebastian Bank 
 5.2 | 2025 | Harald Hammarström & Robert Forkel & Martin Haspelmath & Sebastian Bank 
 5.1 | 2024 | Harald Hammarström & Robert Forkel & Martin Haspelmath & Sebastian Bank 
 5.0 | 2024 | Harald Hammarström & Robert Forkel & Martin Haspelmath & Sebastian Bank 

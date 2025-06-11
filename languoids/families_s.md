@@ -333,6 +333,7 @@
 - [Southeastern Timbira [sout3244]](tree/nucl1710/jeee1236/cerr1237/jese1235/core1264/timb1253/sout3244/md.ini)
 - [Southern Alaskan Athabaskan [sout3337]](tree/atha1245/atha1246/atha1247/sout3337/md.ini)
 - [Southern Angkuic [sout3232]](tree/aust1305/khas1273/pala1352/east2331/angk1246/sout3232/md.ini)
+- [Southern Baining [sout3426]](tree/bain1263/sout3426/md.ini)
 - [Southern Balochi-Koroshi [sout3414]](tree/indo1319/clas1257/indo1320/iran1269/cent2317/cent2318/nort3177/balo1260/sout3242/sout3414/md.ini)
 - [Southern Bantoid [sout3152]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/md.ini)
 - [Southern Bantu [sout3387]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/sout3387/md.ini)

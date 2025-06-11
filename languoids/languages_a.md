@@ -247,7 +247,7 @@
 - [Amharic [amha1245][amh]](tree/afro1255/semi1276/west2786/ethi1244/sout3078/amha1244/amha1245/md.ini)
 - [Ami [amii1238][amy]](tree/west2434/waga1259/amem1235/amii1238/md.ini)
 - [Amikoana [amik1238][akn]](tree/book1242/amik1238/md.ini)
-- [Amira [amir1234]](tree/amir1234/md.ini)
+- [Amira [amir1234]](tree/tege1244/amir1234/md.ini)
 - [Amis [amis1246][ami]](tree/aust1307/east2493/cent2103/amis1246/md.ini)
 - [Amkoe [hoaa1235][huc]](tree/kxaa1236/hoaa1235/md.ini)
 - [Amo [amoo1242][amo]](tree/atla1278/volt1241/benu1247/kain1275/cent2242/basa1288/east2404/josa1234/amoo1242/md.ini)

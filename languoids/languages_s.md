@@ -385,7 +385,7 @@
 - [Silt'e [silt1240][stv]](tree/afro1255/semi1276/west2786/ethi1244/sout3078/hara1270/silt1239/silt1240/md.ini)
 - [Simaa [sima1258][sie]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/grea1287/west2833/sima1262/sima1258/md.ini)
 - [Simba [simb1254][sbw]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/bant1295/b10b1234/tsog1242/nort3213/himb1234/simb1254/md.ini)
-- [Simbali [simb1259][smg]](tree/bain1263/simb1259/md.ini)
+- [Simbali [simb1259][smg]](tree/bain1263/sout3426/mali1290/simb1259/md.ini)
 - [Simbari [simb1255][smb]](tree/anga1289/nucl1763/baru1271/simb1255/md.ini)
 - [Simbo [simb1256][sbb]](tree/aust1307/mala1545/east2712/ocea1241/west2818/meso1253/newi1242/stge1234/nort3225/newg1239/west2857/simb1260/simb1256/md.ini)
 - [Simeku [sime1242][smz]](tree/sout2948/nasi1247/nasi1248/sime1243/sime1242/md.ini)

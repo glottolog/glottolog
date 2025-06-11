@@ -505,6 +505,7 @@
 - [Nsari [nsar1238][asj]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/bebo1243/east2730/nsar1239/nsar1238/md.ini)
 - [Nsenga [nsen1242][nse]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/sabi1248/nsen1242/md.ini)
 - [Nshi [nshi1235][nsc]](tree/unat1236/atla1280/nshi1235/md.ini)
+- [Nsiteu-Kwa' [kwaa1265][bko]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/wide1239/narr1282/mbam1249/sout3350/bami1239/east2862/kwaa1265/md.ini)
 - [Nsong-Mpiin [song1299][soo]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/west2968/nzad1235/lwer1234/ding1244/loan1238/klce1234/nson1239/song1299/md.ini)
 - [Nsongo [nson1238][nsx]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/njil1234/nort3257/mbun1247/nson1238/md.ini)
 - [Ntcham [ntch1242][bud]](tree/atla1278/volt1241/nort3149/gura1261/cent2243/nort2777/bwam1248/otiv1239/nucl1743/gurm1247/gurm1248/gurm1249/ntch1241/ntch1242/md.ini)
