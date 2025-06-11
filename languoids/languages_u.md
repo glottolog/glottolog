@@ -93,7 +93,7 @@
 - [Upper Tanudan Kalinga [uppe1424][kgh]](tree/book1242/uppe1424/md.ini)
 - [Upper Taromi [uppe1235][tov]](tree/indo1319/clas1257/indo1320/iran1269/cent2317/cent2318/nort3177/tati1243/tati1244/cent2265/taro1267/uppe1235/md.ini)
 - [Upper Umpqua [uppe1436][xup]](tree/atha1245/atha1246/atha1247/paci1277/oreg1242/uppe1436/md.ini)
-- [Ura (Papua New Guinea) [urap1240][uro]](tree/bain1263/urap1240/md.ini)
+- [Ura (Papua New Guinea) [urap1240][uro]](tree/bain1263/sout3426/urap1240/md.ini)
 - [Ura (Vanuatu) [urav1235][uur]](tree/aust1307/mala1545/east2712/ocea1241/sout3173/sout2868/erro1239/urav1235/md.ini)
 - [Uradhi [urad1239][urf]](tree/book1242/urad1239/md.ini)
 - [Urak Lawoi' [urak1238][urk]](tree/aust1307/mala1545/mala1554/mala1538/nucl1806/sing1270/keda1253/urak1238/md.ini)

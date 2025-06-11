@@ -70,6 +70,7 @@
 - [Malayo-Chamic [mala1554]](tree/aust1307/mala1545/mala1554/md.ini)
 - [Malayo-Polynesian [mala1545]](tree/aust1307/mala1545/md.ini)
 - [Malaysian Sign [mala1548]](tree/sign1238/deaf1237/lsfi1234/asli1244/mala1548/md.ini)
+- [Mali-Simbali [mali1290]](tree/bain1263/sout3426/mali1290/md.ini)
 - [Malta-Tunisian Arabic [malt1259]](tree/afro1255/semi1276/west2786/cent2236/arab1394/arab1395/nort3191/malt1259/md.ini)
 - [Malto [malt1248]](tree/drav1251/nort2698/kuru1300/malt1248/md.ini)
 - [Malungu-Central Sabi [malu1252]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/sabi1248/malu1252/md.ini)

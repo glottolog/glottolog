@@ -139,7 +139,7 @@
 - [Malgana [malg1242][vml]](tree/pama1250/sout3134/kart1249/kart1250/malg1242/md.ini)
 - [Malgbe [malg1250][mxf]](tree/afro1255/chad1250/bium1280/nort3156/koto1267/koto1265/koto1269/malg1250/md.ini)
 - [Malgwa [malg1251]](tree/afro1255/chad1250/bium1280/nort3156/marg1267/mand1472/wand1280/wand1281/malg1251/md.ini)
-- [Mali [mali1284][gcc]](tree/bain1263/mali1284/md.ini)
+- [Mali [mali1284][gcc]](tree/bain1263/sout3426/mali1290/mali1284/md.ini)
 - [Malibu [mali1242]](tree/uncl1493/mali1242/md.ini)
 - [Maligo [mali1287][mwj]](tree/book1242/mali1287/md.ini)
 - [Malila [mali1279][mgq]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/corr1234/mboz1235/mbey1234/mali1279/md.ini)

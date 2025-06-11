@@ -2,6 +2,15 @@
 
 Notable changes between releases of the Glottolog data.
 
+## [5.2.1]
+
+This bugfix release addresses two issues:
+
+- Jebel El Amira was erroneously classified as isolate in Glottolog 5.2
+- Reference links in endangerment comments harvested from ElCat were broken due to the 
+  merging of the ElCat bibliography into the aggregated CLDF bib.
+
+
 ## [5.2] - 2025-05-27
 
 - See https://github.com/glottolog/glottolog/milestone/12?closed=1 for a list of issues addressed in this release and

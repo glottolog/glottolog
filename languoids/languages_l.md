@@ -17,7 +17,7 @@
 - [Ladin [ladi1250][lld]](tree/indo1319/clas1257/ital1284/lati1262/lati1263/impe1234/roma1334/ital1285/west2813/shif1234/nort3208/gall1280/ladi1250/md.ini)
 - [Ladino [ladi1251][lad]](tree/indo1319/clas1257/ital1284/lati1262/lati1263/impe1234/roma1334/ital1285/west2813/shif1234/sout3183/west2838/cast1243/sout3200/ladi1251/md.ini)
 - [Laeko-Libuat [laek1243][lkl]](tree/nucl1708/laek1243/md.ini)
-- [Lafofa [lafo1243][laf]](tree/lafo1243/md.ini)
+- [Lafofa [lafo1243][laf]](tree/tege1244/lafo1243/md.ini)
 - [Laghu [lagh1246][lgb]](tree/aust1307/mala1545/east2712/ocea1241/west2818/meso1253/newi1242/stge1234/nort3225/west2523/lagh1246/md.ini)
 - [Laghuu [lagh1245][lgh]](tree/sino1245/burm1265/lolo1265/lolo1267/nili1235/sout3212/high1272/muji1235/lagh1244/lagh1245/md.ini)
 - [Lagwan [lagw1237][kot]](tree/afro1255/chad1250/bium1280/nort3156/koto1267/koto1263/lagw1237/md.ini)
