@@ -43,6 +43,12 @@
   ```
 - Update automatically created BibTeX files:
   - `iso6393.bib`: Run `glottolog-admin isobib`
+  - `benjamins.bib`:
+    - Switch to the clone of `glottolog/benjamins`
+    - Pull the latest changes via FTP (following README.md)
+    - Recreate `benjamins.bib`, running `python to_bib.py`
+    - Switch back to `glottolog/glottolog`
+    - Run `glottolog-admin updatebib benjamins PATH/TO/benjamins/benjamins.bib`
   - `elpub.bib`: Run `glottolog-admin elpubbib`
   - `evobib.bib`:
     - download the latest version from https://doi.org/10.5281/zenodo.4071598
