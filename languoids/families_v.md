@@ -1,4 +1,4 @@
-- [Vafsic [vafs1241]](tree/indo1319/clas1257/indo1320/iran1269/cent2317/cent2318/nort3177/tati1243/tati1244/sout3177/vafs1241/md.ini)
+- [Vafsic [vafs1241]](tree/indo1319/clas1257/indo1320/iran1271/iran1269/cent2317/cent2318/nort3177/tati1243/tati1244/sout3177/vafs1241/md.ini)
 - [Vaghat [vagh1250]](tree/atla1278/volt1241/benu1247/benu1248/taro1265/biji1252/vagh1247/vagh1250/md.ini)
 - [Vai-Kono [vaik1238]](tree/mand1469/west2780/mand1431/cent2047/mand1432/mand1433/vaik1238/md.ini)
 - [Valley Mazatec [vall1259]](tree/otom1299/east2557/popo1292/popo1293/maza1295/vall1259/md.ini)

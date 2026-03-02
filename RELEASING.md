@@ -29,6 +29,12 @@
   - `CHANGES.md`
   - `CONTRIBUTORS.md`
   - `config/publication.ini` adding a proper version number
+- Update Wikidata mapping:
+```python
+import pathlib
+from pyglottolog.links.wikidata import query
+query(pathlib.Path('build/glottocode2wikidata.csv'))
+```
 - Run
   ```shell
   glottolog-admin update

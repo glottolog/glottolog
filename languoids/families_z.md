@@ -13,7 +13,7 @@
 - [Zapotecan [zapo1436]](tree/otom1299/east2557/popo1292/zapo1436/md.ini)
 - [Zaric [sout3163]](tree/atla1278/volt1241/benu1247/benu1248/benu1249/sout3163/md.ini)
 - [Zarma-Kaado-Dendi [zarm1240]](tree/song1307/east2431/zarm1240/md.ini)
-- [Zaza [zaza1246][zza]](tree/indo1319/clas1257/indo1320/iran1269/cent2317/cent2318/nort3177/tati1243/zaza1246/md.ini)
+- [Zaza [zaza1246][zza]](tree/indo1319/clas1257/indo1320/iran1271/iran1269/cent2317/cent2318/nort3177/tati1243/zaza1246/md.ini)
 - [Zazao-Blanga [zaza1247]](tree/aust1307/mala1545/east2712/ocea1241/west2818/meso1253/newi1242/stge1234/nort3225/sant1458/cent2063/zaza1247/md.ini)
 - [Zeemic [zeem1243]](tree/afro1255/chad1250/west2785/west2790/west2800/sout3162/sout3170/zeem1243/md.ini)
 - [Zeeuwic [zeeu1239]](tree/indo1319/clas1257/germ1287/nort3152/west2793/macr1270/midd1347/mode1257/sout3292/zeeu1239/md.ini)
