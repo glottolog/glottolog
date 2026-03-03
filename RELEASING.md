@@ -48,7 +48,9 @@ query(pathlib.Path('build/glottocode2wikidata.csv'))
   cd ../glottolog
   ```
 - Update automatically created BibTeX files:
-  - `iso6393.bib`: Run `glottolog-admin isobib`
+  - `iso6393.bib`: 
+    - Empty the cache: `rm build/iso_639_3_cache/*`
+    - Run `glottolog-admin isobib`
   - `benjamins.bib`:
     - Switch to the clone of `glottolog/benjamins`
     - Pull the latest changes via FTP (following README.md)
