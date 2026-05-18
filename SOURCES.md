@@ -13,7 +13,10 @@ involves manual curation.
 ## Language inventory
 
 Glottolog's inventory of languages is based on Harald Hammarström's enumeration of all handbooks/overviews 
-(Hammarström and Nordhoff 2011) and consolidated review of them (including Ethnologue, see Hammarström 2015).
+([Hammarström and Nordhoff 2011](https://doi.org/10.5617/osla.75)) and consolidated review of them 
+(including Ethnologue, see [Hammarström 2015](https://doi.org/10.1353/lan.2015.0038)). Its curation
+by the Glottolog editors is one of the main tasks of Glottolog. See [Forkel and Hammarström 2022](https://doi.org/10.3233/SW-212843)
+for a description of the principles guiding this.
 
 
 ## Links
@@ -84,7 +87,7 @@ critically endangered | critically endangered | 8b (Nearly extinct) | 8b (Nearly
 extinct |  <ul><li>dormant</li><li>awakening</li></ul>  | <ul><li>9 (Dormant)</li><li>9 (Reawakening)</li><li>9 (Second language only)</li><li>10 (Extinct)</li></ul> | 10 (Extinct)
 
 
-## Language location
+## Language locations
 
 Glottolog provides coordinates for all classifiable language-level
 languoids. The coordinate often represents the geographical
@@ -104,7 +107,7 @@ well-founded source for language locations (or variant names). For
 that, one needs to look at the individual sources attributed to the
 language in Glottolog.
 
-
+ 
 ## References
 
 Glottolog aggregates bibliographical references from a number of so-called *providers*, i.e. individuals

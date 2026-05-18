@@ -1,7 +1,12 @@
 # The Glottolog Data Repository
 
 The Glottolog data repository is the place where the data served by the
-[Glottolog web application](https://glottolog.org) is curated. But the repository
+[Glottolog web application](https://glottolog.org) is curated. This curation workflow includes
+- aggregating data from other [sources](SOURCES.md)
+- integrating data (e.g. by adding language identifiers to reference data)
+- ensuring consistency of the data (e.g. by cross-checking references in languoid metadata against the reference collcetions).
+
+But the repository
 also provides an alternative way to access Glottolog's data locally, and possibly
 even locally customized data by [forking](https://help.github.com/articles/fork-a-repo/) glottolog/glottolog.
 
