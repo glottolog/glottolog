@@ -30,7 +30,7 @@ extinct |  <ul><li>dormant</li><li>awakening</li></ul>  | <ul><li>9 (Dormant)</l
 
 ## Language location
 
-Glottolog provides coordinates for nearly all language-level
+Glottolog provides coordinates for all classifiable language-level
 languoids. The coordinate often represents the geographical
 centre-point of the area where the speakers live, but may also
 indicate a historical location, the demographic centre-point or some
@@ -41,11 +41,10 @@ specific source in Glottolog. However, it is expected that any source
 attributed to the language in Glottolog would indicate a location
 compatible with the coordinate given in Glottolog. The actual sources
 for the coordinates in Glottolog are varied and include both
-individual points submitted by various users and ourselves as well as
-databases such as [WALS](https://wals.info), [ASJP](https://asjp.clld.org) and 
-human reading of Ethnologue maps. As
+individual points submitted by various users and 
+human reading of maps in specific sources (including Ethnologue). As
 such the coordinates in Glottolog are not a substitute for a full and
-well-founded source in language locations (or variant names). For
+well-founded source for language locations (or variant names). For
 that, one needs to look at the individual sources attributed to the
 language in Glottolog.
 
