@@ -49,7 +49,8 @@ query(pathlib.Path('build/glottocode2wikidata.csv'))
   ```
 - Update automatically created BibTeX files:
   - `iso6393.bib`: 
-    - Empty the cache: `rm build/iso_639_3_cache/*`
+    - Keep the cache at `build/iso_639_3_cache/*` and add new pages manually - as long as they are
+      protected against automated retrieval ...
     - Run `glottolog-admin isobib`
   - `benjamins.bib`:
     - Switch to the clone of `glottolog/benjamins`
