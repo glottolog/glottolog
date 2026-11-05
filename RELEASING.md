@@ -87,6 +87,8 @@ query(pathlib.Path('build/glottocode2wikidata.csv'))
   glottolog-admin check
   ```
   making sure there are no `ÈRROR`s
+- Commit and push changes
+- Triage issues
 
 
 ## Creating the release PR
