@@ -88,7 +88,7 @@ query(pathlib.Path('build/glottocode2wikidata.csv'))
       glottolog-admin updatebib cldf cldf.bib
       ```
   - `ldh.bib`:
-    Download and unzip the last released bib from https://ldh.clld.org/download
+    Download and unzip the last released bib from https://doi.org/10.5281/zenodo.21392221
     ```shell
     glottolog-admin updatebib ldh description.bib
     ```
