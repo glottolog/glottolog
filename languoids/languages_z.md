@@ -55,6 +55,7 @@
 - [Zoroastrian Yazdi [zoro1242][gbz]](tree/indo1319/clas1257/indo1320/iran1271/iran1269/cent2317/cent2318/nort3177/cent2264/nucl1790/yazd1241/zoro1242/md.ini)
 - [Zotung Chin [zotu1235][czt]](tree/sino1245/kuki1245/kuki1246/cent2330/mara1381/zotu1235/md.ini)
 - [Zou [zouu1235][zom]](tree/sino1245/kuki1245/kuki1246/peri1260/nort3179/siza1239/zouu1235/md.ini)
+- [Zuanga-Yuanga [yuag1237][nua]](tree/aust1307/mala1545/east2712/ocea1241/sout3173/newc1243/main1286/nort3325/extr1244/kumn1236/kumn1237/yuag1237/md.ini)
 - [Zul [zull1239][zlu]](tree/afro1255/chad1250/west2785/west2790/west2800/sout3162/nort3190/nyam1284/polc1245/zuli1234/zull1239/md.ini)
 - [Zula [zula1235][zla]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/cent2260/luba1253/luba1254/zula1235/md.ini)
 - [Zulgo-Gemzek [zulg1242][gnd]](tree/afro1255/chad1250/bium1280/nort3156/marg1267/mofu1249/meri1245/zulg1242/md.ini)

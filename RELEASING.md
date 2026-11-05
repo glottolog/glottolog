@@ -17,36 +17,6 @@
   glottolog-admin check
   ```
   making sure there are no `ÈRROR`s
-
-
-## Creating the release PR
-
-- Check out a new branch:
-  ```shell
-  git checkout -b release-<version>
-  ```
-- Update 
-  - `CHANGES.md`
-  - `CONTRIBUTORS.md`
-  - `config/publication.ini` adding a proper version number
-- Update Wikidata mapping:
-```python
-import pathlib
-from pyglottolog.links.wikidata import query
-query(pathlib.Path('build/glottocode2wikidata.csv'))
-```
-- Run
-  ```shell
-  glottolog-admin update
-  ```
-  and make sure the data can be loaded into treedb:
-  ```shell
-  cd ../treedb
-  git checkout master
-  git pull origin
-  ~/venvs/glottolog/bin/python -c "import treedb; treedb.load(); treedb.write_csv()"
-  cd ../glottolog
-  ```
 - Update automatically created BibTeX files:
   - `iso6393.bib`: 
     - Keep the cache at `build/iso_639_3_cache/*` and add new pages manually - as long as they are
@@ -92,15 +62,48 @@ query(pathlib.Path('build/glottocode2wikidata.csv'))
     ```shell
     glottolog-admin updatebib ldh description.bib
     ```
+- Update Wikidata mapping:
+```python
+import pathlib
+from pyglottolog.links.wikidata import query
+query(pathlib.Path('build/glottocode2wikidata.csv'))
+```
+- Run
+  ```shell
+  glottolog-admin update
+  ```
+  and make sure the data can be loaded into treedb:
+  ```shell
+  cd ../treedb
+  git checkout master
+  git pull origin
+  ~/venvs/glottolog/bin/python -c "import treedb; treedb.load(); treedb.write_csv()"
+  cd ../glottolog
+  ```
+- Check the tree and references running
+  ```
+  glottolog-admin check
+  ```
+  making sure there are no `ÈRROR`s
+
+
+## Creating the release PR
+
+on `dlceutil`:
+
+- Check out a new branch:
+  ```shell
+  git checkout -b release-<version>
+  ```
+- Update 
+  - `CHANGES.md`
+  - `CONTRIBUTORS.md`
+  - `config/publication.ini` adding a proper version number
 - Run
   ```shell
   glottolog-admin bib
   ```
   to create `build/monster-utf8.bib` - about 30mins
-- Run
-  ```shell
-  glottolog-admin update
-  ```
 - Run
   ```shell
   glottolog-admin release
