@@ -77,7 +77,9 @@ query(pathlib.Path('build/glottocode2wikidata.csv'))
   cd ../treedb
   git checkout master
   git pull origin
-  ~/venvs/glottolog/bin/python -c "import treedb; treedb.load(); treedb.write_csv()"
+  ~/venvs/treedb/bin/pip install pytest
+  ~/venvs/treedb/bin/pip install -e .
+  ~/venvs/treedb/bin/python -c "import treedb; treedb.load(); treedb.write_csv()"
   cd ../glottolog
   ```
 - Check the tree and references running
