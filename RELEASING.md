@@ -1,7 +1,6 @@
 
 # Releasing glottolog/glottolog
 
-
 ## Preparations
 
 - Make sure you have the latest ISO 639-3 code tables from 
@@ -11,7 +10,7 @@
   ```shell
   git checkout master
   git pull origin master
-   ```
+  ```
 - Check the tree and references running
   ```
   glottolog-admin check
@@ -32,11 +31,11 @@
   - `evobib.bib`:
     - download the latest version from https://doi.org/10.5281/zenodo.4071598
     - Run `glottolog-admin evobib evobib-converted.bib`
-  - `langsci.bib`:
+  - `langsci.bib`:  FIXME: this can be done on `dlceutil` now
     - Update the `raw_texfiles` repos, see https://github.com/langsci/raw_texfiles#readme
     - Recreate the merged bib: `linglit mergedbib langsci ~/projects/cldf-datasets/imtvault/raw/langsci/ > langsci.bib`
     - Run `glottolog-admin updatebib langsci langsci.bib`
-  - `glossa.bib`:
+  - `glossa.bib`:  FIXME: this can be done on `dlceutil` now
     - Update the glossa repos via
       ```shell
       linglit update glossa ~/projects/cldf-datasets/imtvault/raw/glossa
@@ -47,7 +46,7 @@
       ```shell
       glottolog-admin updatebib glossa glossa.bib
       ```
-  - `cldf.bib`:
+  - `cldf.bib`:  FIXME: this can be done on `dlceutil` now
       ```shell
       linglit update cldf ~/projects/cldf-datasets/imtvault/raw/cldf
       ```
@@ -115,6 +114,8 @@ on `dlceutil`:
   git push origin release-<version>
   ```
 - Create a corresponding PR on GitHub
+
+- Create a release of `glottolog-cldf`.
 
 
 ## Releasing
