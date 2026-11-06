@@ -2,6 +2,13 @@
 
 Notable changes between releases of the Glottolog data.
 
+## [5.4] - 2026-11-09
+
+- See https://github.com/glottolog/glottolog/milestone/15?closed=1 for a list of issues addressed in this release and
+- https://github.com/glottolog/glottolog/pulls?q=is%3Apr+is%3Amerged for a list of merged pull requests and
+- all changes https://github.com/glottolog/glottolog/compare/v5.3...v5.4
+
+
 ## [5.3] - 2026-03-02
 
 - See https://github.com/glottolog/glottolog/milestone/14?closed=1 for a list of issues addressed in this release and
