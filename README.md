@@ -36,6 +36,9 @@ https://doi.org/10.5281/zenodo.596479
 
 ## Types of data in Glottolog
 
+The content of Glottolog is described in [about/README.md](about/README.md). The sections below give
+an overview where to find particular information in the repository.
+
 
 ### Languoids
 

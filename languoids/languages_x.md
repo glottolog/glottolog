@@ -23,7 +23,6 @@
 - [Xipaya [xipa1240][xiy]](tree/tupi1275/east2909/yuru1262/xipa1240/md.ini)
 - [Xipináwa [xipi1238][xip]](tree/unat1236/pano1260/xipi1238/md.ini)
 - [Xiri [xiri1242][xii]](tree/khoe1240/khoe1241/khoe1242/sout3214/xiri1242/md.ini)
-- [Xiriâna [xiri1243][xir]](tree/araw1281/negr1239/bahu1238/xiri1243/md.ini)
 - [Xishanba Lalo [xish1235][ywt]](tree/sino1245/burm1265/lolo1265/lolo1267/nili1235/liso1234/nucl1734/lisu1252/lalu1234/lalo1240/grea1292/core1258/cent2297/xish1235/md.ini)
 - [Xiyun Va [xiyu1235]](tree/aust1305/khas1273/pala1352/east2331/waic1245/wala1271/waaa1245/xiyu1235/md.ini)
 - [Xoco [xoco1235]](tree/uncl1493/xoco1235/md.ini)

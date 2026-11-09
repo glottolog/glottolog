@@ -42,6 +42,7 @@
 - [Romance [roma1334]](tree/indo1319/clas1257/ital1284/lati1262/lati1263/impe1234/roma1334/md.ini)
 - [Romani [roma1329][rom]](tree/indo1319/clas1257/indo1320/indo1321/midd1375/cont1248/midl1245/shau1239/indo1322/roma1329/md.ini)
 - [Ronic [roni1235]](tree/afro1255/chad1250/west2785/west2714/west2716/roni1235/md.ini)
+- [Ronji-Mato [ronj1238]](tree/aust1307/mala1545/east2712/ocea1241/west2818/nort3206/nger1241/viti1243/belr1234/ronj1238/md.ini)
 - [Roosevelt [roos1235]](tree/namb1299/namb1300/nort3153/roos1235/md.ini)
 - [Rote-Meto [rote1234]](tree/aust1307/mala1545/timo1265/rote1234/md.ini)
 - [Rotokas-Askopan [roto1248]](tree/nort2933/roto1248/md.ini)
