@@ -116,6 +116,7 @@
 - [Ainbai [ainb1238][aic]](tree/bord1247/bewa1242/pagi1245/ainb1238/md.ini)
 - [Ainu (China) [ainu1251][aib]](tree/turk1311/comm1245/kipc1240/uygh1241/uygh1240/uigh1243/ainu1251/md.ini)
 - [Aiome [aiom1240][aki]](tree/ramu1234/aian1241/aiom1240/md.ini)
+- [Air Matoa [airm1242]](tree/airm1242/md.ini)
 - [Airoran [airo1242][air]](tree/kwer1242/kwer1240/west1486/airo1242/md.ini)
 - [Aisi [musa1266][mmq]](tree/nucl1709/mada1298/kala1403/sout3148/soge1235/east2767/aisi1234/musa1266/md.ini)
 - [Aiton [aito1238][aio]](tree/taik1256/kamt1241/daic1238/daic1237/cent2251/wenm1239/sapa1255/sout3184/sout2743/shan1276/assa1264/moga1251/assa1275/aito1238/md.ini)
