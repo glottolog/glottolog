@@ -392,8 +392,8 @@ added to the two for that node. The remaining languages, Arapaso, Miriti, Macagu
 and [Tama](https://glottolog.org/resource/languoid/id/tama1340), 
 a small amount of data is attested and published, and this is enough for
 [Ortiz (1965:133)](https://glottolog.org/resource/reference/id/hh:hvw:Ortiz:Colombia) to show that they 
-are within the [Siona-Secoya](https://glottolog.org/resource/languoid/id/sion1248)
-group, and [Ramirez (2019:5-7)](https://glottolog.org/resource/reference/id/hh:gd:Ramirez:Yepa-Masa:2019) 
+subgroup with languages that belong to Western Tucanoan in Glottolog [Siona-Secoya](https://glottolog.org/resource/languoid/id/sion1248),
+and [Ramirez (2019:5-7)](https://glottolog.org/resource/reference/id/hh:gd:Ramirez:Yepa-Masa:2019) 
 later makes a closer assessment of their position. Thus, here 
 [Ortiz (1965:133)](https://glottolog.org/resource/reference/id/hh:hvw:Ortiz:Colombia) and 
 [Ramirez (2019:5-7)](https://glottolog.org/resource/reference/id/hh:gd:Ramirez:Yepa-Masa:2019) are cited as
