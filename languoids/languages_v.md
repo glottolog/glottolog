@@ -38,7 +38,7 @@
 - [Veps [veps1250][vep]](tree/ural1272/finn1317/coas1319/neva1234/nort3282/lado1234/east2796/veps1250/md.ini)
 - [Vera'a [vera1241][vra]](tree/aust1307/mala1545/east2712/ocea1241/nort3195/nort3205/torr1262/leme1240/vera1241/md.ini)
 - [Vere Kaadam [vere1252]](tree/atla1278/volt1241/nort3149/came1255/samb1322/samb1323/nort3259/vere1249/vere1250/vere1252/md.ini)
-- [Vernacular Atayalic Japanese [yila1234][ycr]](tree/japo1237/japa1256/japa1258/yila1234/md.ini)
+- [Vernacular Atayalic Japanese [yila1234][ycr]](tree/japo1237/japa1256/hons1234/japa1258/yila1234/md.ini)
 - [Vidunda [vidu1238][vid]](tree/atla1278/volt1241/benu1247/bant1294/sout3152/narr1281/east2731/nort3203/nort3209/ruvu1235/west2846/vidu1239/vidu1238/md.ini)
 - [Viemo [viem1243][vig]](tree/atla1278/volt1241/nort3149/gura1261/viem1243/md.ini)
 - [Vietnamese [viet1252][vie]](tree/aust1305/viet1250/viet1251/viet1252/md.ini)

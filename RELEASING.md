@@ -1,7 +1,6 @@
 
 # Releasing glottolog/glottolog
 
-
 ## Preparations
 
 - Make sure you have the latest ISO 639-3 code tables from 
@@ -11,42 +10,12 @@
   ```shell
   git checkout master
   git pull origin master
-   ```
+  ```
 - Check the tree and references running
   ```
   glottolog-admin check
   ```
   making sure there are no `ÈRROR`s
-
-
-## Creating the release PR
-
-- Check out a new branch:
-  ```shell
-  git checkout -b release-<version>
-  ```
-- Update 
-  - `CHANGES.md`
-  - `CONTRIBUTORS.md`
-  - `config/publication.ini` adding a proper version number
-- Update Wikidata mapping:
-```python
-import pathlib
-from pyglottolog.links.wikidata import query
-query(pathlib.Path('build/glottocode2wikidata.csv'))
-```
-- Run
-  ```shell
-  glottolog-admin update
-  ```
-  and make sure the data can be loaded into treedb:
-  ```shell
-  cd ../treedb
-  git checkout master
-  git pull origin
-  ~/venvs/glottolog/bin/python -c "import treedb; treedb.load(); treedb.write_csv()"
-  cd ../glottolog
-  ```
 - Update automatically created BibTeX files:
   - `iso6393.bib`: 
     - Keep the cache at `build/iso_639_3_cache/*` and add new pages manually - as long as they are
@@ -62,11 +31,11 @@ query(pathlib.Path('build/glottocode2wikidata.csv'))
   - `evobib.bib`:
     - download the latest version from https://doi.org/10.5281/zenodo.4071598
     - Run `glottolog-admin evobib evobib-converted.bib`
-  - `langsci.bib`:
+  - `langsci.bib`:  FIXME: this can be done on `dlceutil` now
     - Update the `raw_texfiles` repos, see https://github.com/langsci/raw_texfiles#readme
     - Recreate the merged bib: `linglit mergedbib langsci ~/projects/cldf-datasets/imtvault/raw/langsci/ > langsci.bib`
     - Run `glottolog-admin updatebib langsci langsci.bib`
-  - `glossa.bib`:
+  - `glossa.bib`:  FIXME: this can be done on `dlceutil` now
     - Update the glossa repos via
       ```shell
       linglit update glossa ~/projects/cldf-datasets/imtvault/raw/glossa
@@ -77,7 +46,7 @@ query(pathlib.Path('build/glottocode2wikidata.csv'))
       ```shell
       glottolog-admin updatebib glossa glossa.bib
       ```
-  - `cldf.bib`:
+  - `cldf.bib`:  FIXME: this can be done on `dlceutil` now
       ```shell
       linglit update cldf ~/projects/cldf-datasets/imtvault/raw/cldf
       ```
@@ -88,10 +57,51 @@ query(pathlib.Path('build/glottocode2wikidata.csv'))
       glottolog-admin updatebib cldf cldf.bib
       ```
   - `ldh.bib`:
-    Download and unzip the last released bib from https://ldh.clld.org/download
+    Download and unzip the last released bib from https://doi.org/10.5281/zenodo.21392221
     ```shell
     glottolog-admin updatebib ldh description.bib
     ```
+- Update Wikidata mapping:
+```python
+import pathlib
+from pyglottolog.links.wikidata import query
+query(pathlib.Path('build/glottocode2wikidata.csv'))
+```
+- Run
+  ```shell
+  glottolog-admin update
+  ```
+  and make sure the data can be loaded into treedb:
+  ```shell
+  cd ../treedb
+  git checkout master
+  git pull origin
+  ~/venvs/treedb/bin/pip install pytest
+  ~/venvs/treedb/bin/pip install -e .
+  ~/venvs/treedb/bin/python -c "import treedb; treedb.load(); treedb.write_csv()"
+  cd ../glottolog
+  ```
+- Check the tree and references running
+  ```
+  glottolog-admin check
+  ```
+  making sure there are no `ÈRROR`s
+- Commit and push changes
+- Triage issues
+
+
+## Creating the release PR
+
+on `dlceutil`:
+
+- Check out a new branch:
+  ```shell
+  git checkout -b release-<version>
+  ```
+- Update 
+  - `CHANGES.md`
+  - `CONTRIBUTORS.md`
+  - `config/publication.ini` adding a proper version number
 - Run
   ```shell
   glottolog-admin bib
@@ -99,15 +109,13 @@ query(pathlib.Path('build/glottocode2wikidata.csv'))
   to create `build/monster-utf8.bib` - about 30mins
 - Run
   ```shell
-  glottolog-admin update
-  ```
-- Run
-  ```shell
   glottolog-admin release
   git commit -a -m"release <version>"
   git push origin release-<version>
   ```
 - Create a corresponding PR on GitHub
+
+- Create a release of `glottolog-cldf`.
 
 
 ## Releasing
