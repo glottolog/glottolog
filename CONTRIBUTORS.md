@@ -4,6 +4,7 @@
 
 Version | Year | Editors | deposit ID
 --- |------| --- | ---
+5.4 | 2026 | Harald Hammarström & Robert Forkel & Martin Haspelmath & Sebastian Bank |
 5.3 | 2026 | Harald Hammarström & Robert Forkel & Martin Haspelmath & Sebastian Bank | 21681980
 5.2.1 | 2025 | Harald Hammarström & Robert Forkel & Martin Haspelmath & Sebastian Bank |
 5.2 | 2025 | Harald Hammarström & Robert Forkel & Martin Haspelmath & Sebastian Bank | 21681909
