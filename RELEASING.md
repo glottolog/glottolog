@@ -92,7 +92,7 @@ query(pathlib.Path('build/glottocode2wikidata.csv'))
 
 ## Creating the release PR
 
-on `dlceutil`:
+On `dlceutil`:
 
 - Check out a new branch:
   ```shell
@@ -102,14 +102,13 @@ on `dlceutil`:
   - `CHANGES.md`
   - `CONTRIBUTORS.md`
   - `config/publication.ini` adding a proper version number
-- Run
+- Create `build/monster-utf8.bib` - about 30mins
   ```shell
-  glottolog-admin bib
+  gladmin bib
   ```
-  to create `build/monster-utf8.bib` - about 30mins
 - Run
   ```shell
-  glottolog-admin release
+  gladmin release
   git commit -a -m"release <version>"
   git push origin release-<version>
   ```
@@ -132,7 +131,7 @@ Upon approval of the PR:
   ```
 - Push the tag to origin:
   ```shell
-  git push --tags origin
+  git push origin --tags
   ```
 - Create corresponding release of glottolog-cldf, see
   https://github.com/glottolog/glottolog-cldf/blob/master/RELEASING.md 
